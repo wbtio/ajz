@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏗️ JAZ Event Management Platform
 
-## Getting Started
+**Joint Annual Zone to Your Place**
 
-First, run the development server:
+![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Web-blue?style=flat-square)
+![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)
+
+> **منصة متكاملة لتنظيم الفعاليات، المعارض، وبرامج التدريب والتطوير في العراق.**
+
+<div align="center">
+  <img src="path/to/banner.png" alt="JAZ Banner" width="100%" />
+</div>
+
+---
+
+## 📑 جدول المحتويات (Table of Contents)
+- [نظرة عامة](#-نظرة-عامة-overview)
+- [التقنيات المستخدمة](#-التقنيات-المستخدمة-tech-stack)
+- [خريطة الموقع](#-خريطة-الموقع-sitemap)
+- [المميزات الرئيسية](#-المميزات-الرئيسية-features)
+- [تفاصيل الصفحات](#-تفاصيل-الصفحات-page-details)
+- [بنية قاعدة البيانات](#-بنية-قاعدة-البيانات-database-schema)
+- [التثبيت والتشغيل](#-التثبيت-والتشغيل-installation)
+- [التكاليف التقديرية](#-التكاليف-التقديرية-costs)
+
+---
+
+## 📄 نظرة عامة (Overview)
+هذا المستند يوضح الهيكل التفصيلي لموقع شركة **JAZ (Joint Annual Zone to Your Place)**. يهدف المشروع إلى رقمنة قطاع الفعاليات والمعارض عبر توفير منصة ديناميكية تتيح حجز التذاكر، عرض الأجندات، وإدارة برامج التدريب. يعتمد النظام على بنية **Serverless** لضمان التوسعية والأداء.
+
+---
+
+## 🛠️ التقنيات المستخدمة (Tech Stack)
+
+### **Frontend**
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+### **Backend & Infrastructure**
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+---
+
+## 🗺️ خريطة الموقع (Sitemap)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+├── 🏠 Home (الرئيسية)
+├── 🏢 About Us (من نحن)
+├── 📅 Events (الفعاليات والمعارض)
+├── 🎓 Training (التدريب والتطوير) 🚧 [قيد العمل]
+├── 🏭 Sectors (القطاعات)
+├── 📰 Media Center (المدونة)
+├── 📞 Contact Us (اتصل بنا)
+├── 🔐 Registration (تسجيل الدخول/الحجز)
+└── 🛡️ Privacy Policy (السياسة)
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ المميزات الرئيسية (Features)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| الميزة | الوصف التقني | الحالة |
+| --- | --- | --- |
+| **إدارة الفعاليات** | عرض ديناميكي للمعارض مع تصفية البحث (Filtering). | ✅ |
+| **التسجيل والحجز** | نظام حجز مربوط بجدول `registrations` مع تأكيد فوري. | ✅ |
+| **لوحة تحكم (Admin)** | عمليات CRUD كاملة لإدارة المحتوى والمسجلين. | ✅ |
+| **تحديث لحظي** | استخدام Supabase Realtime للعدادات والإشعارات. | ✅ |
+| **أمان البيانات** | تطبيق سياسات RLS لحماية بيانات المستخدمين. | ✅ |
+| **بوابة التدريب** | عرض الدورات والتسجيل فيها. | ⏳ |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🏠 تفاصيل الصفحات (Page Details)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🏠 تفاصيل الصفحة الرئيسية (Home Page Detail)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### 1. الهيدر (Header)
+* **الشعار:** JAZ Logo.
+* **القائمة الرئيسية:** الرئيسية، من نحن، الفعاليات، القطاعات، التواصل، المدونة، التدريب.
+* **إجراءات:** زر "اتصل بنا"، أيقونة البحث، وتبديل اللغة (AR/EN).
 
-## Deploy on Vercel
+#### 2. القسم الرئيسي (Hero Section)
+* **العنوان:** اسم الشركة.
+* **الوصف:** "نقدم حلولاً متكاملة لتنظيم الفعاليات عبر قطاعات استراتيجية تساهم في نمو الاقتصاد العراقي".
+* **إحصائيات:** (بيانات ديناميكية تُجلب من قاعدة البيانات: عدد المعارض، الزوار).
+* **أزرار (CTA):** "تصفح المعارض القادمة"، "تواصل معنا".
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### 3. الفعاليات القادمة (Upcoming Events)
+يعرض أهم 4 فعاليات (Fetch from `events` table)، تتضمن:
+* صورة (من Supabase Storage)، العنوان، التاريخ، المكان.
+* عداد تنازلي (Real-time).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### 4. قسم القطاعات (Sectors)
+* **القطاع التجاري والصناعي:** نبذة + زر قراءة المزيد.
+* **القطاع الطبي والصحي:** نبذة + زر قراءة المزيد.
+
+#### 5. التدريب والتطوير
+هذا القسم في قيد الانتظار
+
+---
+
+### 📅 صفحات الفعاليات (Events Pages)
+* **قسم الهيدربار (Header)**
+* **صندوق البحث والفلترة:** (Query Supabase DB).
+* **شبكة الفعاليات (Events Grid):** عرض البطاقات.
+* **التفاصيل:** وصف كامل، الأجندة، المتحدثين.
+* **التسجيل:** زر الحجز (Insert into `registrations` table).
+
+---
+
+### 🎓 صفحة التدريب والتطوير
+هذا القسم في قيد الانتظار
+
+---
+
+## 🔌 بنية قاعدة البيانات (Database Schema)
+
+يعتمد المشروع على **PostgreSQL** المستضافة على Supabase. الجداول الأساسية:
+
+* `users`: 👤 إدارة المستخدمين، الصلاحيات، والملفات الشخصية.
+* `events`: 📅 تفاصيل الفعاليات (Title, Date, Location, Description, ImageURL).
+* `trainings`: 🎓 تفاصيل الدورات التدريبية (المدرب، السعر، المحتوى).
+* `registrations`: 🎟️ ربط المستخدمين بالفعاليات (Foreign Keys -> users, events).
+* `posts`: 📰 مقالات المدونة والأخبار.
+
+> **ملاحظة:** يتم تخزين الصور (Assets) في **Supabase Storage** داخل الـ Buckets: `events-bucket` و `avatars`.
+
+---
+
+## 🚀 التثبيت والتشغيل (Installation)
+
+للتشغيل محلياً (Locally)، اتبع الخطوات التالية:
+
+1. **استنساخ المستودع (Clone Repo):**
+```bash
+git clone https://github.com/your-username/jaz-website.git
+```
+
+2. **تثبيت الحزم (Install Dependencies):**
+```bash
+npm install
+# or
+yarn install
+```
+
+3. **إعداد البيئة (Environment Variables):**
+قم بإنشاء ملف `.env.local` وأضف مفاتيح Supabase:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+4. **تشغيل السيرفر (Run Server):**
+```bash
+npm run dev
+```
+
+---
+
+## 💰 التكاليف التقديرية (Estimated Costs)
+
+| الخدمة | الخطة | التكلفة الشهرية | الملاحظات |
+| --- | --- | --- | --- |
+| **Vercel** | Hosting (Pro) | ~$20 | لاستضافة الـ Frontend والسرعة العالية. |
+| **Supabase** | Backend (Pro) | ~$25 | تغطي قاعدة البيانات، Auth، و Storage (تخزين 8GB). |
+| **Domain** | Namecheap/GoDaddy | ~$15 (سنوياً) | اسم النطاق. |
+| **Total** | **OpEx** | **~$45 / شهر** | تكاليف تشغيلية تقريبية. |
+
+---
+
+<div align="center">
+<sub>تم التحديث بتاريخ: يناير 2026 | حقوق النشر محفوظة © لشركة JAZ (Joint Annual Zone to Your Place)</sub>
+</div>
