@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض Global Industrie - بوابتك نحو المستقبل الصناعي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 350px; }
+        }
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #1e3a8a, #3b82f6);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        /* Icon styling */
+        .sector-icon svg {
+            width: 48px;
+            height: 48px;
+            color: #2563eb; /* blue-600 */
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover .sector-icon svg {
+            color: #1e40af; /* blue-800 */
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-blue-900 tracking-tighter">GLOBAL <span class="text-blue-600">INDUSTRIE</span></div>
+            <div class="hidden md:flex space-x-6 space-x-reverse">
+                <a href="#about" class="hover:text-blue-600 transition">عن المعرض</a>
+                <a href="#sectors" class="hover:text-blue-600 transition">القطاعات</a>
+                <a href="#benefits" class="hover:text-blue-600 transition">لماذا تحضر؟</a>
+                <a href="#stats" class="hover:text-blue-600 transition">تحليل البيانات</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative bg-slate-900 text-white overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-slate-900 opacity-90"></div>
+        <div class="container mx-auto px-6 py-24 relative z-10 flex flex-col items-center text-center">
+            <span class="bg-amber-500 text-slate-900 px-4 py-1 rounded-full text-sm font-bold mb-6">الحدث الصناعي الأكبر في أوروبا</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+                مستقبل الصناعة يبدأ هنا<br>
+                <span class="text-blue-400">فرصة الشركات العراقية للتحديث والتطوير</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-300 max-w-3xl mb-10">
+                انضم إلى أكبر تجمع صناعي عالمي. اكتشف أحدث تقنيات الصناعة 4.0، وابنِ شراكات استراتيجية لتطوير المصانع والبنية التحتية في العراق.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})" class="bg-transparent border-2 border-slate-400 hover:border-white text-white text-lg px-8 py-4 rounded-lg font-bold transition">
+                    اكتشف المزيد
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Intro & Context -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">ما هو معرض Global Industrie؟</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    يعتبر Global Industrie المنصة الوحيدة التي تجمع بين جميع منظومات الصناعة وسلسلة القيمة والأسواق المستخدمة. إنه المكان الذي يتبلور فيه مستقبل الصناعة، حيث يجتمع الابتكار مع الإنتاج الفعلي. بالنسبة للعراق، هذا هو المكان المثالي للبحث عن حلول لتحديات الطاقة، الأتمتة، وتطوير خطوط الإنتاج.
+                </p>
+            </div>
+
+            <!-- Animated Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center" id="counter-section">
+                <div class="p-6 bg-slate-50 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-4xl font-bold text-blue-600 mb-2 counter" data-target="2300">0</div>
+                    <div class="text-sm text-slate-500 font-medium">عارض دولي</div>
+                </div>
+                <div class="grid p-6 bg-slate-50 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-4xl font-bold text-blue-600 mb-2 counter" data-target="40000">0</div>
+                    <div class="text-sm text-slate-500 font-medium">زائر محترف</div>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-4xl font-bold text-blue-600 mb-2 counter" data-target="100000">0</div>
+                    <div class="text-sm text-slate-500 font-medium">متر مربع من العرض</div>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-4xl font-bold text-blue-600 mb-2 counter" data-target="15">0</div>
+                    <div class="text-sm text-slate-500 font-medium">قطاع صناعي (Univers)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sectors Grid (Universes) -->
+    <section id="sectors" class="py-16 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl font-bold text-slate-800">15 قطاعاً في مكان واحد</h2>
+                <p class="text-slate-600 mt-2">تغطية شاملة لكل احتياجات المصانع والشركات العراقية</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" id="sectors-grid">
+                <!-- JS will populate this -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Visualization Section -->
+    <section id="stats" class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800">تحليل الفرص والاتجاهات</h2>
+                <p class="text-slate-600 mt-2 max-w-2xl mx-auto">
+                    لفهم أهمية هذا الحدث، قمنا بتحليل اهتمامات الزوار والاتجاهات التكنولوجية المعروضة. هذه البيانات تساعدك في تحديد أهداف زيارتك بدقة.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Chart 1: Visitor Goals -->
+                <div class="bg-slate-50 p-6 rounded-2xl shadow-lg border border-slate-100">
+                    <h3 class="text-xl font-bold text-slate-700 mb-4 text-center">أهداف زوار المعرض</h3>
+                    <p class="text-sm text-slate-500 text-center mb-6">ماذا يبحث المحترفون عند زيارة Global Industrie؟</p>
+                    <div class="chart-container">
+                        <canvas id="visitorGoalsChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-sm text-slate-600 text-center bg-blue-50 p-3 rounded-lg">
+                        <span class="font-bold">نصيحة:</span> جهز قائمة باحتياجاتك قبل السفر لتحقيق أقصى استفادة من فرص الاستثمار والشراء.
+                    </div>
+                </div>
+
+                <!-- Chart 2: Tech Trends -->
+                <div class="bg-slate-50 p-6 rounded-2xl shadow-lg border border-slate-100">
+                    <h3 class="text-xl font-bold text-slate-700 mb-4 text-center">أبرز التقنيات المعروضة (Industry 4.0)</h3>
+                    <p class="text-sm text-slate-500 text-center mb-6">التركيز التكنولوجي للشركات العارضة</p>
+                    <div class="chart-container">
+                        <canvas id="techTrendsChart"></canvas>
+                    </div>
+                     <div class="mt-4 text-sm text-slate-600 text-center bg-amber-50 p-3 rounded-lg">
+                        <span class="font-bold">فرصة للعراق:</span> التركيز الكبير على الروبوتات والرقمنة يمثل فرصة لتحديث المصانع المحلية القديمة.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Strategic Benefits for Iraq (Interactive Tabs) -->
+    <section id="benefits" class="py-16 bg-blue-900 text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-white">لماذا يجب أن تشارك الشركات العراقية؟</h2>
+                <p class="text-blue-200 mt-2">اختر تخصصك لتعرف الفائدة المباشرة لك</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <!-- Tab Navigation -->
+                <div class="flex flex-wrap justify-center gap-2 mb-8">
+                    <button class="tab-btn px-6 py-3 rounded-full bg-blue-700 hover:bg-blue-600 text-white font-bold transition focus:ring-2 ring-white ring-offset-2 ring-offset-blue-900 active" data-tab="business">أصحاب المصانع والأعمال</button>
+                    <button class="tab-btn px-6 py-3 rounded-full bg-blue-800 hover:bg-blue-600 text-white font-bold transition focus:ring-2 ring-white ring-offset-2 ring-offset-blue-900" data-tab="engineers">المهندسين والفنيين</button>
+                    <button class="tab-btn px-6 py-3 rounded-full bg-blue-800 hover:bg-blue-600 text-white font-bold transition focus:ring-2 ring-white ring-offset-2 ring-offset-blue-900" data-tab="gov">القطاع العام والمؤسسات</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="bg-white text-slate-800 rounded-2xl p-8 shadow-2xl transition-all duration-300" id="tab-content">
+                    <!-- Dynamic Content Inserted Here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Footer -->
+    <section class="py-20 bg-slate-50 text-center">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-extrabold text-blue-900 mb-6">لا تفوت فرصة تطوير صناعتك</h2>
+            <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
+                التسجيل مفتوح الآن للزوار الدوليين. كن جزءاً من الحدث الذي يشكل مستقبل الصناعة العالمية.
+            </p>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center border-t border-slate-800">
+        <div class="container mx-auto">
+            <p class="mb-2">&copy; 2024 Global Industrie Promotion Page.</p>
+            <p class="text-xs">تم تصميم هذه الصفحة لأغراض تعريفية للجمهور العراقي.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Icons as SVG strings
+        const icons = {
+            assembly: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path><path d="m9 12 2 2 4-4"></path></svg>`, // Shield Check for Quality/Assembly
+            electronics: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M15 12h-3"/><path d="M10 12H9"/><path d="M5 6v12"/><path d="M19 6v12"/><path d="M12 2v4"/><path d="M12 18v4"/></svg>`, // CPU
+            energy: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`, // Zap
+            print3d: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`, // Box
+            measure: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><path d="M2 17h20"/><path d="M2 7h20"/><path d="M6 15v4"/><path d="M10 15v4"/><path d="M14 15v4"/><path d="M18 15v4"/><path d="M6 5v4"/><path d="M10 5v4"/><path d="M14 5v4"/><path d="M18 5v4"/></svg>`, // Ruler
+            robot: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/><path d="m9 12-5-3-2 3"/></svg>`, // Server/Bot abstraction
+            logistics: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 6v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`, // Truck
+            sheetmetal: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`, // Layers
+            plastic: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></svg>`, // Beaker
+            services: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`, // Cog
+            digital: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`, // Monitor
+            forming: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18"/><path d="M12 8l-5 9h10l-5-9z"/><path d="M12 3v5"/></svg>`, // Anvil-like abstraction
+            machining: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`, // Wrench
+            finishing: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 14 2.5 2.5a2.121 2.121 0 0 1 0 3l-1.5 1.5a2.121 2.121 0 0 1-3 0L14.5 18.5"/><path d="M18 14l-6.6-6.6a2 2 0 0 0-2.8 0l-.6.6a2 2 0 0 0 0 2.8L14.5 17.5"/><path d="M4 22 2 20"/><path d="M22 4 20 2"/><circle cx="10" cy="10" r="5"/></svg>`, // Brush
+            components: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>` // Grid
+        };
+
+        // Data Store
+        const sectorsData = [
+            { name: "التجميع والتركيب", icon: icons.assembly, desc: "Assembly, Mounting" },
+            { name: "الإلكترونيات", icon: icons.electronics, desc: "Electronics" },
+            { name: "الطاقة والاستدامة", icon: icons.energy, desc: "Energy & Sustainable Production" },
+            { name: "التصنيع بالإضافة", icon: icons.print3d, desc: "Additive Manufacturing (3D Print)" },
+            { name: "القياس والتحكم", icon: icons.measure, desc: "Measurement & Vision" },
+            { name: "الروبوتات", icon: icons.robot, desc: "Robotics" },
+            { name: "المناولة واللوجستيات", icon: icons.logistics, desc: "Handling & Warehousing" },
+            { name: "الصفائح المعدنية", icon: icons.sheetmetal, desc: "Sheet Metal Working" },
+            { name: "البلاستيك", icon: icons.plastic, desc: "Plastics" },
+            { name: "الخدمات الصناعية", icon: icons.services, desc: "Services & Supplies" },
+            { name: "الحلول الرقمية", icon: icons.digital, desc: "Digital Sector" },
+            { name: "تشكيل المعادن", icon: icons.forming, desc: "Metal Forming" },
+            { name: "الآلات والأدوات", icon: icons.machining, desc: "Machining & Tools" },
+            { name: "التشطيب", icon: icons.finishing, desc: "Finishing & Surface Treatment" },
+            { name: "المكونات", icon: icons.components, desc: "Components & Accessories" }
+        ];
+
+        const benefitsData = {
+            business: {
+                title: "لأصحاب المصانع ورواد الأعمال",
+                items: [
+                    "البحث عن موردين دوليين لخطوط إنتاج جديدة.",
+                    "تقليل تكاليف الإنتاج من خلال تقنيات الأتمتة الحديثة.",
+                    "عقد صفقات تجارية مباشرة مع المصنعين (B2B).",
+                    "استكشاف فرص التصدير والشراكة مع شركات أوروبية."
+                ],
+                color: "text-blue-600"
+            },
+            engineers: {
+                title: "للمهندسين والمدراء الفنيين",
+                items: [
+                    "الاطلاع على أحدث ما توصلت إليه تكنولوجيا الصناعة 4.0.",
+                    "حضور ورش عمل تقنية حول الصيانة التنبؤية والذكاء الاصطناعي.",
+                    "اكتشاف حلول لمشاكل خطوط الإنتاج الحالية.",
+                    "التعرف على معايير الجودة والسلامة الأوروبية الحديثة."
+                ],
+                color: "text-emerald-600"
+            },
+            gov: {
+                title: "للمؤسسات الحكومية والمستثمرين",
+                items: [
+                    "فهم توجهات السوق العالمية لتوجيه الاستثمارات المحلية.",
+                    "نقل الخبرات لبناء المدن الصناعية في العراق.",
+                    "إيجاد حلول مستدامة للبنية التحتية والطاقة.",
+                    "بناء شبكة علاقات دولية صناعية."
+                ],
+                color: "text-amber-600"
+            }
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSectors();
+            setupTabs();
+            initCharts();
+            setupCounters();
+            
+            // Set default tab
+            updateTabContent('business');
+        });
+
+        // 1. Render Sectors Grid
+        function renderSectors() {
+            const grid = document.getElementById('sectors-grid');
+            grid.innerHTML = sectorsData.map(sector => `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-hover transition duration-300 flex flex-col items-center text-center cursor-default group h-full">
+                    <div class="sector-icon mb-3 group-hover:scale-110 transition duration-300">${sector.icon}</div>
+                    <h3 class="font-bold text-slate-800 text-lg leading-tight mb-2">${sector.name}</h3>
+                    <p class="text-xs text-slate-500 mt-auto">${sector.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        // 2. Tab Logic
+        function setupTabs() {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active state
+                    buttons.forEach(b => {
+                        b.classList.remove('bg-blue-700', 'active');
+                        b.classList.add('bg-blue-800');
+                    });
+                    btn.classList.remove('bg-blue-800');
+                    btn.classList.add('bg-blue-700', 'active');
+                    
+                    // Update content
+                    updateTabContent(btn.dataset.tab);
+                });
+            });
+        }
+
+        function updateTabContent(key) {
+            const contentDiv = document.getElementById('tab-content');
+            const data = benefitsData[key];
+            
+            // Fade out effect
+            contentDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                contentDiv.innerHTML = `
+                    <h3 class="text-2xl font-bold ${data.color} mb-6 border-b pb-4">${data.title}</h3>
+                    <ul class="space-y-4">
+                        ${data.items.map(item => `
+                            <li class="flex items-start">
+                                <span class="ml-3 text-2xl text-amber-500">✓</span>
+                                <span class="text-lg leading-relaxed font-medium">${item}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <!-- Registration Link Removed from here -->
+                `;
+                // Fade in
+                contentDiv.style.opacity = '1';
+            }, 300);
+        }
+
+        // 3. Charts Config (Chart.js)
+        function initCharts() {
+            // Chart 1: Visitor Goals (Doughnut)
+            const ctx1 = document.getElementById('visitorGoalsChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['استكشاف الابتكارات', 'الشراء والاستثمار', 'بناء علاقات', 'مراقبة المنافسين'],
+                    datasets: [{
+                        data: [40, 30, 20, 10],
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#6366f1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Tajawal' } } },
+                        tooltip: { callbacks: { label: (c) => ` ${c.label}: ${c.raw}%` } }
+                    }
+                }
+            });
+
+            // Chart 2: Tech Trends (Bar)
+            const ctx2 = document.getElementById('techTrendsChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['الروبوتات', 'الذكاء الاصطناعي', 'الطاقة الخضراء', 'الأمن السيبراني', 'الطباعة 3D'],
+                    datasets: [{
+                        label: 'نسبة الاهتمام',
+                        data: [85, 75, 65, 50, 60],
+                        backgroundColor: '#1e3a8a',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (c) => ` الأهمية: ${c.raw}/100` } }
+                    }
+                }
+            });
+        }
+
+        // 4. Animated Counters
+        function setupCounters() {
+            const counters = document.querySelectorAll('.counter');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = +entry.target.getAttribute('data-target');
+                        const speed = 200;
+                        const updateCount = () => {
+                            const count = +entry.target.innerText;
+                            const inc = target / speed;
+                            if (count < target) {
+                                entry.target.innerText = Math.ceil(count + inc);
+                                setTimeout(updateCount, 20);
+                            } else {
+                                entry.target.innerText = target.toLocaleString();
+                            }
+                        };
+                        updateCount();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => observer.observe(counter));
+        }
+    </script>
+</body>
+</html>
