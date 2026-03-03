@@ -36,7 +36,7 @@ export function SectorsSection({ sectors }: SectorsSectionProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl lg:text-5xl font-bold text-[#050b1a] mb-4">
+          <h2 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-4">
             {t.sectors.title}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
@@ -61,23 +61,21 @@ export function SectorsSection({ sectors }: SectorsSectionProps) {
                       <CardContent className="p-8">
                         <div className="flex items-start gap-6">
                           <div
-                            className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: `${sector.color}15` }}
+                            className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 bg-[#8b0000]/5 group-hover:bg-[#8b0000] transition-colors duration-300"
                           >
                             <IconComponent
-                              className="w-8 h-8"
-                              style={{ color: sector.color || '#3B82F6' }}
+                              className="w-7 h-7 text-[#8b0000] group-hover:text-white transition-colors duration-300"
                             />
                           </div>
 
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#8b0000] transition-colors">
                               {isRTL ? sector.name_ar : sector.name}
                             </h3>
                             <p className="text-gray-500 mb-4 line-clamp-3">
                               {isRTL ? sector.description_ar : sector.description}
                             </p>
-                            <span className="inline-flex items-center text-blue-600 font-medium">
+                            <span className="inline-flex items-center text-[#8b0000] text-sm font-medium">
                               {isRTL ? 'اكتشف المزيد' : 'Explore more'}
                               <Arrow className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                             </span>

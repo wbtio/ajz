@@ -7,11 +7,11 @@ import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 export const metadata = {
-  title: 'المدونة | JAZ - آخر الأخبار والمقالات',
-  description: 'اطلع على آخر الأخبار والمقالات والتحديثات من عالم الفعاليات والمعارض في العراق',
+  title: 'Blog | JAZ - Latest News & Articles',
+  description: 'Discover the latest news, articles, and updates from the world of events and exhibitions in Iraq',
   openGraph: {
-    title: 'المدونة | JAZ',
-    description: 'آخر الأخبار والمقالات من JAZ',
+    title: 'Blog | JAZ',
+    description: 'Latest news and articles from JAZ',
   },
 }
 
@@ -30,22 +30,22 @@ export default async function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pt-36 pb-20">
+    <div className="min-h-screen bg-slate-50/50 pt-36 pb-20" dir="ltr" lang="en">
       <Container>
         {/* Header Section */}
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/50 text-blue-700 text-sm font-medium border border-blue-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8b0000]/10 text-[#8b0000] text-sm font-medium border border-[#8b0000]/20">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b0000]/50 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8b0000]"></span>
             </span>
-            تحديثات مستمرة
+            Continuous Updates
           </div>
           <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-            المدونة والأخبار
+            Blog & News
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            اكتشف أحدث المقالات والرؤى حول عالم الفعاليات، المعارض، وتطورات الأعمال في العراق.
+            Discover the latest articles and insights about the world of events, exhibitions, and business developments in Iraq.
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export default async function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => (
               <Link key={post.id} href={`/blog/${post.id}`} className="group h-full">
-                <article className="flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:border-blue-200 transition-all duration-300">
+                <article className="flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-[#8b0000]/5 hover:border-[#8b0000]/30 transition-all duration-300">
                   
                   {/* Image Container */}
                   <div className="relative h-60 w-full overflow-hidden bg-slate-100">
@@ -66,15 +66,15 @@ export default async function BlogPage() {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                        <FileText className="w-12 h-12 text-blue-200" />
+                      <div className="w-full h-full flex items-center justify-center bg-[#8b0000]/5">
+                        <FileText className="w-12 h-12 text-[#8b0000]/30" />
                       </div>
                     )}
                     
                     {/* Category Badge - Floating over image */}
                     {post.category && (
                       <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-slate-100 flex items-center gap-1.5 z-10">
-                        <Tag className="w-3.5 h-3.5 text-blue-600" />
+                        <Tag className="w-3.5 h-3.5 text-[#8b0000]" />
                         <span className="text-xs font-bold text-slate-700">
                           {post.category}
                         </span>
@@ -86,13 +86,13 @@ export default async function BlogPage() {
                   <div className="flex flex-col flex-grow p-6">
                     
                     {/* Title */}
-                    <h2 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 leading-snug group-hover:text-blue-700 transition-colors">
-                      {post.title_ar || post.title}
+                    <h2 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 leading-snug group-hover:text-[#8b0000] transition-colors">
+                      {post.title || post.title_ar}
                     </h2>
 
                     {/* Excerpt */}
                     <p className="text-slate-500 text-sm line-clamp-3 mb-6 flex-grow leading-relaxed">
-                      {post.excerpt_ar || post.excerpt || post.content?.substring(0, 150)}
+                      {post.excerpt || post.excerpt_ar || post.content?.substring(0, 150)}
                     </p>
 
                     {/* Footer Meta Data & Action */}
@@ -108,7 +108,7 @@ export default async function BlogPage() {
                               <span className="w-1 h-1 rounded-full bg-slate-300" />
                               <div className="flex items-center gap-1">
                                 <Clock className="w-3.5 h-3.5" />
-                                <span>{post.reading_time} دقيقة</span>
+                                <span>{post.reading_time} min</span>
                               </div>
                             </>
                           )}
@@ -116,8 +116,8 @@ export default async function BlogPage() {
                       </div>
 
                       {/* Read More Button Effect */}
-                      <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
-                        <ArrowUpLeft className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+                      <div className="h-8 w-8 rounded-full bg-[#8b0000]/5 flex items-center justify-center group-hover:bg-[#8b0000] transition-colors duration-300">
+                        <ArrowUpLeft className="w-4 h-4 text-[#8b0000] group-hover:text-white transition-colors duration-300" />
                       </div>
                     </div>
                   </div>
@@ -131,10 +131,10 @@ export default async function BlogPage() {
               <FileText className="w-8 h-8 text-slate-400" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">
-              لا توجد مقالات حالياً
+              No articles available yet
             </h3>
             <p className="text-slate-500">
-              نعمل على إعداد محتوى مميز، تابعنا قريباً.
+              We are working on preparing great content, follow us soon.
             </p>
           </div>
         )}

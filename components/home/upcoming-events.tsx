@@ -52,7 +52,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
   }, [events])
 
   return (
-    <section className="py-16 lg:py-20 bg-white relative overflow-hidden">
+    <section className="py-16 lg:py-20 bg-gray-50 relative overflow-hidden">
       <Container>
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10">
@@ -62,7 +62,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl lg:text-3xl font-bold text-[#1a1a2e] mb-1">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
               {t.events.upcoming}
             </h2>
             <p className="text-gray-400 text-sm max-w-lg">
@@ -76,7 +76,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
             transition={{ duration: 0.4 }}
           >
             <Link href="/calendar">
-              <Button variant="outline" className="h-10 px-5 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 font-medium text-sm">
+              <Button variant="outline" className="h-10 px-5 border-gray-300 text-gray-700 hover:bg-white hover:border-[#8b0000]/30 hover:text-[#8b0000] font-medium text-sm">
                 {t.events.viewAll}
                 <Arrow className={`w-3.5 h-3.5 ${isRTL ? 'mr-2' : 'ml-2'}`} />
               </Button>
@@ -94,7 +94,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
                     {/* Month & Year label on the side */}
                     <div className="hidden md:flex flex-col items-center flex-shrink-0 w-20 relative">
                       <div className="text-center sticky top-36">
-                        <div className="text-xl lg:text-2xl font-black text-[#1a1a2e] leading-tight">
+                        <div className="text-xl lg:text-2xl font-black text-gray-900 leading-tight">
                           {getFullMonthName(monthDate, isRTL ? 'ar-IQ' : 'en-US')}
                         </div>
                         <div className="text-sm font-bold text-gray-400">
@@ -114,7 +114,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
                         transition={{ duration: 0.4 }}
                         className="md:hidden mb-2"
                       >
-                        <span className="text-lg font-black text-[#1a1a2e]">
+                        <span className="text-lg font-black text-gray-900">
                           {getFullMonthName(monthDate, isRTL ? 'ar-IQ' : 'en-US')}
                         </span>
                         <span className="text-sm font-bold text-gray-400 mx-1.5">
@@ -139,7 +139,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
                               <div className="flex flex-col lg:flex-row gap-5">
                                 {/* Text Content */}
                                 <div className="flex-1 min-w-0 order-2 lg:order-1">
-                                  <h3 className="text-lg font-bold text-[#1a1a2e] group-hover:text-blue-700 transition-colors mb-1.5 line-clamp-2">
+                                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#8b0000] transition-colors mb-1.5 line-clamp-2">
                                     {title}
                                   </h3>
 
@@ -151,7 +151,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
 
                                   {/* Date */}
                                   <div className="flex items-center gap-2 text-gray-500 text-sm mb-2">
-                                    <Calendar className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                                    <Calendar className="w-3.5 h-3.5 text-[#8b0000] flex-shrink-0" />
                                     <span>{getFullDate(eventDate, isRTL ? 'ar-IQ' : 'en-US')}</span>
                                     {event.end_date && (
                                       <>
@@ -164,14 +164,14 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
                                   {/* Badges */}
                                   <div className="flex flex-wrap gap-1.5 mt-2">
                                     {event.event_type && (
-                                      <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider bg-[#1a1a2e] text-white px-2.5 py-0.5 rounded">
+                                      <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider bg-gray-900 text-white px-2.5 py-0.5 rounded">
                                         {event.event_type === 'international' ? (isRTL ? 'فعالية دولية' : 'INTERNATIONAL EVENT') :
-                                         event.event_type === 'local' ? (isRTL ? 'فعالية محلية' : 'LOCAL EVENT') :
-                                         event.event_type.toUpperCase()}
+                                          event.event_type === 'local' ? (isRTL ? 'فعالية محلية' : 'LOCAL EVENT') :
+                                            event.event_type.toUpperCase()}
                                       </span>
                                     )}
                                     {event.featured && (
-                                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-amber-950 px-2.5 py-0.5 rounded">
+                                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-[#8b0000] text-white px-2.5 py-0.5 rounded">
                                         <Sparkles className="w-2.5 h-2.5" />
                                         {t.events.featured}
                                       </span>
@@ -189,7 +189,7 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
                                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                   ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 flex items-center justify-center">
+                                    <div className="w-full h-full bg-gradient-to-br from-gray-700 via-gray-800 to-black flex items-center justify-center">
                                       <Calendar className="w-12 h-12 text-white/15" />
                                     </div>
                                   )}

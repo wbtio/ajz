@@ -26,12 +26,12 @@ export async function submitSectorRegistration(sectorId: string, data: any) {
 
     if (error) {
       console.error('Supabase error:', error)
-      throw new Error('فشل إرسال النموذج')
+      throw new Error('Failed to submit form')
     }
 
     return { success: true }
   } catch (error: any) {
     console.error('Error submitting form:', error)
-    throw new Error(error.message || 'حدث خطأ غير متوقع')
+    throw new Error(error.message || 'An unexpected error occurred')
   }
 }

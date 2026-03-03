@@ -1,154 +1,199 @@
-import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { Container } from '@/components/ui/container'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { GraduationCap, Clock, Users, Award, ArrowLeft } from 'lucide-react'
+'use client'
 
-export const metadata = {
-  title: 'التدريب والتطوير | JAZ',
-  description: 'برامج تدريبية متخصصة لتطوير المهارات والكفاءات في مختلف المجالات',
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { Container } from '@/components/ui/container'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { GraduationCap, Award, Users, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
+import { useI18n } from '@/lib/i18n'
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.13, duration: 0.45, ease: 'easeOut' as const },
+  }),
 }
 
-export default async function TrainingPage() {
-  const supabase = await createClient()
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: (i: number) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { delay: 0.25 + i * 0.1, duration: 0.4, ease: 'easeOut' as const },
+  }),
+}
 
-  const { data: trainings } = await supabase
-    .from('trainings')
-    .select('*')
-    .order('created_at', { ascending: false })
+export default function TrainingPage() {
+  const { t, locale } = useI18n()
+  const isRTL = locale === 'ar'
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight
 
   const features = [
     {
       icon: GraduationCap,
-      title: 'مدربون خبراء',
-      description: 'نخبة من المدربين المعتمدين ذوي الخبرة العملية',
+      title: t.trainingPage.features.experts.title,
+      description: t.trainingPage.features.experts.description,
     },
     {
       icon: Award,
-      title: 'شهادات معتمدة',
-      description: 'شهادات معترف بها محلياً ودولياً',
+      title: t.trainingPage.features.certificates.title,
+      description: t.trainingPage.features.certificates.description,
     },
     {
       icon: Users,
-      title: 'تدريب تفاعلي',
-      description: 'ورش عمل عملية وتطبيقات حقيقية',
-    },
-    {
-      icon: Clock,
-      title: 'مرونة في الوقت',
-      description: 'جداول مرنة تناسب احتياجاتك',
+      title: t.trainingPage.features.interactive.title,
+      description: t.trainingPage.features.interactive.description,
     },
   ]
 
   return (
-    <div className="pt-36 pb-12">
+    <div className="pt-32 pb-10" dir={isRTL ? 'rtl' : 'ltr'}>
       <Container>
         {/* Hero */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full mb-4">
-            <GraduationCap className="w-5 h-5" />
-            <span className="font-medium">مركز التدريب والتطوير</span>
-          </div>
-          <h1 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6">
-            طوّر مهاراتك مع JAZ
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            نقدم برامج تدريبية متخصصة في مختلف المجالات لتطوير الكفاءات وبناء القدرات المهنية
-          </p>
-        </div>
+        <motion.div
+          className="text-center mb-10"
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div
+            className="inline-flex items-center gap-2 bg-[#8b0000]/5 text-[#8b0000] px-4 py-1.5 rounded-full mb-3 text-sm"
+            variants={fadeUp}
+            custom={0}
+          >
+            <GraduationCap className="w-4 h-4" />
+            <span className="font-medium">{t.trainingPage.badge}</span>
+          </motion.div>
 
-        {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {features.map((feature) => (
-            <Card key={feature.title} className="text-center">
-              <CardContent className="p-6">
-                <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="w-7 h-7 text-blue-600" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-500">{feature.description}</p>
-              </CardContent>
-            </Card>
+          <motion.h1
+            className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3"
+            variants={fadeUp}
+            custom={1}
+          >
+            {t.trainingPage.title}
+          </motion.h1>
+
+          <TextGenerateEffect
+            words={t.trainingPage.subtitle}
+            className="text-base text-gray-600 max-w-xl mx-auto font-normal"
+            duration={0.4}
+            staggerDelay={0.03}
+          />
+        </motion.div>
+
+        {/* Features — 3 compact cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+          {features.map((feature, i) => (
+            <motion.div
+              key={feature.title}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={scaleIn}
+              custom={i}
+            >
+              <Card className="text-center hover:shadow-md transition-shadow duration-300">
+                <CardContent className="p-5">
+                  <motion.div
+                    className="w-12 h-12 bg-[#8b0000]/5 rounded-xl flex items-center justify-center mx-auto mb-3"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <feature.icon className="w-6 h-6 text-[#8b0000]" />
+                  </motion.div>
+                  <h3 className="font-bold text-gray-900 mb-1 text-sm">{feature.title}</h3>
+                  <p className="text-xs text-gray-500">{feature.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
-        {/* Training Programs */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            البرامج التدريبية المتاحة
-          </h2>
+        {/* Coming Soon */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <motion.div variants={fadeUp} custom={0}>
+            <Card className="overflow-hidden">
+              <CardContent className="py-14 text-center relative">
+                {/* Decorative background dots */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{
+                  backgroundImage: 'radial-gradient(circle, #8b0000 1px, transparent 1px)',
+                  backgroundSize: '24px 24px',
+                }} />
 
-          {trainings && trainings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {trainings.map((training) => (
-                <Card key={training.id} className="hover:shadow-lg transition-all duration-300 group">
-                  <CardHeader className="pb-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center mb-4">
-                      <GraduationCap className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                      {training.title_ar || training.title}
-                    </h3>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                      {training.description_ar || training.description || 'برنامج تدريبي متخصص'}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-500">
-                        {training.instructor && (
-                          <span>المدرب: {training.instructor}</span>
-                        )}
-                      </div>
-                      {training.price ? (
-                        <span className="font-bold text-blue-600">
-                          {training.price.toLocaleString()} د.ع
-                        </span>
-                      ) : (
-                        <span className="text-green-600 font-medium">مجاني</span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="py-16 text-center">
-                <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  قريباً... برامج تدريبية جديدة
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  نعمل على إعداد برامج تدريبية متميزة. تابعنا للحصول على آخر التحديثات.
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+                  className="relative"
+                >
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#8b0000]/10 to-[#8b0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <GraduationCap className="w-8 h-8 text-[#8b0000]" />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-600 px-3 py-1 rounded-full mb-4 text-xs font-medium"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {t.trainingPage.emptyTitle}
+                </motion.div>
+
+                <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto relative">
+                  {t.trainingPage.emptyDescription}
                 </p>
+
                 <Link href="/contact">
-                  <Button>
-                    تواصل معنا للاستفسار
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                  </Button>
+                  <motion.div
+                    className="inline-block"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <Button size="sm" className="bg-[#8b0000] hover:bg-[#a01010]">
+                      {t.trainingPage.emptyButton}
+                      <ArrowIcon className={`w-4 h-4 ${isRTL ? 'mr-1.5' : 'ml-1.5'}`} />
+                    </Button>
+                  </motion.div>
                 </Link>
               </CardContent>
             </Card>
-          )}
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* CTA */}
-        <div className="mt-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 lg:p-12 text-center text-white">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-4">
-            هل تحتاج برنامج تدريبي مخصص؟
+        <motion.div
+          className="mt-10 bg-gradient-to-br from-[#8b0000] to-[#a01010] rounded-2xl p-6 lg:p-8 text-center text-white"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <h2 className="text-xl lg:text-2xl font-bold mb-2">
+            {t.trainingPage.ctaTitle}
           </h2>
-          <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            نقدم برامج تدريبية مخصصة للشركات والمؤسسات حسب احتياجاتكم
+          <p className="text-white/80 mb-5 max-w-xl mx-auto text-sm">
+            {t.trainingPage.ctaDescription}
           </p>
           <Link href="/contact">
-            <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50">
-              تواصل معنا
-              <ArrowLeft className="w-5 h-5 mr-2" />
-            </Button>
+            <motion.div
+              className="inline-block"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Button size="lg" className="bg-white text-[#8b0000] hover:bg-gray-50">
+                {t.trainingPage.ctaButton}
+                <ArrowIcon className={`w-4 h-4 ${isRTL ? 'mr-1.5' : 'ml-1.5'}`} />
+              </Button>
+            </motion.div>
           </Link>
-        </div>
+        </motion.div>
       </Container>
     </div>
   )

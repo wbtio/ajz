@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { HeroSection, UpcomingEvents, SectorsSection } from '@/components/home'
+import { HeroSection, UpcomingEvents, SectorsSection, AboutJazSection } from '@/components/home'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -12,7 +12,7 @@ export default async function Home() {
       .eq('status', 'published')
       .gte('date', new Date().toISOString().split('T')[0])
       .order('date', { ascending: true }),
-    
+
     // جلب القطاعات النشطة
     supabase
       .from('sectors')
@@ -27,6 +27,7 @@ export default async function Home() {
   return (
     <>
       <HeroSection />
+      <AboutJazSection />
       <UpcomingEvents events={events || []} />
       <SectorsSection sectors={sectors || []} />
     </>

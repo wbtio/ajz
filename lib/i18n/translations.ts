@@ -210,6 +210,8 @@ export const translations = {
     // About
     about: {
       title: 'من نحن',
+      sectionTitle: 'من نحن',
+      sectionSubtitle: 'نصنع التميز في عالم الفعاليات',
       description: 'JAZ (Joint Annual Zone to Your Place) هي شركة عراقية رائدة متخصصة في تنظيم الفعاليات والمعارض وبرامج التدريب والتطوير. نعمل على ربط القطاعات الاقتصادية المختلفة وتوفير منصات للتواصل والنمو.',
       mission: 'رسالتنا',
       missionText: 'تقديم خدمات تنظيم فعاليات ومعارض متميزة تساهم في تطوير القطاعات الاقتصادية في العراق.',
@@ -220,6 +222,7 @@ export const translations = {
       team: 'فريقنا',
       teamText: 'فريق متخصص من الخبراء في تنظيم الفعاليات والتسويق والإدارة.',
       whatMakesUsDifferent: 'ما يميزنا',
+      whatMakesUsDifferentDescription: 'نحن نلتزم بأعلى معايير الجودة لضمان نجاح فعالياتك وترك بصمة لا تنسى',
       ourStory: 'قصتنا',
       stats: {
         exhibitions: 'معرض ناجح',
@@ -302,6 +305,41 @@ export const translations = {
       hour: 'ساعة',
       minute: 'دقيقة',
       home: 'الرئيسية',
+    },
+    // Training Page
+    trainingPage: {
+      badge: 'مركز التدريب والتطوير',
+      title: 'طوّر مهاراتك مع JAZ',
+      subtitle: 'نقدم برامج تدريبية متخصصة في مختلف المجالات لتطوير الكفاءات وبناء القدرات المهنية',
+      features: {
+        experts: {
+          title: 'مدربون خبراء',
+          description: 'نخبة من المدربين المعتمدين ذوي الخبرة العملية',
+        },
+        certificates: {
+          title: 'شهادات معتمدة',
+          description: 'شهادات معترف بها محلياً ودولياً',
+        },
+        interactive: {
+          title: 'تدريب تفاعلي',
+          description: 'ورش عمل عملية وتطبيقات حقيقية',
+        },
+        flexible: {
+          title: 'مرونة في الوقت',
+          description: 'جداول مرنة تناسب احتياجاتك',
+        },
+      },
+      programsTitle: 'البرامج التدريبية المتاحة',
+      instructor: 'المدرب',
+      free: 'مجاني',
+      currency: 'د.ع',
+      defaultDescription: 'برنامج تدريبي متخصص',
+      emptyTitle: 'قريباً... برامج تدريبية جديدة',
+      emptyDescription: 'نعمل على إعداد برامج تدريبية متميزة. تابعنا للحصول على آخر التحديثات.',
+      emptyButton: 'تواصل معنا للاستفسار',
+      ctaTitle: 'هل تحتاج برنامج تدريبي مخصص؟',
+      ctaDescription: 'نقدم برامج تدريبية مخصصة للشركات والمؤسسات حسب احتياجاتكم',
+      ctaButton: 'تواصل معنا',
     },
     // Time units
     time: {
@@ -521,6 +559,8 @@ export const translations = {
     // About
     about: {
       title: 'About Us',
+      sectionTitle: 'About Us',
+      sectionSubtitle: 'Creating Excellence in the World of Events',
       description: 'JAZ (Joint Annual Zone to Your Place) is a leading Iraqi company specialized in organizing events, exhibitions, and training and development programs. We work to connect different economic sectors and provide platforms for communication and growth.',
       mission: 'Our Mission',
       missionText: 'Providing distinguished event and exhibition organization services that contribute to the development of economic sectors in Iraq.',
@@ -531,6 +571,7 @@ export const translations = {
       team: 'Our Team',
       teamText: 'A specialized team of experts in event organization, marketing, and management.',
       whatMakesUsDifferent: 'What Makes Us Different',
+      whatMakesUsDifferentDescription: 'We are committed to the highest quality standards to ensure the success of your events and leave an unforgettable mark',
       ourStory: 'Our Story',
       stats: {
         exhibitions: 'Successful Exhibitions',
@@ -614,6 +655,41 @@ export const translations = {
       hour: 'hour',
       minute: 'minute',
       home: 'Home',
+    },
+    // Training Page
+    trainingPage: {
+      badge: 'Training & Development Center',
+      title: 'Develop Your Skills with JAZ',
+      subtitle: 'We offer specialized training programs in various fields to develop competencies and build professional capabilities',
+      features: {
+        experts: {
+          title: 'Expert Trainers',
+          description: 'Elite certified trainers with practical experience',
+        },
+        certificates: {
+          title: 'Accredited Certificates',
+          description: 'Locally and internationally recognized certificates',
+        },
+        interactive: {
+          title: 'Interactive Training',
+          description: 'Hands-on workshops and real-world applications',
+        },
+        flexible: {
+          title: 'Flexible Scheduling',
+          description: 'Flexible schedules that suit your needs',
+        },
+      },
+      programsTitle: 'Available Training Programs',
+      instructor: 'Instructor',
+      free: 'Free',
+      currency: 'IQD',
+      defaultDescription: 'Specialized training program',
+      emptyTitle: 'Coming Soon... New Training Programs',
+      emptyDescription: 'We are preparing outstanding training programs. Follow us for the latest updates.',
+      emptyButton: 'Contact Us for Inquiries',
+      ctaTitle: 'Need a Customized Training Program?',
+      ctaDescription: 'We offer customized training programs for companies and organizations based on your needs',
+      ctaButton: 'Contact Us',
     },
     // Time units
     time: {

@@ -210,11 +210,11 @@ export default function SectorsPage() {
                                                         </div>
                                                     </td>
                                                     <td className="py-3 px-4">
-                                                        <div className="font-medium">{sector.name_ar}</div>
-                                                        <div className="text-xs text-gray-400">{sector.name}</div>
+                                                        <div className="font-medium">{sector.name}</div>
+                                                        <div className="text-xs text-gray-400">{sector.name_ar}</div>
                                                     </td>
                                                     <td className="py-3 px-4 max-w-xs truncate text-gray-500">
-                                                        {sector.description_ar}
+                                                        {sector.description}
                                                     </td>
                                                     <td className="py-3 px-4">
                                                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${sector.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'

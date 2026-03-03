@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/header";
@@ -10,6 +10,13 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-ibm-plex-sans-arabic",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -39,7 +46,7 @@ export default async function RootLayout({
 
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body className={`${ibmPlexSansArabic.variable} font-sans antialiased bg-white text-gray-900`}>
+      <body className={`${ibmPlexSansArabic.variable} ${inter.variable} font-sans antialiased bg-white text-gray-900`}>
         <Providers>
           <Header isAdmin={isAdmin} />
           <main className="min-h-screen">{children}</main>

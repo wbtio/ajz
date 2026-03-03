@@ -23,12 +23,12 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     .single()
 
   if (!post) {
-    return { title: 'المقال غير موجود | JAZ' }
+    return { title: 'Article Not Found | JAZ' }
   }
 
   return {
-    title: post.seo_title || `${post.title_ar || post.title} | JAZ`,
-    description: post.seo_description || post.excerpt_ar || post.excerpt,
+    title: post.seo_title || `${post.title || post.title_ar} | JAZ`,
+    description: post.seo_description || post.excerpt || post.excerpt_ar,
     keywords: post.keywords?.join(', '),
     openGraph: {
       title: post.seo_title || post.title_ar || post.title,
@@ -73,15 +73,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     .limit(3)
 
   return (
-    <div className="pt-36 pb-12">
+    <div className="pt-36 pb-12" dir="ltr" lang="en">
       <Container className="max-w-4xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-blue-600">الرئيسية</Link>
+          <Link href="/" className="hover:text-blue-600">Home</Link>
           <span>/</span>
-          <Link href="/blog" className="hover:text-blue-600">المدونة</Link>
+          <Link href="/blog" className="hover:text-blue-600">Blog</Link>
           <span>/</span>
-          <span className="text-gray-900 line-clamp-1">{post.title_ar || post.title}</span>
+          <span className="text-gray-900 line-clamp-1">{post.title || post.title_ar}</span>
         </div>
 
         {/* Article */}
@@ -89,7 +89,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Header */}
           <header className="mb-8">
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              {post.title_ar || post.title}
+              {post.title || post.title_ar}
             </h1>
 
             <div className="flex items-center gap-6 text-gray-500">
@@ -105,7 +105,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="relative h-64 lg:h-96 rounded-2xl overflow-hidden mb-8">
               <Image
                 src={post.image_url}
-                alt={post.title_ar || post.title}
+                alt={post.title || post.title_ar}
                 fill
                 className="object-cover"
               />
@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="prose prose-lg max-w-none mb-8">
             <div
               className="text-gray-700 leading-relaxed whitespace-pre-wrap"
-              dangerouslySetInnerHTML={{ __html: post.content_ar || post.content || '' }}
+              dangerouslySetInnerHTML={{ __html: post.content || post.content_ar || '' }}
             />
           </div>
 
@@ -124,7 +124,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="flex items-center gap-4 py-6 border-t border-gray-200">
             <span className="text-gray-500 flex items-center gap-2">
               <Share2 className="w-5 h-5" />
-              مشاركة:
+              Share:
             </span>
             <a
               href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
@@ -148,7 +148,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Related Posts */}
         {relatedPosts && relatedPosts.length > 0 && (
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">مقالات ذات صلة</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">Related Articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedPosts.map((relatedPost) => (
                 <Link
@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                 >
                   <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
-                    {relatedPost.title_ar || relatedPost.title}
+                    {relatedPost.title || relatedPost.title_ar}
                   </h3>
                   <span className="text-sm text-gray-500">
                     {relatedPost.created_at ? formatDate(relatedPost.created_at) : ''}
@@ -172,8 +172,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="mt-8">
           <Link href="/blog">
             <Button variant="outline">
-              <ArrowRight className="w-4 h-4 ml-2" />
-              العودة للمدونة
+              <ArrowRight className="w-4 h-4 mr-2" />
+              Back to Blog
             </Button>
           </Link>
         </div>

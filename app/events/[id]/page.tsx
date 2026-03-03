@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: EventPageProps) {
   }
 
   return {
-    title: `${event.title_ar || event.title} | JAZ`,
-    description: event.description_ar || event.description,
+    title: `${event.title || event.title_ar} | JAZ`,
+    description: event.description || event.description_ar,
   }
 }
 
@@ -60,7 +60,7 @@ export default async function EventPage({ params }: EventPageProps) {
           href={`/events/${event.id}/registration`}
           className="fixed bottom-6 left-1/2 z-50 inline-flex w-[280px] -translate-x-1/2 items-center justify-center rounded-lg bg-red-600 px-8 py-4 text-lg font-bold text-white shadow-md transition hover:bg-red-700 animate-bounce"
         >
-          سجل الان 
+          Register Now
         </Link>
       </div>
     )
@@ -83,17 +83,17 @@ export default async function EventPage({ params }: EventPageProps) {
   if (event.sector_id) {
     const { data: sector } = await supabase
       .from('sectors')
-      .select('name_ar, name_en')
+      .select('name, name_ar')
       .eq('id', event.sector_id)
       .single()
     if (sector) {
       sectorName_ar = (sector as any).name_ar || null
-      sectorName_en = (sector as any).name_en || null
+      sectorName_en = (sector as any).name || null
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" dir="ltr" lang="en">
       <EventHero
         event={event}
         sectorName_ar={sectorName_ar}
@@ -111,7 +111,7 @@ export default async function EventPage({ params }: EventPageProps) {
         href={`/events/${event.id}/registration`}
         className="fixed bottom-6 left-1/2 z-50 inline-flex w-[280px] -translate-x-1/2 items-center justify-center rounded-lg bg-red-600 px-8 py-4 text-lg font-bold text-white shadow-md transition hover:bg-red-700 animate-bounce"
       >
-        سجل الان 
+        Register Now
       </Link>
     </div>
   )

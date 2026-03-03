@@ -30,17 +30,17 @@ export function SectorRegistrationForm({ sectorId, sectorName, config }: SectorR
     return (
         <Card className="border-blue-100 bg-blue-50/30">
             <CardHeader>
-                <CardTitle>انضم لشركاء قطاع {sectorName}</CardTitle>
+                <CardTitle>Join {sectorName} Sector Partners</CardTitle>
                 <CardDescription>
-                    هل أنت مهتم بالاستثمار أو الشراكة في هذا القطاع؟ املأ النموذج أدناه للتواصل معنا.
+                    Are you interested in investing or partnering in this sector? Fill out the form below to contact us.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <DynamicForm 
                     fields={config} 
                     onSubmit={handleSubmit} 
-                    submitLabel="إرسال طلب الشراكة"
-                    successMessage="تم إرسال طلبك بنجاح! سنتواصل معك قريباً."
+                    submitLabel="Submit Partnership Request"
+                    successMessage="Your request has been submitted successfully! We will contact you soon."
                 />
             </CardContent>
         </Card>

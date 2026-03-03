@@ -211,7 +211,7 @@ export function CalendarView({ events }: CalendarViewProps) {
               <button
                 onClick={goToPrevMonth}
                 disabled={activeMonthIndex <= 0}
-                className="flex-shrink-0 w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="flex-shrink-0 w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-[#8b0000] hover:border-[#8b0000]/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
                 <ChevPrev className="w-4 h-4" />
               </button>
@@ -233,7 +233,7 @@ export function CalendarView({ events }: CalendarViewProps) {
                       {isActive && (
                         <motion.div
                           layoutId="calendarActiveTab"
-                          className="absolute inset-0 bg-[#1a1a2e] rounded-lg"
+                          className="absolute inset-0 bg-[#8b0000] rounded-lg"
                           transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                         />
                       )}
@@ -251,7 +251,7 @@ export function CalendarView({ events }: CalendarViewProps) {
               <button
                 onClick={goToNextMonth}
                 disabled={activeMonthIndex >= eventMonths.length - 1}
-                className="flex-shrink-0 w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-red-500 hover:text-red-600 hover:border-red-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="flex-shrink-0 w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-[#8b0000] hover:text-[#a01010] hover:border-[#8b0000]/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
                 <ChevNext className="w-4 h-4" />
               </button>
@@ -363,7 +363,7 @@ export function CalendarView({ events }: CalendarViewProps) {
                               <div className="flex flex-col lg:flex-row gap-6">
                                 {/* Text Content */}
                                 <div className="flex-1 min-w-0 order-2 lg:order-1">
-                                  <h3 className="text-xl font-bold text-[#1a1a2e] group-hover:text-blue-700 transition-colors mb-2 line-clamp-2">
+                                  <h3 className="text-xl font-bold text-[#1a1a2e] group-hover:text-[#8b0000] transition-colors mb-2 line-clamp-2">
                                     {title}
                                   </h3>
 
@@ -418,7 +418,7 @@ export function CalendarView({ events }: CalendarViewProps) {
                                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                   ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 flex items-center justify-center">
+                                    <div className="w-full h-full bg-gradient-to-br from-[#8b0000] via-[#a01010] to-[#8b0000] flex items-center justify-center">
                                       <Calendar className="w-14 h-14 text-white/15" />
                                     </div>
                                   )}

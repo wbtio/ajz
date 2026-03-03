@@ -25,12 +25,12 @@ export function EventCard({ event }: EventCardProps) {
         {event.image_url ? (
           <Image
             src={event.image_url}
-            alt={event.title_ar || event.title}
+            alt={event.title || event.title_ar || 'Event'}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-700 via-indigo-800 to-blue-950 flex items-center justify-center relative">
+          <div className="w-full h-full bg-gradient-to-br from-gray-700 via-gray-800 to-black flex items-center justify-center relative">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
             <Calendar className="w-16 h-16 text-white/10 relative z-10" />
           </div>
@@ -40,16 +40,16 @@ export function EventCard({ event }: EventCardProps) {
         <div className="absolute top-6 inset-x-6 flex justify-between items-start z-20">
           <div className="flex items-center gap-1.5">
             {event.featured && (
-              <div className="bg-yellow-400 text-yellow-950 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-2xl shadow-xl border border-yellow-300/50 backdrop-blur-md bg-opacity-95">
+              <div className="bg-[#8b0000] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-2xl shadow-xl border border-[#8b0000]/50 backdrop-blur-md">
                 {t.events.featured}
               </div>
             )}
             {event.event_type === 'international' ? (
-              <div className="bg-blue-500/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-blue-400/30">
+              <div className="bg-gray-700/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-gray-600/30">
                 {isRTL ? 'دولية' : 'International'}
               </div>
             ) : event.event_type === 'local' ? (
-              <div className="bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-emerald-400/30">
+              <div className="bg-gray-600/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-gray-500/30">
                 {isRTL ? 'محلية' : 'Local'}
               </div>
             ) : null}
@@ -76,14 +76,14 @@ export function EventCard({ event }: EventCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-black text-gray-900 leading-tight mb-4 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3rem]">
+          <h3 className="text-xl font-black text-gray-900 leading-tight mb-4 group-hover:text-[#8b0000] transition-colors line-clamp-2 min-h-[3rem]">
             {isRTL ? (event.title_ar || event.title) : (event.title || event.title_ar)}
           </h3>
 
           {/* Details Grid */}
           <div className="space-y-3 mb-6">
             <div className="flex items-center gap-3 group/item">
-              <div className="w-10 h-10 flex items-center justify-center bg-blue-50 rounded-2xl text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-all duration-300">
+              <div className="w-10 h-10 flex items-center justify-center bg-red-50 rounded-2xl text-[#8b0000] group-hover/item:bg-[#8b0000] group-hover/item:text-white transition-all duration-300">
                 <Calendar className="w-4 h-4" />
               </div>
               <div className="flex flex-col">
@@ -93,7 +93,7 @@ export function EventCard({ event }: EventCardProps) {
             </div>
             
             <div className="flex items-center gap-3 group/item">
-              <div className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-2xl text-gray-400 group-hover/item:bg-blue-600 group-hover/item:text-white transition-all duration-300">
+              <div className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-2xl text-gray-400 group-hover/item:bg-gray-800 group-hover/item:text-white transition-all duration-300">
                 <MapPin className="w-4 h-4" />
               </div>
               <div className="flex flex-col">
@@ -111,7 +111,7 @@ export function EventCard({ event }: EventCardProps) {
           <Link
             href={`/events/${event.id}`}
             target="_blank"
-            className="mt-auto group/btn relative flex items-center justify-center gap-3 py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.5rem] font-black text-sm transition-all duration-300 shadow-lg shadow-blue-500/25 overflow-hidden"
+            className="mt-auto group/btn relative flex items-center justify-center gap-3 py-4 px-6 bg-[#8b0000] hover:bg-[#6b0000] text-white rounded-[1.5rem] font-black text-sm transition-all duration-300 shadow-lg shadow-red-900/25 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
             <span>{t.events.viewDetails}</span>

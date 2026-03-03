@@ -4,8 +4,8 @@ import { EventCard } from '@/components/home/event-card'
 import { EventsFilter } from './events-filter'
 
 export const metadata = {
-  title: 'الفعاليات والمعارض | JAZ',
-  description: 'تصفح جميع الفعاليات والمعارض القادمة في العراق',
+  title: 'Events & Exhibitions | JAZ',
+  description: 'Browse all upcoming events and exhibitions in Iraq',
 }
 
 interface EventsPageProps {
@@ -47,15 +47,15 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   const events = eventsResult.data
 
   return (
-    <div className="pt-36 pb-12">
+    <div className="pt-36 pb-12" dir="ltr" lang="en">
       <Container>
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            الفعاليات والمعارض
+          <h1 className="text-3xl lg:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-[#8b0000] mb-4">
+            Events & Exhibitions
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            اكتشف جميع الفعاليات والمعارض القادمة وسجل حضورك الآن
+            Discover all upcoming events and exhibitions and register your attendance now
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
           </div>
         ) : (
           <div className="text-center py-16 bg-gray-50 rounded-xl">
-            <p className="text-gray-500 text-lg">لا توجد فعاليات متاحة حالياً</p>
+            <p className="text-gray-500 text-lg">No events available currently</p>
           </div>
         )}
       </Container>

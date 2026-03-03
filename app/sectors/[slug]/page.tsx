@@ -27,17 +27,17 @@ export async function generateMetadata({ params }: SectorPageProps) {
 
   const { data: sector } = await supabase
     .from('sectors')
-    .select('name_ar, description_ar')
+    .select('name, description')
     .eq('slug', slug)
     .single()
 
   if (!sector) {
-    return { title: 'القطاع غير موجود | JAZ' }
+    return { title: 'Sector Not Found | JAZ' }
   }
 
   return {
-    title: `${sector.name_ar} | JAZ`,
-    description: sector.description_ar,
+    title: `${sector.name} | JAZ`,
+    description: sector.description,
   }
 }
 
@@ -67,15 +67,15 @@ export default async function SectorPage({ params }: SectorPageProps) {
   const IconComponent = iconMap[sector.icon || 'Building2'] || Building2
 
   return (
-    <div className="pt-36 pb-12">
+    <div className="pt-36 pb-12" dir="ltr" lang="en">
       <Container>
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-blue-600">الرئيسية</Link>
+          <Link href="/" className="hover:text-blue-600">Home</Link>
           <span>/</span>
-          <Link href="/sectors" className="hover:text-blue-600">القطاعات</Link>
+          <Link href="/sectors" className="hover:text-blue-600">Sectors</Link>
           <span>/</span>
-          <span className="text-gray-900">{sector.name_ar}</span>
+          <span className="text-gray-900">{sector.name}</span>
         </div>
 
         {/* Hero */}
@@ -84,7 +84,7 @@ export default async function SectorPage({ params }: SectorPageProps) {
             <div className="absolute inset-0 z-0">
               <img
                 src={sector.cover_image}
-                alt={sector.name_ar}
+                alt={sector.name}
                 className="w-full h-full object-cover opacity-50"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
@@ -104,10 +104,10 @@ export default async function SectorPage({ params }: SectorPageProps) {
               </div>
               <div>
                 <h1 className="text-4xl lg:text-6xl font-extrabold mb-6 leading-tight">
-                  {sector.name_ar}
+                  {sector.name}
                 </h1>
                 <p className="text-xl text-gray-200 max-w-3xl leading-relaxed">
-                  {sector.description_ar}
+                  {sector.description}
                 </p>
               </div>
             </div>
@@ -115,31 +115,31 @@ export default async function SectorPage({ params }: SectorPageProps) {
         </div>
 
         {/* Detailed Content */}
-        {sector.long_description_ar && (
+        {sector.long_description && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
             <div className="lg:col-span-2">
               <div className="prose prose-lg prose-blue max-w-none prose-headings:font-bold prose-a:text-blue-600">
-                <ReactMarkdown>{sector.long_description_ar}</ReactMarkdown>
+                <ReactMarkdown>{sector.long_description}</ReactMarkdown>
               </div>
             </div>
             <div className="space-y-8">
               <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-fit">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">لماذا هذا القطاع؟</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Why This Sector?</h3>
                 <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                  نعمل في JAZ على توفير أفضل الفرص والفعاليات في هذا القطاع لتعزيز التواصل والنمو المهني.
+                  At JAZ, we work to provide the best opportunities and events in this sector to enhance networking and professional growth.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-sm font-medium text-gray-700">
                     <div className="w-2 h-2 rounded-full bg-blue-500" />
-                    فعاليات متجددة
+                    Continuous Events
                   </div>
                   <div className="flex items-center gap-3 text-sm font-medium text-gray-700">
                     <div className="w-2 h-2 rounded-full bg-blue-500" />
-                    شبكة علاقات واسعة
+                    Wide Network Connections
                   </div>
                   <div className="flex items-center gap-3 text-sm font-medium text-gray-700">
                     <div className="w-2 h-2 rounded-full bg-blue-500" />
-                    فرص تدريبية متخصصة
+                    Specialized Training Opportunities
                   </div>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default async function SectorPage({ params }: SectorPageProps) {
               {/* Registration Form */}
               <SectorRegistrationForm 
                 sectorId={sector.id}
-                sectorName={sector.name_ar}
+                sectorName={sector.name}
                 config={sector.registration_config as unknown as FormField[]}
               />
             </div>
@@ -158,12 +158,12 @@ export default async function SectorPage({ params }: SectorPageProps) {
         <div>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-gray-900">
-              فعاليات هذا القطاع
+              Events in This Sector
             </h2>
             <Link href={`/events?sector=${slug}`}>
               <Button variant="outline">
-                عرض الكل
-                <ArrowRight className="w-4 h-4 mr-2" />
+                View All
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
           </div>
@@ -175,10 +175,10 @@ export default async function SectorPage({ params }: SectorPageProps) {
                   <Card className="h-full hover:shadow-lg transition-all duration-300 group">
                     <CardContent className="p-6">
                       <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                        {event.title_ar || event.title}
+                        {event.title || event.title_ar}
                       </h3>
-                      {event.sub_sector_ar && (
-                        <span className="inline-block text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full mb-2">{event.sub_sector_ar}</span>
+                      {event.sub_sector && (
+                        <span className="inline-block text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full mb-2">{event.sub_sector}</span>
                       )}
                       <div className="space-y-2 text-sm text-gray-500">
                         <div className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export default async function SectorPage({ params }: SectorPageProps) {
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
-                          <span>{[event.location_ar || event.location, event.country_ar || event.country].filter(Boolean).join('، ')}</span>
+                          <span>{[event.location, event.country].filter(Boolean).join(', ')}</span>
                         </div>
                       </div>
                     </CardContent>
@@ -197,9 +197,9 @@ export default async function SectorPage({ params }: SectorPageProps) {
             </div>
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-xl">
-              <p className="text-gray-500 mb-4">لا توجد فعاليات في هذا القطاع حالياً</p>
+              <p className="text-gray-500 mb-4">No events in this sector currently</p>
               <Link href="/events">
-                <Button variant="outline">تصفح جميع الفعاليات</Button>
+                <Button variant="outline">Browse All Events</Button>
               </Link>
             </div>
           )}

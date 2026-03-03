@@ -198,10 +198,10 @@ export default function LinksPage() {
                 <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 list-none [&::-webkit-details-marker]:hidden">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors group-open:bg-blue-600"
-                      style={{ backgroundColor: `${category.color || '#3B82F6'}15` }}
+                      className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors group-open:bg-[#8b0000]"
+                      style={{ backgroundColor: `${category.color || '#8b0000'}15` }}
                     >
-                      <Icon className="w-5 h-5 group-open:text-white" style={{ color: category.color || '#3B82F6' }} />
+                      <Icon className="w-5 h-5 group-open:text-white" style={{ color: category.color || '#8b0000' }} />
                     </div>
                     <div>
                       <h2 className="text-lg font-bold text-gray-900">
@@ -223,11 +223,11 @@ export default function LinksPage() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group/link p-4 rounded-lg border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all bg-white"
+                        className="group/link p-4 rounded-lg border border-gray-200 hover:border-[#8b0000]/40 hover:shadow-md transition-all bg-white"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 group-hover/link:text-blue-600 transition-colors text-sm mb-1">
+                            <h3 className="font-semibold text-gray-900 group-hover/link:text-[#8b0000] transition-colors text-sm mb-1">
                               {locale === 'ar' ? link.title_ar : link.title_en}
                             </h3>
                             {link.country && (
@@ -237,7 +237,7 @@ export default function LinksPage() {
                               </div>
                             )}
                           </div>
-                          <ExternalLink className="w-4 h-4 text-gray-400 group-hover/link:text-blue-500 transition-colors flex-shrink-0 mt-0.5" />
+                          <ExternalLink className="w-4 h-4 text-gray-400 group-hover/link:text-[#8b0000] transition-colors flex-shrink-0 mt-0.5" />
                         </div>
                         {(locale === 'ar' ? link.description_ar : link.description_en) && (
                           <p className="text-xs text-gray-600 line-clamp-2 mt-2">

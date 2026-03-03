@@ -10,24 +10,24 @@ export function CTASection() {
   const { t } = useI18n()
 
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+    <section className="py-16 lg:py-24 bg-gradient-to-br from-gray-900 to-black text-white">
       <Container>
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             {t.cta.title}
           </h2>
-          <p className="text-blue-100 text-lg mb-8">
+          <p className="text-gray-300 text-lg mb-8">
             {t.cta.subtitle}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/contact">
-              <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50">
+              <Button size="lg" className="bg-[#8b0000] text-white hover:bg-[#a01010]">
                 <Phone className="w-5 h-5 ml-2" />
                 {t.hero.contactUs}
               </Button>
             </Link>
             <a href="mailto:info@jaz.iq">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="border-gray-400 text-white hover:bg-white/10">
                 <Mail className="w-5 h-5 ml-2" />
                 info@jaz.iq
               </Button>
