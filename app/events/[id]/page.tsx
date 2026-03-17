@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EventHero, EventTabs } from '@/components/conference/event-tabs'
+import { isHiddenEvent } from '@/lib/events-visibility'
 
 const TEMPLATE_EVENT_AR_TITLE = 'تنفس البصرة 2026'
 
@@ -19,6 +20,10 @@ export async function generateMetadata({ params }: EventPageProps) {
     .single()
 
   if (!event) {
+    return { title: 'Event Not Found | JAZ' }
+  }
+
+  if (isHiddenEvent(event)) {
     return { title: 'Event Not Found | JAZ' }
   }
 
@@ -42,7 +47,11 @@ export default async function EventPage({ params }: EventPageProps) {
     notFound()
   }
 
-  const htmlContent = (event as any).html_content
+  if (isHiddenEvent(event)) {
+    notFound()
+  }
+
+  const htmlContent = event.html_content
 
   // إذا الفعالية تحتوي على محتوى HTML، نعرضه كصفحة مستقلة داخل iframe
   // حتى نتجنب hydration mismatch ونحافظ على head/body/scripts كما هي
@@ -66,7 +75,7 @@ export default async function EventPage({ params }: EventPageProps) {
     )
   }
 
-  const cc = (event as any).conference_config as any
+  const cc = event.conference_config
 
   const { data: templateEvent } = await supabase
     .from('events')
@@ -76,7 +85,7 @@ export default async function EventPage({ params }: EventPageProps) {
     .limit(1)
     .maybeSingle()
 
-  const templateConferenceConfig = (templateEvent as any)?.conference_config as any
+  const templateConferenceConfig = templateEvent?.conference_config
 
   let sectorName_ar: string | null = null
   let sectorName_en: string | null = null
@@ -87,8 +96,8 @@ export default async function EventPage({ params }: EventPageProps) {
       .eq('id', event.sector_id)
       .single()
     if (sector) {
-      sectorName_ar = (sector as any).name_ar || null
-      sectorName_en = (sector as any).name || null
+      sectorName_ar = sector.name_ar || null
+      sectorName_en = sector.name || null
     }
   }
 

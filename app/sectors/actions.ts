@@ -1,9 +1,9 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
+import type { Json } from '@/lib/database.types'
 
-export async function submitSectorRegistration(sectorId: string, data: any) {
+export async function submitSectorRegistration(sectorId: string, data: Record<string, string>) {
   try {
     const supabase = await createClient()
 
@@ -16,11 +16,11 @@ export async function submitSectorRegistration(sectorId: string, data: any) {
     // Structure: id, sector_id, user_id, data (jsonb), status, created_at
 
     const { error } = await supabase
-      .from('sector_registrations' as any)
+      .from('sector_registrations')
       .insert({
         sector_id: sectorId,
         user_id: user?.id || null,
-        data: data,
+        data: data as Json,
         status: 'pending'
       })
 
@@ -30,8 +30,8 @@ export async function submitSectorRegistration(sectorId: string, data: any) {
     }
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error submitting form:', error)
-    throw new Error(error.message || 'An unexpected error occurred')
+    throw new Error(error instanceof Error ? error.message : 'An unexpected error occurred')
   }
 }

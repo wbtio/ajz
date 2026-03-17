@@ -7,16 +7,25 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, CheckCircle } from 'lucide-react'
 import type { FormField } from '@/lib/types'
+import { useI18n } from '@/lib/i18n'
 
 interface DynamicFormProps {
     fields: FormField[]
-    onSubmit: (data: Record<string, any>) => Promise<void>
+    onSubmit: (data: Record<string, string>) => Promise<void>
     submitLabel?: string
     successMessage?: string
 }
 
 export function DynamicForm({ fields, onSubmit, submitLabel = 'إرسال', successMessage = 'تم الإرسال بنجاح' }: DynamicFormProps) {
-    const [formData, setFormData] = useState<Record<string, any>>({})
+    const { locale } = useI18n()
+    const isArabic = locale === 'ar'
+    const [formData, setFormData] = useState<Record<string, string>>(
+        Object.fromEntries(
+            fields
+                .filter((field) => field.defaultValue !== undefined)
+                .map((field) => [field.id, field.defaultValue])
+        )
+    )
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
 
@@ -41,7 +50,7 @@ export function DynamicForm({ fields, onSubmit, submitLabel = 'إرسال', succ
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{successMessage}</h3>
                 <Button onClick={() => setSuccess(false)} variant="outline" className="mt-4">
-                    إرسال رد آخر
+                    {isArabic ? 'إرسال رد آخر' : 'Send another response'}
                 </Button>
             </div>
         )
@@ -52,7 +61,7 @@ export function DynamicForm({ fields, onSubmit, submitLabel = 'إرسال', succ
             {fields.map((field) => (
                 <div key={field.id} className="space-y-2">
                     <Label className="text-sm font-medium text-gray-700">
-                        {field.label_ar || field.label_en}
+                        {isArabic ? (field.label_ar || field.label_en) : field.label_en}
                         {field.required && <span className="text-red-500 mr-1">*</span>}
                     </Label>
                     {field.type === 'textarea' ? (
@@ -61,7 +70,7 @@ export function DynamicForm({ fields, onSubmit, submitLabel = 'إرسال', succ
                             value={formData[field.id] || ''}
                             onChange={(e) => setFormData({ ...formData, [field.id]: e.target.value })}
                             className="bg-gray-50 border-gray-200 focus:bg-white transition-colors min-h-[100px]"
-                            placeholder={`أدخل ${field.label_ar}...`}
+                            placeholder={isArabic ? `أدخل ${field.label_ar || field.label_en}...` : `Enter ${field.label_en}...`}
                         />
                     ) : field.type === 'select' ? (
                         <select
@@ -70,7 +79,7 @@ export function DynamicForm({ fields, onSubmit, submitLabel = 'إرسال', succ
                             onChange={(e) => setFormData({ ...formData, [field.id]: e.target.value })}
                             className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-colors h-11"
                         >
-                            <option value="">{`اختر ${field.label_ar || field.label_en}...`}</option>
+                            <option value="">{isArabic ? `اختر ${field.label_ar || field.label_en}...` : `Select ${field.label_en}...`}</option>
                             {(field.options || []).map((opt, i) => (
                                 <option key={i} value={opt}>{opt}</option>
                             ))}
@@ -82,7 +91,7 @@ export function DynamicForm({ fields, onSubmit, submitLabel = 'إرسال', succ
                             value={formData[field.id] || ''}
                             onChange={(e) => setFormData({ ...formData, [field.id]: e.target.value })}
                             className="bg-gray-50 border-gray-200 focus:bg-white transition-colors h-11"
-                            placeholder={`أدخل ${field.label_ar}...`}
+                            placeholder={isArabic ? `أدخل ${field.label_ar || field.label_en}...` : `Enter ${field.label_en}...`}
                         />
                     )}
                 </div>

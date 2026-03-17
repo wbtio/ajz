@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { Container } from '@/components/ui/container'
 import { Calendar, Clock, ArrowUpLeft, Tag, FileText } from 'lucide-react' // تم إضافة Clock و Tag
 import { formatDate } from '@/lib/utils'
-import { cn } from '@/lib/utils'
 
 export const metadata = {
   title: 'Blog | JAZ - Latest News & Articles',
@@ -42,7 +41,7 @@ export default async function BlogPage() {
             Continuous Updates
           </div>
           <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Blog & News
+            Blog
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Discover the latest articles and insights about the world of events, exhibitions, and business developments in Iraq.

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Calendar, MapPin, ArrowLeft, ArrowRight } from 'lucide-react'
+import { CalendarDaysIcon as Calendar, MapPinIcon as MapPin, ArrowLeftIcon as ArrowLeft, ArrowRightIcon as ArrowRight } from 'lucide-animated'
 import { Card } from '@/components/ui/card'
 import { formatDate } from '@/lib/utils'
 import { CountdownTimer } from './countdown-timer'

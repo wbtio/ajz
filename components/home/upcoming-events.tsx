@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
-import { Calendar, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
+import { CalendarDaysIcon as Calendar, ArrowLeftIcon as ArrowLeft, ArrowRightIcon as ArrowRight, SparklesIcon as Sparkles } from 'lucide-animated'
 import { useI18n } from '@/lib/i18n'
 import type { Event } from '@/lib/database.types'
 

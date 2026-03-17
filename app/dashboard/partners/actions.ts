@@ -11,7 +11,7 @@ export async function getPartnerCategories() {
             .from('partner_categories')
             .select('*')
             .order('sort_order', { ascending: true })
-        
+
         if (error) {
             console.error('Error fetching partner categories:', error)
             throw new Error(error.message)
@@ -73,7 +73,7 @@ export async function getPartnerOpportunities() {
             .from('partner_opportunities')
             .select('*, category:partner_categories(title_ar, title_en)')
             .order('sort_order', { ascending: true })
-        
+
         if (error) throw error
         return data
     } catch (err: any) {
@@ -141,7 +141,7 @@ export async function getPartnerSubmissions() {
                 user:users(full_name, email, phone)
             `)
             .order('created_at', { ascending: false })
-        
+
         if (error) throw error
         return data
     } catch (err: any) {
@@ -172,6 +172,27 @@ export async function submitPartnerForm(data: any) {
         return { success: true }
     } catch (err: any) {
         console.error('submitPartnerForm failed:', err)
+        throw new Error(err.message)
+    }
+}
+
+export async function submitStaticPartnerForm(data: any, type: string) {
+    try {
+        const supabase = await createClient()
+        // Save to contact_messages to avoid requiring UUID foreign keys
+        const { error } = await supabase.from('contact_messages').insert({
+            full_name: data['الاسم الكامل / Full Name'] || data['اسم الممثل الرسمي والمنصب / Contact Person & Title'] || 'Anonymous',
+            email: data['البريد الإلكتروني الرسمي / Official Email'] || 'no-email@example.com',
+            phone: data['رقم التواصل / Contact Number'] || data['رقم الواتساب / WhatsApp Number'] || '',
+            subject: `طلب انضمام/شراكة: ${type}`,
+            category: 'Partnership',
+            message: JSON.stringify(data, null, 2),
+            status: 'new'
+        })
+        if (error) throw error
+        return { success: true }
+    } catch (err: any) {
+        console.error('submitStaticPartnerForm failed:', err)
         throw new Error(err.message)
     }
 }

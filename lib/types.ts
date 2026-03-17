@@ -18,6 +18,7 @@ export interface FormField {
     type: 'text' | 'number' | 'email' | 'date' | 'select' | 'textarea'
     required: boolean
     options?: string[]
+    defaultValue?: string
 }
 
 // ============================================

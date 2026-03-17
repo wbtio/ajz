@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { isHiddenEvent } from '@/lib/events-visibility'
 
 interface EventContentPageProps {
     params: Promise<{
@@ -21,7 +22,11 @@ export default async function EventContentPage({ params }: EventContentPageProps
         notFound()
     }
 
-    const htmlContent = (event as any).html_content
+    if (isHiddenEvent(event)) {
+        notFound()
+    }
+
+    const htmlContent = event.html_content
 
     if (!htmlContent) {
         return (

@@ -1,26 +1,26 @@
 'use client'
 
-import { useState } from 'react'
 import { DynamicForm } from '@/components/shared/dynamic-form'
 import { type FormField } from '@/lib/types'
 import { submitSectorRegistration } from '@/app/sectors/actions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { ActionDialog } from '@/app/partners/components/action-dialog' // Or make a generic one
 import { FileText } from 'lucide-react'
+import { getSectorRegistrationFallback } from '@/app/sectors/sector-content'
+import { useI18n } from '@/lib/i18n'
 
 interface SectorRegistrationFormProps {
     sectorId: string
     sectorName: string
     config: FormField[] | null
+    intro?: string
 }
 
-export function SectorRegistrationForm({ sectorId, sectorName, config }: SectorRegistrationFormProps) {
-    const [isOpen, setIsOpen] = useState(false)
+export function SectorRegistrationForm({ sectorId, sectorName, config, intro }: SectorRegistrationFormProps) {
+    const { locale } = useI18n()
+    const isArabic = locale === 'ar'
+    const fields = config && config.length > 0 ? config : getSectorRegistrationFallback(sectorName, locale)
 
-    if (!config || config.length === 0) return null
-
-    const handleSubmit = async (data: any) => {
+    const handleSubmit = async (data: Record<string, string>) => {
         const result = await submitSectorRegistration(sectorId, data)
         if (!result.success) {
             throw new Error('Failed to submit')
@@ -28,19 +28,22 @@ export function SectorRegistrationForm({ sectorId, sectorName, config }: SectorR
     }
 
     return (
-        <Card className="border-blue-100 bg-blue-50/30">
+        <Card className="border-[#8b0000]/10 bg-white shadow-sm" dir={isArabic ? 'rtl' : 'ltr'}>
             <CardHeader>
-                <CardTitle>Join {sectorName} Sector Partners</CardTitle>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#8b0000]/10 text-[#8b0000]">
+                    <FileText className="h-5 w-5" />
+                </div>
+                <CardTitle className={`text-2xl ${isArabic ? 'text-right' : 'text-left'}`}>{isArabic ? 'نموذج التسجيل' : 'Registration Form'}</CardTitle>
                 <CardDescription>
-                    Are you interested in investing or partnering in this sector? Fill out the form below to contact us.
+                    {intro || `يمكنكم استخدام هذا النموذج للتواصل مع فريق ${sectorName} بخصوص فرص التعاون أو المشاركة أو الاستفسارات المهنية.`}
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <DynamicForm 
-                    fields={config} 
+                    fields={fields} 
                     onSubmit={handleSubmit} 
-                    submitLabel="Submit Partnership Request"
-                    successMessage="Your request has been submitted successfully! We will contact you soon."
+                    submitLabel={isArabic ? 'إرسال الطلب' : 'Submit Request'}
+                    successMessage={isArabic ? 'تم إرسال طلبكم بنجاح، وسيتواصل معكم فريقنا قريباً.' : 'Your request has been submitted successfully. Our team will contact you soon.'}
                 />
             </CardContent>
         </Card>

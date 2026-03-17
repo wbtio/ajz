@@ -1,4 +1,4 @@
-import { AboutClient } from './about-client'
+import { redirect } from 'next/navigation'
 
 export const metadata = {
   title: 'About Us | JAZ',
@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function AboutPage() {
-  return <AboutClient />
+  redirect('/')
 }

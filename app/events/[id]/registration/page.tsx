@@ -7,14 +7,17 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ConferenceForm } from '@/components/conference/conference-form'
 import { formatDateTime } from '@/lib/utils'
 import type { FormField } from '@/lib/types'
+import { isHiddenEvent } from '@/lib/events-visibility'
+import type { Tables } from '@/lib/database.types'
 
 const TEMPLATE_EVENT_AR_TITLE = 'تنفس البصرة 2026'
+type EventRegistrationSource = Pick<Tables<'events'>, 'registration_config' | 'conference_config'> | null
 
 interface RegistrationPageProps {
   params: Promise<{ id: string }>
 }
 
-function getRegistrationFieldsFromEvent(eventData: any): FormField[] {
+function getRegistrationFieldsFromEvent(eventData: EventRegistrationSource): FormField[] {
   if (!eventData) return []
 
   const directFields = Array.isArray(eventData.registration_config)
@@ -43,6 +46,10 @@ export default async function EventRegistrationPage({ params }: RegistrationPage
     .single()
 
   if (!event) {
+    notFound()
+  }
+
+  if (isHiddenEvent(event)) {
     notFound()
   }
 

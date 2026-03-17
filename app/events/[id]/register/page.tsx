@@ -12,10 +12,12 @@ import { formatDateTime } from '@/lib/utils'
 import type { Event, User } from '@/lib/database.types'
 import type { FormField } from '@/lib/types'
 import { Input } from '@/components/ui/input'
+import { isHiddenEvent } from '@/lib/events-visibility'
 
 const TEMPLATE_EVENT_AR_TITLE = 'تنفس البصرة 2026'
+type EventRegistrationSource = Pick<Event, 'registration_config' | 'conference_config'> | null
 
-function getRegistrationFieldsFromEvent(eventData: any): FormField[] {
+function getRegistrationFieldsFromEvent(eventData: EventRegistrationSource): FormField[] {
   if (!eventData) return []
 
   const directFields = Array.isArray(eventData.registration_config)
@@ -43,10 +45,9 @@ export default function RegisterPage({ params }: RegisterPageProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
-  const [ticketNumber, setTicketNumber] = useState('')
   const [error, setError] = useState('')
   const [formFields, setFormFields] = useState<FormField[]>([])
-  const [dynamicFormData, setDynamicFormData] = useState<Record<string, any>>({})
+  const [dynamicFormData, setDynamicFormData] = useState<Record<string, string>>({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,7 +76,6 @@ export default function RegisterPage({ params }: RegisterPageProps) {
 
         if (existingReg) {
           setIsRegistered(true)
-          setTicketNumber(existingReg.ticket_number || '')
         }
       }
       // Get event
@@ -84,6 +84,11 @@ export default function RegisterPage({ params }: RegisterPageProps) {
         .select('*')
         .eq('id', id)
         .single()
+
+      if (isHiddenEvent(eventData)) {
+        router.replace('/events')
+        return
+      }
 
       setEvent(eventData)
 
@@ -118,7 +123,7 @@ export default function RegisterPage({ params }: RegisterPageProps) {
 
     const supabase = createClient()
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('registrations')
       .insert({
         user_id: user.id,
@@ -139,7 +144,6 @@ export default function RegisterPage({ params }: RegisterPageProps) {
     }
 
     setIsRegistered(true)
-    setTicketNumber(data.ticket_number || '')
     setIsLoading(false)
   }
 

@@ -45,7 +45,9 @@ const BlurText: React.FC<BlurTextProps> = ({
     onAnimationComplete,
     stepDuration = 0.35,
 }) => {
-    const elements = animateBy === "words" ? text.split(" ") : text.split("")
+    const elements = animateBy === "words"
+        ? text.split(/(\n| )/).filter(segment => segment.length > 0)
+        : text.split("")
     const [inView, setInView] = useState(false)
     const ref = useRef<HTMLParagraphElement>(null)
 
@@ -119,8 +121,7 @@ const BlurText: React.FC<BlurTextProps> = ({
                         }}
                         transition={spanTransition}
                     >
-                        {segment === " " ? "\u00A0" : segment}
-                        {animateBy === "words" && index < elements.length - 1 && "\u00A0"}
+                        {segment === "\n" ? <br /> : segment === " " ? "\u00A0" : segment}
                     </motion.span>
                 )
             })}

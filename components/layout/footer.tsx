@@ -3,15 +3,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Container } from '@/components/ui/container'
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
+import { Mail, Phone, MapPin, Facebook } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 
 // Social media links - to be added when official accounts are verified
 const socialLinks: { name: string; icon: typeof Facebook; href: string }[] = []
 
 export function Footer() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const pathname = usePathname()
+  const officeLocations = locale === 'ar'
+    ? ['مكتب البصرة', 'مكتب بغداد', 'مكتب أربيل']
+    : ['Basra Office', 'Baghdad Office', 'Erbil Office']
 
   const normalizedPathname = pathname?.toLowerCase() ?? ''
   const isEventDetailsPage = /^\/events\/[^/]+\/?$/.test(normalizedPathname)
@@ -49,9 +52,16 @@ export function Footer() {
               {t.footer.description}
             </p>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-[#8b0000]" />
-                <span>بغداد، المنصور، شارع 14 رمضان</span>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-[#8b0000] mt-0.5" />
+                <div className="space-y-2">
+                  {officeLocations.map((office) => (
+                    <div key={office} className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#8b0000]" />
+                      <span>{office}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#8b0000]" />
