@@ -144,17 +144,19 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: t.contact.address,
-      details: isRTL ? ['بغداد، المنصور', 'شارع 14 رمضان'] : ['Baghdad, Al-Mansour', '14 Ramadan St'],
+      details: isRTL
+        ? ['البصرة', 'بغداد', 'أربيل']
+        : ['Basra', 'Baghdad', 'Erbil'],
     },
     {
       icon: Phone,
       title: t.contact.phone,
-      details: ['+964 771 234 5678', '+964 782 345 6789'],
+      details: ['+964 771 900 0600'],
     },
     {
       icon: Mail,
       title: t.contact.email,
-      details: ['info@jaz.iq', 'support@jaz.iq'],
+      details: ['contact@jaz.iq'],
     },
     {
       icon: Clock,
@@ -187,9 +189,36 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-1">{item.title}</h3>
-                    {item.details.map((detail, i) => (
-                      <p key={i} className="text-gray-500 text-sm">{detail}</p>
-                    ))}
+                    {item.icon === MapPin ? (
+                      <div className="flex flex-col gap-1.5">
+                        {/* Iraq group */}
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800">{isRTL ? 'العراق' : 'Iraq'}</p>
+                          <div className="mt-0.5 flex flex-col gap-0.5 ps-2">
+                            {item.details.map((city, i) => (
+                              <div key={i} className="flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-600" />
+                                <span className="text-sm text-gray-500">{city}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        {/* France group */}
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800">{isRTL ? 'فرنسا' : 'France'}</p>
+                          <div className="mt-0.5 flex items-center gap-1.5 ps-2">
+                            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-600" />
+                            <a href="https://jazexpo.fr/" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:underline">
+                              {isRTL ? 'باريس' : 'Paris'}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      item.details.map((detail, i) => (
+                        <p key={i} className="text-gray-500 text-sm">{detail}</p>
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -260,13 +289,12 @@ export default function ContactPage() {
                           <option value="general">{t.contact.categories.general}</option>
                           <option value="event">{t.contact.categories.event}</option>
                           <option value="sector">{t.contact.categories.sector}</option>
-                          <option value="blog">{t.contact.categories.blog}</option>
                           <option value="service">{t.contact.categories.service}</option>
                         </select>
                       </div>
                     </div>
 
-                    {['event', 'sector', 'blog'].includes(formData.category) && (
+                    {['event', 'sector'].includes(formData.category) && (
                       <div className="space-y-1">
                         <label className="block text-sm font-medium text-gray-700">
                           {formData.category === 'event' && t.contact.selectEvent}

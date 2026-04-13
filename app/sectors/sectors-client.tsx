@@ -1,126 +1,175 @@
 'use client'
 
-import { motion, Variants } from 'framer-motion'
+import { motion, useReducedMotion, Variants } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Container } from '@/components/ui/container'
 import { Card, CardContent } from '@/components/ui/card'
-import { Building2, Heart, Cpu, GraduationCap, ArrowLeft } from 'lucide-react'
+import { ArrowLeftIcon as ArrowLeft, ArrowRightIcon as ArrowRight } from 'lucide-animated'
+import { Building2, GraduationCap } from 'lucide-react'
+import { HeartIcon as Heart, CpuIcon as Cpu } from 'lucide-animated'
 import type { Tables } from '@/lib/database.types'
 import { useI18n } from '@/lib/i18n'
-import { mergeSectorWithContent } from './sector-content'
+import { mergeSectorWithContent, getSectorContent } from './sector-content'
+
+const sectorImageMap: Record<string, string> = {
+  industrie: '/JAZ Industrie.svg',
+  medical: '/JAZ Medical.svg',
+  technology: '/JAZ Technology.svg',
+  academia: '/JAZ Academia.svg',
+}
 
 const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
-    Building2,
-    Heart,
-    Cpu,
-    GraduationCap,
+  Building2: Building2 as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+  Heart: Heart as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+  Cpu: Cpu as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+  GraduationCap: GraduationCap as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
 }
 
-const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-}
-
-const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-}
+const neutralAccentPalette = ['#475569', '#64748b', '#6b7280', '#4b5563']
 
 export function SectorsClient({ sectors }: { sectors: Tables<'sectors'>[] | null }) {
-    const { locale, dir } = useI18n()
-    const isArabic = locale === 'ar'
-    const mergedSectors = (sectors || [])
-        .map((sector) => mergeSectorWithContent(sector))
-        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+  const { locale, dir } = useI18n()
+  const isRTL = locale === 'ar'
+  const Arrow = isRTL ? ArrowLeft : ArrowRight
+  const shouldReduceMotion = useReducedMotion()
+  const mergedSectors = (sectors || [])
+    .map((sector) => mergeSectorWithContent(sector))
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
 
-    return (
-        <div className="pt-36 pb-12 overflow-hidden" dir={dir} lang={locale}>
-            <Container>
-                {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="text-center mb-16 relative"
-                >
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#8b0000]/20 blur-[80px] rounded-full -z-10 animate-pulse"></div>
+  const containerVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
+      },
+    },
+  }
 
-                    <h1 className="text-3xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-[#8b0000] mb-6">
-                        {isArabic ? 'القطاعات' : 'Sectors'}
-                    </h1>
-                    <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                        {isArabic
-                            ? 'تعمل Joint Annual Zone كمنصة ربط استراتيجي، تهدف إلى دمج الأفكار والشركات والكوادر المهنية في كبرى المعارض والمؤتمرات الدولية لتحقيق أهداف عملائها.'
-                            : 'Joint Annual Zone operates as a strategic connection platform, integrating ideas, companies, and professional talent into major international exhibitions and conferences.'}
-                    </p>
-                </motion.div>
+  const cardVariants: Variants = {
+    hidden: (index: number = 0) => ({
+      opacity: 0,
+      y: 28,
+      x: shouldReduceMotion ? 0 : (isRTL ? (index % 2 === 0 ? 18 : -18) : (index % 2 === 0 ? -18 : 18)),
+      scale: 0.965,
+    }),
+    visible: {
+      opacity: 1,
+      y: 0,
+      x: 0,
+      scale: 1,
+      transition: {
+        duration: 0.65,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  }
 
-                {/* Sectors Grid */}
-                {mergedSectors.length > 0 ? (
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10"
-                    >
-                        {mergedSectors.map((sector) => {
-                            const IconComponent = iconMap[sector.icon || 'Building2'] || Building2
-                            return (
-                                <motion.div key={sector.id} variants={itemVariants} whileHover={{ y: -5 }}>
-                                    <Link href={`/sectors/${sector.slug}`}>
-                                        <Card className="h-full hover:shadow-2xl hover:shadow-[#8b0000]/5 transition-all duration-300 group overflow-hidden border-gray-100 hover:border-[#8b0000]/30 bg-white">
-                                            <CardContent className="p-8 relative">
-                                                {/* decorative background shape */}
-                                                <div className="absolute top-0 left-0 w-32 h-32 bg-gray-50/50 rounded-br-full -z-10 group-hover:scale-125 group-hover:bg-[#8b0000]/5 transition-all duration-700"></div>
+  return (
+    <div className="bg-white pt-36 pb-14 sm:pb-16 lg:pb-20" dir={dir} lang={locale}>
+      <Container className="relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="mb-10 text-center sm:mb-12"
+        >
+          <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-950 lg:text-5xl">
+            {isRTL ? 'القطاعات' : 'Sectors'}
+          </h1>
+        </motion.div>
 
-                                                <div className={`flex flex-col items-start gap-6 relative z-10 ${isArabic ? 'sm:flex-row-reverse text-right' : 'sm:flex-row text-left'}`}>
-                                                    {/* Icon */}
-                                                    <div
-                                                        className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-sm"
-                                                        style={{ backgroundColor: `${sector.color}15` }}
-                                                    >
-                                                        <IconComponent
-                                                            className="w-8 h-8 transition-transform duration-500 group-hover:scale-110"
-                                                            style={{ color: sector.color || '#3B82F6' }}
-                                                        />
-                                                    </div>
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/92 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.06)] backdrop-blur-sm sm:p-5 lg:p-6"
+        >
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
-                                                    {/* Content */}
-                                                    <div className="flex-1 mt-2 sm:mt-0">
-                                                        <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#8b0000] transition-colors duration-300">
-                                                            {isArabic ? sector.name_ar : sector.name}
-                                                        </h2>
-                                                        <p className="text-gray-600 mb-5 leading-relaxed">
-                                                            {isArabic ? (sector.description_ar || sector.description) : sector.description}
-                                                        </p>
-                                                        <span className="inline-flex items-center text-[#8b0000] font-bold group-hover:text-[#a01010] transition-colors">
-                                                            {isArabic ? 'اكتشف المزيد' : 'Discover More'}
-                                                            <ArrowLeft className={`w-5 h-5 ${isArabic ? 'mr-2 group-hover:-translate-x-2' : 'ml-2 rotate-180 group-hover:translate-x-2'} transition-transform duration-300`} />
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                </motion.div>
-                            )
-                        })}
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-center py-16 bg-gray-50 rounded-2xl border border-gray-100"
-                    >
-                        <p className="text-gray-500 text-lg">{isArabic ? 'لا توجد قطاعات متاحة حالياً' : 'No sectors available at the moment'}</p>
-                    </motion.div>
-                )}
-            </Container>
-        </div>
-    )
+          {mergedSectors.length > 0 ? (
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              dir="ltr"
+              className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-3"
+            >
+              {mergedSectors.map((sector, index) => {
+                const accentColor = neutralAccentPalette[index % neutralAccentPalette.length]
+                const sectorTitle = isRTL ? (sector.name_ar || sector.name) : (sector.name || sector.name_ar)
+
+                const jazName = (() => {
+                  if (!sectorTitle) return { prefix: 'JAZ', suffix: '' }
+                  const parts = sectorTitle.split(' ')
+                  if (parts[0]?.toLowerCase() === 'jaz') {
+                    return { prefix: 'JAZ', suffix: parts.slice(1).join(' ') }
+                  }
+                  return { prefix: sectorTitle, suffix: '' }
+                })()
+
+                const sectorKey = getSectorContent(sector)?.key ?? ''
+                const sectorImage = sectorImageMap[sectorKey] ?? null
+
+                const titleBlock = (
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <h3 className="text-xl font-bold leading-tight text-slate-950 sm:text-[1.35rem]">
+                      <span className="block">{jazName.prefix}</span>
+                      {jazName.suffix && <span className="block">{jazName.suffix}</span>}
+                    </h3>
+                  </div>
+                )
+
+                return (
+                  <motion.div key={sector.id} variants={cardVariants} custom={index}>
+                    <Link href={`/sectors/${sector.slug}`} className="block h-full">
+                      <motion.div
+                        whileHover={shouldReduceMotion ? undefined : { y: -6 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <Card dir={dir} lang={locale} className="group h-full rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)] transition-all duration-300 hover:border-slate-300 hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+                          <CardContent className="relative flex h-full min-h-[110px] flex-col p-3 text-start sm:min-h-[120px] sm:p-4">
+                            {sectorImage && (
+                              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[1.6rem]">
+                                <Image
+                                  src={sectorImage}
+                                  alt=""
+                                  fill
+                                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                  unoptimized
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-white/10" />
+                              </div>
+                            )}
+                            <div className="relative mb-3 flex w-full min-w-0 items-start justify-between gap-3">
+                              {titleBlock}
+                            </div>
+
+                            <span
+                              className={`absolute bottom-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow-sm transition-all duration-300 ${isRTL ? 'left-4' : 'right-4'}`}
+                              style={{ color: accentColor }}
+                            >
+                              <Arrow className={`h-4 w-4 transition-all duration-300 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
+                            </span>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    </Link>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="rounded-[1.75rem] border border-slate-200 bg-white/70 py-16 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+            >
+              <p className="text-lg text-slate-500">{isRTL ? 'لا توجد قطاعات متاحة حالياً' : 'No sectors available at the moment'}</p>
+            </motion.div>
+          )}
+        </motion.div>
+      </Container>
+    </div>
+  )
 }

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
   CalendarDays,
   Globe,
@@ -12,27 +13,33 @@ import {
   Link as LinkIcon,
   Menu,
   Newspaper,
-  Search,
   User,
   X,
 } from 'lucide-react'
 import { Container } from '@/components/ui/container'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n'
+import { motion, AnimatePresence } from 'framer-motion'
 
-export function Header({ isAdmin }: { isAdmin?: boolean }) {
+export function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [scrolled, setScrolled] = useState(false)
 
   const { locale, setLocale, t } = useI18n()
   const pathname = usePathname()
-  const router = useRouter()
+
 
   const normalizedPathname = pathname?.toLowerCase() ?? ''
   const isEventDetailsPage = /^\/events\/[^/]+\/?$/.test(normalizedPathname)
-  const isHomePage = pathname === '/'
+  const accent = {
+    logo: 'bg-gradient-to-br from-slate-700 via-slate-800 to-slate-950 shadow-slate-900/20',
+    hoverText: 'hover:text-stone-700',
+    focusField: 'focus:border-stone-500 focus:bg-white focus:ring-4 focus:ring-stone-500/10',
+    menuActive: 'border-stone-800 bg-stone-800 text-white shadow-[0_12px_30px_rgba(41,37,36,0.18)]',
+    menuInactive: 'border-stone-200 bg-white/90 text-stone-700 hover:border-stone-400/25 hover:bg-stone-50 hover:text-stone-800',
+    menuIcon: 'text-stone-600',
+    actionHover: 'hover:border-stone-400/25 hover:bg-stone-100/80 hover:text-stone-800',
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,6 +48,25 @@ export function Header({ isAdmin }: { isAdmin?: boolean }) {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
 
   if (
     normalizedPathname.startsWith('/dashboard') ||
@@ -64,92 +90,45 @@ export function Header({ isAdmin }: { isAdmin?: boolean }) {
     setLocale(locale === 'ar' ? 'en' : 'ar')
   }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) return
-
-    router.push(`/events?q=${encodeURIComponent(searchQuery.trim())}`)
-    setSearchQuery('')
-    setIsOpen(false)
-  }
-
-  const searchPlaceholder =
-    locale === 'ar' ? 'البحث في موقع JAZ' : 'Search in JAZ Website'
+  const menuLabel = locale === 'ar' ? 'القائمة' : 'Menu'
+  const closeMenuLabel = locale === 'ar' ? 'إغلاق القائمة' : 'Close menu'
+  const mainMenuLabel = locale === 'ar' ? 'القائمة الرئيسية' : 'Main menu'
+  const openMenu = () => setIsOpen(true)
+  const closeMenu = () => setIsOpen(false)
 
   return (
     <>
-      {/* Desktop Navbar - شريط علوي أفقي للشاشات الكبيرة */}
       <header
+        dir={locale === 'ar' ? 'rtl' : 'ltr'}
+        lang={locale}
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-300 hidden md:block',
-          (isHomePage && !scrolled)
-            ? 'bg-transparent'
-            : 'bg-white/95 backdrop-blur-md shadow-lg shadow-black/5'
+          'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+          isOpen ? 'pointer-events-none' : 'pointer-events-auto'
         )}
       >
-        <Container>
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
+        <Container className="pt-4">
+          <div
+            className={cn(
+              'flex items-center justify-between gap-3 rounded-[1.75rem] border px-4 py-3 shadow-lg shadow-black/5 transition-all duration-300',
+              scrolled
+                ? 'border-white/80 bg-white/92 backdrop-blur-xl'
+                : 'border-white/70 bg-white/82 backdrop-blur-xl'
+            )}
+          >
             <Link
               href="/"
-              className="flex items-center gap-2 group"
+              className="group block shrink-0"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-white shadow-lg transition-all duration-300 bg-gradient-to-br from-[#8b0000] to-[#6b0000] shadow-[#8b0000]/20">
-                <span>J</span>
+              <div className="relative aspect-[3/1] w-28 transition-transform duration-300 group-hover:scale-[1.02] sm:w-32">
+                <Image
+                  src="/Joint Annual Zone logo.png"
+                  alt="Joint Annual Zone Logo"
+                  fill
+                  sizes="(min-width: 640px) 8rem, 7rem"
+                  className="object-contain ltr:object-left rtl:object-right"
+                  priority
+                />
               </div>
-              <span className="text-lg font-bold tracking-[0.24em] text-gray-900">
-                JAZ
-              </span>
-            </Link>
-
-            {/* Navigation Links */}
-            <nav className="flex items-center gap-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
-                      isActive
-                        ? "bg-[#8b0000]/10 text-[#8b0000]"
-                        : "text-gray-600 hover:text-[#8b0000] hover:bg-gray-100"
-                    )}
-                  >
-                    {item.name}
-                  </Link>
-                )
-              })}
-            </nav>
-
-            {/* Language Toggle */}
-            <button
-              type="button"
-              onClick={toggleLocale}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-[#8b0000] hover:bg-gray-100"
-            >
-              <Globe className="h-4 w-4" />
-              <span>{locale === 'ar' ? 'EN' : 'عر'}</span>
-            </button>
-          </div>
-        </Container>
-      </header>
-
-      {/* Mobile Navbar - شريط مبسط للموبايل */}
-      <div className="fixed top-4 z-50 w-full pointer-events-none md:hidden">
-        <Container>
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/70 bg-white/90 px-4 py-2 shadow-lg shadow-black/5 backdrop-blur"
-            >
-              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8b0000] to-[#6b0000] text-sm font-bold text-white shadow-md shadow-[#8b0000]/20">
-                J
-              </div>
-              <span className="text-sm font-bold tracking-[0.24em] text-gray-900">
-                JAZ
-              </span>
             </Link>
 
             <div className="flex items-center gap-2">
@@ -157,165 +136,126 @@ export function Header({ isAdmin }: { isAdmin?: boolean }) {
                 type="button"
                 onClick={toggleLocale}
                 aria-label={locale === 'ar' ? 'تغيير اللغة' : 'Change language'}
-                className="pointer-events-auto flex h-12 items-center gap-2 rounded-2xl border border-white/70 bg-white/90 px-4 text-gray-800 shadow-lg shadow-black/10 backdrop-blur transition hover:scale-[1.02] hover:text-[#8b0000]"
+                className={cn("flex min-h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white/92 px-4 text-slate-800 shadow-sm transition hover:scale-[1.02]", accent.hoverText)}
               >
                 <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">{locale === 'ar' ? 'EN' : 'عر'}</span>
+                <span className="text-sm font-medium">
+                  {locale === 'ar' ? 'EN' : 'ع'}
+                </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setIsOpen(true)}
+                onClick={openMenu}
                 aria-label={locale === 'ar' ? 'فتح القائمة' : 'Open menu'}
-                className="pointer-events-auto flex h-12 items-center gap-2 rounded-2xl border border-white/70 bg-white/90 px-4 text-gray-800 shadow-lg shadow-black/10 backdrop-blur transition hover:scale-[1.02] hover:text-[#8b0000]"
+                className={cn(
+                  'flex min-h-11 items-center gap-2 rounded-2xl px-4 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.02]',
+                  'bg-slate-900 hover:bg-slate-800'
+                )}
               >
                 <Menu className="h-5 w-5" />
+                <span className="hidden sm:inline">{menuLabel}</span>
               </button>
             </div>
           </div>
         </Container>
-      </div>
+      </header>
 
-      {/* Mobile Menu Overlay */}
       <div
         className={cn(
-          'fixed inset-0 z-[60] bg-black/45 backdrop-blur-sm transition-all duration-300 md:hidden',
+          'fixed inset-0 z-[60] bg-black/45 backdrop-blur-sm transition-all duration-300',
           isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         )}
-        onClick={() => setIsOpen(false)}
+        onClick={closeMenu}
       />
 
-      {/* Mobile Sidebar Menu */}
-      <aside
+      <AnimatePresence>
+      {isOpen && (
+      <motion.aside
+        key="sidebar"
+        initial={{ x: locale === 'ar' ? '100%' : '-100%', opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: locale === 'ar' ? '100%' : '-100%', opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 30 }}
         className={cn(
-          'fixed top-0 z-[70] flex h-full w-[min(92vw,380px)] flex-col overflow-hidden border-l border-gray-200 bg-[#faf8f5] shadow-2xl shadow-black/20 transition-transform duration-300 will-change-transform md:hidden',
-          locale === 'ar' ? 'right-0' : 'left-0'
+          'fixed top-0 z-[70] flex h-full w-[min(92vw,420px)] flex-col overflow-hidden bg-slate-50 shadow-2xl shadow-slate-900/20 will-change-transform',
+          locale === 'ar'
+            ? 'right-0 border-l border-white/70'
+            : 'left-0 border-r border-white/70'
         )}
-        aria-hidden={!isOpen}
+        aria-label={mainMenuLabel}
         dir={locale === 'ar' ? 'rtl' : 'ltr'}
-        style={{
-          visibility: isOpen ? 'visible' : 'hidden',
-          transform: isOpen
-            ? 'translateX(0)'
-            : locale === 'ar'
-              ? 'translateX(100%)'
-              : 'translateX(-100%)',
-        }}
       >
-        <div className="border-b border-gray-200 bg-white px-5 py-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-3">
-              <Link
-                href="/"
-                className="flex items-center gap-3"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8b0000] to-[#6b0000] text-lg font-bold text-white shadow-lg shadow-[#8b0000]/20">
-                  J
-                </div>
-                <div>
-                  <div className="text-lg font-bold tracking-[0.18em] text-gray-900">
-                    JAZ
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {locale === 'ar' ? 'القائمة الرئيسية' : 'Main menu'}
-                  </div>
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-8">
+          <div className="mb-8 flex items-center justify-between">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, duration: 0.35, ease: 'easeOut' }}
+            >
+              <Link href="/" className="group block shrink-0" onClick={closeMenu}>
+                <div className="relative aspect-[3/1] w-28 transition-transform duration-300 group-hover:scale-[1.02] sm:w-32">
+                  <Image
+                    src="/Joint Annual Zone logo.png"
+                    alt="Joint Annual Zone Logo"
+                    fill
+                    sizes="(min-width: 640px) 8rem, 7rem"
+                    className="object-contain ltr:object-left rtl:object-right"
+                  />
                 </div>
               </Link>
+            </motion.div>
 
-            </div>
-
-            <button
+            <motion.button
               type="button"
-              onClick={() => setIsOpen(false)}
-              aria-label={locale === 'ar' ? 'إغلاق القائمة' : 'Close menu'}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-gray-600 transition hover:bg-gray-200 hover:text-[#8b0000]"
+              onClick={closeMenu}
+              aria-label={closeMenuLabel}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.25, ease: 'easeOut' }}
+              className={cn("flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-stone-100/90 text-stone-600 shadow-sm transition hover:bg-stone-200", accent.hoverText)}
             >
               <X className="h-5 w-5" />
-            </button>
+            </motion.button>
           </div>
-        </div>
 
-        <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5">
-          <form
-            onSubmit={handleSearch}
-            className="rounded-3xl border border-gray-200 bg-white p-4"
-          >
-            <label className="mb-3 block text-sm font-semibold text-gray-800">
-              {locale === 'ar' ? 'البحث' : 'Search'}
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={searchPlaceholder}
-                className="h-12 w-full rounded-2xl border border-gray-200 bg-[#faf8f5] text-sm text-gray-900 outline-none transition focus:border-[#8b0000] focus:bg-white focus:ring-4 focus:ring-[#8b0000]/10 ltr:pl-4 ltr:pr-11 rtl:pr-4 rtl:pl-11"
-              />
-              <button
-                type="submit"
-                className="absolute top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-[#8b0000] ltr:right-4 rtl:left-4"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-            </div>
-          </form>
+          <nav className="space-y-2">
+            {navigation.map((item, index) => {
+              const isActive = pathname === item.href
+              const Icon = item.icon
 
-          <div className="space-y-3">
-            <div className="px-1 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-              {locale === 'ar' ? 'التنقل' : 'Navigation'}
-            </div>
-
-            <nav className="space-y-2">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href
-                const Icon = item.icon
-
-                return (
+              return (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, x: locale === 'ar' ? 30 : -30, filter: 'blur(4px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  transition={{
+                    delay: index * 0.055 + 0.12,
+                    duration: 0.4,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                >
                   <Link
-                    key={item.href}
                     href={item.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={closeMenu}
                     className={cn(
-                      'flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-sm font-medium transition',
-                      isActive
-                        ? 'border-[#8b0000] bg-[#8b0000] text-white'
-                        : 'border-gray-200 bg-white text-gray-700 hover:border-[#8b0000]/30 hover:bg-[#fcf7f5] hover:text-[#8b0000]'
+                      'flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-sm font-medium shadow-[0_8px_20px_rgba(41,37,36,0.04)] transition',
+                      isActive ? accent.menuActive : accent.menuInactive
                     )}
                   >
-                    <span
-                      className={cn(
-                        'flex items-center justify-center transition',
-                        isActive
-                          ? 'text-white'
-                          : 'text-[#8b0000]'
-                      )}
-                    >
-                      <Icon className="h-6 w-6" />
+                    <span className={cn('flex items-center justify-center transition', isActive ? 'text-white' : accent.menuIcon)}>
+                      <Icon className="h-5 w-5" />
                     </span>
                     <span>{item.name}</span>
                   </Link>
-                )
-              })}
-            </nav>
-          </div>
+                </motion.div>
+              )
+            })}
+          </nav>
         </div>
-
-        <div className="space-y-3 border-t border-gray-200 bg-white px-5 py-5">
-          {isAdmin && (
-            <Link href="/admin" onClick={() => setIsOpen(false)} className="block">
-              <Button
-                variant="outline"
-                size="md"
-                className="h-12 w-full gap-2 rounded-2xl border-gray-200 text-gray-700 hover:border-[#8b0000] hover:bg-[#8b0000]/5 hover:text-[#8b0000]"
-              >
-                <User className="h-4 w-4" />
-                Admin
-              </Button>
-            </Link>
-          )}
-        </div>
-      </aside>
+      </motion.aside>
+      )}
+      </AnimatePresence>
     </>
   )
 }

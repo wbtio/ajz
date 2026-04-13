@@ -26,12 +26,14 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     return { title: 'Article Not Found | JAZ' }
   }
 
+  const postTitle = post.title || post.title_ar || 'Article'
+
   return {
-    title: post.seo_title || `${post.title || post.title_ar} | JAZ`,
+    title: post.seo_title || `${postTitle} | JAZ`,
     description: post.seo_description || post.excerpt || post.excerpt_ar,
     keywords: post.keywords?.join(', '),
     openGraph: {
-      title: post.seo_title || post.title_ar || post.title,
+      title: post.seo_title || postTitle,
       description: post.seo_description || post.excerpt_ar || post.excerpt,
       images: post.featured_image_url ? [post.featured_image_url] : [],
     },
@@ -57,6 +59,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
+  const postTitle = post.title || post.title_ar || 'Untitled article'
+
   // Increment view count
   await supabase
     .from('posts')
@@ -81,7 +85,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <span>/</span>
           <Link href="/blog" className="hover:text-blue-600">Blog</Link>
           <span>/</span>
-          <span className="text-gray-900 line-clamp-1">{post.title || post.title_ar}</span>
+          <span className="text-gray-900 line-clamp-1">{postTitle}</span>
         </div>
 
         {/* Article */}
@@ -89,7 +93,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Header */}
           <header className="mb-8">
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              {post.title || post.title_ar}
+              {postTitle}
             </h1>
 
             <div className="flex items-center gap-6 text-gray-500">
@@ -105,7 +109,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="relative h-64 lg:h-96 rounded-2xl overflow-hidden mb-8">
               <Image
                 src={post.image_url}
-                alt={post.title || post.title_ar}
+                alt={postTitle}
                 fill
                 className="object-cover"
               />

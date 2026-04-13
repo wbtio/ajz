@@ -54,23 +54,24 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
     }
 
     return (
-        <aside className="w-72 bg-white border-l border-gray-100 flex flex-col h-screen sticky top-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-30">
-            {/* Header / Logo */}
-            <div className="p-6 pb-2">
-                <Link href="/" className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-all duration-300">
-                        <span className="text-white font-bold text-xl">J</span>
+        <aside className="sticky top-0 z-30 flex h-screen w-72 flex-col border-l border-stone-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(252,250,248,0.98)_100%)] shadow-[4px_0_24px_rgba(0,0,0,0.03)]">
+            <div className="border-b border-stone-200/70 p-6 pb-4">
+                <Link href="/" className="group flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#8b0000,#c2410c)] shadow-[0_14px_30px_-18px_rgba(139,0,0,0.7)] ring-1 ring-white/30 transition-transform duration-300 group-hover:scale-105">
+                        <span className="text-xl font-black text-white">J</span>
                     </div>
                     <div>
-                        <span className="block text-lg font-bold text-gray-900 tracking-tight">JAZ Admin</span>
-                        <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">Dashboard</span>
+                        <span className="block text-lg font-black tracking-tight text-stone-950">JAZ Admin</span>
+                        <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">Dashboard</span>
                     </div>
                 </Link>
             </div>
 
-            {/* Navigation */}
-            <div className="flex-1 overflow-y-auto py-6 px-4 scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-transparent">
-                <nav className="space-y-1">
+            <div className="flex-1 overflow-y-auto px-4 py-5 scrollbar-thin scrollbar-thumb-stone-200 scrollbar-track-transparent">
+                <div className="mb-4 rounded-[1.25rem] border border-stone-200/70 bg-white/70 p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">Navigation</p>
+                </div>
+                <nav className="space-y-1.5">
                     {navigation.map((item) => {
                         const isActive = pathname === item.href ||
                             (item.href !== '/dashboard/home' && pathname.startsWith(item.href))
@@ -80,23 +81,23 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                                 key={item.name}
                                 href={item.href}
                                 className={cn(
-                                    'group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium relative overflow-hidden',
+                                    'group relative flex items-center gap-3 overflow-hidden rounded-2xl px-3.5 py-3 text-sm font-medium transition-all duration-200',
                                     isActive
-                                        ? 'bg-blue-50/80 text-blue-700 shadow-sm'
-                                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                        ? 'border border-blue-200/70 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] text-blue-700 shadow-[0_14px_30px_-22px_rgba(59,130,246,0.6)]'
+                                        : 'border border-transparent text-stone-500 hover:border-stone-200 hover:bg-white hover:text-stone-950'
                                 )}
                             >
                                 {isActive && (
-                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-600 rounded-l-full" />
+                                    <div className="absolute right-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-l-full bg-blue-600" />
                                 )}
                                 
                                 <item.icon className={cn(
-                                    "w-5 h-5 transition-colors duration-200",
-                                    isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                                    'h-5 w-5 transition-colors duration-200',
+                                    isActive ? 'text-blue-600' : 'text-stone-400 group-hover:text-stone-600'
                                 )} />
                                 <span className="flex-1">{item.name}</span>
                                 {isActive && (
-                                    <ChevronLeft className="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <ChevronLeft className="h-4 w-4 text-blue-400 opacity-0 transition-opacity group-hover:opacity-100" />
                                 )}
                             </Link>
                         )
@@ -104,17 +105,16 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                 </nav>
             </div>
 
-            {/* User Profile Footer */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50/30">
-                <div className="flex items-center gap-3 mb-4 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">
+            <div className="border-t border-stone-200/70 bg-white/70 p-4">
+                <div className="mb-4 flex items-center gap-3 rounded-[1.25rem] border border-stone-200/70 bg-white p-3 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(37,99,235,0.14),rgba(191,219,254,0.5))] font-bold text-blue-700">
                         {user.full_name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-gray-900 truncate">
+                        <p className="truncate text-sm font-bold text-stone-950">
                             {user.full_name || 'مدير النظام'}
                         </p>
-                        <p className="text-[10px] text-gray-500 truncate font-medium">
+                        <p className="truncate text-[10px] font-medium text-stone-500">
                             {user.email}
                         </p>
                     </div>
@@ -122,9 +122,9 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                 
                 <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50/80 hover:border-red-100 border border-transparent rounded-lg transition-all duration-200"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent px-4 py-3 text-sm font-medium text-stone-600 transition-all duration-200 hover:border-rose-100 hover:bg-rose-50/80 hover:text-rose-600"
                 >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="h-4 w-4" />
                     تسجيل الخروج
                 </button>
             </div>

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import type { Json } from '@/lib/database.types'
+import { sendEmail, generateSectorRegistrationEmail } from '@/lib/email'
 
 export async function submitSectorRegistration(sectorId: string, data: Record<string, string>) {
   try {
@@ -10,16 +11,28 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
     // Get current user if logged in
     const { data: { user } } = await supabase.auth.getUser()
 
-    // We assume there is a table 'sector_registrations'
-    // If not, we might need to store it in a generic 'submissions' table or similar.
-    // Since I cannot create the table via MCP, I will assume it exists or the user will create it.
-    // Structure: id, sector_id, user_id, data (jsonb), status, created_at
+    const fullName = [data.given_name, data.surname].filter(Boolean).join(' ').trim() || data.full_name || data.company_name || null
+    const email = data.email || data.personal_email_address || null
+    const phone = data.telephone || data.personal_telephone || data.contact_number || data.phone || null
 
+    // Get sector information
+    const { data: sector } = await supabase
+      .from('sectors')
+      .select('name, name_ar')
+      .eq('id', sectorId)
+      .single()
+
+    const sectorName = sector?.name_ar || sector?.name || 'القطاع'
+
+    // Insert registration into database
     const { error } = await supabase
       .from('sector_registrations')
       .insert({
         sector_id: sectorId,
         user_id: user?.id || null,
+        full_name: fullName,
+        email,
+        phone,
         data: data as Json,
         status: 'pending'
       })
@@ -27,6 +40,41 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
     if (error) {
       console.error('Supabase error:', error)
       throw new Error('Failed to submit form')
+    }
+
+    // Send email notifications
+    if (email) {
+      // Send confirmation email to user
+      const userEmailHtml = generateSectorRegistrationEmail({
+        sectorName,
+        fullName: fullName || 'المستخدم',
+        email,
+        phone: phone || undefined,
+        formData: data,
+        isAdminEmail: false
+      })
+
+      await sendEmail({
+        to: [email],
+        subject: `تأكيد استلام طلب التسجيل - ${sectorName}`,
+        html: userEmailHtml
+      })
+
+      // Send notification email to admin
+      const adminEmailHtml = generateSectorRegistrationEmail({
+        sectorName,
+        fullName: fullName || 'غير محدد',
+        email,
+        phone: phone || undefined,
+        formData: data,
+        isAdminEmail: true
+      })
+
+      await sendEmail({
+        to: ['jaz.registr@gmail.com'],
+        subject: `طلب تسجيل جديد - ${sectorName} - ${fullName || email}`,
+        html: adminEmailHtml
+      })
     }
 
     return { success: true }

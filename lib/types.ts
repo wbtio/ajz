@@ -18,7 +18,13 @@ export interface FormField {
     type: 'text' | 'number' | 'email' | 'date' | 'select' | 'textarea'
     required: boolean
     options?: string[]
+    options_ar?: string[]
     defaultValue?: string
+    description_en?: string
+    description_ar?: string
+    placeholder_en?: string
+    placeholder_ar?: string
+    width?: 'full' | 'half'
 }
 
 // ============================================

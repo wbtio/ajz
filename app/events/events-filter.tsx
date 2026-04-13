@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { Search, Filter } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/lib/i18n'
 import type { Sector } from '@/lib/database.types'
 
 interface EventsFilterProps {
@@ -12,6 +13,8 @@ interface EventsFilterProps {
 }
 
 export function EventsFilter({ sectors }: EventsFilterProps) {
+  const { t, locale } = useI18n()
+  const isRTL = locale === 'ar'
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
@@ -37,58 +40,59 @@ export function EventsFilter({ sectors }: EventsFilterProps) {
   }
 
   return (
-    <div className="mb-10 space-y-6">
-      {/* Search and Main Actions */}
-      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 group">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#8b0000] transition-colors" />
+    <div className="mb-10 space-y-6 rounded-[2rem] border border-white/60 bg-white/55 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:p-6">
+      <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
+        <div className="group relative flex-1">
+          <Search className="absolute end-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-slate-700" />
           <Input
             type="text"
-            placeholder="Search for event name or keywords..."
+            placeholder={t.events.searchPlaceholderDetail}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-11 h-12 bg-white border-gray-200 rounded-xl shadow-sm focus:ring-[#8b0000]/10 focus:border-[#8b0000] transition-all text-base"
+            dir="auto"
+            className={`h-12 rounded-xl border-white/70 bg-white/80 text-base shadow-sm backdrop-blur-sm transition-all focus:border-slate-500 focus:ring-slate-500/10 ${isRTL ? 'ps-4 pe-11 text-right' : 'ps-4 pe-11 text-left'}`}
           />
         </div>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           isLoading={isPending}
-          className="h-12 px-8 rounded-xl bg-[#8b0000] hover:bg-[#a01010] shadow-md shadow-[#8b0000]/20 transition-all font-bold"
+          className="h-12 gap-2 rounded-xl bg-slate-800 px-8 font-bold shadow-md shadow-slate-900/15 transition-all hover:bg-slate-700"
         >
-          <Filter className="w-4 h-4 mr-2" />
-          Filter Results
+          <Filter className="h-4 w-4" />
+          {t.events.filterResults}
         </Button>
       </form>
 
-      {/* Sector Filters Container */}
       <div className="space-y-3">
-        <label className="text-sm font-bold text-gray-900 flex items-center gap-2 px-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#8b0000]" />
-          Sector Categories
+        <label className="flex items-center gap-2 px-1 text-sm font-bold text-slate-900">
+          <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-700" />
+          {t.events.sectorCategoriesLabel}
         </label>
-        
+
         <div className="flex flex-wrap gap-2 pb-2">
           <button
+            type="button"
             onClick={() => updateFilters('sector', '')}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
+            className={`rounded-xl border-2 px-6 py-2.5 text-sm font-bold transition-all ${
               !currentSector
-                ? 'bg-[#8b0000] border-[#8b0000] text-white shadow-lg shadow-[#8b0000]/20'
-                : 'bg-white border-gray-100 text-gray-600 hover:border-[#8b0000]/30 hover:text-[#8b0000] shadow-sm'
+                ? 'border-slate-800 bg-slate-800 text-white shadow-lg shadow-slate-900/15'
+                : 'border-white/80 bg-white/80 text-slate-600 shadow-sm hover:border-slate-400/35 hover:text-slate-900'
             }`}
           >
-            All
+            {t.events.all}
           </button>
           {sectors.map((sector) => (
             <button
               key={sector.id}
+              type="button"
               onClick={() => updateFilters('sector', sector.slug)}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
+              className={`rounded-xl border-2 px-6 py-2.5 text-sm font-bold transition-all ${
                 currentSector === sector.slug
-                  ? 'bg-[#8b0000] border-[#8b0000] text-white shadow-lg shadow-[#8b0000]/20'
-                  : 'bg-white border-gray-100 text-gray-600 hover:border-[#8b0000]/30 hover:text-[#8b0000] shadow-sm'
+                  ? 'border-slate-800 bg-slate-800 text-white shadow-lg shadow-slate-900/15'
+                  : 'border-white/80 bg-white/80 text-slate-600 shadow-sm hover:border-slate-400/35 hover:text-slate-900'
               }`}
             >
-              {sector.name}
+              {isRTL ? sector.name_ar || sector.name : sector.name || sector.name_ar}
             </button>
           ))}
         </div>

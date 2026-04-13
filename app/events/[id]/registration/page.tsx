@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Container } from '@/components/ui/container'
 import { Card, CardContent } from '@/components/ui/card'
 import { ConferenceForm } from '@/components/conference/conference-form'
+import { getRegistrationFieldsFromConferenceConfig, parseFormFields } from '@/lib/form-fields'
 import { formatDateTime } from '@/lib/utils'
 import type { FormField } from '@/lib/types'
 import { isHiddenEvent } from '@/lib/events-visibility'
@@ -20,19 +21,13 @@ interface RegistrationPageProps {
 function getRegistrationFieldsFromEvent(eventData: EventRegistrationSource): FormField[] {
   if (!eventData) return []
 
-  const directFields = Array.isArray(eventData.registration_config)
-    ? eventData.registration_config
-    : []
+  const directFields = parseFormFields(eventData.registration_config)
 
   if (directFields.length > 0) {
-    return directFields as FormField[]
+    return directFields
   }
 
-  const conferenceFields = Array.isArray(eventData?.conference_config?.registration?.form_fields)
-    ? eventData.conference_config.registration.form_fields
-    : []
-
-  return conferenceFields as FormField[]
+  return getRegistrationFieldsFromConferenceConfig(eventData.conference_config)
 }
 
 export default async function EventRegistrationPage({ params }: RegistrationPageProps) {

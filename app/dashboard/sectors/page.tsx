@@ -13,6 +13,7 @@ import type { Sector } from '@/lib/database.types'
 import { RegistrationFormBuilder } from '@/components/shared/registration-form-builder'
 import type { FormField } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
+import { getSectorRegistrationFallback } from '@/app/sectors/sector-content'
 
 const iconMap: Record<string, any> = {
     Building2,
@@ -295,7 +296,7 @@ export default function SectorsPage() {
                                                         if (Object.keys(data).length === 0) return <span className="text-gray-400 text-sm">-</span>;
 
                                                         // Get config to map labels
-                                                        const config = (reg.sectors as any)?.registration_config || [];
+                                                        const config = getSectorRegistrationFallback();
                                                         
                                                         return (
                                                             <div className="space-y-2 max-w-sm">
@@ -666,7 +667,7 @@ export default function SectorsPage() {
                                 <div className="space-y-4">
                                     {(() => {
                                         const data = selectedRegistration.data || {};
-                                        const config = (selectedRegistration.sectors as any)?.registration_config || [];
+                                        const config = getSectorRegistrationFallback();
                                         
                                         if (Object.keys(data).length === 0) {
                                             return <p className="text-gray-500 text-center py-4">لا توجد بيانات إضافية</p>;

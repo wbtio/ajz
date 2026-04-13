@@ -3,20 +3,20 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { 
-  Mail, 
-  Trash2, 
-  CheckCircle, 
-  Clock, 
+import {
+  Bell,
+  CheckCircle,
+  Clock,
   MessageSquare,
-  Search,
   RefreshCw,
-  ExternalLink
+  Search,
+  Trash2,
 } from 'lucide-react'
-import { Container } from '@/components/ui/container'
-import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { formatDateTime } from '@/lib/utils'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { cn, formatDateTime } from '@/lib/utils'
 
 interface ContactMessage {
   id: string
@@ -31,7 +31,6 @@ interface ContactMessage {
 
 export default function MessagesPage({ initialMessages }: { initialMessages: ContactMessage[] }) {
   const [messages, setMessages] = useState<ContactMessage[]>(initialMessages)
-  const [isLoading, setIsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const supabase = createClient()
   const router = useRouter()
@@ -66,129 +65,174 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
     msg.subject?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const unreadCount = messages.filter((msg) => msg.status === 'unread').length
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">رسائل التواصل</h1>
-          <p className="text-sm text-gray-500">إدارة الرسائل الواردة من نموذج اتصل بنا</p>
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => router.refresh()}
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className="w-4 h-4" />
-          تحديث
-        </Button>
-      </div>
-
-      <div className="relative group max-w-md">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-        <input
-          type="text"
-          placeholder="بحث في الرسائل..."
-          className="w-full pr-10 pl-4 py-2 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4">
-        {filteredMessages.length > 0 ? (
-          filteredMessages.map((msg) => (
-            <Card key={msg.id} className={cn(
-              "overflow-hidden border-gray-100 transition-all hover:shadow-md",
-              msg.status === 'unread' ? "border-r-4 border-r-blue-500" : ""
-            )}>
-              <CardContent className="p-0">
-                <div className="p-6">
-                  <div className="flex flex-col lg:flex-row justify-between gap-6">
-                    <div className="flex-1 space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold",
-                          msg.status === 'unread' ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500"
-                        )}>
-                          {msg.full_name[0].toUpperCase()}
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                            {msg.full_name}
-                            {msg.status === 'unread' && (
-                              <span className="bg-blue-100 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">جديد</span>
-                            )}
-                          </h3>
-                          <p className="text-xs text-gray-500">{msg.email} • {msg.phone || 'بدون رقم هاتف'}</p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-sm font-bold text-gray-800 mb-1">{msg.subject || 'بدون موضوع'}</h4>
-                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-                          {msg.message}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-4 text-[11px] text-gray-400 font-medium">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          {msg.created_at ? formatDateTime(msg.created_at) : '-'}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-row lg:flex-col gap-2 justify-end">
-                      {msg.status === 'unread' ? (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleStatusUpdate(msg.id, 'read')}
-                          className="flex items-center gap-2 text-blue-600 border-blue-100 hover:bg-blue-50"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                          تمييز كمقروء
-                        </Button>
-                      ) : (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleStatusUpdate(msg.id, 'unread')}
-                          className="flex items-center gap-2 text-gray-500 border-gray-100 hover:bg-gray-50"
-                        >
-                          <RefreshCw className="w-4 h-4" />
-                          إعادة كغير مقروء
-                        </Button>
-                      )}
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleDelete(msg.id)}
-                        className="flex items-center gap-2 text-red-600 border-red-100 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        حذف
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="text-center py-20 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-100">
-            <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="w-8 h-8 text-gray-200" />
+    <div className="space-y-6 text-right" dir="rtl">
+      <section className="rounded-2xl border border-stone-200 bg-white p-5 md:p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <Badge variant="outline" className="border-stone-200 bg-stone-50 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-stone-600">
+              رسائل التواصل
+            </Badge>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-stone-950 md:text-3xl">رسائل التواصل</h1>
+              <p className="mt-1 text-sm text-stone-600">
+                عرض مختصر للرسائل الواردة من نموذج التواصل.
+              </p>
             </div>
-            <p className="text-gray-500 font-medium">لا توجد رسائل واردة حالياً</p>
           </div>
-        )}
-      </div>
+
+          <div className="flex flex-wrap gap-2">
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600">
+              <Bell className="h-4 w-4 text-stone-500" />
+              {unreadCount} غير مقروء
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.refresh()}
+              className="h-10 rounded-2xl border-stone-200 bg-white px-4 text-stone-700 hover:bg-stone-50"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              تحديث
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <Card className="overflow-hidden rounded-2xl border-stone-200 bg-white shadow-sm">
+        <CardHeader className="border-b border-stone-200 bg-white">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <CardTitle className="text-xl font-semibold text-stone-950">صندوق الوارد</CardTitle>
+              <CardDescription className="mt-1 text-sm text-stone-500">
+                ابحث بالاسم أو البريد أو الموضوع، ثم راجع الرسالة بسرعة.
+              </CardDescription>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm font-medium text-stone-500">
+              <MessageSquare className="h-4 w-4 text-stone-500" />
+              {filteredMessages.length} رسالة
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4 p-4 md:p-5">
+          <div className="relative max-w-md">
+            <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+            <Input
+              type="text"
+              placeholder="ابحث باسم المرسل أو البريد أو الموضوع"
+              className="h-11 rounded-2xl border-stone-200 bg-stone-50 pr-11 text-sm shadow-none transition-colors focus:border-stone-300 focus:bg-white"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
+            {filteredMessages.length > 0 ? (
+              filteredMessages.map((msg) => (
+                <Card
+                  key={msg.id}
+                  className={cn(
+                    'overflow-hidden rounded-2xl border-stone-200 bg-white shadow-sm',
+                    msg.status === 'unread' ? 'border-r-4 border-r-stone-900' : ''
+                  )}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={cn(
+                              'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-semibold',
+                              msg.status === 'unread' ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-500'
+                            )}
+                          >
+                            {msg.full_name[0].toUpperCase()}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-sm font-semibold text-stone-950">{msg.full_name}</h3>
+                              {msg.status === 'unread' && (
+                                <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-semibold text-stone-700">
+                                  جديد
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="mt-2 space-y-1">
+                              <p className="truncate text-sm font-medium text-stone-800">
+                                {msg.subject || 'بدون موضوع'}
+                              </p>
+                              <p className="line-clamp-2 text-sm leading-6 text-stone-600">
+                                {msg.message}
+                              </p>
+                            </div>
+
+                            <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-medium text-stone-400">
+                              <span className="truncate" dir="ltr">
+                                {msg.email}
+                              </span>
+                              {msg.phone ? (
+                                <span dir="ltr">{msg.phone}</span>
+                              ) : null}
+                              <span className="inline-flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                {msg.created_at ? formatDateTime(msg.created_at) : '-'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 lg:shrink-0">
+                        {msg.status === 'unread' ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStatusUpdate(msg.id, 'read')}
+                            className="h-9 rounded-xl border-stone-200 px-3 text-stone-700 hover:bg-stone-50"
+                          >
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            قراءة
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStatusUpdate(msg.id, 'unread')}
+                            className="h-9 rounded-xl border-stone-200 px-3 text-stone-600 hover:bg-stone-50"
+                          >
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            إعادة
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDelete(msg.id)}
+                          className="h-9 rounded-xl border-rose-100 px-3 text-rose-600 hover:bg-rose-50"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          حذف
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-stone-200 bg-stone-50 py-16 text-center">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white">
+                  <MessageSquare className="h-7 w-7 text-stone-300" />
+                </div>
+                <p className="font-medium text-stone-500">لا توجد رسائل واردة حالياً</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
-}
-
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
 }

@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
     ArrowRight,
     ArrowLeft,
@@ -14,14 +14,13 @@ import {
     Rocket,
     Shield,
     Target,
-    Users,
-    CheckCircle2
+    Users
 } from 'lucide-react'
 import { submitStaticPartnerForm } from '@/app/dashboard/partners/actions'
 import { DynamicForm } from '@/components/shared/dynamic-form'
 import type { FormField } from '@/lib/types'
 import { useI18n } from '@/lib/i18n'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { Grid } from '@/components/eldoraui/grid'
 
 const startupFormFields: FormField[] = [
@@ -46,7 +45,7 @@ const committeesFormFields: FormField[] = [
 
 const corporateFormFields: FormField[] = [
     { id: 'اسم الشركة / Organization Name', label_ar: 'اسم الشركة / Organization Name', label_en: 'Organization Name', type: 'text', required: true },
-    { id: 'اسم الممثل الرسمي والمنصب / Contact Person & Title', label_ar: 'اسم الممثل الرسمي والمنصب / Contact Person & Title', label_en: 'Contact Person & Title', type: 'text', required: true },
+    { id: 'اسم الممثل الرسمي والمنصب / Contact Person & Title', label_ar: 'اسم الممثل الرسمي والمنصب / Contact Person and Title', label_en: 'Contact Person and Title', type: 'text', required: true },
     { id: 'القطاع (طبي، صناعي، تجاري، إلخ) / Industry', label_ar: 'القطاع (طبي، صناعي، تجاري، إلخ) / Industry', label_en: 'Industry', type: 'text', required: true },
     { id: 'الخدمة المطلوبة / Required Service', label_ar: 'الخدمة المطلوبة / Required Service', label_en: 'Required Service', type: 'select', options: ['توسع السوق والتحول الدولي', 'الربط التجاري والوفود التجارية', 'الاستشارات والدعم الرسمي والقانوني'], required: true },
     { id: 'ملخص الطلب أو الهدف الاستراتيجي / Request Summary', label_ar: 'ملخص الطلب أو الهدف الاستراتيجي / Request Summary', label_en: 'Request Summary', type: 'textarea', required: true },
@@ -88,7 +87,7 @@ const sectionsData: SectionData[] = [
     title: 'مبادرة جاز لتطوير الشباب',
     titleEn: 'JAZ Youth Initiative',
     subtitle: 'إشراف: قسم التدريب والتطوير',
-    subtitleEn: 'Supervised by: Training & Development Division',
+    subtitleEn: 'Supervised by: Training and Development Division',
     description: 'فرصة مثالية للشباب لتطوير مشاريعهم أو الانضمام إلى بيئة عمل محترفة تتبنى أفكارهم الريادية وتحولها إلى واقع ملموس بدعم استراتيجي ومؤسسي متكامل.',
     descriptionEn: 'An ideal opportunity for youth to develop their projects or join a professional environment that adopts their entrepreneurial ideas and turns them into reality with integrated strategic and institutional support.',
     icon: Rocket,
@@ -105,8 +104,8 @@ const sectionsData: SectionData[] = [
     successMessage: 'تم استلام بيانات مشروعك بنجاح! فريقنا سيقوم بمراجعة الفكرة والتواصل معك قريباً.',
   },
   {
-    category: 'للأفراد',
-    categoryEn: 'For Individuals',
+    category: 'للمؤسسات',
+    categoryEn: 'For Organizations',
     title: 'الفريق التنظيمي للمعارض والمؤتمرات',
     titleEn: 'Event Committees',
     subtitle: 'اللجان التنظيمية',
@@ -134,13 +133,13 @@ const sectionsData: SectionData[] = [
     title: 'الشركات والنمو',
     titleEn: 'Corporate and Growth',
     subtitle: 'مسار نمو مؤسسي ودولي',
-    subtitleEn: 'Institutional & International Growth',
+    subtitleEn: 'Institutional and International Growth',
     description: 'هل تبحث عن مسار نمو مؤسسي ودولي؟ اطلب إيجازاً مهنياً وسنراجع احتياج شركتكم لنحدد نقطة الدخول الأنسب وخطة التحرك التالية عبر خدماتنا الاستراتيجية.',
     descriptionEn: 'Looking for an institutional and international growth path? Request a professional brief and we will assess your company needs to define the right entry point and next move through our strategic services.',
     icon: Building2,
     features: [
       {
-        title: 'توسع السوق والتحول الدولي', titleEn: 'Market Entry & Expansion', icon: Globe,
+        title: 'توسع السوق والتحول الدولي', titleEn: 'Market Entry and Expansion', icon: Globe,
         points: [
           { ar: 'مساعدة الشركات الوطنية في دخول الأسواق الدولية.', en: 'Supporting national companies in entering international markets.' },
           { ar: 'تقديم تقارير فرص التعاون التجاري.', en: 'Providing market opportunity reports.' },
@@ -156,7 +155,7 @@ const sectionsData: SectionData[] = [
         ]
       },
       {
-        title: 'الاستشارات والدعم الرسمي', titleEn: 'Advisory & Support', icon: Briefcase,
+        title: 'الاستشارات والدعم الرسمي', titleEn: 'Advisory and Support', icon: Briefcase,
         points: [
           { ar: 'استشارات مالية وقانونية لسلامة العمليات.', en: 'Financial and legal advisory for safe operations.' },
           { ar: 'فحص وتدقيق الشركات قبل التوسع.', en: 'Screening companies before expansion.' },
@@ -177,51 +176,87 @@ export default function PartnersPage() {
     const { locale, dir } = useI18n()
     const isArabic = locale === 'ar'
     const ArrowIcon = isArabic ? ArrowLeft : ArrowRight
+    const hasOddCards = sectionsData.length % 2 !== 0
+
+    const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
+
+    const gridVariants: Variants = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.1,
+            },
+        },
+    }
+
+    const cardVariants: Variants = {
+        hidden: { opacity: 0, y: 60, scale: 0.95, filter: 'blur(6px)' },
+        visible: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: 'blur(0px)',
+            transition: { duration: 0.8, ease },
+        },
+    }
+
+    const featureVariants: Variants = {
+        hidden: { opacity: 0, y: 20, scale: 0.96 },
+        visible: (i: number) => ({
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: { duration: 0.5, ease, delay: i * 0.07 },
+        }),
+    }
 
     return (
-        <div className="relative overflow-hidden bg-[linear-gradient(180deg,#faf5f0_0%,#ffffff_40%,#f6eee7_100%)] pt-28 pb-24 lg:pt-36" dir={dir} lang={locale}>
+        <div className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_40%,#eef2f7_100%)] pt-28 pb-24 lg:pt-36" dir={dir} lang={locale}>
             {/* Background Decorative Grid */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
                 <Grid columns={18} rows={18} height="h-full" width="w-full" className="h-[200%] w-full opacity-[0.04]" showPlusIcons={false} />
             </div>
 
             {/* Glowing Orbs */}
-            <div className="pointer-events-none absolute left-[-8rem] top-32 h-[28rem] w-[28rem] rounded-full bg-[#8b0000]/8 blur-[100px]" />
-            <div className="pointer-events-none absolute right-[-10rem] top-56 h-[22rem] w-[22rem] rounded-full bg-[#8b0000]/5 blur-[80px]" />
+            <div className="pointer-events-none absolute left-[-8rem] top-32 h-[28rem] w-[28rem] rounded-full bg-slate-500/12 blur-[100px]" />
+            <div className="pointer-events-none absolute right-[-10rem] top-56 h-[22rem] w-[22rem] rounded-full bg-slate-400/10 blur-[80px]" />
 
             <Container className="relative z-10">
                 <div className="mx-auto mb-16 text-center max-w-3xl">
-                   <motion.h1 
-                     initial={{ opacity: 0, y: 20 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     transition={{ duration: 0.6 }}
+                   <motion.h1
+                     initial={{ opacity: 0, y: 24, scale: 0.96, filter: 'blur(8px)' }}
+                     animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                     transition={{ duration: 0.85, ease }}
                      className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
                    >
-                     {isArabic ? 'شركاء جاز' : 'JAZ Partners'}
+                     {isArabic ? 'العلاقات الاستراتيجية' : 'Strategic Relations'}
                    </motion.h1>
-                   <motion.p 
-                     initial={{ opacity: 0, y: 20 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     transition={{ duration: 0.6, delay: 0.1 }}
-                     className="mt-6 text-lg leading-relaxed text-slate-600"
-                   >
-                     {isArabic 
-                       ? 'نحن نؤمن بأن الشراكات الاستراتيجية هي المفتاح للنمو. اكتشف برامج ومبادرات جاز المصممة خصيصاً لدعم الأفراد والشركات في تحقيق أهدافهم.' 
-                       : 'We believe strategic partnerships are the key to growth. Discover JAZ programs designed to support individuals and companies in achieving their goals.'}
-                   </motion.p>
                 </div>
 
-                <div className="flex flex-col gap-16 lg:gap-24">
+                <motion.div
+                    variants={gridVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: '-80px' }}
+                    className="grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8 lg:gap-10"
+                >
                     {sectionsData.map((section, index) => {
                         const Icon = section.icon
+                        const isLastOddCard = hasOddCards && index === sectionsData.length - 1
+                        const hasDenseFeatures = section.features.length >= 5
+                        const featuresGridClass = hasDenseFeatures
+                            ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                            : section.features.length > 3
+                                ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
+                                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                         return (
                             <motion.article
                                 key={section.title}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: '-10% 0px' }}
-                                transition={{ duration: 0.8 }}
-                                className="group relative overflow-hidden rounded-[2.5rem] border border-[#8b0000]/10 bg-white shadow-[0_24px_80px_rgba(139,0,0,0.07)] transition-all duration-700 hover:shadow-[0_40px_100px_rgba(139,0,0,0.12)]"
+                                variants={cardVariants}
+                                whileHover={{ y: -6, scale: 1.01 }}
+                                transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] as [number, number, number, number] }}
+                                className={`group relative h-full overflow-hidden rounded-[2.5rem] border border-white/60 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)] hover:shadow-[0_40px_100px_rgba(15,23,42,0.13)] ${isLastOddCard ? 'sm:col-span-2' : ''}`}
                             >
                                 {/* Card Internal Grid Background */}
                                 <div className="absolute inset-0 pointer-events-none">
@@ -229,12 +264,12 @@ export default function PartnersPage() {
                                 </div>
 
                                 {/* Internal Glows */}
-                                <div className="absolute right-[-15%] top-[-15%] h-[50%] w-[50%] rounded-full bg-gradient-to-br from-[#8b0000]/5 to-[#c93d3d]/5 blur-[80px] transition-transform duration-700 group-hover:scale-125" />
+                                <div className="absolute right-[-15%] top-[-15%] h-[50%] w-[50%] rounded-full bg-gradient-to-br from-slate-500/10 to-slate-300/5 blur-[80px] transition-transform duration-700 group-hover:scale-125" />
                                 
-                                <div className="relative z-10 p-8 sm:p-10 lg:p-14 flex flex-col h-full">
-                                    <div className="mb-10 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                                <div className="relative z-10 p-6 sm:p-8 lg:p-10 flex flex-col h-full">
+                                    <div className="mb-6 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                                         <div>
-                                            <div className="mb-5 inline-flex items-center rounded-full border border-[#b3261e]/20 bg-[#fff3f2] px-4 py-1.5 text-sm font-bold tracking-wide text-[#b3261e]">
+                                            <div className="mb-3 inline-flex items-center rounded-full border border-slate-600/12 bg-slate-600/[0.03] px-4 py-1 text-sm font-bold tracking-wide text-slate-700">
                                                 {isArabic ? section.category : section.categoryEn}
                                             </div>
                                             <h2 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl lg:text-4xl">
@@ -244,63 +279,68 @@ export default function PartnersPage() {
                                                 {isArabic ? section.subtitle : section.subtitleEn}
                                             </p>
                                         </div>
-                                        <div className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] border-2 border-[#8b0000]/10 bg-[#8b0000]/5 text-[#8b0000] shadow-md transition-transform duration-500 group-hover:rotate-6 ${isArabic ? 'lg:mr-auto' : 'lg:ml-auto'}`}>
-                                            <Icon className="h-10 w-10 text-[#8b0000]" />
+                                        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] border-2 border-slate-700/10 bg-slate-600/8 text-slate-700 shadow-md transition-transform duration-500 group-hover:rotate-6 ${isArabic ? 'lg:mr-auto' : 'lg:ml-auto'}`}>
+                                            <Icon className="h-7 w-7 text-slate-700" />
                                         </div>
                                     </div>
 
-                                    <p className="mb-12 text-lg leading-relaxed text-slate-600 lg:max-w-4xl">
+                                    <p className="mb-6 text-base leading-relaxed text-slate-600 lg:max-w-4xl">
                                         {isArabic ? section.description : section.descriptionEn}
                                     </p>
 
-                                    <div className={`mb-12 grid gap-6 ${section.features.length > 3 && section.features.length < 5 ? 'sm:grid-cols-2 lg:grid-cols-3' : (section.features.length >= 5 ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5' : 'sm:grid-cols-3')}`}>
+                                    <div className={`mb-6 grid gap-3 sm:gap-4 ${featuresGridClass}`}>
                                         {section.features.map((feature, i) => {
                                             const FeatureIcon = feature.icon
                                             return (
-                                                <div key={i} className="group/feature flex flex-col rounded-[1.5rem] border border-gray-200 bg-gray-50 p-6 transition-all duration-300 hover:bg-white hover:border-[#8b0000]/25 hover:shadow-lg hover:shadow-[#8b0000]/5">
+                                                <motion.div key={i} custom={i} variants={featureVariants} className={`group/feature flex h-full flex-col rounded-[1.5rem] border border-slate-200 bg-slate-50 transition-all duration-300 hover:border-slate-700/15 hover:bg-white hover:shadow-lg hover:shadow-slate-900/5 ${hasDenseFeatures ? 'p-4 sm:p-5' : 'p-6'}`}>
                                                     {FeatureIcon && (
-                                                        <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#fff3f2] text-[#b3261e] transition-transform duration-300 group-hover/feature:scale-110">
-                                                            <FeatureIcon className="h-6 w-6" />
+                                                        <div className={`inline-flex items-center justify-center bg-slate-600/[0.06] text-slate-700 transition-transform duration-300 group-hover/feature:scale-110 ${hasDenseFeatures ? 'mb-4 h-10 w-10 rounded-lg' : 'mb-5 h-12 w-12 rounded-xl'}`}>
+                                                            <FeatureIcon className={hasDenseFeatures ? 'h-5 w-5' : 'h-6 w-6'} />
                                                         </div>
                                                     )}
-                                                    <h3 className="font-bold text-slate-900 text-lg mb-3">
+                                                    <h3 className={`mb-1 font-bold leading-snug text-slate-900 ${hasDenseFeatures ? 'text-base' : 'text-lg'}`}>
                                                         {isArabic ? feature.title : feature.titleEn}
                                                     </h3>
-                                                    {feature.points && (
-                                                        <ul className="mt-2 space-y-3">
-                                                            {feature.points.map((point, idx) => (
-                                                                <li key={idx} className="flex items-start text-sm leading-relaxed text-slate-600">
-                                                                    <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 text-[#b3261e]/70 ${isArabic ? 'ml-2' : 'mr-2'}`} />
-                                                                    <span>{isArabic ? point.ar : point.en}</span>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </div>
+                                                </motion.div>
                                             )
                                         })}
                                     </div>
 
-                                    <div className="mt-auto pt-8 border-t border-gray-200 flex justify-end">
+                                    <div className="mt-auto flex justify-end border-t border-slate-200 pt-5">
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button className="h-14 w-full sm:w-auto rounded-2xl border-0 bg-[#8b0000] px-8 text-base font-semibold text-white shadow-[0_12px_24px_rgba(139,0,0,0.22)] transition-all duration-300 hover:bg-[#6e0000] hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(139,0,0,0.32)]">
+                                                <Button className="h-11 w-full rounded-2xl border-0 bg-slate-800 px-6 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(15,23,42,0.22)] transition-all duration-300 hover:-translate-y-1 hover:bg-slate-700 hover:shadow-[0_16px_32px_rgba(15,23,42,0.32)] sm:w-auto">
                                                     {isArabic ? section.actionLabel : section.actionLabelEn}
                                                     <ArrowIcon className={`h-5 w-5 ${isArabic ? 'mr-3' : 'ml-3'}`} />
                                                 </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="max-h-[85vh] w-[95%] max-w-xl overflow-y-auto">
-                                                <DialogHeader>
-                                                    <DialogTitle>{section.formTitle}</DialogTitle>
-                                                </DialogHeader>
-                                                <DynamicForm
-                                                    fields={section.formFields}
-                                                    onSubmit={async (data) => {
-                                                        await submitStaticPartnerForm(data, section.title)
-                                                    }}
-                                                    submitLabel={section.submitTitle}
-                                                    successMessage={section.successMessage}
-                                                />
+                                            <DialogContent
+                                                dir={dir}
+                                                lang={locale}
+                                                className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
+                                            >
+                                                <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
+                                                    <DialogHeader className="space-y-2 text-start">
+                                                        <DialogTitle className="text-start text-xl font-semibold leading-snug tracking-tight text-slate-900">
+                                                            {section.formTitle}
+                                                        </DialogTitle>
+                                                        <DialogDescription className="text-start text-sm leading-relaxed text-slate-600">
+                                                            {isArabic
+                                                                ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
+                                                                : 'Please complete the fields below. Items marked with (*) are required.'}
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                </div>
+                                                <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
+                                                    <DynamicForm
+                                                        fields={section.formFields}
+                                                        onSubmit={async (data) => {
+                                                            await submitStaticPartnerForm(data, section.title)
+                                                        }}
+                                                        submitLabel={section.submitTitle}
+                                                        successMessage={section.successMessage}
+                                                    />
+                                                </div>
                                             </DialogContent>
                                         </Dialog>
                                     </div>
@@ -308,7 +348,7 @@ export default function PartnersPage() {
                             </motion.article>
                         )
                     })}
-                </div>
+                </motion.div>
             </Container>
         </div>
     )

@@ -8,6 +8,7 @@ import { Container } from '@/components/ui/container'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, CheckCircle, Calendar, MapPin } from 'lucide-react'
+import { getRegistrationFieldsFromConferenceConfig, parseFormFields } from '@/lib/form-fields'
 import { formatDateTime } from '@/lib/utils'
 import type { Event, User } from '@/lib/database.types'
 import type { FormField } from '@/lib/types'
@@ -20,19 +21,13 @@ type EventRegistrationSource = Pick<Event, 'registration_config' | 'conference_c
 function getRegistrationFieldsFromEvent(eventData: EventRegistrationSource): FormField[] {
   if (!eventData) return []
 
-  const directFields = Array.isArray(eventData.registration_config)
-    ? eventData.registration_config
-    : []
+  const directFields = parseFormFields(eventData.registration_config)
 
   if (directFields.length > 0) {
-    return directFields as FormField[]
+    return directFields
   }
 
-  const conferenceFields = Array.isArray(eventData?.conference_config?.registration?.form_fields)
-    ? eventData.conference_config.registration.form_fields
-    : []
-
-  return conferenceFields as FormField[]
+  return getRegistrationFieldsFromConferenceConfig(eventData.conference_config)
 }
 
 interface RegisterPageProps {

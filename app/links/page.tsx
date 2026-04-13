@@ -160,7 +160,7 @@ export default function LinksPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-white pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-28" dir={dir}>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[linear-gradient(to_bottom,rgba(255,255,255,1)_0%,rgba(255,255,255,0.96)_54%,transparent_100%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-20 -z-10 h-[24rem] w-[24rem] -translate-x-1/2 rounded-full bg-[#8b0000]/10 blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/2 top-20 -z-10 h-[24rem] w-[24rem] -translate-x-1/2 rounded-full bg-slate-500/10 blur-[120px]" />
 
       <Container className="relative z-10">
         <motion.section
@@ -169,9 +169,9 @@ export default function LinksPage() {
           transition={{ duration: shouldReduceMotion ? 0 : 0.55 }}
           className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-[0_30px_100px_rgba(15,23,42,0.06)] sm:p-7 lg:p-10"
         >
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8b0000]/18 to-transparent opacity-90" />
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,1),rgba(255,255,255,0.96),rgba(139,0,0,0.035))]" />
-          <div className="pointer-events-none absolute -top-28 right-0 h-56 w-56 rounded-full bg-[#8b0000]/6 blur-3xl" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-400/30 to-transparent opacity-90" />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,1),rgba(255,255,255,0.98),rgba(148,163,184,0.08))]" />
+          <div className="pointer-events-none absolute -top-28 right-0 h-56 w-56 rounded-full bg-slate-400/10 blur-3xl" />
 
           <div className="relative z-10">
             <motion.div
@@ -180,7 +180,7 @@ export default function LinksPage() {
               transition={{ duration: shouldReduceMotion ? 0 : 0.6, delay: shouldReduceMotion ? 0 : 0.05 }}
               className="mx-auto mb-10 max-w-3xl text-center sm:mb-14"
             >
-              <span className="mb-4 inline-flex min-h-11 items-center rounded-full border border-[#8b0000]/12 bg-[#8b0000]/[0.03] px-4 py-1.5 text-sm font-medium text-[#8b0000]">
+              <span className="mb-4 inline-flex min-h-11 items-center rounded-full border border-slate-600/12 bg-slate-600/[0.03] px-4 py-1.5 text-sm font-medium text-slate-700">
                 {locale === 'ar' ? 'بوابات وخدمات رسمية' : 'Official portals and services'}
               </span>
               <h1 className="mb-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
@@ -199,8 +199,8 @@ export default function LinksPage() {
               transition={{ duration: shouldReduceMotion ? 0 : 0.65, delay: shouldReduceMotion ? 0 : 0.12 }}
               className="relative mb-8 overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white px-3 py-4 shadow-[0_14px_40px_rgba(15,23,42,0.04)] sm:px-4 sm:py-4"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-white to-[#8b0000]/[0.03]" />
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8b0000]/15 to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-white to-slate-500/[0.04]" />
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-400/25 to-transparent opacity-80" />
               <div className="relative z-10">
                 <div
                   dir="ltr"
@@ -218,7 +218,7 @@ export default function LinksPage() {
                         key={`${country.code}-${i}`}
                         title={locale === 'ar' ? country.name : country.nameEn}
                         aria-label={locale === 'ar' ? country.name : country.nameEn}
-                        className="group/item flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-[#8b0000]/25 hover:shadow-[0_16px_34px_rgba(139,0,0,0.08)] sm:h-[4.5rem] sm:w-[4.5rem]"
+                        className="group/item flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-400/30 hover:shadow-[0_16px_34px_rgba(51,65,85,0.08)] sm:h-[4.5rem] sm:w-[4.5rem]"
                       >
                         <Icon icon={`circle-flags:${country.code}`} className="h-10 w-10 sm:h-12 sm:w-12" />
                       </div>
@@ -234,7 +234,7 @@ export default function LinksPage() {
                 if (categoryLinks.length === 0) return null
 
                 const CategoryIcon = iconMap[category.icon || 'Globe'] || Globe
-                const accent = category.color || '#8b0000'
+                const accent = category.color || '#475569'
 
                 return (
                   <motion.details
@@ -247,7 +247,7 @@ export default function LinksPage() {
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 sm:p-5 [&::-webkit-details-marker]:hidden">
                       <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
                         <div
-                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-colors duration-300 group-open:bg-[#8b0000]"
+                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-colors duration-300 group-open:bg-slate-700"
                           style={{ backgroundColor: `${accent}15` }}
                         >
                           <CategoryIcon className="h-5 w-5 transition-colors duration-300 group-open:text-white" style={{ color: accent }} />
@@ -265,7 +265,7 @@ export default function LinksPage() {
                       </div>
 
                       <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <span className="rounded-full border border-[#8b0000]/12 bg-[#8b0000]/[0.03] px-3 py-1 text-xs font-semibold text-[#8b0000]">
+                        <span className="rounded-full border border-slate-600/12 bg-slate-600/[0.03] px-3 py-1 text-xs font-semibold text-slate-700">
                           {categoryLinks.length} {locale === 'ar' ? 'رابط' : 'links'}
                         </span>
                         <ChevronDown className="h-5 w-5 text-slate-400 transition-transform duration-300 group-open:rotate-180" />
@@ -280,12 +280,12 @@ export default function LinksPage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group/link relative overflow-hidden rounded-[1.25rem] border border-slate-200/80 bg-white/90 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-[#8b0000]/25 hover:shadow-[0_20px_45px_rgba(139,0,0,0.09)]"
+                            className="group/link relative overflow-hidden rounded-[1.25rem] border border-slate-200/80 bg-white/90 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-400/25 hover:shadow-[0_20px_45px_rgba(51,65,85,0.09)]"
                           >
-                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8b0000]/35 to-transparent opacity-0 transition-opacity duration-300 group-hover/link:opacity-100" />
+                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-400/40 to-transparent opacity-0 transition-opacity duration-300 group-hover/link:opacity-100" />
                             <div className={`relative z-10 flex items-start justify-between gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
                               <div className="flex-1">
-                                <h3 className="mb-1 text-sm font-semibold text-slate-900 transition-colors group-hover/link:text-[#8b0000] sm:text-base">
+                                <h3 className="mb-1 text-sm font-semibold text-slate-900 transition-colors group-hover/link:text-slate-700 sm:text-base">
                                   {locale === 'ar' ? link.title_ar : link.title_en}
                                 </h3>
                                 {link.country && (
@@ -295,7 +295,7 @@ export default function LinksPage() {
                                   </div>
                                 )}
                               </div>
-                              <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover/link:text-[#8b0000]" />
+                              <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover/link:text-slate-700" />
                             </div>
 
                             {(locale === 'ar' ? link.description_ar : link.description_en) && (

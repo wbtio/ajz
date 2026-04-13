@@ -1,12 +1,8 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
-import { Container } from '@/components/ui/container'
-import { Calendar, Clock, ArrowUpLeft, Tag, FileText } from 'lucide-react' // تم إضافة Clock و Tag
-import { formatDate } from '@/lib/utils'
+import { BlogPageView } from './blog-page-view'
 
 export const metadata = {
-  title: 'Blog | JAZ - Latest News & Articles',
+  title: 'Blog | JAZ - Latest News and Articles',
   description: 'Discover the latest news, articles, and updates from the world of events and exhibitions in Iraq',
   openGraph: {
     title: 'Blog | JAZ',
@@ -28,116 +24,5 @@ export default async function BlogPage() {
     console.error('Error fetching posts:', error)
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50/50 pt-36 pb-20" dir="ltr" lang="en">
-      <Container>
-        {/* Header Section */}
-        <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8b0000]/10 text-[#8b0000] text-sm font-medium border border-[#8b0000]/20">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b0000]/50 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8b0000]"></span>
-            </span>
-            Continuous Updates
-          </div>
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Blog
-          </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Discover the latest articles and insights about the world of events, exhibitions, and business developments in Iraq.
-          </p>
-        </div>
-
-        {/* Posts Grid */}
-        {posts && posts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.id}`} className="group h-full">
-                <article className="flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-[#8b0000]/5 hover:border-[#8b0000]/30 transition-all duration-300">
-                  
-                  {/* Image Container */}
-                  <div className="relative h-60 w-full overflow-hidden bg-slate-100">
-                    {post.featured_image_url || post.image_url ? (
-                      <Image
-                        src={post.featured_image_url || post.image_url || ''}
-                        alt={post.title_ar || post.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-[#8b0000]/5">
-                        <FileText className="w-12 h-12 text-[#8b0000]/30" />
-                      </div>
-                    )}
-                    
-                    {/* Category Badge - Floating over image */}
-                    {post.category && (
-                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-slate-100 flex items-center gap-1.5 z-10">
-                        <Tag className="w-3.5 h-3.5 text-[#8b0000]" />
-                        <span className="text-xs font-bold text-slate-700">
-                          {post.category}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content Container */}
-                  <div className="flex flex-col flex-grow p-6">
-                    
-                    {/* Title */}
-                    <h2 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 leading-snug group-hover:text-[#8b0000] transition-colors">
-                      {post.title || post.title_ar}
-                    </h2>
-
-                    {/* Excerpt */}
-                    <p className="text-slate-500 text-sm line-clamp-3 mb-6 flex-grow leading-relaxed">
-                      {post.excerpt || post.excerpt_ar || post.content?.substring(0, 150)}
-                    </p>
-
-                    {/* Footer Meta Data & Action */}
-                    <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            <span>{formatDate(post.published_at || post.created_at || '')}</span>
-                          </div>
-                          {post.reading_time && (
-                            <>
-                              <span className="w-1 h-1 rounded-full bg-slate-300" />
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span>{post.reading_time} min</span>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Read More Button Effect */}
-                      <div className="h-8 w-8 rounded-full bg-[#8b0000]/5 flex items-center justify-center group-hover:bg-[#8b0000] transition-colors duration-300">
-                        <ArrowUpLeft className="w-4 h-4 text-[#8b0000] group-hover:text-white transition-colors duration-300" />
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-dashed border-slate-200">
-            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-slate-400" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
-              No articles available yet
-            </h3>
-            <p className="text-slate-500">
-              We are working on preparing great content, follow us soon.
-            </p>
-          </div>
-        )}
-      </Container>
-    </div>
-  )
+  return <BlogPageView posts={posts ?? []} />
 }

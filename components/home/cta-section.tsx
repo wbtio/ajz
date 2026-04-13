@@ -26,10 +26,10 @@ export function CTASection() {
                 {t.hero.contactUs}
               </Button>
             </Link>
-            <a href="mailto:info@jaz.iq">
+            <a href="mailto:contact@jaz.iq">
               <Button size="lg" variant="outline" className="border-gray-400 text-white hover:bg-white/10">
                 <Mail className="w-5 h-5 ml-2" />
-                info@jaz.iq
+                contact@jaz.iq
               </Button>
             </a>
           </div>

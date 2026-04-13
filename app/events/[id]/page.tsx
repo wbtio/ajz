@@ -2,12 +2,22 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EventHero, EventTabs } from '@/components/conference/event-tabs'
+import type { Json } from '@/lib/database.types'
 import { isHiddenEvent } from '@/lib/events-visibility'
 
 const TEMPLATE_EVENT_AR_TITLE = 'تنفس البصرة 2026'
+type EventTabsConferenceConfig = Parameters<typeof EventTabs>[0]['conferenceConfig']
 
 interface EventPageProps {
   params: Promise<{ id: string }>
+}
+
+function asConferenceConfig(value: Json | null | undefined): EventTabsConferenceConfig {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null
+  }
+
+  return value as NonNullable<EventTabsConferenceConfig>
 }
 
 export async function generateMetadata({ params }: EventPageProps) {
@@ -75,7 +85,7 @@ export default async function EventPage({ params }: EventPageProps) {
     )
   }
 
-  const cc = event.conference_config
+  const cc = asConferenceConfig(event.conference_config)
 
   const { data: templateEvent } = await supabase
     .from('events')
@@ -85,7 +95,7 @@ export default async function EventPage({ params }: EventPageProps) {
     .limit(1)
     .maybeSingle()
 
-  const templateConferenceConfig = templateEvent?.conference_config
+  const templateConferenceConfig = asConferenceConfig(templateEvent?.conference_config)
 
   let sectorName_ar: string | null = null
   let sectorName_en: string | null = null
