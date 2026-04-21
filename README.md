@@ -1,203 +1,164 @@
-# 🏗️ JAZ Event Management Platform
-
-**Joint Annual Zone to Your Place**
+# 🏗️ JAZ Event Management Platform (Joint Annual Zone)
 
 ![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Web-blue?style=flat-square)
-![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)
+![Stack](https://img.shields.io/badge/Stack-Next.js%20%7C%20Supabase%20%7C%20Tailwind-black?style=flat-square)
 
-> **منصة متكاملة لتنظيم الفعاليات، المعارض، وبرامج التدريب والتطوير في العراق.**
-
-<div align="center">
-  <img src="path/to/banner.png" alt="JAZ Banner" width="100%" />
-</div>
+> **منصة متكاملة وشاملة لتنظيم الفعاليات، المعارض، برامج التدريب والتطوير، وإدارة الشركاء والقطاعات في العراق.**
 
 ---
 
 ## 📑 جدول المحتويات (Table of Contents)
-- [نظرة عامة](#-نظرة-عامة-overview)
+- [نظرة عامة على النظام](#-نظرة-عامة-على-النظام-system-overview)
 - [التقنيات المستخدمة](#-التقنيات-المستخدمة-tech-stack)
-- [خريطة الموقع](#-خريطة-الموقع-sitemap)
-- [المميزات الرئيسية](#-المميزات-الرئيسية-features)
-- [تفاصيل الصفحات](#-تفاصيل-الصفحات-page-details)
+- [إحصائيات المشروع والملفات](#-إحصائيات-المشروع-والملفات-project-stats--files)
+- [هيكلية المشروع (Project Structure)](#-هيكلية-المشروع-project-structure)
+- [واجهة المستخدم الرئيسية (Client Side)](#-واجهة-المستخدم-الرئيسية-client-side)
+- [لوحة تحكم الإدارة (Admin Dashboard)](#-لوحة-تحكم-الإدارة-admin-dashboard)
 - [بنية قاعدة البيانات](#-بنية-قاعدة-البيانات-database-schema)
-- [التثبيت والتشغيل](#-التثبيت-والتشغيل-installation)
-- [التكاليف التقديرية](#-التكاليف-التقديرية-costs)
+- [كيفية تشغيل المشروع](#-كيفية-تشغيل-المشروع-installation--setup)
 
 ---
 
-## 📄 نظرة عامة (Overview)
-هذا المستند يوضح الهيكل التفصيلي لموقع شركة **JAZ (Joint Annual Zone to Your Place)**. يهدف المشروع إلى رقمنة قطاع الفعاليات والمعارض عبر توفير منصة ديناميكية تتيح حجز التذاكر، عرض الأجندات، وإدارة برامج التدريب. يعتمد النظام على بنية **Serverless** لضمان التوسعية والأداء.
+## 📄 نظرة عامة على النظام (System Overview)
+منصة **JAZ (Joint Annual Zone to Your Place)** هي نظام حديث ومتكامل تم بناؤه لتسهيل وتبسيط عملية تنظيم الفعاليات والمؤتمرات والمعارض في مختلف القطاعات. يتميز الموقع بواجهة مستخدم زجاجية حديثة (Glassmorphism) تتضمن تأثيرات حركية جذابة (Animations). 
+
+يحتوي النظام على نظامين رئيسيين:
+1. **واجهة تفاعلية للزوار:** لتصفح الفعاليات، التسجيل، قراءة المدونات، الانضمام كشركاء، والتقديم لبرامج التدريب.
+2. **لوحة تحكم متكاملة للمشرفين (Dashboard):** للتحكم الكلي بجميع جوانب الموقع، كإدارة الحجوزات، إضافة البيانات وتعديلها، متابعة الإحصائيات مع رسوم بيانية وتصدير للبيانات بصيغ (PDF / Excel).
 
 ---
 
 ## 🛠️ التقنيات المستخدمة (Tech Stack)
 
-### **Frontend**
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+### **Frontend (واجهة المستخدم)**
+- **البيئة والإطار:** Next.js 15 (App Router), React 19
+- **التصميم والتنسيق:** Tailwind CSS 4, CSS Modules
+- **مكتبات المكونات الجاهزة:** Shadcn UI, Radix UI
+- **الأنميشن والمؤثرات البصرية:** Framer Motion, Three.js, Lucide Animated (لوحات ديناميكية وAurora, Grainient, Magical Text)
+- **مخططات بيانية وإحصائيات:** Recharts, D3-Geo
 
-### **Backend & Infrastructure**
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+### **Backend & Infrastructure (الخلفية والبنية التحتية)**
+- **قاعدة البيانات الأساسية:** Supabase (PostgreSQL)
+- **خدمات التوثيق (Auth):** أنظمة الـ Login/Register والمصادقة الخاصة بـ Supabase
+- **تخزين الملفات (Storage):** Supabase Storage (Buckets for events, avatars, attachments)
+- **أدوات مساعدة:** JSPDF و XLSX لتصدير ملفات الحجوزات.
+- **تعدد اللغات:** نظام داخلي مخصص i18n (Context & Translations) متواجد في مجلد `lib` لدعم العربية والإنجليزية.
 
 ---
 
-## 🗺️ خريطة الموقع (Sitemap)
+## 📊 إحصائيات المشروع والملفات (Project Stats & Files)
+المشروع ضخم ويحتوي مكتبة واسعة من الملفات المخصصة، يقدر عددها بـ **أكثر من 170 ملفاً رئيسياً** (بعيداً عن مجلدات النظام `node_modules` وغيرها):
+- **مجلد `app`**: يحتوي على أكثر من **50 مسار** مقسم بين الموقع المفتوح ولوحة التحكم.
+- **مجلد `components`**: يحتوي على أكثر من **55 مكون (Component)**، مخصصة للمدونات، والصفحة الرئيسية، ولوحة التحكم، ومكتبة طويلة من أزرار Shadcn، وتطبيقات خاصة بحركات الـ UI مثل `aurora.tsx`، `colourful-text.tsx` و `counting-number.tsx`.
+- **مجلد `lib`**: يحتوي على 11 ملفاً تنظيمياً مهماً لإدارة Supabase، وأنظمة إرسال البريد `email.ts`، وقواعد الحقول `form-fields.ts`، والترجمات `i18n`.
+
+---
+
+## 🏗️ هيكلية المشروع (Project Structure)
+شرح مبسط للهياكل الرئيسية داخل النظام:
 
 ```bash
-├── 🏠 Home (الرئيسية)
-├── 🏢 About Us (من نحن)
-├── 📅 Events (الفعاليات والمعارض)
-├── 🎓 Training (التدريب والتطوير) 🚧 [قيد العمل]
-├── 🏭 Sectors (القطاعات)
-├── 📰 Media Center (المدونة)
-├── 📞 Contact Us (اتصل بنا)
-├── 🔐 Registration (تسجيل الدخول/الحجز)
-└── 🛡️ Privacy Policy (السياسة)
-
+📦 ajz 
+ ┣ 📂 app               # جميع مسارات الصفحات الرئيسية ولوحة التحكم 
+ ┃ ┣ 📂 about           # صفحة "من نحن" 
+ ┃ ┣ 📂 admin-login     # تسجيل الدخول الخاص بالمسؤولين 
+ ┃ ┣ 📂 auth            # عمليات المصادقة 
+ ┃ ┣ 📂 blog            # أرشيف وعرض المقالات والأخبار 
+ ┃ ┣ 📂 calendar        # صفحة تقويم الفعاليات 
+ ┃ ┣ 📂 dashboard       # لوحة تحكم الإدارة الشاملة 
+ ┃ ┣ 📂 events          # قائمة الفعاليات وصفحات الحجز الخاصة بها 
+ ┃ ┣ 📂 partners        # برامج الشركاء والمبادرات (JAZ Youth, Corporate) 
+ ┃ ┣ 📂 sectors         # صفحة القطاعات المتاحة مع طلبات تسجيل قطاع 
+ ┃ ┗ ...                # مسارات أخرى 
+ ┣ 📂 components        # المكونات البرمجية المجزأة 
+ ┃ ┣ 📂 dashboard       # البطاقات الإحصائية والرسوم البيانية للإدارة 
+ ┃ ┣ 📂 home            # مكونات الصفحة الرئيسية (الهيرو، الأنيميشن، الفعاليات القادمة) 
+ ┃ ┣ 📂 layout          # التذييل (Footer) والشريط العلوي (Header) 
+ ┃ ┗ 📂 ui              # كل قطع واجهة المستخدم (Buttons, Inputs, Modals, etc) 
+ ┗ 📂 lib               # الأدوات الخدمية المساعدة
+ ┃ ┣ 📂 i18n            # مترجم النظام الداخلي (عربي/إنجليزي)
+ ┃ ┣ 📂 supabase        # توصيفات عملاء الـ Client و Server
+ ┃ ┗ 📜 database.types.ts # نوع البيانات (TypeScript) 
 ```
 
 ---
 
-## ✨ المميزات الرئيسية (Features)
+## 🌐 واجهة المستخدم الرئيسية (Client Side)
 
-| الميزة | الوصف التقني | الحالة |
-| --- | --- | --- |
-| **إدارة الفعاليات** | عرض ديناميكي للمعارض مع تصفية البحث (Filtering). | ✅ |
-| **التسجيل والحجز** | نظام حجز مربوط بجدول `registrations` مع تأكيد فوري. | ✅ |
-| **لوحة تحكم (Admin)** | عمليات CRUD كاملة لإدارة المحتوى والمسجلين. | ✅ |
-| **تحديث لحظي** | استخدام Supabase Realtime للعدادات والإشعارات. | ✅ |
-| **أمان البيانات** | تطبيق سياسات RLS لحماية بيانات المستخدمين. | ✅ |
-| **بوابة التدريب** | عرض الدورات والتسجيل فيها. | ⏳ |
-
----
-
-## 🏠 تفاصيل الصفحات (Page Details)
-
-### 🏠 تفاصيل الصفحة الرئيسية (Home Page Detail)
-
-#### 1. الهيدر (Header)
-* **الشعار:** JAZ Logo.
-* **القائمة الرئيسية:** الرئيسية، من نحن، الفعاليات، القطاعات، التواصل، المدونة، التدريب.
-* **إجراءات:** زر "اتصل بنا"، أيقونة البحث، وتبديل اللغة (AR/EN).
-
-#### 2. القسم الرئيسي (Hero Section)
-* **العنوان:** اسم الشركة.
-* **الوصف:** "نقدم حلولاً متكاملة لتنظيم الفعاليات عبر قطاعات استراتيجية تساهم في نمو الاقتصاد العراقي".
-* **إحصائيات:** (بيانات ديناميكية تُجلب من قاعدة البيانات: عدد المعارض، الزوار).
-* **أزرار (CTA):** "تصفح المعارض القادمة"، "تواصل معنا".
-
-#### 3. الفعاليات القادمة (Upcoming Events)
-يعرض أهم 4 فعاليات (Fetch from `events` table)، تتضمن:
-* صورة (من Supabase Storage)، العنوان، التاريخ، المكان.
-* عداد تنازلي (Real-time).
-
-#### 4. قسم القطاعات (Sectors)
-* **القطاع التجاري والصناعي:** نبذة + زر قراءة المزيد.
-* **القطاع الطبي والصحي:** نبذة + زر قراءة المزيد.
-
-#### 5. التدريب والتطوير
-هذا القسم في قيد الانتظار
+الموقع الأساسي مصمم لجذب الزوار وتوفير طرق تسجيل سهلة:
+1. **الصفحة الرئيسية (Home):**
+   - **Hero Section:** يعرض رسالة الموقع الأساسية بمؤثرات متحركة وأرقام تفاعلية تعكس عدد الزوار والفعاليات.
+   - **الأقسام الأخرى:** نبذة عن الشركة، الفعاليات الأقرب، وقطاعات الشركة بشكل جذاب.
+2. **الفعاليات (Events):**
+   - قوائم بالفعاليات المعروضة باستخدام نظام فلترة ذكي.
+   - إمكانية قراءة التفاصيل ورؤية الجدول الزمني والتسجيل كزائر في الفعالية.
+3. **القطاعات (Sectors):** 
+   - يضم أهم القطاعات (صناعي، طبي...إلخ)، مع نماذج طلب مخصصة لكل قطاع (`sector-registration-form`).
+4. **الشركاء (Partners):**
+   - صفحات تضم فرص الشركات لكي يكونوا شركاء رعاة، وأيضاً مبادرات للشباب.
+5. **التسجيل والمصادقة (Auth):**
+   - أنظمة تأكيد إيميلات (Verify) ودخول مؤمن.
+6. **المركز الإعلامي والمدونة (Blog):**
+   - عرض أحدث النشرات الإعلامية وبطاقات المقالات.
 
 ---
 
-### 📅 صفحات الفعاليات (Events Pages)
-* **قسم الهيدربار (Header)**
-**قسم رئيسي (Main Section)**  يظهر الفالية قادمة خلال فترة اقرب من 15 يوما ( بين قوسين يظهر اقرب فعالية).
-* **صندوق البحث والفلترة:** (Query Supabase DB).
-* **شبكة الفعاليات (Events Grid):** عرض البطاقات.
-* **التفاصيل:** وصف كامل، الأجندة، المتحدثين.
-* **التسجيل:** زر الحجز (Insert into `registrations` table).
+## 🛠️ لوحة تحكم الإدارة (Admin Dashboard)
 
----
-### صفحات القطاعات (Sectors Pages)
-**قسم الهيدربار (Header)**
-**قسم الصفحة راح يحتوي على كل قطاعات (Sectors Grid):** 
-**قسم التفاصيل (Details Section):** 
-#
----
-
-### 🎓 صفحة التدريب والتطوير
-هذا القسم في قيد الانتظار
-
----
-
-### 🛠️ لوحة التحكم (Admin Dashboard)
-توفر لوحة التحكم واجهة متكاملة لإدارة محتوى المنصة والبيانات الحساسة، مع صلاحيات وصول مخصصة.
-
-#### 1. إدارة الفعاليات (Events Management)
-* **إضافة/تعديل/حذف:** التحكم الكامل في بيانات المعارض والفعاليات.
-* **إدارة الوسائط:** رفع الصور والبوسترات مباشرة إلى Supabase Storage.
-* **تفعيل/إيقاف:** التحكم في ظهور الفعالية على الموقع.
-
-#### 2. إدارة المستخدمين والطلبات (Users & Registrations)
-* **قائمة المسجلين:** عرض تفصيلي لجميع الحجوزات في كل فعالية.
-* **تصدير البيانات:** إمكانية تصدير قوائم المسجلين (CSV/Excel).
-* **إدارة الصلاحيات:** تحديد المشرفين (Admins) وتعديل أدوار المستخدمين.
-
-#### 3. إدارة المحتوى (CMS)
-* **المدونة (Media Center):** كتابة ونشر الأخبار والمقالات.
-* **القطاعات:** تحديث بيانات القطاعات الاستراتيجية والصور المرتبطة بها.
-
-#### 4. الإحصائيات (Analytics)
-* **لوحة المؤشرات:** عرض رسوم بيانية لعدد الحجوزات، الزوار، والفعاليات النشطة باستخدام بيانات لحظية من Supabase.
+تمثل المركز العصبي للنظام. محمية بأنظمة RLS عبر Supabase وتوفر صفحات شاملة لكل شيء:
+* **/dashboard/home & stats:** بطاقات متحركة تعرض نسب الحجوزات ونمو النظام بصرياً بفضل مجلد `components/dashboard`.
+* **/dashboard/events:** إضافة جديدة، تعديل، حذف الفعاليات، ورفع الصور الخاصة بها.
+* **/dashboard/registrations:** استعراض كامل لجميع الحجوزات العادية الواردة من قِبل الزوار مع أدوات للفرز أو التصفية.
+* **/dashboard/sector-registrations:** إدارة الحجوزات أو الطلبات العميقة الخاصة بالقطاعات التجارية.
+* **/dashboard/partners:** طلبات الانضمام لقطاع المبادرات والشركاء (JAZ Youth Group).
+* **/dashboard/blog:** منصة لنشر الأخبار والمقالات الجديدة.
+* **/dashboard/links & users:** إدارة لروابط السوشل ميديا الخاصة بالشركة والمستخدمين المنضمين للمنصة.
 
 ---
 
 ## 🔌 بنية قاعدة البيانات (Database Schema)
-
-يعتمد المشروع على **PostgreSQL** المستضافة على Supabase. الجداول الأساسية:
-
-* `users`: 👤 إدارة المستخدمين، الصلاحيات، والملفات الشخصية.
-* `events`: 📅 تفاصيل الفعاليات (Title, Date, Location, Description, ImageURL).
-* `trainings`: 🎓 تفاصيل الدورات التدريبية (المدرب، السعر، المحتوى).
-* `registrations`: 🎟️ ربط المستخدمين بالفعاليات (Foreign Keys -> users, events).
-* `posts`: 📰 مقالات المدونة والأخبار.
-
-> **ملاحظة:** يتم تخزين الصور (Assets) في **Supabase Storage** داخل الـ Buckets: `events-bucket` و `avatars`.
+يعتمد المشروع على نظام `PostgreSQL` قوي الجذور مبني في `Supabase` بإدارة Typescript دقيقة (`database.types.ts`). الجداول المتوقعة والمبنية:
+* `users` / `profiles`: أمان وصلاحيات.
+* `events`: يملك عنوان، تاريخ، صورة كفر، حالة الفعالية.
+* `registrations`: ربط المستخدم مع الـ `event_id`.
+* `sector_registrations`: طلبات مخصصة ببيانات إضافية حسب القطاع.
+* `partners_requests`: لإدارة طلبات الشراكة المتفرعة.
+* `posts`: لبيانات التدوين الخ...
 
 ---
 
-## 🚀 التثبيت والتشغيل (Installation)
-
-للتشغيل محلياً (Locally)، اتبع الخطوات التالية:
+## 🚀 كيفية تشغيل المشروع (Installation & Setup)
 
 1. **استنساخ المستودع (Clone Repo):**
 ```bash
-https://github.com/wbtio/ajz.git
+git clone https://github.com/wbtio/ajz.git
+cd ajz
 ```
 
 2. **تثبيت الحزم (Install Dependencies):**
+يفضل استخدام أحدث نسخة من `npm` أو `bun`. (المنصة تحتوي على ملف `bun.lock` مما يدل على سرعة البناء باستخدام bun).
 ```bash
 npm install
+# أو
+bun install
 ```
 
 3. **إعداد البيئة (Environment Variables):**
-قم بإنشاء ملف `.env.local` وأضف مفاتيح Supabase:
+قم بإنشاء ملف `.env.local`، وضع مفاتيح مشروعك على Subapase فيه:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://tnghigrmyvuqazucpcgg.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_HO59urXt6rPVmr1a4tdLQA_GLc9l3wd
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
-4. **تشغيل السيرفر (Run Server):**
+4. **تشغيل خادم التطوير (Run Development Server):**
+تم تمكين بيئة Turbo في Next.js لسرعة التطوير.
 ```bash
 npm run dev
+# سيفتح السيرفر على http://localhost:3000
 ```
 
 ---
-
-## 💰 التكاليف التقديرية (Estimated Costs)
-
-| الخدمة | الخطة | التكلفة الشهرية | الملاحظات |
-| --- | --- | --- | --- |
-| **Vercel** | Hosting (Pro) | ~$20 | لاستضافة الـ Frontend والسرعة العالية. |
-| **Supabase** | Backend (Pro) | ~$25 | تغطي قاعدة البيانات، Auth، و Storage (تخزين 8GB). |
-
----
-
 <div align="center">
-<sub>تم التحديث بتاريخ: يناير 2026 | حقوق النشر محفوظة © لشركة JAZ (Joint Annual Zone to Your Place)</sub>
+  <sub>تم التحليل والتحديث بواسطة الذكاء الاصطناعي بناءً على بنية المشروع الحالية | حقوق النشر محفوظة © JAZ</sub>
 </div>
