@@ -7,7 +7,9 @@ import { motion } from 'framer-motion'
 import { Container } from '@/components/ui/container'
 import { Calendar, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
-import type { Event } from '@/lib/database.types'
+import type { Tables } from '@/lib/database.types'
+
+type Event = Tables<'events'>
 
 interface CalendarViewProps {
   events: Event[]

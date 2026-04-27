@@ -7,7 +7,9 @@ import { Card } from '@/components/ui/card'
 import { formatDate } from '@/lib/utils'
 import { CountdownTimer } from './countdown-timer'
 import { useI18n } from '@/lib/i18n'
-import type { Event } from '@/lib/database.types'
+import type { Tables } from '@/lib/database.types'
+
+type Event = Tables<'events'>
 
 interface EventCardProps {
   event: Event
