@@ -672,6 +672,100 @@ export type Database = {
           },
         ]
       }
+      partner_categories: {
+        Row: {
+          id: string
+          title_ar: string
+          title_en: string
+          description_ar: string | null
+          description_en: string | null
+          icon: string | null
+          sort_order: number
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title_ar: string
+          title_en: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title_ar?: string
+          title_en?: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      partner_opportunities: {
+        Row: {
+          id: string
+          category_id: string | null
+          title_ar: string
+          title_en: string
+          description_ar: string | null
+          description_en: string | null
+          requirements_ar: string[] | null
+          requirements_en: string[] | null
+          benefits_ar: string[] | null
+          benefits_en: string[] | null
+          icon: string | null
+          sort_order: number
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          category_id?: string | null
+          title_ar: string
+          title_en: string
+          description_ar?: string | null
+          description_en?: string | null
+          requirements_ar?: string[] | null
+          requirements_en?: string[] | null
+          benefits_ar?: string[] | null
+          benefits_en?: string[] | null
+          icon?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          category_id?: string | null
+          title_ar?: string
+          title_en?: string
+          description_ar?: string | null
+          requirements_ar?: string[] | null
+          requirements_en?: string[] | null
+          benefits_ar?: string[] | null
+          benefits_en?: string[] | null
+          icon?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_opportunities_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "partner_categories"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       partner_submissions: {
         Row: {
           company_name: string
@@ -726,6 +820,126 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      link_categories: {
+        Row: {
+          id: string
+          title_ar: string
+          title_en: string
+          description_ar: string | null
+          description_en: string | null
+          icon: string | null
+          color: string
+          slug: string
+          sort_order: number
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title_ar: string
+          title_en: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          color?: string
+          slug: string
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title_ar?: string
+          title_en?: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          color?: string
+          slug?: string
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      links: {
+        Row: {
+          id: string
+          category_id: string | null
+          country_id: string | null
+          title_ar: string
+          title_en: string
+          description_ar: string | null
+          description_en: string | null
+          url: string
+          link_type: string
+          organization_type: string | null
+          industry: string | null
+          home_country: string | null
+          icon: string | null
+          color: string | null
+          sort_order: number
+          is_active: boolean
+          is_verified: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          category_id?: string | null
+          country_id?: string | null
+          title_ar: string
+          title_en: string
+          description_ar?: string | null
+          description_en?: string | null
+          url: string
+          link_type?: string
+          organization_type?: string | null
+          industry?: string | null
+          home_country?: string | null
+          icon?: string | null
+          color?: string | null
+          sort_order?: number
+          is_active?: boolean
+          is_verified?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          category_id?: string | null
+          country_id?: string | null
+          title_ar?: string
+          title_en?: string
+          description_ar?: string | null
+          description_en?: string | null
+          url?: string
+          link_type?: string
+          organization_type?: string | null
+          industry?: string | null
+          home_country?: string | null
+          icon?: string | null
+          color?: string | null
+          sort_order?: number
+          is_active?: boolean
+          is_verified?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "links_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "link_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "links_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          }
         ]
       }
       posts: {
@@ -967,10 +1181,12 @@ export type Database = {
         Row: {
           additional_info: Json | null
           created_at: string | null
+          data: Json | null
           email: string
           full_name: string
           id: string
           phone: string | null
+          sector_id: string | null
           sector_name: string
           status: string | null
           updated_at: string | null
@@ -979,10 +1195,12 @@ export type Database = {
         Insert: {
           additional_info?: Json | null
           created_at?: string | null
+          data?: Json | null
           email: string
           full_name: string
           id?: string
           phone?: string | null
+          sector_id?: string | null
           sector_name: string
           status?: string | null
           updated_at?: string | null
@@ -991,10 +1209,12 @@ export type Database = {
         Update: {
           additional_info?: Json | null
           created_at?: string | null
+          data?: Json | null
           email?: string
           full_name?: string
           id?: string
           phone?: string | null
+          sector_id?: string | null
           sector_name?: string
           status?: string | null
           updated_at?: string | null
@@ -1020,8 +1240,14 @@ export type Database = {
           icon: string | null
           id: string
           is_active: boolean | null
+          is_featured: boolean | null
+          long_description: string | null
+          long_description_ar: string | null
+          name: string
           name_ar: string
           name_en: string
+          registration_config: Json | null
+          slug: string
           sort_order: number | null
           updated_at: string | null
         }
@@ -1034,8 +1260,14 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          is_featured?: boolean | null
+          long_description?: string | null
+          long_description_ar?: string | null
+          name?: string
           name_ar: string
           name_en: string
+          registration_config?: Json | null
+          slug: string
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -1048,8 +1280,14 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          is_featured?: boolean | null
+          long_description?: string | null
+          long_description_ar?: string | null
+          name?: string
           name_ar?: string
           name_en?: string
+          registration_config?: Json | null
+          slug?: string
           sort_order?: number | null
           updated_at?: string | null
         }
