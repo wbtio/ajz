@@ -5,6 +5,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Tracker } from "@/components/analytics/tracker";
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
@@ -48,6 +49,7 @@ export default async function RootLayout({
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body className={`${ibmPlexSansArabic.variable} ${plusJakartaSans.variable} font-sans antialiased bg-white text-gray-900`}>
         <Providers>
+          <Tracker />
           <Header isAdmin={isAdmin} />
           <main className="min-h-screen">{children}</main>
           <Footer />

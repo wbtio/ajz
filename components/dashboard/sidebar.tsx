@@ -17,7 +17,9 @@ import {
     BookOpen,
     Link as LinkIcon,
     ChevronLeft,
-    ClipboardList
+    ClipboardList,
+    Search,
+    BarChart3
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { User } from '@/lib/database.types'
@@ -43,6 +45,8 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         { name: t.dashboard.users, href: '/dashboard/users', icon: Users },
         { name: t.dashboard.registrations, href: '/dashboard/registrations', icon: FileText },
         { name: t.dashboard.sectorRegistrations, href: '/dashboard/sector-registrations', icon: ClipboardList },
+        { name: 'Event Discovery', href: '/dashboard/event-discovery/sessions', icon: Search },
+        { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
         { name: t.dashboard.settings, href: '/dashboard/settings', icon: Settings },
     ]
 

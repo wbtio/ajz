@@ -7,241 +7,138 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   public: {
     Tables: {
-      contact_messages: {
+      analytics_events: {
         Row: {
-          id: string
-          full_name: string
-          email: string
-          phone: string | null
-          subject: string | null
-          category: string | null
-          related_id: string | null
-          related_title: string | null
-          message: string
-          status: string | null
           created_at: string | null
-          updated_at: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          path: string
+          session_id: string
+          url: string | null
+          user_id: string | null
         }
         Insert: {
-          id?: string
-          full_name: string
-          email: string
-          phone?: string | null
-          subject?: string | null
-          category?: string | null
-          related_id?: string | null
-          related_title?: string | null
-          message: string
-          status?: string | null
           created_at?: string | null
-          updated_at?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          path: string
+          session_id: string
+          url?: string | null
+          user_id?: string | null
         }
         Update: {
-          id?: string
-          full_name?: string
-          email?: string
-          phone?: string | null
-          subject?: string | null
-          category?: string | null
-          related_id?: string | null
-          related_title?: string | null
-          message?: string
-          status?: string | null
           created_at?: string | null
-          updated_at?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          path?: string
+          session_id?: string
+          url?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
-      countries: {
+      conference_sections: {
         Row: {
-          id: string
-          name_ar: string
-          name_en: string
-          code: string
-          flag_emoji: string | null
-          region: string | null
-          sort_order: number | null
-          is_active: boolean | null
+          color: string | null
           created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          name_ar: string
-          name_en: string
-          code: string
-          flag_emoji?: string | null
-          region?: string | null
-          sort_order?: number | null
-          is_active?: boolean | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          name_ar?: string
-          name_en?: string
-          code?: string
-          flag_emoji?: string | null
-          region?: string | null
-          sort_order?: number | null
-          is_active?: boolean | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      events: {
-        Row: {
-          capacity: number | null
-          created_at: string | null
-          date: string
-          description: string | null
           description_ar: string | null
-          end_date: string | null
-          event_type: string | null
-          featured: boolean | null
+          description_en: string | null
+          event_id: string
+          icon: string | null
           id: string
-          image_url: string | null
-          location: string
-          location_ar: string | null
-          price: number | null
-          show_price: boolean | null
-          sector: string | null
-          sector_id: string | null
-          status: string | null
-          title: string
-          title_ar: string | null
-          updated_at: string | null
+          is_active: boolean | null
           registration_config: Json | null
-          format: Json | null
-          awards: Json | null
-          mentorship: string | null
-          mentorship_ar: string | null
-          coordinators: Json | null
-          conference_config: Json | null
-          country: string | null
-          country_ar: string | null
-          sub_sector: string | null
-          sub_sector_ar: string | null
-          html_content_url: string | null
-          html_content: string | null
+          slug: string
+          sort_order: number | null
+          title_ar: string
+          title_en: string
+          updated_at: string | null
         }
         Insert: {
-          capacity?: number | null
+          color?: string | null
           created_at?: string | null
-          date: string
-          description?: string | null
           description_ar?: string | null
-          end_date?: string | null
-          event_type?: string | null
-          featured?: boolean | null
+          description_en?: string | null
+          event_id: string
+          icon?: string | null
           id?: string
-          image_url?: string | null
-          location: string
-          location_ar?: string | null
-          price?: number | null
-          show_price?: boolean | null
-          sector?: string | null
-          sector_id?: string | null
-          status?: string | null
-          title: string
-          title_ar?: string | null
-          updated_at?: string | null
+          is_active?: boolean | null
           registration_config?: Json | null
-          format?: Json | null
-          awards?: Json | null
-          mentorship?: string | null
-          mentorship_ar?: string | null
-          coordinators?: Json | null
-          conference_config?: Json | null
-          country?: string | null
-          country_ar?: string | null
-          sub_sector?: string | null
-          sub_sector_ar?: string | null
-          html_content_url?: string | null
-          html_content?: string | null
+          slug: string
+          sort_order?: number | null
+          title_ar: string
+          title_en: string
+          updated_at?: string | null
         }
         Update: {
-          capacity?: number | null
+          color?: string | null
           created_at?: string | null
-          date?: string
-          description?: string | null
           description_ar?: string | null
-          end_date?: string | null
-          event_type?: string | null
-          featured?: boolean | null
+          description_en?: string | null
+          event_id?: string
+          icon?: string | null
           id?: string
-          image_url?: string | null
-          location?: string
-          location_ar?: string | null
-          price?: number | null
-          show_price?: boolean | null
-          sector?: string | null
-          sector_id?: string | null
-          status?: string | null
-          title?: string
-          title_ar?: string | null
-          updated_at?: string | null
+          is_active?: boolean | null
           registration_config?: Json | null
-          format?: Json | null
-          awards?: Json | null
-          mentorship?: string | null
-          mentorship_ar?: string | null
-          coordinators?: Json | null
-          conference_config?: Json | null
-          country?: string | null
-          country_ar?: string | null
-          sub_sector?: string | null
-          sub_sector_ar?: string | null
-          html_content_url?: string | null
-          html_content?: string | null
+          slug?: string
+          sort_order?: number | null
+          title_ar?: string
+          title_en?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "events_sector_id_fkey"
-            columns: ["sector_id"]
+            foreignKeyName: "conference_sections_event_id_fkey"
+            columns: ["event_id"]
             isOneToOne: false
-            referencedRelation: "sectors"
+            referencedRelation: "events"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       conference_submissions: {
         Row: {
-          id: string
+          created_at: string | null
+          data: Json | null
           event_id: string
+          id: string
           section_id: string | null
           section_slug: string
-          user_id: string | null
-          data: Json | null
           status: string | null
-          created_at: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
-          id?: string
+          created_at?: string | null
+          data?: Json | null
           event_id: string
+          id?: string
           section_id?: string | null
           section_slug?: string
-          user_id?: string | null
-          data?: Json | null
           status?: string | null
-          created_at?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
-          id?: string
+          created_at?: string | null
+          data?: Json | null
           event_id?: string
+          id?: string
           section_id?: string | null
           section_slug?: string
-          user_id?: string | null
-          data?: Json | null
           status?: string | null
-          created_at?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -252,125 +149,553 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conference_submissions_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "conference_sections"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "conference_submissions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
-      link_categories: {
+      contact_messages: {
         Row: {
-          id: string
-          title_ar: string
-          title_en: string
-          description_ar: string | null
-          description_en: string | null
-          icon: string | null
-          color: string | null
-          slug: string
-          sort_order: number | null
-          is_active: boolean | null
+          category: string | null
           created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          message: string
+          phone: string | null
+          related_id: string | null
+          related_title: string | null
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          message: string
+          phone?: string | null
+          related_id?: string | null
+          related_title?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          message?: string
+          phone?: string | null
+          related_id?: string | null
+          related_title?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      countries: {
+        Row: {
+          code: string
+          created_at: string | null
+          flag_emoji: string | null
+          id: string
+          is_active: boolean | null
+          name_ar: string
+          name_en: string
+          region: string | null
+          sort_order: number | null
           updated_at: string | null
         }
         Insert: {
-          id?: string
-          title_ar: string
-          title_en: string
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
-          color?: string | null
-          slug: string
-          sort_order?: number | null
-          is_active?: boolean | null
+          code: string
           created_at?: string | null
+          flag_emoji?: string | null
+          id?: string
+          is_active?: boolean | null
+          name_ar: string
+          name_en: string
+          region?: string | null
+          sort_order?: number | null
           updated_at?: string | null
         }
         Update: {
+          code?: string
+          created_at?: string | null
+          flag_emoji?: string | null
           id?: string
-          title_ar?: string
-          title_en?: string
+          is_active?: boolean | null
+          name_ar?: string
+          name_en?: string
+          region?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      daily_logs: {
+        Row: {
+          ai_feedback: string | null
+          ai_score: number | null
+          created_at: string | null
+          goal_id: string | null
+          id: string
+          user_input: string | null
+        }
+        Insert: {
+          ai_feedback?: string | null
+          ai_score?: number | null
+          created_at?: string | null
+          goal_id?: string | null
+          id?: string
+          user_input?: string | null
+        }
+        Update: {
+          ai_feedback?: string | null
+          ai_score?: number | null
+          created_at?: string | null
+          goal_id?: string | null
+          id?: string
+          user_input?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_logs_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_cache: {
+        Row: {
+          ai_relevance_score: number | null
+          ai_sector: string | null
+          ai_summary: string | null
+          clean_text_for_ai: string | null
+          created_at: string | null
+          description: string | null
+          duplicate_of: string | null
+          event_id: string | null
+          extracted_date: string | null
+          extracted_email: string | null
+          fingerprint: string | null
+          fingerprint_source: string | null
+          has_clear_organizer: boolean | null
+          has_contact_info: boolean | null
+          id: string
+          official_url: string | null
+          organizer_name: string | null
+          recommended_action: string | null
+          review_notes: string | null
+          review_status: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          search_session_id: number | null
+          status: string | null
+          title: string | null
+        }
+        Insert: {
+          ai_relevance_score?: number | null
+          ai_sector?: string | null
+          ai_summary?: string | null
+          clean_text_for_ai?: string | null
+          created_at?: string | null
+          description?: string | null
+          duplicate_of?: string | null
+          event_id?: string | null
+          extracted_date?: string | null
+          extracted_email?: string | null
+          fingerprint?: string | null
+          fingerprint_source?: string | null
+          has_clear_organizer?: boolean | null
+          has_contact_info?: boolean | null
+          id?: string
+          official_url?: string | null
+          organizer_name?: string | null
+          recommended_action?: string | null
+          review_notes?: string | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          search_session_id?: number | null
+          status?: string | null
+          title?: string | null
+        }
+        Update: {
+          ai_relevance_score?: number | null
+          ai_sector?: string | null
+          ai_summary?: string | null
+          clean_text_for_ai?: string | null
+          created_at?: string | null
+          description?: string | null
+          duplicate_of?: string | null
+          event_id?: string | null
+          extracted_date?: string | null
+          extracted_email?: string | null
+          fingerprint?: string | null
+          fingerprint_source?: string | null
+          has_clear_organizer?: boolean | null
+          has_contact_info?: boolean | null
+          id?: string
+          official_url?: string | null
+          organizer_name?: string | null
+          recommended_action?: string | null
+          review_notes?: string | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          search_session_id?: number | null
+          status?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_cache_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_cache_search_session_id_fkey"
+            columns: ["search_session_id"]
+            isOneToOne: false
+            referencedRelation: "search_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          awards: Json | null
+          capacity: number | null
+          conference_config: Json | null
+          coordinators: Json | null
+          country: string | null
+          country_ar: string | null
+          created_at: string | null
+          date: string
+          description: string | null
+          description_ar: string | null
+          end_date: string | null
+          event_type: string | null
+          featured: boolean | null
+          format: Json | null
+          html_content: string | null
+          html_content_url: string | null
+          id: string
+          image_url: string | null
+          location: string
+          location_ar: string | null
+          mentorship: string | null
+          mentorship_ar: string | null
+          price: number | null
+          registration_config: Json | null
+          sector: string | null
+          sector_id: string | null
+          show_price: boolean | null
+          status: string | null
+          sub_sector: string | null
+          sub_sector_ar: string | null
+          title: string
+          title_ar: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          awards?: Json | null
+          capacity?: number | null
+          conference_config?: Json | null
+          coordinators?: Json | null
+          country?: string | null
+          country_ar?: string | null
+          created_at?: string | null
+          date: string
+          description?: string | null
+          description_ar?: string | null
+          end_date?: string | null
+          event_type?: string | null
+          featured?: boolean | null
+          format?: Json | null
+          html_content?: string | null
+          html_content_url?: string | null
+          id?: string
+          image_url?: string | null
+          location: string
+          location_ar?: string | null
+          mentorship?: string | null
+          mentorship_ar?: string | null
+          price?: number | null
+          registration_config?: Json | null
+          sector?: string | null
+          sector_id?: string | null
+          show_price?: boolean | null
+          status?: string | null
+          sub_sector?: string | null
+          sub_sector_ar?: string | null
+          title: string
+          title_ar?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          awards?: Json | null
+          capacity?: number | null
+          conference_config?: Json | null
+          coordinators?: Json | null
+          country?: string | null
+          country_ar?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          description_ar?: string | null
+          end_date?: string | null
+          event_type?: string | null
+          featured?: boolean | null
+          format?: Json | null
+          html_content?: string | null
+          html_content_url?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string
+          location_ar?: string | null
+          mentorship?: string | null
+          mentorship_ar?: string | null
+          price?: number | null
+          registration_config?: Json | null
+          sector?: string | null
+          sector_id?: string | null
+          show_price?: boolean | null
+          status?: string | null
+          sub_sector?: string | null
+          sub_sector_ar?: string | null
+          title?: string
+          title_ar?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fingerprints: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          fingerprint: string
+          fingerprint_source: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          fingerprint: string
+          fingerprint_source?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          fingerprint?: string
+          fingerprint_source?: string | null
+        }
+        Relationships: []
+      }
+      goals: {
+        Row: {
+          created_at: string | null
+          current_points: number | null
+          id: string
+          status: string | null
+          target_points: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_points?: number | null
+          id?: string
+          status?: string | null
+          target_points?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          current_points?: number | null
+          id?: string
+          status?: string | null
+          target_points?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
+      imported_events: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          end_date: string | null
+          event_name: string
+          event_type: string | null
+          id: string
+          sector: string | null
+          source_file_name: string | null
+          start_date: string | null
+          venue: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          end_date?: string | null
+          event_name: string
+          event_type?: string | null
+          id?: string
+          sector?: string | null
+          source_file_name?: string | null
+          start_date?: string | null
+          venue?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          end_date?: string | null
+          event_name?: string
+          event_type?: string | null
+          id?: string
+          sector?: string | null
+          source_file_name?: string | null
+          start_date?: string | null
+          venue?: string | null
+        }
+        Relationships: []
+      }
+      link_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description_ar: string | null
+          description_en: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          slug: string
+          sort_order: number | null
+          title_ar: string
+          title_en: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
           icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          slug: string
+          sort_order?: number | null
+          title_ar: string
+          title_en: string
+          updated_at?: string | null
+        }
+        Update: {
           color?: string | null
+          created_at?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
           slug?: string
           sort_order?: number | null
-          is_active?: boolean | null
-          created_at?: string | null
+          title_ar?: string
+          title_en?: string
           updated_at?: string | null
         }
         Relationships: []
       }
       links: {
         Row: {
-          id: string
           category_id: string | null
+          color: string | null
           country_id: string | null
-          title_ar: string
-          title_en: string
+          created_at: string | null
           description_ar: string | null
           description_en: string | null
-          url: string
-          link_type: string | null
-          organization_type: string | null
-          industry: string | null
           home_country: string | null
           icon: string | null
-          color: string | null
-          sort_order: number | null
+          id: string
+          industry: string | null
           is_active: boolean | null
           is_verified: boolean | null
           last_checked_at: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          category_id?: string | null
-          country_id?: string | null
+          link_type: string | null
+          organization_type: string | null
+          sort_order: number | null
           title_ar: string
           title_en: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          category_id?: string | null
+          color?: string | null
+          country_id?: string | null
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
-          url: string
-          link_type?: string | null
-          organization_type?: string | null
-          industry?: string | null
           home_country?: string | null
           icon?: string | null
-          color?: string | null
-          sort_order?: number | null
+          id?: string
+          industry?: string | null
           is_active?: boolean | null
           is_verified?: boolean | null
           last_checked_at?: string | null
-          created_at?: string | null
+          link_type?: string | null
+          organization_type?: string | null
+          sort_order?: number | null
+          title_ar: string
+          title_en: string
           updated_at?: string | null
+          url: string
         }
         Update: {
-          id?: string
           category_id?: string | null
+          color?: string | null
           country_id?: string | null
-          title_ar?: string
-          title_en?: string
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
-          url?: string
-          link_type?: string | null
-          organization_type?: string | null
-          industry?: string | null
           home_country?: string | null
           icon?: string | null
-          color?: string | null
-          sort_order?: number | null
+          id?: string
+          industry?: string | null
           is_active?: boolean | null
           is_verified?: boolean | null
           last_checked_at?: string | null
-          created_at?: string | null
+          link_type?: string | null
+          organization_type?: string | null
+          sort_order?: number | null
+          title_ar?: string
+          title_en?: string
           updated_at?: string | null
+          url?: string
         }
         Relationships: [
           {
@@ -386,92 +711,98 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "countries"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       partner_categories: {
         Row: {
-          id: string
-          title_ar: string
-          title_en: string
+          color: string | null
+          contact_email: string | null
+          created_at: string | null
           description_ar: string | null
           description_en: string | null
           icon: string | null
-          color: string | null
+          id: string
+          registration_config: Json | null
           slug: string
           sort_order: number | null
-          created_at: string | null
+          title_ar: string
+          title_en: string
           updated_at: string | null
         }
         Insert: {
-          id?: string
-          title_ar: string
-          title_en: string
+          color?: string | null
+          contact_email?: string | null
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
           icon?: string | null
-          color?: string | null
+          id?: string
+          registration_config?: Json | null
           slug: string
           sort_order?: number | null
-          created_at?: string | null
+          title_ar: string
+          title_en: string
           updated_at?: string | null
         }
         Update: {
-          id?: string
-          title_ar?: string
-          title_en?: string
+          color?: string | null
+          contact_email?: string | null
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
           icon?: string | null
-          color?: string | null
+          id?: string
+          registration_config?: Json | null
           slug?: string
           sort_order?: number | null
-          created_at?: string | null
+          title_ar?: string
+          title_en?: string
           updated_at?: string | null
         }
         Relationships: []
       }
       partner_opportunities: {
         Row: {
-          id: string
-          category_id: string
-          title_ar: string
-          title_en: string
+          category_id: string | null
+          color: string | null
+          created_at: string | null
           description_ar: string | null
           description_en: string | null
           icon: string | null
-          color: string | null
+          id: string
           registration_config: Json | null
           sort_order: number | null
-          created_at: string | null
+          title_ar: string
+          title_en: string
           updated_at: string | null
         }
         Insert: {
-          id?: string
-          category_id: string
-          title_ar: string
-          title_en: string
+          category_id?: string | null
+          color?: string | null
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
           icon?: string | null
-          color?: string | null
+          id?: string
           registration_config?: Json | null
           sort_order?: number | null
-          created_at?: string | null
+          title_ar: string
+          title_en: string
           updated_at?: string | null
         }
         Update: {
-          id?: string
-          category_id?: string
-          title_ar?: string
-          title_en?: string
+          category_id?: string | null
+          color?: string | null
+          created_at?: string | null
           description_ar?: string | null
           description_en?: string | null
           icon?: string | null
-          color?: string | null
+          id?: string
           registration_config?: Json | null
           sort_order?: number | null
-          created_at?: string | null
+          title_ar?: string
+          title_en?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -481,38 +812,48 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "partner_categories"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       partner_submissions: {
         Row: {
-          id: string
-          opportunity_id: string
-          user_id: string | null
-          data: Json | null
-          status: string | null
+          category_id: string | null
           created_at: string | null
+          data: Json | null
+          id: string
+          opportunity_id: string | null
+          status: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
-          id?: string
-          opportunity_id: string
-          user_id?: string | null
-          data?: Json | null
-          status?: string | null
+          category_id?: string | null
           created_at?: string | null
+          data?: Json | null
+          id?: string
+          opportunity_id?: string | null
+          status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
-          id?: string
-          opportunity_id?: string
-          user_id?: string | null
-          data?: Json | null
-          status?: string | null
+          category_id?: string | null
           created_at?: string | null
+          data?: Json | null
+          id?: string
+          opportunity_id?: string | null
+          status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "partner_submissions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "partner_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "partner_submissions_opportunity_id_fkey"
             columns: ["opportunity_id"]
@@ -526,7 +867,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       posts: {
@@ -614,37 +955,46 @@ export type Database = {
       }
       registrations: {
         Row: {
+          additional_data: Json | null
           created_at: string | null
+          email: string | null
           event_id: string
+          form_data: Json | null
+          full_name: string | null
           id: string
           notes: string | null
           status: string | null
           ticket_number: string | null
-          additional_data: Json | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          additional_data?: Json | null
           created_at?: string | null
+          email?: string | null
           event_id: string
+          form_data?: Json | null
+          full_name?: string | null
           id?: string
           notes?: string | null
           status?: string | null
           ticket_number?: string | null
-          additional_data?: Json | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          additional_data?: Json | null
           created_at?: string | null
+          email?: string | null
           event_id?: string
+          form_data?: Json | null
+          full_name?: string | null
           id?: string
           notes?: string | null
           status?: string | null
           ticket_number?: string | null
-          additional_data?: Json | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -663,42 +1013,134 @@ export type Database = {
           },
         ]
       }
-      sector_registrations: {
+      review_actions: {
         Row: {
-          id: string
-          sector_id: string
-          user_id: string | null
-          full_name: string | null
-          email: string | null
-          phone: string | null
-          data: Json | null
-          status: string | null
+          action: string
           created_at: string | null
-          updated_at: string | null
+          event_cache_id: string | null
+          id: string
+          notes: string | null
+          performed_by: string | null
         }
         Insert: {
-          id?: string
-          sector_id: string
-          user_id?: string | null
-          full_name?: string | null
-          email?: string | null
-          phone?: string | null
-          data?: Json | null
-          status?: string | null
+          action: string
           created_at?: string | null
-          updated_at?: string | null
+          event_cache_id?: string | null
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
         }
         Update: {
-          id?: string
-          sector_id?: string
-          user_id?: string | null
-          full_name?: string | null
-          email?: string | null
-          phone?: string | null
-          data?: Json | null
-          status?: string | null
+          action?: string
           created_at?: string | null
+          event_cache_id?: string | null
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_actions_event_cache_id_fkey"
+            columns: ["event_cache_id"]
+            isOneToOne: false
+            referencedRelation: "event_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_actions_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      search_sessions: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          date_range_end: string | null
+          date_range_start: string | null
+          event_type: string | null
+          id: number
+          keywords: string | null
+          sector: string | null
+          status: string | null
+          total_events_found: number | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_range_end?: string | null
+          date_range_start?: string | null
+          event_type?: string | null
+          id?: number
+          keywords?: string | null
+          sector?: string | null
+          status?: string | null
+          total_events_found?: number | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_range_end?: string | null
+          date_range_start?: string | null
+          event_type?: string | null
+          id?: number
+          keywords?: string | null
+          sector?: string | null
+          status?: string | null
+          total_events_found?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_sessions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sector_registrations: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          sector_id: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          sector_id?: string | null
+          status?: string | null
           updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          sector_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -714,69 +1156,109 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       sectors: {
         Row: {
           color: string | null
+          cover_image: string | null
           created_at: string | null
           description: string | null
           description_ar: string | null
-          long_description: string | null
-          long_description_ar: string | null
           icon: string | null
           id: string
           image_url: string | null
-          cover_image: string | null
           is_active: boolean | null
           is_featured: boolean | null
+          long_description: string | null
+          long_description_ar: string | null
           name: string
           name_ar: string
+          registration_config: Json | null
           slug: string
           sort_order: number | null
           updated_at: string | null
-          registration_config: Json | null
         }
         Insert: {
           color?: string | null
+          cover_image?: string | null
           created_at?: string | null
           description?: string | null
           description_ar?: string | null
-          long_description?: string | null
-          long_description_ar?: string | null
           icon?: string | null
           id?: string
           image_url?: string | null
-          cover_image?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          long_description?: string | null
+          long_description_ar?: string | null
           name: string
           name_ar: string
+          registration_config?: Json | null
           slug: string
           sort_order?: number | null
           updated_at?: string | null
         }
         Update: {
           color?: string | null
+          cover_image?: string | null
           created_at?: string | null
           description?: string | null
           description_ar?: string | null
-          long_description?: string | null
-          long_description_ar?: string | null
           icon?: string | null
           id?: string
           image_url?: string | null
-          cover_image?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          long_description?: string | null
+          long_description_ar?: string | null
           name?: string
           name_ar?: string
+          registration_config?: Json | null
           slug?: string
           sort_order?: number | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      sub_layers: {
+        Row: {
+          completed_count: number | null
+          created_at: string | null
+          frequency: string | null
+          goal_id: string | null
+          id: string
+          importance_weight: number | null
+          task_description: string
+        }
+        Insert: {
+          completed_count?: number | null
+          created_at?: string | null
+          frequency?: string | null
+          goal_id?: string | null
+          id?: string
+          importance_weight?: number | null
+          task_description: string
+        }
+        Update: {
+          completed_count?: number | null
+          created_at?: string | null
+          frequency?: string | null
+          goal_id?: string | null
+          id?: string
+          importance_weight?: number | null
+          task_description?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_layers_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trainings: {
         Row: {
@@ -879,7 +1361,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
@@ -890,25 +1372,33 @@ export type Database = {
   }
 }
 
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-        Database["public"]["Views"])
-    ? (Database["public"]["Tables"] &
-        Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -916,20 +1406,24 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -937,29 +1431,78 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
       : never
     : never
 
-export type Event = Tables<"events">
-export type Post = Tables<"posts">
-export type Registration = Tables<"registrations">
-export type Sector = Tables<"sectors">
-export type Training = Tables<"trainings">
-export type User = Tables<"users">
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
+
+// --- Custom Type Aliases ---
+export type Event = Database['public']['Tables']['events']['Row']
+export type User = Database['public']['Tables']['users']['Row']
+export type Sector = Database['public']['Tables']['sectors']['Row']
+export type Post = Database['public']['Tables']['posts']['Row']
+export type LinkItem = Database['public']['Tables']['links']['Row']
+export type LinkCategory = Database['public']['Tables']['link_categories']['Row']
+export type PartnerOpportunity = Database['public']['Tables']['partner_opportunities']['Row']
+export type PartnerCategory = Database['public']['Tables']['partner_categories']['Row']
+export type Training = Database['public']['Tables']['trainings']['Row']
+export type Registration = Database['public']['Tables']['registrations']['Row']

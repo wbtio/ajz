@@ -1,0 +1,721 @@
+{
+  "name": "JAZ Event Discovery & Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jaz-event-search",
+        "options": {}
+      },
+      "id": "3da6eba6-0998-478f-9f16-10f1f67dc1bb",
+      "name": "JAZ Search Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        592
+      ],
+      "webhookId": "dae7161d-c7e0-429f-8c8f-d262d6b75f6d"
+    },
+    {
+      "parameters": {
+        "tableId": "search_sessions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sector",
+              "fieldValue": "={{ $json.body.sector }}"
+            },
+            {
+              "fieldId": "country",
+              "fieldValue": "={{ $json.body.country }}"
+            },
+            {
+              "fieldId": "date_range_start",
+              "fieldValue": "={{ $json.body.dateRange.start }}"
+            },
+            {
+              "fieldId": "date_range_end",
+              "fieldValue": "={{ $json.body.dateRange.end }}"
+            },
+            {
+              "fieldId": "event_type",
+              "fieldValue": "={{ $json.body.eventType }}"
+            },
+            {
+              "fieldId": "keywords",
+              "fieldValue": "={{ $json.body.keywords }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "processing"
+            }
+          ]
+        }
+      },
+      "id": "d24f2aaa-7109-4e42-9f25-6714fb8f4107",
+      "name": "Create Search Session",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        464,
+        592
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "85SaDPruK4OzCy5q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.eventbriteapi.com/v3/events/search/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $(\"JAZ Search Webhook\").item.json.body.keywords }}"
+            },
+            {
+              "name": "location.address",
+              "value": "={{ $(\"JAZ Search Webhook\").item.json.body.country }}"
+            },
+            {
+              "name": "start_date.range_start",
+              "value": "={{ $(\"JAZ Search Webhook\").item.json.body.dateRange.start }}"
+            },
+            {
+              "name": "start_date.range_end",
+              "value": "={{ $(\"JAZ Search Webhook\").item.json.body.dateRange.end }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "02a0801a-4761-4aa7-814b-d264dc912aa4",
+      "name": "Search Events API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        592
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "event_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "event_name",
+              "value": "={{ $json.name.text }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "event_url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "search_session_id",
+              "value": "={{ $(\"Create Search Session\").item.json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "164d4a9a-1f18-4846-9753-f31e03994e89",
+      "name": "Normalize Event Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "processed_events",
+        "options": {}
+      },
+      "id": "af46e87a-49f1-4298-9b5f-ecda15c3d1d6",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "search_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $(\"Create Search Session\").item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "completed"
+            },
+            {
+              "fieldId": "total_events_found",
+              "fieldValue": "={{ $json.processed_events.length }}"
+            }
+          ]
+        }
+      },
+      "id": "8b32dca7-ac5d-4f5d-aa28-4d79e1adb33c",
+      "name": "Update Search Session Complete",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "85SaDPruK4OzCy5q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "239d46fa-7b25-461a-8fa5-0a3a77c0ce8f",
+      "name": "Wait 3 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        592
+      ],
+      "webhookId": "cdd80cae-abdb-468d-bea5-be3cab7a0660"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.event_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "html_content"
+            }
+          }
+        }
+      },
+      "id": "cbc99d66-e0c3-409b-a8ba-8249cc25e2f0",
+      "name": "Fetch Event Page HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Extract structured data from HTML\nconst html = $input.item.json.html_content || '';\n\n// Simple text extraction (remove HTML tags)\nconst cleanText = html\n  .replace(/<script[^>]*>.*?<\\/script>/gi, '')\n  .replace(/<style[^>]*>.*?<\\/style>/gi, '')\n  .replace(/<[^>]+>/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// Extract key information using regex patterns\nconst titleMatch = html.match(/<h1[^>]*>([^<]+)<\\/h1>/i);\nconst emailMatch = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9_-]+)/);\nconst dateMatch = html.match(/\\b(\\d{4}-\\d{2}-\\d{2}|\\d{1,2}\\/\\d{1,2}\\/\\d{4})\\b/);\n\n// Extract organizer info\nconst organizerMatch = html.match(/organizer[^>]*>([^<]+)</i) || \n                       html.match(/hosted by[^>]*>([^<]+)</i);\n\nreturn {\n  title: titleMatch ? titleMatch[1].trim() : $input.item.json.event_name,\n  description: cleanText.substring(0, 1000),\n  extracted_email: emailMatch ? emailMatch[1] : null,\n  extracted_date: dateMatch ? dateMatch[1] : null,\n  organizer_name: organizerMatch ? organizerMatch[1].trim() : null,\n  official_url: $input.item.json.event_url,\n  event_id: $input.item.json.event_id,\n  search_session_id: $input.item.json.search_session_id,\n  clean_text_for_ai: cleanText.substring(0, 2000)\n};"
+      },
+      "id": "812dd18a-c69e-435f-aa30-66d35bb133ba",
+      "name": "Extract Event Data from HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const aiResponse = $input.item.json;\nconst eventData = $(\"Extract Event Data from HTML\").item.json;\n\nlet analysis = {};\ntry {\n  // Ollama returns response in message.content\n  const content = aiResponse.message?.content || aiResponse.output || '';\n  analysis = typeof content === 'string' ? JSON.parse(content) : content;\n} catch (e) {\n  analysis = {\n    summary: 'Failed to parse AI response',\n    relevance_score: 50,\n    sector_classification: 'unknown',\n    has_clear_organizer: false,\n    has_contact_info: false,\n    recommended_action: 'review'\n  };\n}\n\nreturn {\n  ...eventData,\n  ai_summary: analysis.summary,\n  ai_relevance_score: analysis.relevance_score,\n  ai_sector: analysis.sector_classification,\n  has_clear_organizer: analysis.has_clear_organizer,\n  has_contact_info: analysis.has_contact_info,\n  recommended_action: analysis.recommended_action\n};"
+      },
+      "id": "6f9bdeb2-5d4a-4d81-b70b-3c61c50923e9",
+      "name": "Parse AI Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const crypto = require('crypto');\n\nconst title = ($input.item.json.title || '').toLowerCase().trim();\nconst url = $input.item.json.official_url || '';\nconst domain = url.match(/https?:\\/\\/([^\\/]+)/)?.[1] || '';\nconst date = $input.item.json.extracted_date || '';\nconst organizer = ($input.item.json.organizer_name || '').toLowerCase().trim();\n\n// Normalize title (remove special chars, extra spaces)\nconst normalizedTitle = title.replace(/[^a-z0-9\\s]/g, '').replace(/\\s+/g, ' ');\n\n// Create fingerprint string\nconst fingerprintString = `${normalizedTitle}|${domain}|${date}|${organizer}`;\n\n// Generate hash\nconst fingerprint = crypto.createHash('sha256').update(fingerprintString).digest('hex');\n\nreturn {\n  ...$input.item.json,\n  fingerprint: fingerprint,\n  fingerprint_source: fingerprintString\n};"
+      },
+      "id": "475908de-5576-4567-b3cf-a853ccd70dc1",
+      "name": "Generate Event Fingerprint",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2480,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "fingerprints",
+        "limit": 1,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "fingerprint",
+              "condition": "eq",
+              "keyValue": "={{ $json.fingerprint }}"
+            }
+          ]
+        }
+      },
+      "id": "8c14a745-ce8c-4585-96b9-2244f5b84996",
+      "name": "Check Duplicate Fingerprint",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        592
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "85SaDPruK4OzCy5q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $(\"Check Duplicate Fingerprint\").item.json.fingerprint }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              },
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "efc8cfbe-2370-4b66-9937-776a72d80a18",
+      "name": "Is Duplicate?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2928,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "status",
+              "value": "duplicate",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "duplicate_of",
+              "value": "={{ $(\"Check Duplicate Fingerprint\").item.json.event_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "afb56044-ce1b-4754-b896-bfed77c743e1",
+      "name": "Mark as Duplicate",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3152,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "event_cache",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "970771d2-6927-4769-98e8-7e8d40716bbc",
+      "name": "Save to Event Cache",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        592
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "85SaDPruK4OzCy5q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "fingerprints",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "fingerprint",
+              "fieldValue": "={{ $(\"Save to Event Cache\").item.json.fingerprint }}"
+            },
+            {
+              "fieldId": "event_id",
+              "fieldValue": "={{ $(\"Save to Event Cache\").item.json.event_id }}"
+            },
+            {
+              "fieldId": "fingerprint_source",
+              "fieldValue": "={{ $(\"Save to Event Cache\").item.json.fingerprint_source }}"
+            }
+          ]
+        }
+      },
+      "id": "ece2b9d5-7de3-4451-8e57-0f7dc5b32d33",
+      "name": "Save Fingerprint",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        664
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "85SaDPruK4OzCy5q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1ba99b08-d269-43c1-9304-ac7018305588",
+      "name": "Loop Over Events",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "status",
+              "value": "={{ $json.ai_relevance_score >= 70 ? \"ready_for_review\" : \"weak_result\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "e79b4296-f311-4953-96aa-083c3e0ca7b8",
+      "name": "Set Status for New Event",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3152,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:11434/api/chat",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"gemma4\", \"messages\": [{ \"role\": \"user\", \"content\": \"Analyze this event and provide a JSON response with: summary (brief 2-3 sentences), relevance_score (0-100), sector_classification (technology/finance/healthcare/other), has_clear_organizer (true/false), has_contact_info (true/false), recommended_action (approve/review/reject).\\n\\nEvent Details:\\nTitle: \" + $json.title + \"\\nDescription: \" + $json.clean_text_for_ai + \"\\nOrganizer: \" + $json.organizer_name + \"\\nEmail: \" + $json.extracted_email }], \"stream\": false } }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "3485f9cd-7a14-4ee8-b7db-d44b9bc7ca0e",
+      "name": "Analyze Event with Ollama",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2032,
+        592
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "JAZ Search Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create Search Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Search Session": {
+      "main": [
+        [
+          {
+            "node": "Search Events API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Events API": {
+      "main": [
+        [
+          {
+            "node": "Normalize Event Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Event Results": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [
+          {
+            "node": "Update Search Session Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Fetch Event Page HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Event Page HTML": {
+      "main": [
+        [
+          {
+            "node": "Extract Event Data from HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Event Data from HTML": {
+      "main": [
+        [
+          {
+            "node": "Analyze Event with Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Generate Event Fingerprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Event Fingerprint": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicate Fingerprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicate Fingerprint": {
+      "main": [
+        [
+          {
+            "node": "Is Duplicate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Duplicate?": {
+      "main": [
+        [
+          {
+            "node": "Mark as Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Status for New Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Save to Event Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Event Cache": {
+      "main": [
+        [
+          {
+            "node": "Save Fingerprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Fingerprint": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Events": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 3 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Status for New Event": {
+      "main": [
+        [
+          {
+            "node": "Save to Event Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Event with Ollama": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9447cccb-c46d-4ba8-9234-1e440d099200",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cb3928e84f5b9009ca55bba0265d86d75859215f9b9089725b65a169d0760d28"
+  },
+  "id": "Lclcy7t8mDfJf5cX",
+  "tags": []
+}
