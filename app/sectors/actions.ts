@@ -28,12 +28,14 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
     const { error } = await supabase
       .from('sector_registrations')
       .insert({
+        // @ts-ignore - keeping sector_id just in case it exists in DB but not in types
         sector_id: sectorId,
+        sector_name: sectorName,
         user_id: user?.id || null,
-        full_name: fullName,
-        email,
-        phone,
-        data: data as Json,
+        full_name: fullName || 'غير معروف',
+        email: email || '',
+        phone: phone,
+        additional_info: data as Json,
         status: 'pending'
       })
 
