@@ -207,6 +207,12 @@ export default function PublicTasksBoardPage() {
               طلب جديد
             </Link>
             <Link
+              href="/dashboard/home"
+              className="hidden items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition-colors sm:flex"
+            >
+              لوحة التحكم
+            </Link>
+            <Link
               href="/"
               className="hidden items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition-colors sm:flex"
             >

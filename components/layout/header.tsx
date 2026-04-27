@@ -71,6 +71,7 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
   if (
     normalizedPathname.startsWith('/dashboard') ||
     normalizedPathname.startsWith('/admin') ||
+    normalizedPathname.startsWith('/tasks') ||
     isEventDetailsPage
   ) {
     return null
