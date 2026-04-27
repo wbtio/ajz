@@ -1003,6 +1003,8 @@ export type Database = {
       }
       sectors: {
         Row: {
+          color: string | null
+          cover_image: string | null
           created_at: string | null
           description: string | null
           description_ar: string | null
@@ -1015,6 +1017,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          color?: string | null
+          cover_image?: string | null
           created_at?: string | null
           description?: string | null
           description_ar?: string | null
@@ -1027,6 +1031,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          color?: string | null
+          cover_image?: string | null
           created_at?: string | null
           description?: string | null
           description_ar?: string | null

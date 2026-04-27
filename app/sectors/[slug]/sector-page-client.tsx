@@ -48,7 +48,7 @@ export function SectorPageClient({ slug, sector, content, events }: SectorPageCl
   const { locale, dir } = useI18n()
   const isArabic = locale === 'ar'
   const IconComponent = iconMap[sector.icon || 'Building2'] || Building2
-  const accentColor = content.accent || '#8b0000'
+  const accentColor = sector.color || content.accent || '#8b0000'
   const primaryName = isArabic ? content.nameAr : content.name
   const heroDescription = isArabic ? content.heroDescriptionAr : content.heroDescription
   const overviewTitle = isArabic ? content.overviewTitleAr : content.overviewTitle
@@ -71,9 +71,7 @@ export function SectorPageClient({ slug, sector, content, events }: SectorPageCl
           <span>/</span>
           <span className="text-gray-900">{primaryName}</span>
         </nav>
-
         <div className="relative mb-12 overflow-hidden rounded-[2rem] bg-stone-950 text-white shadow-[0_35px_80px_-50px_rgba(15,23,42,0.85)]">
-          {/* @ts-ignore - cover_image exists in DB but not in types */}
           {sector.cover_image && (
             <div className="absolute inset-0 z-0">
               <Image
