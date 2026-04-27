@@ -731,15 +731,18 @@ export type Database = {
       posts: {
         Row: {
           author_id: string | null
+          category: string | null
           content: string | null
           content_ar: string | null
           created_at: string | null
           excerpt: string | null
           excerpt_ar: string | null
+          featured_image_url: string | null
           id: string
           image_url: string | null
           keywords: string[] | null
           published_at: string | null
+          reading_time: number | null
           seo_description: string | null
           seo_title: string | null
           slug: string
@@ -752,15 +755,18 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
+          category?: string | null
           content?: string | null
           content_ar?: string | null
           created_at?: string | null
           excerpt?: string | null
           excerpt_ar?: string | null
+          featured_image_url?: string | null
           id?: string
           image_url?: string | null
           keywords?: string[] | null
           published_at?: string | null
+          reading_time?: number | null
           seo_description?: string | null
           seo_title?: string | null
           slug: string
@@ -773,15 +779,18 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
+          category?: string | null
           content?: string | null
           content_ar?: string | null
           created_at?: string | null
           excerpt?: string | null
           excerpt_ar?: string | null
+          featured_image_url?: string | null
           id?: string
           image_url?: string | null
           keywords?: string[] | null
           published_at?: string | null
+          reading_time?: number | null
           seo_description?: string | null
           seo_title?: string | null
           slug?: string
