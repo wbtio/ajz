@@ -102,12 +102,12 @@ export default async function EventPage({ params }: EventPageProps) {
   if (event.sector_id) {
     const { data: sector } = await supabase
       .from('sectors')
-      .select('name, name_ar')
+      .select('name_en, name_ar')
       .eq('id', event.sector_id)
       .single()
     if (sector) {
       sectorName_ar = sector.name_ar || null
-      sectorName_en = sector.name || null
+      sectorName_en = sector.name_en || null
     }
   }
 

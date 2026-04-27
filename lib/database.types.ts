@@ -1348,3 +1348,12 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// Helper exports for commonly used table types
+export type Event = Tables<'events'>
+export type Sector = Tables<'sectors'>
+export type User = Tables<'users'>
+export type Post = Tables<'posts'>
+export type Registration = Tables<'registrations'>
+
+

@@ -39,13 +39,13 @@ export default function ContactPage() {
         if (formData.category === 'sector') {
           const { data, error } = await supabase
             .from('sectors')
-            .select('id, name, name_ar')
+            .select('id, name_en, name_ar')
             .order('created_at', { ascending: false })
 
           if (!error && data) {
             const formattedData = data.map((item) => ({
               id: item.id,
-              title: isRTL ? (item.name_ar || item.name) : item.name,
+              title: isRTL ? (item.name_ar || item.name_en) : item.name_en,
             }))
             setRelatedItems(formattedData)
           }

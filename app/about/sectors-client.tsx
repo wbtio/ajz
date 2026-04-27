@@ -82,7 +82,7 @@ export function SectorsClient({ sectors }: { sectors: any[] | null }) {
                                                     {/* Content */}
                                                     <div className="flex-1 mt-2 sm:mt-0">
                                                         <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#8b0000] transition-colors duration-300">
-                                                            {sector.name}
+                                                            {sector.name_en}
                                                         </h2>
                                                         <p className="text-gray-600 mb-5 leading-relaxed">
                                                             {sector.description}

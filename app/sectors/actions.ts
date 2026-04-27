@@ -18,11 +18,11 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
     // Get sector information
     const { data: sector } = await supabase
       .from('sectors')
-      .select('name, name_ar')
+      .select('name_en, name_ar')
       .eq('id', sectorId)
       .single()
 
-    const sectorName = sector?.name_ar || sector?.name || 'القطاع'
+    const sectorName = sector?.name_ar || sector?.name_en || 'القطاع'
 
     // Insert registration into database
     const { error } = await supabase

@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: SectorPageProps) {
 
   const { data: sector } = await supabase
     .from('sectors')
-    .select('name, description')
+    .select('name_en, description')
     .eq('slug', slug)
     .single()
 
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: SectorPageProps) {
   }
 
   return {
-    title: `${sector.name} | JAZ`,
+    title: `${sector.name_en} | JAZ`,
     description: sector.description,
   }
 }
