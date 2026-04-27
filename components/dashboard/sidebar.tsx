@@ -19,13 +19,21 @@ import {
     ChevronLeft,
     ClipboardList,
     Search,
-    BarChart3
+    BarChart3,
+    CheckSquare
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { User } from '@/lib/database.types'
+
+interface DashboardUser {
+    id: string
+    email: string
+    full_name: string | null
+    role: string | null
+    avatar_url: string | null
+}
 
 interface DashboardSidebarProps {
-    user: User
+    user: DashboardUser
 }
 
 export function DashboardSidebar({ user }: DashboardSidebarProps) {
@@ -47,6 +55,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         { name: t.dashboard.sectorRegistrations, href: '/dashboard/sector-registrations', icon: ClipboardList },
         { name: 'Event Discovery', href: '/dashboard/event-discovery/sessions', icon: Search },
         { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+        { name: 'Tasks', href: '/tasks', icon: CheckSquare },
         { name: t.dashboard.settings, href: '/dashboard/settings', icon: Settings },
     ]
 

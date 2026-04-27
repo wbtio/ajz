@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
@@ -518,36 +516,65 @@ export type Database = {
       }
       goals: {
         Row: {
+          ai_score: number | null
+          completed_at: string | null
           created_at: string | null
-          current_points: number | null
+          deadline: string | null
+          description: string | null
           id: string
+          importance_level: string | null
+          progress: number | null
+          reminder_time: string | null
           status: string | null
-          target_points: number | null
           title: string
+          updated_at: string | null
+          user_id: string | null
         }
         Insert: {
+          ai_score?: number | null
+          completed_at?: string | null
           created_at?: string | null
-          current_points?: number | null
+          deadline?: string | null
+          description?: string | null
           id?: string
+          importance_level?: string | null
+          progress?: number | null
+          reminder_time?: string | null
           status?: string | null
-          target_points?: number | null
           title: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
+          ai_score?: number | null
+          completed_at?: string | null
           created_at?: string | null
-          current_points?: number | null
+          deadline?: string | null
+          description?: string | null
           id?: string
+          importance_level?: string | null
+          progress?: number | null
+          reminder_time?: string | null
           status?: string | null
-          target_points?: number | null
           title?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       imported_events: {
         Row: {
           city: string | null
           country: string | null
-          created_at: string
+          created_at: string | null
           end_date: string | null
           event_name: string
           event_type: string | null
@@ -560,7 +587,7 @@ export type Database = {
         Insert: {
           city?: string | null
           country?: string | null
-          created_at?: string
+          created_at?: string | null
           end_date?: string | null
           event_name: string
           event_type?: string | null
@@ -573,7 +600,7 @@ export type Database = {
         Update: {
           city?: string | null
           country?: string | null
-          created_at?: string
+          created_at?: string | null
           end_date?: string | null
           event_name?: string
           event_type?: string | null
@@ -585,282 +612,113 @@ export type Database = {
         }
         Relationships: []
       }
-      link_categories: {
+      logs: {
         Row: {
-          color: string | null
+          ai_message: string | null
+          ai_rating: string | null
           created_at: string | null
-          description_ar: string | null
-          description_en: string | null
-          icon: string | null
+          day_number: number | null
+          description: string | null
+          goal_id: string | null
           id: string
-          is_active: boolean | null
-          slug: string
-          sort_order: number | null
-          title_ar: string
-          title_en: string
+          reflection: string | null
+          status: string | null
+          title: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
-          color?: string | null
+          ai_message?: string | null
+          ai_rating?: string | null
           created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
+          day_number?: number | null
+          description?: string | null
+          goal_id?: string | null
           id?: string
-          is_active?: boolean | null
-          slug: string
-          sort_order?: number | null
-          title_ar: string
-          title_en: string
+          reflection?: string | null
+          status?: string | null
+          title: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
-          color?: string | null
+          ai_message?: string | null
+          ai_rating?: string | null
           created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
+          day_number?: number | null
+          description?: string | null
+          goal_id?: string | null
           id?: string
-          is_active?: boolean | null
-          slug?: string
-          sort_order?: number | null
-          title_ar?: string
-          title_en?: string
+          reflection?: string | null
+          status?: string | null
+          title?: string
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      links: {
-        Row: {
-          category_id: string | null
-          color: string | null
-          country_id: string | null
-          created_at: string | null
-          description_ar: string | null
-          description_en: string | null
-          home_country: string | null
-          icon: string | null
-          id: string
-          industry: string | null
-          is_active: boolean | null
-          is_verified: boolean | null
-          last_checked_at: string | null
-          link_type: string | null
-          organization_type: string | null
-          sort_order: number | null
-          title_ar: string
-          title_en: string
-          updated_at: string | null
-          url: string
-        }
-        Insert: {
-          category_id?: string | null
-          color?: string | null
-          country_id?: string | null
-          created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          home_country?: string | null
-          icon?: string | null
-          id?: string
-          industry?: string | null
-          is_active?: boolean | null
-          is_verified?: boolean | null
-          last_checked_at?: string | null
-          link_type?: string | null
-          organization_type?: string | null
-          sort_order?: number | null
-          title_ar: string
-          title_en: string
-          updated_at?: string | null
-          url: string
-        }
-        Update: {
-          category_id?: string | null
-          color?: string | null
-          country_id?: string | null
-          created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          home_country?: string | null
-          icon?: string | null
-          id?: string
-          industry?: string | null
-          is_active?: boolean | null
-          is_verified?: boolean | null
-          last_checked_at?: string | null
-          link_type?: string | null
-          organization_type?: string | null
-          sort_order?: number | null
-          title_ar?: string
-          title_en?: string
-          updated_at?: string | null
-          url?: string
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "links_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: "logs_goal_id_fkey"
+            columns: ["goal_id"]
             isOneToOne: false
-            referencedRelation: "link_categories"
+            referencedRelation: "goals"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "links_country_id_fkey"
-            columns: ["country_id"]
+            foreignKeyName: "logs_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "countries"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      partner_categories: {
-        Row: {
-          color: string | null
-          contact_email: string | null
-          created_at: string | null
-          description_ar: string | null
-          description_en: string | null
-          icon: string | null
-          id: string
-          registration_config: Json | null
-          slug: string
-          sort_order: number | null
-          title_ar: string
-          title_en: string
-          updated_at: string | null
-        }
-        Insert: {
-          color?: string | null
-          contact_email?: string | null
-          created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
-          id?: string
-          registration_config?: Json | null
-          slug: string
-          sort_order?: number | null
-          title_ar: string
-          title_en: string
-          updated_at?: string | null
-        }
-        Update: {
-          color?: string | null
-          contact_email?: string | null
-          created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
-          id?: string
-          registration_config?: Json | null
-          slug?: string
-          sort_order?: number | null
-          title_ar?: string
-          title_en?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      partner_opportunities: {
-        Row: {
-          category_id: string | null
-          color: string | null
-          created_at: string | null
-          description_ar: string | null
-          description_en: string | null
-          icon: string | null
-          id: string
-          registration_config: Json | null
-          sort_order: number | null
-          title_ar: string
-          title_en: string
-          updated_at: string | null
-        }
-        Insert: {
-          category_id?: string | null
-          color?: string | null
-          created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
-          id?: string
-          registration_config?: Json | null
-          sort_order?: number | null
-          title_ar: string
-          title_en: string
-          updated_at?: string | null
-        }
-        Update: {
-          category_id?: string | null
-          color?: string | null
-          created_at?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          icon?: string | null
-          id?: string
-          registration_config?: Json | null
-          sort_order?: number | null
-          title_ar?: string
-          title_en?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "partner_opportunities_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "partner_categories"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
       partner_submissions: {
         Row: {
-          category_id: string | null
+          company_name: string
+          company_type: string
+          contact_person: string
           created_at: string | null
-          data: Json | null
+          email: string
           id: string
-          opportunity_id: string | null
+          logo_url: string | null
+          message: string | null
+          phone: string | null
           status: string | null
           updated_at: string | null
           user_id: string | null
+          website: string | null
         }
         Insert: {
-          category_id?: string | null
+          company_name: string
+          company_type: string
+          contact_person: string
           created_at?: string | null
-          data?: Json | null
+          email: string
           id?: string
-          opportunity_id?: string | null
+          logo_url?: string | null
+          message?: string | null
+          phone?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
+          website?: string | null
         }
         Update: {
-          category_id?: string | null
+          company_name?: string
+          company_type?: string
+          contact_person?: string
           created_at?: string | null
-          data?: Json | null
+          email?: string
           id?: string
-          opportunity_id?: string | null
+          logo_url?: string | null
+          message?: string | null
+          phone?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
+          website?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "partner_submissions_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "partner_categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "partner_submissions_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "partner_opportunities"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "partner_submissions_user_id_fkey"
             columns: ["user_id"]
@@ -873,18 +731,15 @@ export type Database = {
       posts: {
         Row: {
           author_id: string | null
-          category: string | null
           content: string | null
           content_ar: string | null
           created_at: string | null
           excerpt: string | null
           excerpt_ar: string | null
-          featured_image_url: string | null
           id: string
           image_url: string | null
           keywords: string[] | null
           published_at: string | null
-          reading_time: number | null
           seo_description: string | null
           seo_title: string | null
           slug: string
@@ -897,18 +752,15 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
-          category?: string | null
           content?: string | null
           content_ar?: string | null
           created_at?: string | null
           excerpt?: string | null
           excerpt_ar?: string | null
-          featured_image_url?: string | null
           id?: string
           image_url?: string | null
           keywords?: string[] | null
           published_at?: string | null
-          reading_time?: number | null
           seo_description?: string | null
           seo_title?: string | null
           slug: string
@@ -921,18 +773,15 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
-          category?: string | null
           content?: string | null
           content_ar?: string | null
           created_at?: string | null
           excerpt?: string | null
           excerpt_ar?: string | null
-          featured_image_url?: string | null
           id?: string
           image_url?: string | null
           keywords?: string[] | null
           published_at?: string | null
-          reading_time?: number | null
           seo_description?: string | null
           seo_title?: string | null
           slug?: string
@@ -1107,49 +956,42 @@ export type Database = {
       }
       sector_registrations: {
         Row: {
+          additional_info: Json | null
           created_at: string | null
-          data: Json | null
-          email: string | null
-          full_name: string | null
+          email: string
+          full_name: string
           id: string
           phone: string | null
-          sector_id: string | null
+          sector_name: string
           status: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          additional_info?: Json | null
           created_at?: string | null
-          data?: Json | null
-          email?: string | null
-          full_name?: string | null
+          email: string
+          full_name: string
           id?: string
           phone?: string | null
-          sector_id?: string | null
+          sector_name: string
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          additional_info?: Json | null
           created_at?: string | null
-          data?: Json | null
-          email?: string | null
-          full_name?: string | null
+          email?: string
+          full_name?: string
           id?: string
           phone?: string | null
-          sector_id?: string | null
+          sector_name?: string
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "sector_registrations_sector_id_fkey"
-            columns: ["sector_id"]
-            isOneToOne: false
-            referencedRelation: "sectors"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "sector_registrations_user_id_fkey"
             columns: ["user_id"]
@@ -1161,62 +1003,38 @@ export type Database = {
       }
       sectors: {
         Row: {
-          color: string | null
-          cover_image: string | null
           created_at: string | null
           description: string | null
           description_ar: string | null
           icon: string | null
           id: string
-          image_url: string | null
           is_active: boolean | null
-          is_featured: boolean | null
-          long_description: string | null
-          long_description_ar: string | null
-          name: string
           name_ar: string
-          registration_config: Json | null
-          slug: string
+          name_en: string
           sort_order: number | null
           updated_at: string | null
         }
         Insert: {
-          color?: string | null
-          cover_image?: string | null
           created_at?: string | null
           description?: string | null
           description_ar?: string | null
           icon?: string | null
           id?: string
-          image_url?: string | null
           is_active?: boolean | null
-          is_featured?: boolean | null
-          long_description?: string | null
-          long_description_ar?: string | null
-          name: string
           name_ar: string
-          registration_config?: Json | null
-          slug: string
+          name_en: string
           sort_order?: number | null
           updated_at?: string | null
         }
         Update: {
-          color?: string | null
-          cover_image?: string | null
           created_at?: string | null
           description?: string | null
           description_ar?: string | null
           icon?: string | null
           id?: string
-          image_url?: string | null
           is_active?: boolean | null
-          is_featured?: boolean | null
-          long_description?: string | null
-          long_description_ar?: string | null
-          name?: string
           name_ar?: string
-          registration_config?: Json | null
-          slug?: string
+          name_en?: string
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -1259,6 +1077,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tasks: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          image_annotation: Json | null
+          image_url: string | null
+          modification_type: string
+          page: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          image_annotation?: Json | null
+          image_url?: string | null
+          modification_type: string
+          page: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_annotation?: Json | null
+          image_url?: string | null
+          modification_type?: string
+          page?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       trainings: {
         Row: {
@@ -1494,15 +1348,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-// --- Custom Type Aliases ---
-export type Event = Database['public']['Tables']['events']['Row']
-export type User = Database['public']['Tables']['users']['Row']
-export type Sector = Database['public']['Tables']['sectors']['Row']
-export type Post = Database['public']['Tables']['posts']['Row']
-export type LinkItem = Database['public']['Tables']['links']['Row']
-export type LinkCategory = Database['public']['Tables']['link_categories']['Row']
-export type PartnerOpportunity = Database['public']['Tables']['partner_opportunities']['Row']
-export type PartnerCategory = Database['public']['Tables']['partner_categories']['Row']
-export type Training = Database['public']['Tables']['trainings']['Row']
-export type Registration = Database['public']['Tables']['registrations']['Row']
