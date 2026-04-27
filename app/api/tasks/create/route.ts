@@ -11,6 +11,7 @@ async function sendTelegramMessage(task: {
   description: string;
   status: string;
   created_at: string | null;
+  image_url: string | null;
 }) {
   const text = `
 📋 <b>طلب جديد - تعديلات الموقع</b>
@@ -26,15 +27,28 @@ async function sendTelegramMessage(task: {
 `;
 
   try {
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text,
-        parse_mode: "HTML",
-      }),
-    });
+    if (task.image_url) {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          photo: task.image_url,
+          caption: text,
+          parse_mode: "HTML",
+        }),
+      });
+    } else {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text,
+          parse_mode: "HTML",
+        }),
+      });
+    }
   } catch (e) {
     console.error("Telegram send failed:", e);
   }
