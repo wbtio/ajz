@@ -419,10 +419,10 @@ export default function NewTaskPage() {
               إرسال طلب آخر
             </button>
             <Link
-              href="/"
+              href="/tasks"
               className="w-full rounded-2xl border border-stone-200 bg-white px-6 py-4 text-base font-bold text-stone-700 hover:bg-stone-50 transition-colors"
             >
-              العودة للرئيسية
+              العودة للمهام
             </Link>
           </div>
         </div>
@@ -435,7 +435,7 @@ export default function NewTaskPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center gap-3">
           <Link
-            href="/"
+            href="/tasks"
             className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-stone-600 shadow-sm hover:bg-stone-50 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />

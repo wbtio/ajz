@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   const { id } = await params
   const supabase = await createClient()
 
-  const { data: post } = await supabase
+  const { data: post, error } = await supabase
     .from('posts')
-    .select('title_ar, title, excerpt_ar, excerpt, seo_title, seo_description, featured_image_url, keywords')
+    .select('title_ar, title, excerpt_ar, excerpt, seo_title, seo_description, keywords')
     .eq('id', id)
     .single()
 
-  if (!post) {
+  if (error || !post) {
     return { title: 'Article Not Found | JAZ' }
   }
 
@@ -35,7 +35,6 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     openGraph: {
       title: post.seo_title || postTitle,
       description: post.seo_description || post.excerpt_ar || post.excerpt,
-      images: post.featured_image_url ? [post.featured_image_url] : [],
     },
   }
 }
