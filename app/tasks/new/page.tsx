@@ -336,21 +336,6 @@ export default function NewTaskPage() {
 
     setIsSubmitting(true);
     try {
-      let imageUrl = null;
-
-      if (imageFile) {
-        const formData = new FormData();
-        formData.append("file", imageFile);
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json();
-          imageUrl = uploadData.url;
-        }
-      }
-
       const subPageLabel =
         subPage === "other"
           ? subPageOther || "صفحة أخرى"
@@ -368,9 +353,11 @@ export default function NewTaskPage() {
         description: fullDescription,
       };
 
-      if (imageUrl) body.image_url = imageUrl;
-      if (annotation) body.image_annotation = annotation;
-      if (freehandStrokes.length > 0) body.image_annotation = { strokes: freehandStrokes, rect: annotation };
+      // Send the annotated image (or original) directly to Telegram without saving to server
+      const finalImage = croppedPreview || imagePreview;
+      if (finalImage) {
+        body.base64_image = finalImage;
+      }
 
       const res = await fetch("/api/tasks/create", {
         method: "POST",

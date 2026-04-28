@@ -13,7 +13,7 @@ async function sendTelegramMessage(task: {
   description: string;
   status: string;
   created_at: string | null;
-  image_url: string | null;
+  base64_image?: string | null;
 }) {
   const text = `
 📋 <b>طلب جديد - تعديلات الموقع</b>
@@ -29,11 +29,11 @@ async function sendTelegramMessage(task: {
 `;
 
   try {
-    if (task.image_url) {
+    if (task.base64_image) {
       let sentPhoto = false;
       try {
-        const filePath = join(process.cwd(), "public", task.image_url);
-        const fileBuffer = await readFile(filePath);
+        const base64Data = task.base64_image.replace(/^data:image\/\w+;base64,/, "");
+        const fileBuffer = Buffer.from(base64Data, "base64");
         
         const formData = new FormData();
         formData.append("chat_id", CHAT_ID);
@@ -52,21 +52,16 @@ async function sendTelegramMessage(task: {
           console.error("Telegram sendPhoto failed:", await res.text());
         }
       } catch (err) {
-        console.error("Error reading file or sending photo to Telegram:", err);
+        console.error("Error sending base64 photo to Telegram:", err);
       }
 
       if (!sentPhoto) {
-        // Fallback if reading file fails or Telegram API rejects it
-        const fullUrl = task.image_url.startsWith('http') 
-          ? task.image_url 
-          : `${process.env.NEXT_PUBLIC_SITE_URL || ''}${task.image_url}`;
-        
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: CHAT_ID,
-            text: text + `\n🖼 <a href="${fullUrl}">عرض الصورة المرفقة</a>`,
+            text,
             parse_mode: "HTML",
           }),
         });
@@ -108,8 +103,8 @@ export async function POST(req: NextRequest) {
         modification_type: body.modification_type,
         description: body.description,
         status: "todo",
-        image_url: body.image_url || null,
-        image_annotation: body.image_annotation || null,
+        image_url: null, // Not saving to database as per user request
+        image_annotation: null,
       })
       .select()
       .single();
@@ -118,8 +113,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Send Telegram notification
-    await sendTelegramMessage(data);
+    // Send Telegram notification with the base64 image (not saved to server)
+    await sendTelegramMessage({
+      ...data,
+      base64_image: body.base64_image || null
+    });
 
     return NextResponse.json(data, { status: 201 });
   } catch (err) {
