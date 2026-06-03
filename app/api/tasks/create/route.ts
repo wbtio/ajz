@@ -39,7 +39,8 @@ async function sendTelegramMessage(task: {
         formData.append("chat_id", CHAT_ID);
         formData.append("caption", text);
         formData.append("parse_mode", "HTML");
-        formData.append("photo", new Blob([fileBuffer]), "image.png");
+        const file = new File([fileBuffer], "image.png", { type: "image/png" });
+        formData.append("photo", file);
 
         const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
           method: "POST",
@@ -61,7 +62,7 @@ async function sendTelegramMessage(task: {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: CHAT_ID,
-            text,
+            text: text + "\n⚠️ <b>تنبيه:</b> يوجد صورة مرفقة ولكن تعذر إرسالها بسبب خطأ تقني.",
             parse_mode: "HTML",
           }),
         });

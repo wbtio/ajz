@@ -1,185 +1,236 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { motion, useReducedMotion, Variants } from 'framer-motion'
-import { Container } from '@/components/ui/container'
-import { Card, CardContent } from '@/components/ui/card'
-import { ArrowLeftIcon as ArrowLeft, ArrowRightIcon as ArrowRight, HeartIcon as Heart, CpuIcon as Cpu } from 'lucide-animated'
-import { Building2, GraduationCap } from 'lucide-react'
-import { useI18n } from '@/lib/i18n'
-import type { Sector } from '@/lib/database.types'
-import { mergeSectorWithContent, getSectorContent } from '@/app/sectors/sector-content'
+import Link from "next/link";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { Icon } from "@iconify/react";
+import { Container } from "@/components/ui/container";
+import { useI18n } from "@/lib/i18n";
+import type { Sector } from "@/lib/database.types";
+import { mergeSectorWithContent, getSectorContent } from "@/app/sectors/sector-content";
+import type { Tables } from "@/lib/database.types";
 
-const sectorImageMap: Record<string, string> = {
-  industrie: '/JAZ Industrie.svg',
-  medical: '/JAZ Medical.svg',
-  technology: '/JAZ Technology.svg',
-  academia: '/JAZ Academia.svg',
-}
-
-const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
-  Building2: Building2 as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-  Heart: Heart as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-  Cpu: Cpu as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-  GraduationCap: GraduationCap as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-}
+type Event = Tables<"events">;
 
 interface SectorsSectionProps {
-  sectors: Sector[]
+  sectors: Sector[];
+  events?: Event[];
 }
 
-export function SectorsSection({ sectors }: SectorsSectionProps) {
-  const { t, locale, dir } = useI18n()
-  const isRTL = locale === 'ar'
-  const Arrow = isRTL ? ArrowLeft : ArrowRight
-  const shouldReduceMotion = useReducedMotion()
-  const neutralAccentPalette = ['#475569', '#64748b', '#6b7280', '#4b5563']
-  const mergedSectors = sectors
-    .map((sector) => mergeSectorWithContent(sector))
-    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+const iconMap: Record<string, string> = {
+  Building2: "solar:city-bold-duotone",
+  Heart: "solar:heart-bold-duotone",
+  Cpu: "solar:cpu-bold-duotone",
+  GraduationCap: "solar:square-academic-cap-bold-duotone",
+};
 
-  const containerVariants: Variants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.1,
-        delayChildren: 0.05,
-      },
-    },
-  }
+export function SectorsSection({ sectors, events = [] }: SectorsSectionProps) {
+  const { t, locale, dir } = useI18n();
+  const isRTL = locale === "ar";
+  const shouldReduceMotion = useReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const lastWheelTime = useRef(0);
 
-  const cardVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 40,
-      scale: 0.94,
-      filter: 'blur(4px)',
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      filter: 'blur(0px)',
-      transition: {
-        duration: 0.7,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-  }
+  // Merge database sectors with static details and sort
+  const mergedSectors = useMemo(() => {
+    return sectors
+      .map((sector) => mergeSectorWithContent(sector))
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  }, [sectors]);
+
+  // Count active events per sector
+  const activeEventCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    events.forEach((event) => {
+      if (event.sector_id) {
+        counts[event.sector_id] = (counts[event.sector_id] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [events]);
+
+  // Auto-rotating timer logic
+  useEffect(() => {
+    if (isHovered || shouldReduceMotion || mergedSectors.length === 0) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % mergedSectors.length);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [mergedSectors.length, isHovered, shouldReduceMotion]);
+
+  // Premium Wheel Scroll Navigation
+  const handleWheel = (e: React.WheelEvent) => {
+    if (mergedSectors.length === 0) return;
+    const now = Date.now();
+    if (now - lastWheelTime.current < 700) return; // 700ms throttle
+    if (Math.abs(e.deltaY) < 15) return; // Ignore small movements
+
+    if (e.deltaY > 0) {
+      setActiveIndex((prev) => (prev + 1) % mergedSectors.length);
+      lastWheelTime.current = now;
+    } else if (e.deltaY < 0) {
+      setActiveIndex((prev) => (prev - 1 + mergedSectors.length) % mergedSectors.length);
+      lastWheelTime.current = now;
+    }
+  };
+
+  // Select active sector data
+  const activeSector = mergedSectors[activeIndex] || mergedSectors[0];
+  const activeEventCount = activeSector ? activeEventCounts[activeSector.id] || 0 : 0;
+  
+  // Fetch static details like accent color and background watermark
+  const activeContent = activeSector ? getSectorContent(activeSector) : null;
+  const accentColor = activeContent?.accent || "#8B0000";
+
+  const activeTitle = isRTL
+    ? activeSector?.name_ar || activeSector?.name
+    : activeSector?.name || activeSector?.name_ar;
+
+  const activeDescription = isRTL
+    ? activeSector?.description_ar || activeSector?.description
+    : activeSector?.description || activeSector?.description_ar;
+
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   return (
-    <section dir={dir} lang={locale} className="relative overflow-hidden bg-slate-50 pt-0 pb-8 sm:pb-12 lg:pb-16">
-      <div className="home-grid-pattern absolute inset-0 opacity-45"></div>
-      <Container className="relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-10 text-center sm:mb-12"
-        >
-          <span className="mb-3 block text-3xl font-bold text-gray-900 md:text-4xl">
+    <section
+      dir={dir}
+      lang={locale}
+      className="relative overflow-hidden bg-slate-50 pt-20 pb-8 sm:pt-24 sm:pb-10 lg:pt-28 lg:pb-12 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+    >
+      <div className="absolute inset-0 home-grid-pattern opacity-30 pointer-events-none" />
+      <Container className="relative z-10 max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16 w-full">
+        {/* Header */}
+        <div className="mb-6 text-start max-w-4xl">
+          <h2 className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl lg:text-4xl leading-tight">
             {t.sectors.title}
-          </span>
-        </motion.div>
+          </h2>
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-[75ch]">
+            {t.sectors.subtitle}
+          </p>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24, scale: 0.98 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/92 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.06)] backdrop-blur-sm sm:p-5 lg:p-6"
-        >
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-          {/* Sectors Grid */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            /* Stable column flow: first card stays visually start-side of grid; each card sets its own dir/lang */
-            dir="ltr"
-            className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-3"
-          >
-            {mergedSectors.map((sector, index) => {
-              const IconComponent = iconMap[sector.icon || 'Building2'] || Building2
-              const accentColor = neutralAccentPalette[index % neutralAccentPalette.length]
-              const sectorTitle = isRTL ? (sector.name_ar || sector.name) : (sector.name || sector.name_ar)
+        {mergedSectors.length > 0 && (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6 lg:items-stretch" onWheel={handleWheel}>
+            {/* Tabs */}
+            <div className="flex flex-col gap-1.5 lg:col-span-5 order-2 lg:order-1 justify-between">
+              {mergedSectors.map((sector, index) => {
+                const isSelected = index === activeIndex;
+                const content = getSectorContent(sector);
+                const sectorAccent = content?.accent || "#475569";
+                const sectorTitle = isRTL ? sector.name_ar || sector.name : sector.name || sector.name_ar;
 
-              const jazName = (() => {
-                if (!sectorTitle) return { prefix: 'JAZ', suffix: '' }
-                const parts = sectorTitle.split(' ')
-                if (parts[0]?.toLowerCase() === 'jaz') {
-                  return { prefix: 'JAZ', suffix: parts.slice(1).join(' ') }
-                }
-                return { prefix: sectorTitle, suffix: '' }
-              })()
-
-              const sectorKey = getSectorContent(sector)?.key ?? ''
-              const sectorImage = sectorImageMap[sectorKey] ?? null
-
-              const titleBlock = (
-                <div className="flex min-w-0 flex-1 flex-col items-start">
-                  <h3 className="text-xl font-bold leading-tight text-slate-950 sm:text-[1.35rem]">
-                    <span className="block">{jazName.prefix}</span>
-                    {jazName.suffix && <span className="block">{jazName.suffix}</span>}
-                  </h3>
-                </div>
-              )
-
-              return (
-                <motion.div key={sector.id} variants={cardVariants} custom={index}>
-                  <Link href={`/sectors/${sector.slug}`} className="block h-full">
-                    <motion.div
-                      whileHover={shouldReduceMotion ? undefined : { y: -8, scale: 1.02 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+                return (
+                  <button
+                    key={sector.id}
+                    onClick={() => setActiveIndex(index)}
+                    className={`relative flex items-center gap-3 rounded-xl py-2.5 px-3.5 text-start transition-all duration-300 w-full outline-none select-none z-10 group overflow-hidden border ${
+                      isSelected
+                        ? "bg-white border-slate-200 shadow-[0_8px_24px_rgba(15,23,42,0.03)]"
+                        : "border-transparent bg-transparent hover:bg-slate-200/40"
+                    }`}
+                  >
+                    {isSelected && (
+                      <motion.div
+                        layoutId="v4ActiveTabLine"
+                        className="absolute inset-y-0 start-0 w-1 pointer-events-none rounded-r-md"
+                        style={{ backgroundColor: sectorAccent }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                      />
+                    )}
+                    <div
+                      className="relative z-10 flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl transition-all duration-300"
+                      style={{
+                        backgroundColor: isSelected ? `${sectorAccent}12` : "#e2e8f0",
+                      }}
                     >
-                      <Card dir={dir} lang={locale} className="group h-full rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)] transition-all duration-300 hover:border-slate-300 hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
-                        <CardContent className="relative flex h-full min-h-[110px] flex-col p-3 text-start sm:min-h-[120px] sm:p-4">
-                          {sectorImage && (
-                            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[1.6rem]">
-                              <Image
-                                src={sectorImage}
-                                alt=""
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                unoptimized
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-white/10" />
-                            </div>
-                          )}
-                          <div className="relative mb-3 flex w-full min-w-0 items-start justify-between gap-3">
-                            {titleBlock}
-                          </div>
+                      <Icon
+                        icon={iconMap[sector.icon || "Building2"] || "solar:city-bold-duotone"}
+                        className="h-5.5 w-5.5 transition-colors duration-300"
+                        style={{ color: isSelected ? sectorAccent : "#64748b" }}
+                      />
+                    </div>
+                    <div className="relative z-10 flex-1 min-w-0">
+                      <span className={`block text-sm sm:text-base font-bold leading-snug ${isSelected ? "text-slate-950 font-extrabold" : "text-slate-600 group-hover:text-slate-950"}`}>
+                        {sectorTitle}
+                      </span>
+                    </div>
+                    <ArrowIcon
+                      className={`relative z-10 h-4 w-4 shrink-0 transition-all duration-300 ${
+                        isSelected ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 group-hover:opacity-40"
+                      }`}
+                      style={{ color: sectorAccent }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
 
-                          <span
-                            className={`absolute bottom-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow-sm transition-all duration-300 ${isRTL ? 'left-4' : 'right-4'}`}
-                            style={{ color: accentColor }}
-                          >
-                            <Arrow className={`h-4 w-4 transition-all duration-300 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
-                          </span>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  </Link>
-                </motion.div>
-              )
-            })}
-          </motion.div>
-        </motion.div>
+            {/* Cinematic Expand Spotlight detailed card */}
+            <div className="lg:col-span-7 order-1 lg:order-2">
+              <motion.div 
+                layout
+                className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-[0_20px_50px_rgba(15,23,42,0.02)] h-full"
+                transition={{ type: "spring", stiffness: 260, damping: 25 }}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col gap-4 text-start h-full justify-between"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <motion.div
+                        layoutId={`v4-icon-spot-${activeIndex}`}
+                        className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm"
+                        style={{ backgroundColor: `${accentColor}12` }}
+                      >
+                        <Icon
+                          icon={iconMap[activeSector.icon || "Building2"] || "solar:city-bold-duotone"}
+                          className="h-6 w-6"
+                          style={{ color: accentColor }}
+                        />
+                      </motion.div>
+                      {activeEventCount > 0 && (
+                        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-100">
+                          <span>{activeEventCount} {isRTL ? t.sectors.activeEvents : t.sectors.activeEvents}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <motion.h3 layout className="text-lg font-extrabold text-slate-950 leading-tight mb-1.5 sm:text-xl">
+                        {activeTitle}
+                      </motion.h3>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-[70ch]">
+                        {activeDescription}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-start pt-1">
+                      <Link
+                        href={`/sectors/${activeSector.slug}`}
+                        className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-xs font-bold text-white transition-all duration-300 hover:shadow-lg active:scale-95 text-center group/btn"
+                        style={{ backgroundColor: accentColor }}
+                      >
+                        <span>{t.sectors.learnMore}</span>
+                        <ArrowIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      </Link>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          </div>
+        )}
       </Container>
-
-      {/* Contact Banner */}
-      <div className="relative z-10 mt-6 flex justify-center px-4 sm:mt-8 sm:px-6 lg:px-8">
-        <Link
-          href="/contact"
-          className="inline-flex shrink-0 items-center justify-center rounded-lg border-2 border-slate-700/20 bg-white/55 px-8 py-3 text-lg font-medium text-slate-900 backdrop-blur-sm transition-all duration-300 hover:border-slate-700/35 hover:bg-white/75 active:scale-95"
-        >
-          {t.sectors.contactBanner.cta}
-        </Link>
-      </div>
     </section>
-  )
+  );
 }

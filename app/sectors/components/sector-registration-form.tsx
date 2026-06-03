@@ -52,7 +52,7 @@ export function SectorRegistrationForm({
     },
     {
       icon: FileText,
-      title: isArabic ? 'وثائق الباسبور' : 'Passport Documents',
+      title: isArabic ? 'وثائق جواز السفر' : 'Passport Documents',
       description: isArabic ? 'نوع الوثيقة ورقمها وبيانات الإصدار.' : 'Document type, number, and issuing details.',
     },
     {
@@ -75,13 +75,13 @@ export function SectorRegistrationForm({
   if (variant === 'plain') {
     return (
       <div className={cn('space-y-5', className)} dir={isArabic ? 'rtl' : 'ltr'}>
-        <Card className="overflow-hidden rounded-[1.7rem] border border-stone-200 bg-white shadow-[0_28px_70px_-58px_rgba(15,23,42,0.3)]">
-          <CardHeader className="border-b border-stone-200 bg-[#faf6f0] px-5 py-5 sm:px-6 sm:py-6">
+        <Card className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
+          <CardHeader className="border-b border-stone-200 bg-[#f5f7fa] px-5 py-5 sm:px-6 sm:py-6">
             <div className={cn('flex items-start justify-between gap-4', isArabic ? 'flex-row-reverse text-right' : 'text-left')}>
               <div className="min-w-0 flex-1">
                 <Badge
                   variant="outline"
-                  className="mb-3 rounded-full border-[#8b0000]/15 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b0000]"
+                  className="mb-3 rounded border-[#8b0000]/15 bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8b0000]"
                 >
                   {isArabic ? 'استمارة رسمية' : 'Official Dossier'}
                 </Badge>
@@ -94,7 +94,7 @@ export function SectorRegistrationForm({
                   </>
                 )}
               </div>
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-stone-200 bg-white text-[#8b0000]">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-white text-[#8b0000]">
                 <FileText className="h-5 w-5" />
               </div>
             </div>
@@ -107,12 +107,12 @@ export function SectorRegistrationForm({
                   <div
                     key={item.title}
                     className={cn(
-                      'rounded-2xl border border-stone-200 bg-white p-4',
+                      'rounded-xl border border-stone-200 bg-white p-4 shadow-sm',
                       isArabic ? 'text-right' : 'text-left',
                     )}
                   >
                     <div className={cn('mb-3 flex items-center gap-3', isArabic ? 'flex-row-reverse' : '')}>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8b0000]/8 text-[#8b0000]">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#8b0000]/8 text-[#8b0000]">
                         <Icon className="h-4 w-4" />
                       </div>
                       <p className="text-sm font-semibold text-stone-900">{item.title}</p>

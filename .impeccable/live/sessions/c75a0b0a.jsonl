@@ -1,0 +1,2 @@
+{"seq":1,"id":"c75a0b0a","type":"steer","ts":"2026-05-30T15:23:09.968Z","event":{"type":"steer","id":"c75a0b0a","message":"start","pageUrl":"http://localhost:3000/","token":"6b2780af-c21d-465b-bca2-ea71c82bf447"}}
+{"seq":2,"id":"c75a0b0a","type":"steer_done","ts":"2026-05-30T15:24:06.712Z","event":{"type":"steer_done","id":"c75a0b0a","sourceEventType":"steer","carbonize":false}}

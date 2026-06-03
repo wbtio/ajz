@@ -56,7 +56,7 @@ export default function TermsPage() {
   ]
 
   return (
-    <div className="pt-36 pb-12">
+    <div className="pt-28 sm:pt-32 lg:pt-36 pb-12">
       <Container className="max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">

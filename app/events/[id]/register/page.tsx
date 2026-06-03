@@ -144,7 +144,7 @@ export default function RegisterPage({ params }: RegisterPageProps) {
 
   if (!event) {
     return (
-      <div className="pt-36 pb-12">
+      <div className="pt-28 sm:pt-32 lg:pt-36 pb-12">
         <Container className="max-w-lg">
           <div className="text-center py-12">
             <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
@@ -156,7 +156,7 @@ export default function RegisterPage({ params }: RegisterPageProps) {
   }
 
   return (
-    <div className="pt-40 pb-12 min-h-screen bg-gray-50/50">
+    <div className="pt-28 sm:pt-32 lg:pt-36 pb-12 min-h-screen bg-gray-50/50">
       <Container className="max-w-2xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-8 px-2">

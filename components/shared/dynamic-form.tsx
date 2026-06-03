@@ -55,7 +55,7 @@ const sectorFormSections: SectorFormSection[] = [
     {
         key: 'document',
         title_en: 'Passport Documents',
-        title_ar: 'وثائق الباسبور',
+        title_ar: 'وثائق جواز السفر',
         badge_en: 'Section 02',
         badge_ar: 'القسم 02',
         icon: FileText,
@@ -161,7 +161,7 @@ function normalizeSectorFields(fields: FormField[]) {
                 label_ar: 'اللقب',
                 width: 'half',
                 placeholder_en: field.placeholder_en || 'Surname as shown in passport',
-                placeholder_ar: field.placeholder_ar || 'اللقب كما هو مكتوب في الجواز أو الباسبور',
+                placeholder_ar: field.placeholder_ar || 'اللقب كما هو مكتوب في جواز السفر',
             }
         }
 
@@ -587,7 +587,7 @@ function normalizeSectorFields(fields: FormField[]) {
         required: false,
         width: 'half',
         placeholder_en: 'Surname as shown in passport',
-        placeholder_ar: 'اللقب كما هو مكتوب في الجواز أو الباسبور',
+        placeholder_ar: 'اللقب كما هو مكتوب في جواز السفر',
     }
 
     if (!hasFullName && hasLegacyNameFields) {
@@ -601,9 +601,9 @@ function normalizeSectorFields(fields: FormField[]) {
             required: Boolean(givenNameField?.required || surnameField?.required),
             width: 'half',
             description_en: 'Enter the full name exactly as it appears in the passport.',
-            description_ar: 'أدخل الاسم الكامل كما هو مكتوب في الجواز أو الباسبور.',
+            description_ar: 'يرجى إدخال الاسم الكامل تماماً كما يظهر في جواز السفر الرسمي.',
             placeholder_en: 'Full name as shown in passport',
-            placeholder_ar: 'الاسم الكامل كما هو مكتوب في الجواز أو الباسبور',
+            placeholder_ar: 'الاسم الكامل كما هو مثبت في جواز السفر',
         }
 
         let insertedFullName = false
@@ -922,18 +922,18 @@ export function DynamicForm({
             <Card className={cn(
                 'overflow-hidden border shadow-sm',
                 isSectorVariant
-                    ? 'rounded-[1.75rem] border-emerald-200 bg-[linear-gradient(145deg,#f7fffb_0%,#ffffff_60%,#effdf5_100%)] shadow-[0_28px_70px_-50px_rgba(16,185,129,0.45)]'
-                    : 'rounded-2xl border-slate-200/80 bg-white shadow-sm',
+                    ? 'rounded-xl border-emerald-100 bg-white'
+                    : 'rounded-xl border-slate-200/80 bg-white shadow-sm',
             )}>
                 <CardContent className="flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6 sm:py-10">
                     <div className={cn(
                         'mb-4 flex items-center justify-center rounded-full',
-                        isSectorVariant ? 'h-20 w-20 bg-emerald-50 text-emerald-600' : 'h-16 w-16 bg-slate-100 text-slate-700',
+                        isSectorVariant ? 'h-16 w-16 bg-emerald-50 text-emerald-600' : 'h-16 w-16 bg-slate-100 text-slate-700',
                     )}>
-                        <CheckCircle className={cn(isSectorVariant ? 'h-10 w-10' : 'h-8 w-8')} />
+                        <CheckCircle className={cn(isSectorVariant ? 'h-8 w-8' : 'h-8 w-8')} />
                     </div>
                     {isSectorVariant && (
-                        <Badge variant="outline" className="mb-3 rounded-full border-emerald-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                        <Badge variant="outline" className="mb-3 rounded border-emerald-200 bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700">
                             {isArabic ? 'تم الاستلام' : 'Received'}
                         </Badge>
                     )}
@@ -947,8 +947,8 @@ export function DynamicForm({
                         onClick={() => setSuccess(false)}
                         variant="outline"
                         className={cn(
-                            'mt-5 rounded-xl',
-                            isSectorVariant && 'rounded-full border-[#8b0000]/15 px-5 text-[#8b0000] hover:bg-[#8b0000]/5 hover:text-[#8b0000]',
+                            'mt-5 rounded-md text-sm font-semibold',
+                            isSectorVariant && 'border-[#8b0000]/15 px-5 text-[#8b0000] hover:bg-[#8b0000]/5 hover:text-[#8b0000]',
                             !isSectorVariant && 'border-slate-200 text-slate-800 hover:bg-slate-50',
                         )}
                     >
@@ -1316,15 +1316,15 @@ export function DynamicForm({
                         id={`sector-section-${section.key}`}
                         key={section.key}
                         className={cn(
-                            'overflow-hidden rounded-[1.5rem] border bg-white transition-all duration-300',
+                            'overflow-hidden rounded-xl border bg-white transition-all duration-300 shadow-sm',
                             isActive
-                                ? 'border-[#8b0000]/18 shadow-[0_26px_65px_-54px_rgba(15,23,42,0.35)]'
-                                : 'border-stone-200 shadow-[0_18px_44px_-42px_rgba(15,23,42,0.3)]',
+                                ? 'border-[#8b0000]/30'
+                                : 'border-stone-200',
                         )}
                     >
                         <CardHeader className={cn(
                             'px-5 py-5 sm:px-6',
-                            isActive ? 'border-b border-stone-200 bg-[#faf6f0]' : 'bg-white',
+                            isActive ? 'border-b border-stone-200 bg-[#f5f7fa]' : 'bg-white',
                         )}>
                             <button
                                 type="button"
@@ -1336,8 +1336,8 @@ export function DynamicForm({
                             >
                                 <div className={cn('flex items-start gap-4', isArabic ? 'flex-row-reverse text-right' : 'text-left')}>
                                     <div className={cn(
-                                        'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-[#8b0000]',
-                                        isActive ? 'border-[#8b0000]/12 bg-[#fff7f2]' : 'border-stone-200 bg-stone-50',
+                                        'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-[#8b0000]',
+                                        isActive ? 'border-[#8b0000]/20 bg-[#8b0000]/5' : 'border-stone-200 bg-stone-50',
                                     )}>
                                         <Icon className="h-5 w-5" />
                                     </div>
@@ -1345,11 +1345,11 @@ export function DynamicForm({
                                         <div className={cn('mb-3 flex items-center gap-2', isArabic ? 'flex-row-reverse justify-between' : 'justify-between')}>
                                             <Badge
                                                 variant="outline"
-                                                className="rounded-full border-[#8b0000]/15 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b0000]"
+                                                className="rounded border-[#8b0000]/15 bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8b0000]"
                                             >
                                                 {isArabic ? section.badge_ar : section.badge_en}
                                             </Badge>
-                                            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-[#8b0000]">
+                                            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-[#8b0000]">
                                                 {isActive ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                             </span>
                                         </div>
@@ -1390,7 +1390,7 @@ export function DynamicForm({
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                className="rounded-xl border-[#8b0000]/15 px-5 text-[#8b0000] hover:bg-[#8b0000]/5 hover:text-[#8b0000]"
+                                                className="rounded-md border-[#8b0000]/15 px-5 text-[#8b0000] hover:bg-[#8b0000]/5 hover:text-[#8b0000]"
                                                 onClick={() => goToSection(index - 1)}
                                             >
                                                 <PreviousSectionIcon className={cn('h-4 w-4', isArabic ? 'ml-2' : 'mr-2')} />
@@ -1400,7 +1400,7 @@ export function DynamicForm({
                                         {!isLastSection && (
                                             <Button
                                                 type="button"
-                                                className="rounded-xl bg-[#8b0000] px-5 text-white shadow-[0_18px_45px_-24px_rgba(139,0,0,0.45)] hover:bg-[#740000]"
+                                                className="rounded-md bg-[#8b0000] px-5 text-white hover:bg-[#740000]"
                                                 onClick={() => goToSection(index + 1)}
                                                 disabled={!isCurrentSectionComplete}
                                             >
@@ -1417,13 +1417,13 @@ export function DynamicForm({
             })}
 
             <Card className={cn(
-                'overflow-hidden rounded-[1.5rem] border border-stone-200 bg-[#faf6f0] shadow-[0_24px_64px_-56px_rgba(15,23,42,0.3)] transition-all duration-300',
+                'overflow-hidden rounded-xl border border-stone-200 bg-[#f5f7fa] shadow-sm transition-all duration-300',
                 sections.length > 0 && activeSectionIndex !== sections.length - 1 && 'pointer-events-none hidden opacity-0',
             )}>
                 <CardContent className="px-5 py-5 sm:px-6">
                     <div className={cn('flex flex-col gap-5', isArabic ? 'text-right' : 'text-left')}>
                         <div className="flex flex-wrap items-center gap-3">
-                            <Badge className="rounded-full bg-[#8b0000] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                            <Badge className="rounded border-[#8b0000]/15 bg-[#8b0000] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
                                 {isArabic ? 'جاهز للإرسال' : 'Ready to Submit'}
                             </Badge>
                             <span className="text-sm text-stone-500">
@@ -1441,7 +1441,7 @@ export function DynamicForm({
                             </p>
                             <Button
                                 type="submit"
-                                className="min-h-12 rounded-xl bg-[#8b0000] px-6 text-base text-white shadow-[0_18px_45px_-24px_rgba(139,0,0,0.55)] hover:bg-[#740000] focus:ring-[#8b0000]/30"
+                                className="min-h-11 rounded-md bg-[#8b0000] px-6 text-sm font-semibold text-white hover:bg-[#740000] focus:ring-2 focus:ring-[#8b0000]/20"
                                 disabled={loading || getFirstIncompleteSectionIndex() !== -1}
                             >
                                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : submitLabel}

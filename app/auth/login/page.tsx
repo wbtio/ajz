@@ -43,7 +43,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center pt-36 pb-12">
+    <div className="min-h-[80vh] flex items-center justify-center pt-28 sm:pt-32 lg:pt-36 pb-12">
       <Container className="max-w-md">
         <Card>
           <CardHeader className="text-center">

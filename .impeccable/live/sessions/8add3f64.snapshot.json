@@ -1,0 +1,20 @@
+{
+  "id": "8add3f64",
+  "phase": "variants_ready",
+  "pageUrl": "/sectors",
+  "sourceFile": "app/dashboard/analytics/page.tsx",
+  "expectedVariants": 3,
+  "arrivedVariants": 0,
+  "visibleVariant": 0,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 1,
+  "activeOwner": "afaa083f",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-05-31T22:28:21.516Z"
+}

@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { CalendarDaysIcon as Calendar, MapPinIcon as MapPin, ArrowLeftIcon as ArrowLeft, ArrowRightIcon as ArrowRight } from 'lucide-animated'
-import { Card } from '@/components/ui/card'
-import { formatDate } from '@/lib/utils'
-import { CountdownTimer } from './countdown-timer'
+import { motion } from 'framer-motion'
+import { CalendarDaysIcon as Calendar, SparklesIcon as Sparkles } from 'lucide-animated'
+import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import type { Tables } from '@/lib/database.types'
 
@@ -15,112 +14,201 @@ interface EventCardProps {
   event: Event
 }
 
+function formatEventDate(startDateStr: string, endDateStr: string | null | undefined, locale: string) {
+  const start = new Date(startDateStr)
+  const isRTL = locale.startsWith('ar')
+
+  if (!endDateStr) {
+    return new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(start)
+  }
+
+  const end = new Date(endDateStr)
+  
+  const startYear = start.getFullYear()
+  const endYear = end.getFullYear()
+  const startMonth = start.getMonth()
+  const endMonth = end.getMonth()
+  const startDay = start.getDate()
+  const endDay = end.getDate()
+
+  // Same day
+  if (startYear === endYear && startMonth === endMonth && startDay === endDay) {
+    return new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(start)
+  }
+
+  // Same month and year
+  if (startYear === endYear && startMonth === endMonth) {
+    const monthStr = new Intl.DateTimeFormat(locale, { month: 'short' }).format(start)
+    if (isRTL) {
+      return `${startDay}—${endDay} ${monthStr} ${startYear}`
+    } else {
+      return `${monthStr} ${startDay}—${endDay}, ${startYear}`
+    }
+  }
+
+  // Same year, different months
+  if (startYear === endYear) {
+    const startMonthStr = new Intl.DateTimeFormat(locale, { month: 'short' }).format(start)
+    const endMonthStr = new Intl.DateTimeFormat(locale, { month: 'short' }).format(end)
+    if (isRTL) {
+      return `${startDay} ${startMonthStr} — ${endDay} ${endMonthStr} ${startYear}`
+    } else {
+      return `${startMonthStr} ${startDay} — ${endMonthStr} ${endDay}, ${startYear}`
+    }
+  }
+
+  // Different years
+  const startStr = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(start)
+  const endStr = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(end)
+  
+  return `${startStr} — ${endStr}`
+}
+
 export function EventCard({ event }: EventCardProps) {
-  const { t, locale } = useI18n()
+  const { locale } = useI18n()
   const isRTL = locale === 'ar'
   const Arrow = isRTL ? ArrowLeft : ArrowRight
 
+  const title = isRTL ? (event.title_ar || event.title) : (event.title || event.title_ar || '')
+  const description = isRTL ? (event.description_ar || event.description) : (event.description || event.description_ar || '')
+  const locationText = isRTL
+    ? [event.location_ar || event.location, event.country_ar || event.country].filter(Boolean).join('، ')
+    : [event.location || event.location_ar, event.country || event.country_ar].filter(Boolean).join(', ')
+
+  const eventTypeLabel = event.event_type === 'international'
+    ? (isRTL ? 'دولية' : 'International')
+    : event.event_type === 'local'
+      ? (isRTL ? 'محلية' : 'Local')
+      : null
+
+  const isFree = !(event.show_price && event.price && event.price > 0)
+  const priceLabel = isFree
+    ? (isRTL ? 'مجاني' : 'Free')
+    : (isRTL ? `${event.price!.toLocaleString('ar-IQ')} د.ع` : `$${event.price!.toLocaleString()}`)
+
+  const isCompleted = event.status === 'completed'
+  const ctaLabel = isCompleted
+    ? (isRTL ? 'تفاصيل الفعالية' : 'View Details')
+    : (isRTL ? 'سجل الآن' : 'Register')
+
   return (
-    <Card className="group relative overflow-hidden bg-white border border-gray-100/80 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] hover:-translate-y-2 transition-all duration-500 flex flex-col h-full rounded-[2.5rem]">
-      {/* Image & Overlay Section */}
-      <div className="relative aspect-[16/11] overflow-hidden">
-        {event.image_url ? (
-          <Image
-            src={event.image_url}
-            alt={event.title || event.title_ar || 'Event'}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-700 via-gray-800 to-black flex items-center justify-center relative">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-            <Calendar className="w-16 h-16 text-white/10 relative z-10" />
-          </div>
-        )}
-        
-        {/* Badges - Floating Style */}
-        <div className="absolute top-6 inset-x-6 flex justify-between items-start z-20">
-          <div className="flex items-center gap-1.5">
-            {event.featured && (
-              <div className="bg-[#8b0000] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-2xl shadow-xl border border-[#8b0000]/50 backdrop-blur-md">
-                {t.events.featured}
-              </div>
-            )}
-            {event.event_type === 'international' ? (
-              <div className="bg-gray-700/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-gray-600/30">
-                {isRTL ? 'دولية' : 'International'}
-              </div>
-            ) : event.event_type === 'local' ? (
-              <div className="bg-gray-600/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-gray-500/30">
-                {isRTL ? 'محلية' : 'Local'}
-              </div>
-            ) : null}
-          </div>
-          {(event.sub_sector || event.sector) && (
-            <div className="bg-white/10 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-2xl shadow-sm border border-white/20 ml-auto">
-              {isRTL 
-                ? (event.sub_sector_ar || event.sector)
-                : (event.sub_sector || event.sector)}
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className="flex w-full"
+    >
+      <Link
+        href={`/events/${event.id}`}
+        className="group flex w-full flex-col overflow-hidden rounded-lg border border-[#0b1426]/10 bg-white transition-all duration-300 hover:border-[#8B0000]/30 hover:shadow-[0_4px_12px_rgba(15,23,42,0.03)]"
+      >
+        {/* Image Header — compact widescreen aspect ratio */}
+        <div className="relative aspect-[16/5] w-full overflow-hidden bg-slate-100">
+          {event.image_url ? (
+            <Image
+              src={event.image_url}
+              alt={title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center bg-[#0b1426] p-4 text-center select-none relative">
+              <Calendar size={20} className="text-white/20 mb-1.5" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#8B0000]">
+                {event.sector ? (isRTL ? 'القطاع الاستراتيجي' : 'Strategic Sector') : (isRTL ? 'فعالية JAZ' : 'JAZ Event')}
+              </span>
+              <span className="text-[10px] font-semibold text-white/45 mt-0.5 truncate max-w-[85%] uppercase tracking-wider">
+                {event.sector || 'Joint Annual Zone'}
+              </span>
             </div>
           )}
+
+          {/* Overlay row — Type + Status (start) · Price (end) */}
+          <div className="absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {event.featured && (
+                <span className="inline-flex items-center gap-1 rounded-sm bg-[#8B0000] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-sm">
+                  <Sparkles className="h-2.5 w-2.5" />
+                  {isRTL ? 'مميز' : 'Featured'}
+                </span>
+              )}
+              {eventTypeLabel && (
+                <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#0b1426] shadow-sm">
+                  {event.status === 'published' && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
+                  )}
+                  {event.status === 'completed' && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                  )}
+                  {eventTypeLabel}
+                </span>
+              )}
+            </div>
+
+            <span
+              className={`inline-flex items-center rounded-sm px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap shadow-sm ${
+                isFree ? 'bg-[#16a34a] text-white' : 'bg-[#0b1426] text-white'
+              }`}
+            >
+              {priceLabel}
+            </span>
+          </div>
         </div>
 
-        {/* Dynamic Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-      </div>
-
-      {/* Content Section - Floating Card Effect */}
-      <div className="px-6 pb-6 -mt-16 relative z-30 flex flex-col flex-1">
-        <div className="bg-white p-5 rounded-[2rem] shadow-[0_15px_35px_-10px_rgba(0,0,0,0.1)] border border-gray-50 flex flex-col flex-1 transition-transform duration-500 group-hover:scale-[1.02]">
-          {/* Countdown Area */}
-          <div className="mb-6 flex justify-center">
-            <CountdownTimer targetDate={event.date} />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-xl font-black text-gray-900 leading-tight mb-4 group-hover:text-[#8b0000] transition-colors line-clamp-2 min-h-[3rem]">
-            {isRTL ? (event.title_ar || event.title) : (event.title || event.title_ar)}
+        {/* Card Content — spacious layout with optimized visual rhythm */}
+        <div className="flex flex-1 flex-col gap-3 p-5 text-start">
+          {/* Title — Title tier per DESIGN.md */}
+          <h3 className="line-clamp-2 text-base font-bold leading-snug text-[#0b1426] transition-colors group-hover:text-[#8B0000]">
+            {title}
           </h3>
 
-          {/* Details Grid */}
-          <div className="space-y-3 mb-6">
-            <div className="flex items-center gap-3 group/item">
-              <div className="w-10 h-10 flex items-center justify-center bg-red-50 rounded-2xl text-[#8b0000] group-hover/item:bg-[#8b0000] group-hover/item:text-white transition-all duration-300">
-                <Calendar className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{locale === 'ar' ? 'التاريخ' : 'Date'}</span>
-                <span className="text-xs font-black text-gray-700">{formatDate(event.date)}</span>
-              </div>
+          {/* Description */}
+          {description && (
+            <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
+              {description}
+            </p>
+          )}
+
+          {/* Location */}
+          {locationText && (
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 mt-1">
+              <MapPin size={12} className="shrink-0 text-slate-400" />
+              <span className="line-clamp-1">{locationText}</span>
+            </div>
+          )}
+
+          {/* Bottom metadata row — unified, clean action layout */}
+          <div className="mt-auto pt-3.5 border-t border-[#0b1426]/5 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0b1426]">
+              <Calendar size={13} className="shrink-0 text-slate-400" />
+              <span className="line-clamp-1">
+                {formatEventDate(event.date, event.end_date, locale)}
+              </span>
             </div>
             
-            <div className="flex items-center gap-3 group/item">
-              <div className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-2xl text-gray-400 group-hover/item:bg-gray-800 group-hover/item:text-white transition-all duration-300">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{locale === 'ar' ? 'الموقع' : 'Location'}</span>
-                <span className="text-xs font-black text-gray-700 line-clamp-1">
-                  {isRTL 
-                    ? [event.location_ar || event.location, event.country_ar || event.country].filter(Boolean).join('، ')
-                    : [event.location || event.location_ar, event.country || event.country_ar].filter(Boolean).join(', ')}
-                </span>
-              </div>
-            </div>
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-[#8B0000] transition-colors group-hover:text-[#6B0000]">
+              <span>{ctaLabel}</span>
+              <Arrow className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+            </span>
           </div>
-
-          {/* Premium Action Button */}
-          <Link
-            href={`/events/${event.id}`}
-            target="_blank"
-            className="mt-auto group/btn relative flex items-center justify-center gap-3 py-4 px-6 bg-[#8b0000] hover:bg-[#6b0000] text-white rounded-[1.5rem] font-black text-sm transition-all duration-300 shadow-lg shadow-red-900/25 overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
-            <span>{t.events.viewDetails}</span>
-            <Arrow className={`w-4 h-4 transition-transform duration-300 ${isRTL ? 'group-hover:-translate-x-2' : 'group-hover:translate-x-2'}`} />
-          </Link>
         </div>
-      </div>
-    </Card>
+      </Link>
+    </motion.div>
   )
 }

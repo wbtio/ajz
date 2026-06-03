@@ -1,0 +1,20 @@
+{
+  "id": "07b4ea73",
+  "phase": "completed",
+  "pageUrl": "/",
+  "sourceFile": "components/home/hero-section.tsx",
+  "expectedVariants": 2,
+  "arrivedVariants": 2,
+  "visibleVariant": 1,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 13,
+  "activeOwner": "f1956281",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-05-30T19:55:39.656Z"
+}

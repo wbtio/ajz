@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     .limit(3)
 
   return (
-    <div className="pt-36 pb-12" dir="ltr" lang="en">
+    <div className="pt-28 sm:pt-32 lg:pt-36 pb-12" dir="ltr" lang="en">
       <Container className="max-w-4xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">

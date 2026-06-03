@@ -1,0 +1,29 @@
+{
+  "id": "47e773db",
+  "phase": "completed",
+  "pageUrl": "/",
+  "sourceFile": "components/home/why-jaz-section.tsx",
+  "expectedVariants": 4,
+  "arrivedVariants": 3,
+  "visibleVariant": 3,
+  "paramValues": {
+    "density": "snug",
+    "color-theme": "committed"
+  },
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 14,
+  "activeOwner": "f8d665b4",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [
+    {
+      "error": "carbonize_cleanup_required",
+      "file": "components/home/why-jaz-section.tsx",
+      "message": "Accepted variant still has carbonize markers that must be folded into source CSS."
+    }
+  ],
+  "updatedAt": "2026-05-31T15:51:31.124Z"
+}

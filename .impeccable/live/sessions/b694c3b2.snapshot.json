@@ -1,0 +1,20 @@
+{
+  "id": "b694c3b2",
+  "phase": "variants_ready",
+  "pageUrl": "/",
+  "sourceFile": "components/layout/footer.tsx",
+  "expectedVariants": 3,
+  "arrivedVariants": 0,
+  "visibleVariant": 0,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 2,
+  "activeOwner": "a4676434",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-05-31T15:11:59.702Z"
+}

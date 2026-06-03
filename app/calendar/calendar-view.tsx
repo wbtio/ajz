@@ -183,7 +183,7 @@ export function CalendarView({ events }: CalendarViewProps) {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-20">
+    <div className="min-h-screen bg-white pt-28 sm:pt-32 lg:pt-36 pb-20">
       <Container>
         {/* Page Header */}
         <motion.div

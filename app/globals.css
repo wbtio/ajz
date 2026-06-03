@@ -45,6 +45,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-red-deep: #b42318;
+  --color-red-deep-hover: #911b13;
 }
 
 * {
@@ -311,4 +313,131 @@ html[lang="ar"] :is(button, input, textarea, select) {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* JAZ Strategic Divisions - The Meridian Minimalist (Polished Variant 3) */
+.v3-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: v3-fade 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes v3-fade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.v3-grid {
+  display: grid;
+  grid-template-cols: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .v3-grid {
+    grid-template-cols: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.v3-glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  border-radius: 1.8rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.v3-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(15, 23, 42, 0.1);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+}
+
+.v3-icon-box {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+/* JAZ Partners Features Grid - Overdrive Accepted Design */
+.partners-features-grid {
+  position: relative;
+  background-image: 
+    radial-gradient(circle, rgba(139, 0, 0, 0.4) 1px, transparent 1px),
+    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.partners-feature-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 3px solid rgba(139, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.02);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.partners-feature-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-bottom-color: #8B0000;
+  border-color: rgba(139, 0, 0, 0.3);
+  box-shadow: 0 16px 36px rgba(139, 0, 0, 0.06);
+}
+
+.partners-icon-box {
+  background: rgba(139, 0, 0, 0.06);
+  color: #8B0000;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease, color 0.3s ease;
+}
+
+.partners-feature-card:hover .partners-icon-box {
+  transform: scale(1.15) rotate(5deg);
+  background: #8B0000;
+  color: #ffffff;
+}
+
+/* JAZ Partners Features Grid - Distilled Accepted Design */
+.partners-features-distilled-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0;
+  border-top: 1px solid rgba(11, 20, 38, 0.1);
+  border-bottom: 1px solid rgba(11, 20, 38, 0.1);
+}
+
+.partners-features-distilled-item {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid rgba(11, 20, 38, 0.1);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.partners-features-distilled-icon {
+  color: #0b1426;
+  opacity: 0.6;
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.partners-features-distilled-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0b1426;
 }

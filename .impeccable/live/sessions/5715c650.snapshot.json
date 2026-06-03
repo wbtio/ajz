@@ -1,0 +1,32 @@
+{
+  "id": "5715c650",
+  "phase": "completed",
+  "pageUrl": "/sectors",
+  "sourceFile": "app/sectors/sectors-client.tsx",
+  "expectedVariants": 3,
+  "arrivedVariants": 3,
+  "visibleVariant": 3,
+  "paramValues": {
+    "blur-radius": 10
+  },
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 9,
+  "activeOwner": "6e60f256",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [
+    {
+      "error": "stale_checkpoint_ignored",
+      "revision": 1
+    },
+    {
+      "error": "carbonize_cleanup_required",
+      "file": "app/sectors/sectors-client.tsx",
+      "message": "Accepted variant still has carbonize markers that must be folded into source CSS."
+    }
+  ],
+  "updatedAt": "2026-05-31T22:33:06.864Z"
+}

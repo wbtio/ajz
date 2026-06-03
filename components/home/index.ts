@@ -5,3 +5,5 @@ export { CountdownTimer } from './countdown-timer'
 export { SectorsSection } from './sectors-section'
 export { CTASection } from './cta-section'
 export { AboutJazSection } from './about-jaz-section'
+export { WhyJazSection } from './why-jaz-section'
+

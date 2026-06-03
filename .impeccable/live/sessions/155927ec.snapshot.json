@@ -1,0 +1,20 @@
+{
+  "id": "155927ec",
+  "phase": "variants_ready",
+  "pageUrl": "/events",
+  "sourceFile": "app/blog/blog-page-view.tsx",
+  "expectedVariants": 4,
+  "arrivedVariants": 0,
+  "visibleVariant": 0,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 1,
+  "activeOwner": "a2273f9b",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-06-01T13:25:16.563Z"
+}

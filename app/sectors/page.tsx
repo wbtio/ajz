@@ -1,19 +1,47 @@
-import { createClient } from '@/lib/supabase/server'
-import { SectorsClient } from './sectors-client'
+import { createClient } from "@/lib/supabase/server";
+import { SectorsClient } from "./sectors-client";
 
 export const metadata = {
-  title: 'Strategic Sectors | JAZ',
-  description: 'Explore the strategic sectors we cover at JAZ',
-}
+  title: "Our Strategic Divisions | JAZ",
+  description: "Explore the strategic divisions we cover at JAZ",
+};
+
+const ESTABLISHED_YEAR = 2022;
 
 export default async function SectorsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data: sectors } = await supabase
-    .from('sectors')
-    .select('*')
-    .order('created_at', { ascending: true })
+  const [{ data: sectors }, { count: eventsCount }, { data: countriesRows }] =
+    await Promise.all([
+      supabase.from("sectors").select("*").order("created_at", { ascending: true }),
+      supabase
+        .from("events")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "published"),
+      supabase
+        .from("events")
+        .select("country")
+        .eq("status", "published")
+        .not("country", "is", null),
+    ]);
 
-  return <SectorsClient sectors={sectors} />
+  const uniqueCountries = new Set(
+    (countriesRows || [])
+      .map((row) => row.country?.trim().toLowerCase())
+      .filter((value): value is string => Boolean(value)),
+  ).size;
+
+  const yearsOfExpertise = Math.max(
+    1,
+    new Date().getFullYear() - ESTABLISHED_YEAR,
+  );
+
+  const stats = {
+    years: yearsOfExpertise,
+    events: eventsCount ?? 0,
+    countries: uniqueCountries,
+    divisions: (sectors || []).length || 4,
+  };
+
+  return <SectorsClient sectors={sectors} stats={stats} />;
 }
-
