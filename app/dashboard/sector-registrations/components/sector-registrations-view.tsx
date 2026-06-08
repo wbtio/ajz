@@ -31,7 +31,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
-import { getSectorContent, getSectorRegistrationFallback } from '@/app/sectors/sector-content'
+import { getSectorContent, getSectorRegistrationFallback } from '@/app/departments/department-content'
 import { deleteSectorRegistration, updateSectorRegistrationStatus } from '@/app/dashboard/sector-registrations/actions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

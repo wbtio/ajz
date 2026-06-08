@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Heart, Cpu, GraduationCap, ArrowLeft } from "lucide-react";
-import { mergeSectorWithContent } from "@/app/sectors/sector-content";
+import { mergeSectorWithContent } from "@/app/departments/department-content";
 import type { Tables } from "@/lib/database.types";
 
 const iconMap: Record<
@@ -78,7 +78,7 @@ export function SectorsClient({
                   variants={itemVariants}
                   whileHover={{ y: -5 }}
                 >
-                  <Link href={`/sectors/${sector.slug}`}>
+                  <Link href={`/departments/${sector.slug}`}>
                     <Card className="h-full hover:shadow-2xl hover:shadow-[#8b0000]/5 transition-all duration-300 group overflow-hidden border-gray-100 hover:border-[#8b0000]/30 bg-white">
                       <CardContent className="p-8 relative">
                         {/* decorative background shape */}

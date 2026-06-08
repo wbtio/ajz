@@ -8,7 +8,7 @@ import { Icon } from "@iconify/react";
 import { Container } from "@/components/ui/container";
 import { useI18n } from "@/lib/i18n";
 import type { Sector } from "@/lib/database.types";
-import { mergeSectorWithContent, getSectorContent } from "@/app/sectors/sector-content";
+import { mergeSectorWithContent, getSectorContent } from "@/app/departments/department-content";
 import type { Tables } from "@/lib/database.types";
 
 type Event = Tables<"events">;
@@ -216,7 +216,7 @@ export function SectorsSection({ sectors, events = [] }: SectorsSectionProps) {
 
                     <div className="flex justify-start pt-1">
                       <Link
-                        href={`/sectors/${activeSector.slug}`}
+                        href={`/departments/${activeSector.slug}`}
                         className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-xs font-bold text-white transition-all duration-300 hover:shadow-lg active:scale-95 text-center group/btn"
                         style={{ backgroundColor: accentColor }}
                       >

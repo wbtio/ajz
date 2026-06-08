@@ -2,12 +2,12 @@
 
 import { DynamicForm } from '@/components/shared/dynamic-form'
 import { type FormField } from '@/lib/types'
-import { submitSectorRegistration } from '@/app/sectors/actions'
+import { submitSectorRegistration } from '@/app/departments/actions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { FileText, Building2, UserRound } from 'lucide-react'
-import { getSectorRegistrationFallback } from '@/app/sectors/sector-content'
+import { getSectorRegistrationFallback } from '@/app/departments/department-content'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 

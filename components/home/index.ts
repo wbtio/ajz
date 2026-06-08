@@ -6,4 +6,11 @@ export { SectorsSection } from './sectors-section'
 export { CTASection } from './cta-section'
 export { AboutJazSection } from './about-jaz-section'
 export { WhyJazSection } from './why-jaz-section'
+export { FocusSectors } from './focus-sectors'
+export { OurServices } from './our-services'
+export { FeaturedEvents } from './featured-events'
+export { PartnershipProcess } from './partnership-process'
+export { TrustedPartners } from './trusted-partners'
+export { NewsInsights } from './news-insights'
+
 

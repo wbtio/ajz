@@ -1,42 +1,54 @@
 'use client'
 
-import Image from 'next/image'
+import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Container } from '@/components/ui/container'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Globe, X, Instagram, Linkedin } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
+import { Container } from '@/components/ui/container'
 
 const socialLinks = [
   {
+    name: 'Website',
+    href: '/',
+    icon: Globe,
+  },
+  {
+    name: 'Twitter',
+    href: 'https://x.com',
+    icon: X,
+  },
+  {
     name: 'Instagram',
     href: 'https://www.instagram.com/joint.annual.zone?igsh=bmk2eWxzejhlNzBw&utm_source=qr',
-    icon: () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-    ),
+    icon: Instagram,
   },
   {
     name: 'LinkedIn',
     href: 'https://www.linkedin.com/company/jazcompany/',
-    icon: () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-    ),
-  },
-  {
-    name: 'Facebook',
-    href: 'https://www.facebook.com/share/1AjQDmrwgW/?mibextid=wwXIfr',
-    icon: () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-    ),
+    icon: Linkedin,
   },
 ]
 
 export function Footer() {
-  const { t, locale, dir } = useI18n()
+  const { locale, dir } = useI18n()
   const pathname = usePathname()
-  const iraqOffices = locale === 'ar' ? ['البصرة', 'بغداد', 'أربيل'] : ['Basra', 'Baghdad', 'Erbil']
-  const iraqLabel = locale === 'ar' ? 'العراق' : 'Iraq'
-  const franceLabel = locale === 'ar' ? 'فرنسا' : 'France'
+  
+  const [emailInput, setEmailInput] = useState('')
+  const [isSubscribing, setIsSubscribing] = useState(false)
+  const [subscribeSuccess, setSubscribeSuccess] = useState(false)
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!emailInput) return
+    setIsSubscribing(true)
+    setTimeout(() => {
+      setIsSubscribing(false)
+      setSubscribeSuccess(true)
+      setEmailInput('')
+    }, 1200)
+  }
 
   const normalizedPathname = pathname?.toLowerCase() ?? ''
   const isEventDetailsPage = /^\/events\/[^/]+\/?$/.test(normalizedPathname)
@@ -45,147 +57,263 @@ export function Footer() {
     return null
   }
 
-  const footerLinks = {
-    services: [
-      { name: t.nav.events, href: '/events' },
-      { name: t.trainingPage.title, href: '/training' },
-      { name: t.nav.sectors, href: '/#sectors' },
-    ],
-    support: [
-      { name: t.nav.contact, href: '/contact' },
-      { name: t.footer.faq, href: '/faq' },
-      { name: t.footer.privacy, href: '/privacy' },
-      { name: t.footer.terms, href: '/terms' },
-    ],
-  }
-
   return (
     <footer
       dir={dir}
       lang={locale}
-      className="relative border-t border-[#0b1426]/10 bg-[#f5f7fa] text-[#0b1426] py-4 sm:py-5"
+      className="bg-[#021c36] text-[#6f85a3] border-t border-[#c4c6ce]/10 py-8 sm:py-10"
     >
       <Container>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6 lg:gap-8 text-start">
-          {/* Column 1: Logo & Brand Pitch & Contact Info */}
-          <div className="flex flex-col items-start gap-3 md:col-span-6 lg:col-span-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 text-start">
+          {/* Brand & Description */}
+          <div className="lg:col-span-3 space-y-4">
             <Link href="/" className="group block shrink-0">
               <Image
                 src="/Joint Annual Zone logo.png"
                 alt="Joint Annual Zone Logo"
-                width={384}
-                height={128}
-                sizes="10rem"
-                className="h-auto w-24 object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                width={120}
+                height={40}
+                className="h-auto w-28 object-contain brightness-0 invert transition-transform duration-300 group-hover:scale-[1.01]"
                 unoptimized
               />
             </Link>
-            <p className="text-xs leading-relaxed text-[#0b1426]/60 font-medium max-w-[35ch]">
-              {t.footer.description}
-            </p>
-            
-            {/* Direct Contact links */}
-            <div className="flex flex-col gap-1.5 mt-0.5">
-              <a
-                href="tel:+9647719000600"
-                className="flex items-center gap-2 text-xs font-semibold text-[#0b1426]/60 hover:text-[#8B0000] transition-colors"
-              >
-                <Phone className="h-3.5 w-3.5 text-[#0b1426]/40 shrink-0" />
-                <span dir="ltr">+964 771 900 0600</span>
-              </a>
-              <a
-                href="mailto:contact@jaz.iq"
-                className="flex items-center gap-2 text-xs font-semibold text-[#0b1426]/60 hover:text-[#8B0000] transition-colors"
-              >
-                <Mail className="h-3.5 w-3.5 text-[#0b1426]/40 shrink-0" />
-                <span>contact@jaz.iq</span>
-              </a>
+            <div className="space-y-2.5">
+              <p className="text-xs leading-relaxed text-[#6f85a3]/80">
+                {locale === 'ar'
+                  ? 'بوابة العراق للمعارض الدولية والشراكات المؤسسية.'
+                  : "Iraq's Gateway to International Exhibitions & Institutional Partnerships."}
+              </p>
+              <p className="text-xs leading-relaxed text-[#6f85a3]/60">
+                {locale === 'ar'
+                  ? 'نحن نربط ونمثل ونمكن المؤسسات والمهنيين في العراق على الساحة العالمية.'
+                  : "We connect, represent, and empower Iraq's institutions and professionals on the stage."}
+              </p>
             </div>
+            {/* Social Icons */}
+            <div className="flex gap-3 items-center pt-1">
+              {socialLinks.map((social) => {
+                const Icon = social.icon
+                return (
+                  <Link
+                    key={social.name}
+                    className="w-7 h-7 rounded-full border border-[#6f85a3]/30 flex items-center justify-center text-[#6f85a3] hover:text-[#f7e382] hover:border-[#f7e382] transition-all duration-300 transform active:scale-95"
+                    href={social.href}
+                    target={social.href.startsWith('http') ? '_blank' : undefined}
+                    rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
 
-            {/* Social Links inline */}
-            <div className="flex items-center gap-2 mt-1">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-7 w-7 items-center justify-center rounded bg-[#0b1426]/5 text-[#0b1426]/60 transition-all hover:bg-[#8B0000]/5 hover:text-[#8B0000] hover:border-[#8B0000]/20 border border-transparent shadow-sm"
-                  aria-label={social.name}
-                >
-                  <social.icon />
+
+          {/* Quick Links */}
+          <div className="lg:col-span-2 space-y-4">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              {locale === 'ar' ? 'روابط سريعة' : 'Quick Links'}
+            </h3>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/about">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'عن JAZ' : 'About JAZ'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/departments">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'الأقسام' : 'Departments'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/services">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'خدماتنا' : 'Our Services'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/events">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'تقويم الفعاليات' : 'Events Calendar'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/invitation-support">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'دعم الدعوة' : 'Invitation Support'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partners">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'الشراكات' : 'Partnerships'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/blog">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'الأخبار والأفكار' : 'News & Insights'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/contact">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'اتصل بنا' : 'Contact Us'}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Departments */}
+          <div className="lg:col-span-2 space-y-4">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              {locale === 'ar' ? 'الأقسام' : 'Departments'}
+            </h3>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/departments">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'التعاون الدولي' : 'International Cooperation'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/events">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'المعارض والفعاليات' : 'Exhibitions & Events'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partners">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'الشراكات المؤسسية' : 'Institutional Partnerships'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/services">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'تطوير الأعمال' : 'Business Development'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/invitation-support">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'مكتب دعم الدعوة' : 'Invitation Support Office'}
+                </Link>
+              </li>
+              <li>
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/blog">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
+                  {locale === 'ar' ? 'البحوث والأفكار' : 'Research & Insights'}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Us */}
+          <div className="lg:col-span-2 space-y-4">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              {locale === 'ar' ? 'اتصل بنا' : 'Contact Us'}
+            </h3>
+            <div className="space-y-3.5 text-xs text-[#6f85a3]">
+              <div>
+                <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب البصرة' : 'Basra Office'}</p>
+                <p className="text-[11px] opacity-80">{locale === 'ar' ? 'شارع الكورنيش، البصرة' : 'Al Corniche St., Basra'}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب بغداد' : 'Baghdad Office'}</p>
+                <p className="text-[11px] opacity-80">{locale === 'ar' ? 'المنصور، بغداد' : 'Al Mansour, Baghdad'}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب أربيل' : 'Erbil Office'}</p>
+                <p className="text-[11px] opacity-80">{locale === 'ar' ? 'شارع الـ 60م، أربيل' : '60m St., Erbil'}</p>
+              </div>
+              <div className="pt-1.5 space-y-0.5 border-t border-[#6f85a3]/10">
+                <a href="tel:+9647719000600" className="block text-white/90 hover:text-[#f7e382] transition-colors font-medium" dir="ltr">
+                  +964 771 900 0600
                 </a>
-              ))}
+                <a href="mailto:info@jaz-iq.com" className="block hover:text-[#f7e382] transition-colors font-medium">
+                  info@jaz-iq.com
+                </a>
+              </div>
             </div>
           </div>
 
-          {/* Column 2: Navigation Links (Services) */}
-          <div className="flex flex-col items-start gap-2 md:col-span-3 lg:col-span-3">
-            <h4 className="text-xs font-bold text-[#0b1426] uppercase tracking-wider">
-              {locale === 'ar' ? 'الخدمات' : 'Services'}
-            </h4>
-            <ul className="flex flex-col gap-1.5 text-start w-full">
-              {footerLinks.services.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-xs font-semibold text-[#0b1426]/60 hover:text-[#8B0000] transition-colors"
+          {/* Newsletter & Office Hours */}
+          <div className="lg:col-span-3 space-y-6">
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                {locale === 'ar' ? 'النشرة البريدية' : 'Newsletter'}
+              </h3>
+              <p className="text-xs text-[#6f85a3]/85 leading-relaxed">
+                {locale === 'ar'
+                  ? 'اشترك لتصلك مستجدات الفعاليات وأخبار الشراكات.'
+                  : 'Subscribe to receive updates on events and partnership news.'}
+              </p>
+              
+              {subscribeSuccess ? (
+                <div className="bg-emerald-950/30 border border-emerald-500/30 p-2.5 rounded text-center">
+                  <p className="text-[11px] font-bold text-emerald-400">
+                    {locale === 'ar' ? 'تم الاشتراك بنجاح!' : 'Subscribed successfully!'}
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex w-full group overflow-hidden rounded border border-[#6f85a3]/20 animate-in fade-in duration-300">
+                  <input
+                    className="flex-grow px-3 py-2 bg-white text-[#000000] outline-none text-xs border-none focus:ring-0 transition-all min-w-0"
+                    placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Your email'}
+                    type="email"
+                    required
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    disabled={isSubscribing}
+                  />
+                  <button
+                    className="bg-[#f7e382] text-[#000000] font-bold px-4 py-2 text-xs hover:bg-[#f7e382]/90 transition-all active:scale-95 disabled:opacity-50 shrink-0"
+                    type="submit"
+                    disabled={isSubscribing}
                   >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Navigation Links (Support) */}
-          <div className="flex flex-col items-start gap-2 md:col-span-3 lg:col-span-4">
-            <h4 className="text-xs font-bold text-[#0b1426] uppercase tracking-wider">
-              {t.footer.support}
-            </h4>
-            <ul className="flex flex-col gap-1.5 text-start w-full">
-              {footerLinks.support.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-xs font-semibold text-[#0b1426]/60 hover:text-[#8B0000] transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    {isSubscribing ? '...' : (locale === 'ar' ? 'اشترك' : 'Subscribe')}
+                  </button>
+                </form>
+              )}
+            </div>
+            
+            <div className="space-y-2 pt-3.5 border-t border-[#6f85a3]/10">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                {locale === 'ar' ? 'أوقات العمل' : 'Office Hours'}
+              </h3>
+              <div className="text-xs text-[#6f85a3]">
+                <p>{locale === 'ar' ? 'السبت – الخميس' : 'Saturday – Thursday'}</p>
+                <p className="font-semibold text-white/90">8:30 AM – 4:30 PM</p>
+                <p className="text-[10px] opacity-60">
+                  {locale === 'ar' ? '(بتوقيت العراق المحلي)' : '(Iraq Local Time)'}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Bottom copyright & locations bar */}
-        <div className="mt-4 pt-3 border-t border-[#0b1426]/10 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 text-xs font-semibold text-[#0b1426]/50 text-start">
-            <span>
-              © {new Date().getFullYear()} JAZ. {t.footer.rights}
-            </span>
-            <span className="hidden sm:inline text-[#0b1426]/20">•</span>
-            <div className="flex items-center gap-3">
-              <Link href="/privacy" className="hover:text-[#8B0000] transition-colors">
-                {t.footer.privacy}
-              </Link>
-              <span className="text-[#0b1426]/20">•</span>
-              <Link href="/terms" className="hover:text-[#8B0000] transition-colors">
-                {t.footer.terms}
-              </Link>
-            </div>
-          </div>
-
-          {/* Office locations */}
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs font-semibold text-[#0b1426]/50 text-start">
-            <span className="uppercase text-[#0b1426]/40">{iraqLabel}:</span>
-            <span className="text-[#0b1426]/80">{iraqOffices.join(' • ')}</span>
-            <span className="mx-1.5 text-[#0b1426]/20 font-normal">|</span>
-            <span className="uppercase text-[#0b1426]/40">{franceLabel}:</span>
-            <span className="text-[#0b1426]/80">Paris</span>
+        {/* Bottom Copyright Bar */}
+        <div className="mt-8 pt-4 border-t border-[#6f85a3]/10 flex flex-col md:flex-row justify-between items-center gap-3.5 text-xs text-[#6f85a3]/70 text-center md:text-start">
+          <p>
+            {locale === 'ar'
+              ? '© 2024 المنطقة السنوية المشتركة (JAZ). جميع الحقوق محفوظة.'
+              : '© 2024 Joint Annual Zone (JAZ). All rights reserved.'}
+          </p>
+          <div className="flex items-center gap-4">
+            <Link className="hover:text-[#f7e382] transition-colors" href="/privacy">
+              {locale === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+            </Link>
+            <span className="text-[#6f85a3]/30">|</span>
+            <Link className="hover:text-[#f7e382] transition-colors" href="/terms">
+              {locale === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
+            </Link>
           </div>
         </div>
       </Container>
     </footer>
   )
 }
+

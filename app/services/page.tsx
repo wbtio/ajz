@@ -1,362 +1,307 @@
-"use client";
+'use client'
 
-import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform, Variants } from "framer-motion";
-import { Icon } from "@iconify/react";
-import { Sparkles, Compass, CheckCircle2 } from "lucide-react";
-import { Container } from "@/components/ui/container";
-import { Card, CardContent } from "@/components/ui/card";
-import { useI18n } from "@/lib/i18n";
-import { ContactBanner } from "@/components/shared/contact-banner";
-import { StatsBar } from "@/components/shared/stats-bar";
-import Aurora from "@/components/home/aurora";
-import BlurText from "@/components/ui/blur-text";
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
+import { useRef } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Container } from '@/components/ui/container'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { useI18n } from '@/lib/i18n'
+import { Icon } from '@iconify/react'
 
 export default function ServicesPage() {
-  const { t, locale, dir } = useI18n();
-  const isArabic = locale === "ar";
-  const shouldReduceMotion = useReducedMotion() ?? false;
+  const { t, locale, dir } = useI18n()
+  const isRTL = locale === 'ar'
+  const shouldReduceMotion = useReducedMotion() ?? false
 
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
+  const sectionRef = useRef<HTMLElement | null>(null)
 
-  const contentY = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, 72]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], shouldReduceMotion ? [1, 1] : [1, 0.6]);
-  const heroGlowScale = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [1, 1] : [1, 1.08]);
-
-  const heroContainerVariants: Variants = {
+  const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.3,
+        staggerChildren: 0.08,
       },
     },
-  };
+  }
 
-  const heroItemVariants: Variants = {
-    hidden: { opacity: 0, y: 30 },
+  const cardVariants = {
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        duration: 0.5,
+        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
       },
     },
-  };
+  }
 
-  const services = [
+  // Stats bar data from the HTML
+  const stats = [
     {
-      title: t.about.matchmakingTitle,
-      description: t.about.matchmakingText,
-      icon: "solar:global-bold-duotone",
-      color: "bg-teal-500/10 text-teal-600 border-teal-500/20",
+      val: '+10',
+      label: isRTL ? t.servicesPage.stats.expLabel : t.servicesPage.stats.expLabel,
+      icon: 'solar:medal-ribbons-star-bold-duotone',
     },
     {
-      title: t.about.trainingTitle,
-      description: t.about.trainingText,
-      icon: "solar:square-academic-cap-bold-duotone",
-      color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
+      val: isRTL ? t.servicesPage.stats.citiesVal : t.servicesPage.stats.citiesVal,
+      label: isRTL ? t.servicesPage.stats.citiesLabel : t.servicesPage.stats.citiesLabel,
+      icon: 'solar:globus-bold-duotone',
     },
     {
-      title: t.about.serviceExhibitionTitle,
-      description: t.about.serviceExhibitionText,
-      icon: "solar:widget-3-bold-duotone",
-      color: "bg-red-500/10 text-red-600 border-red-500/20",
+      val: isRTL ? t.servicesPage.stats.sectorsVal : t.servicesPage.stats.sectorsVal,
+      label: isRTL ? t.servicesPage.stats.sectorsLabel : t.servicesPage.stats.sectorsLabel,
+      icon: 'solar:widget-5-bold-duotone',
     },
     {
-      title: t.about.serviceEventMgmtTitle,
-      description: t.about.serviceEventMgmtText,
-      icon: "solar:calendar-date-bold-duotone",
-      color: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      val: isRTL ? t.servicesPage.stats.govVal : t.servicesPage.stats.govVal,
+      label: isRTL ? t.servicesPage.stats.govLabel : t.servicesPage.stats.govLabel,
+      icon: 'solar:users-group-two-rounded-bold-duotone',
     },
-    {
-      title: t.about.serviceCustomerTitle,
-      description: t.about.serviceCustomerText,
-      icon: "solar:chat-round-dots-bold-duotone",
-      color: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-    },
-  ];
+  ]
 
-  const statsItems = isArabic
-    ? [
-        {
-          value: 150,
-          label: "مؤتمرات ومعارض دولية",
-          icon: "solar:global-bold-duotone",
-          suffix: "+",
-        },
-        {
-          value: 45,
-          label: "برامج تدريبية معتمدة",
-          icon: "solar:square-academic-cap-bold-duotone",
-          suffix: "+",
-        },
-        {
-          value: 2500,
-          label: "متدرب ومشارك مستفيد",
-          icon: "solar:users-group-rounded-bold-duotone",
-          suffix: "+",
-        },
-        {
-          value: 98,
-          label: "نسبة رضا المؤسسات",
-          icon: "solar:like-bold-duotone",
-          suffix: "%",
-        },
-      ]
-    : [
-        {
-          value: 150,
-          label: "International Events",
-          icon: "solar:global-bold-duotone",
-          suffix: "+",
-        },
-        {
-          value: 45,
-          label: "Accredited Programs",
-          icon: "solar:square-academic-cap-bold-duotone",
-          suffix: "+",
-        },
-        {
-          value: 2500,
-          label: "Trained Professionals",
-          icon: "solar:users-group-rounded-bold-duotone",
-          suffix: "+",
-        },
-        {
-          value: 98,
-          label: "Client Satisfaction",
-          icon: "solar:like-bold-duotone",
-          suffix: "%",
-        },
-      ];
+  // Icons matching each of the 8 services
+  const serviceIcons = [
+    'solar:globus-bold-duotone',                  // International Event Access
+    'solar:users-group-two-rounded-bold-duotone', // Delegation Coordination
+    'solar:letter-bold-duotone',                  // Invitation & Registration
+    'solar:share-bold-duotone',                   // Official Pub & Promotion
+    'solar:link-bold-duotone',                    // Institutional Partnerships
+    'solar:compass-bold-duotone',                 // Market Outreach
+    'solar:handshake-bold-duotone',               // B2B Matchmaking
+    'solar:shield-user-bold-duotone'              // Logistics & Protocol
+  ]
 
-  const valueProps = isArabic
-    ? [
-        "خبرة محلية عميقة مع رؤية دولية واسعة.",
-        "شراكات استراتيجية موثوقة وممتدة لأكثر من عقد.",
-        "فريق متخصص يرافقك خطوة بخطوة لتحقيق نتائج قابلة للقياس.",
-        "حلول متكاملة تغطي كافة جوانب الفعاليات والتدريب.",
-      ]
-    : [
-        "Deep local expertise with an extensive global vision.",
-        "Trusted strategic partnerships spanning over a decade.",
-        "A dedicated team guiding you step-by-step to achieve measurable outcomes.",
-        "Integrated solutions covering all event and training aspects.",
-      ];
+  const coreServices = t.servicesPage.coreServices.items || []
+  const whyJazItems = t.servicesPage.info.whyJaz.items || []
 
   return (
-    <div className="min-h-screen bg-white" dir={dir} lang={locale}>
-      {/* Hero Section - Matching BlogHero Layout */}
-      <motion.section
+    <div className="min-h-screen bg-white text-[#001a33]" dir={dir} lang={locale}>
+      {/* Hero Section */}
+      <section
         ref={sectionRef}
-        dir={dir}
-        lang={locale}
-        className="relative z-20 flex flex-col justify-between bg-[#0b1426] text-white pt-24 pb-8 sm:pt-26 lg:pt-28 sm:pb-10 lg:pb-12 overflow-hidden"
+        className="relative min-h-[400px] bg-[#001a33] text-white overflow-hidden flex items-center"
+        data-purpose="hero-section"
       >
-        {/* Aurora dynamic animated background with readability overlays */}
-        <div className="absolute inset-0 overflow-hidden">
-          <Aurora
-            className="absolute inset-0"
-            colorStops={["#052511", "#8B0000", "#0b1426"]}
-            amplitude={1.2}
-            blend={0.6}
-            speed={0.4}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,20,38,0.75)_0%,rgba(11,20,38,0.55)_35%,rgba(11,20,38,0.35)_65%,#0b1426_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.05),transparent_36%),radial-gradient(circle_at_72%_34%,rgba(139,0,0,0.08),transparent_30%),radial-gradient(circle_at_18%_26%,rgba(22,163,74,0.06),transparent_26%)]" />
-
-          {/* Services Banner Background Image Overlay */}
-          <div
-            className="absolute inset-0 z-0 opacity-[0.12] md:opacity-[0.18] pointer-events-none select-none transition-all duration-700"
-            style={{
-              backgroundImage: "url('/services-banner.png')",
-              backgroundPosition: "center center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-
-          <motion.div
-            style={{ scale: heroGlowScale }}
-            className="absolute inset-x-[5%] top-0 h-[18rem] rounded-full bg-[radial-gradient(circle,rgba(139,0,0,0.06),transparent_65%)] blur-3xl"
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(22,163,74,0.04),transparent_45%)]" />
-          <motion.div
-            animate={shouldReduceMotion ? undefined : { opacity: [0.15, 0.4, 0.15], scaleX: [0.92, 1.08, 0.92] }}
-            transition={shouldReduceMotion ? undefined : { duration: 9, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-x-[12%] bottom-[30%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
-          />
-          <div className="home-grid-transition absolute inset-x-0 bottom-0 h-[19rem] opacity-40" />
-          <div className="absolute bottom-[-5.5rem] left-1/2 h-[12rem] w-[min(120%,88rem)] -translate-x-1/2 rounded-[100%] bg-white/5 blur-3xl" />
+        {/* Background Image with Dark Blue Gradient Overlay */}
+        <div className="absolute inset-0 z-0 select-none pointer-events-none">
+          {/* On mobile: cover background with lower opacity */}
+          <div className="lg:hidden absolute inset-0">
+            <Image
+              src="/services-hero-bg.png"
+              alt="Services Globe Background"
+              fill
+              priority
+              className="object-cover opacity-30"
+              sizes="100vw"
+            />
+          </div>
+          
+          {/* On desktop: positioned on the 'end' side (right in LTR, left in RTL) */}
+          <div className="hidden lg:block absolute inset-y-0 end-0 start-1/3">
+            <Image
+              src="/services-hero-bg.png"
+              alt="Services Connection Map"
+              fill
+              priority
+              className="object-cover object-right opacity-80"
+              sizes="60vw"
+            />
+          </div>
+          
+          {/* Linear blending gradients */}
+          <div className="absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l from-[#001a33] via-[#001a33]/85 lg:via-[#001a33]/40 to-transparent"></div>
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#001a33] to-transparent"></div>
         </div>
 
-        <Container className="relative max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16 w-full flex justify-start">
-          <div className="flex flex-col items-start justify-start w-full text-start">
-            {/* Text Content */}
-            <motion.div
-              style={{ y: contentY, opacity: contentOpacity }}
-              variants={heroContainerVariants}
-              initial="hidden"
-              animate="visible"
-              className="mt-6 sm:mt-10 lg:mt-14 flex w-full max-w-2xl lg:max-w-3xl flex-col items-start text-start"
-            >
-              {/* Main Title */}
-              <motion.div variants={heroItemVariants} className="mb-4">
-                <h1 className="font-black tracking-[-0.04em] text-white text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] drop-shadow-[0_4px_24px_rgba(255,255,255,0.08)]">
-                  {t.about.servicesTitle}
-                </h1>
-              </motion.div>
-
-              {/* Description */}
-              <motion.div variants={heroItemVariants} className="w-full">
-                <motion.div
-                  whileInView={shouldReduceMotion ? undefined : { opacity: [0.75, 1, 0.85, 1] }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 2.4 }}
-                >
-                  <BlurText
-                    text={t.about.servicesHeading}
-                    delay={80}
-                    animateBy="words"
-                    direction="top"
-                    className={`text-start text-navy-200/90 ${
-                      isArabic
-                        ? "max-w-2xl text-[1.04rem] leading-[2.05] sm:text-[1.15rem] md:text-[1.3rem]"
-                        : "max-w-xl text-base leading-relaxed sm:text-lg md:text-xl"
-                    }`}
-                  />
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </Container>
-      </motion.section>
-
-      {/* Services Stats Bar */}
-      <StatsBar items={statsItems} overlap={false} />
-
-      {/* Main Content */}
-      <Container className="max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16 py-12 md:py-20 space-y-16 md:space-y-24 mt-8 lg:mt-12">
-        {/* Intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center max-w-3xl mx-auto space-y-4"
-        >
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#8b0000]/5 px-3 py-1 text-xs font-bold text-[#8b0000]">
-            <Sparkles className="h-3 w-3" />
-            {isArabic ? "بوابتك نحو التميز" : "Your Gateway to Excellence"}
-          </div>
-          <p className="text-sm sm:text-base leading-relaxed text-slate-600">
-            {t.about.servicesDescription}
-          </p>
-        </motion.div>
-
-        {/* Services List Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {services.map((service, idx) => {
-            return (
-              <motion.div key={idx} variants={itemVariants}>
-                <Card className="h-full border-slate-100 hover:border-[#8b0000]/20 hover:shadow-md transition-all duration-300 bg-white group relative overflow-hidden">
-                  <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#8b0000]/60 via-[#8b0000] to-[#8b0000]/60 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center" />
-                  <CardContent className="p-6 flex flex-col items-start gap-4 text-start h-full">
-                    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-transform duration-300 group-hover:scale-115 ${service.color}`}>
-                      <Icon icon={service.icon} className="h-5.5 w-5.5" />
-                    </span>
-                    <div className="space-y-2 flex-grow">
-                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-[#8b0000] transition-colors duration-300">
-                        {service.title}
-                      </h3>
-                      <p className="text-xs sm:text-sm leading-relaxed text-slate-600">
-                        {service.description}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* What sets us apart (Why JAZ) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center border-t border-slate-100 pt-16">
+        <Container className="relative z-10 w-full text-start px-6 py-16 lg:py-24">
           <motion.div
-            initial={{ opacity: 0, x: isArabic ? 40 : -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-5 text-start"
+            className="max-w-xl"
           >
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#8b0000]/5 px-3 py-1 text-xs font-bold text-[#8b0000]">
-              <Compass className="h-3 w-3" />
-              {isArabic ? "ريادة وتميز" : "Leadership & Distinction"}
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 leading-tight">
-              {t.about.whyTitle}
-            </h2>
-            <p className="text-sm sm:text-base leading-relaxed text-slate-600">
-              {t.about.whyText}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 tracking-tight leading-tight">
+              {t.servicesPage.hero.title}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-8 font-medium">
+              {t.servicesPage.hero.description}
             </p>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                asChild
+                className="bg-[#cba76d] hover:bg-[#bba362] text-[#001a33] font-bold px-6 py-5 rounded-[4px] text-xs shadow-md border-0 shrink-0"
+              >
+                <Link href="/contact?subject=cooperation">
+                  {t.servicesPage.hero.ctaCooperation}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="bg-[#001a33] border border-blue-900 text-white font-bold px-6 py-5 rounded-[4px] text-xs hover:bg-blue-900 shrink-0"
+              >
+                <Link href="/events">
+                  {t.servicesPage.hero.ctaParticipation}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="bg-[#001a33] border border-blue-900 text-white font-bold px-6 py-5 rounded-[4px] text-xs hover:bg-blue-900 shrink-0"
+              >
+                <Link href="/invitation-support">
+                  {t.servicesPage.hero.ctaInvitation}
+                </Link>
+              </Button>
+            </div>
           </motion.div>
+        </Container>
+      </section>
 
-          <motion.div
-            initial={{ opacity: 0, x: isArabic ? -40 : 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="space-y-4"
-          >
-            {valueProps.map((prop, idx) => (
-              <div key={idx} className="flex items-start gap-3 text-start">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-500/10 text-green-600 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3" />
+      {/* Stats Bar */}
+      <section
+        className="bg-[#001226] text-white py-5 border-t border-blue-900/40 relative z-10"
+        data-purpose="stats-bar"
+      >
+        <Container className="px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x sm:rtl:divide-x-reverse divide-white/10">
+            {stats.map((stat, index) => (
+              <div key={index} className="flex flex-col items-center justify-center p-2 sm:p-0">
+                <span className="text-base sm:text-lg font-black text-white leading-none mb-1.5 flex items-center gap-1.5 justify-center">
+                  <Icon icon={stat.icon} className="text-[#cba76d] h-5 w-5 shrink-0" />
+                  {stat.val}
                 </span>
-                <span className="text-xs sm:text-sm text-slate-700 font-medium">
-                  {prop}
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">
+                  {stat.label}
                 </span>
               </div>
             ))}
-          </motion.div>
-        </div>
-      </Container>
+          </div>
+        </Container>
+      </section>
 
-      {/* Footer Contact Banner */}
-      <ContactBanner
-        title={t.blogPage.contactBanner.title}
-        description={t.blogPage.contactBanner.description}
-        ctaLabel={t.blogPage.contactBanner.cta}
-        ctaHref="/contact"
-        className="mt-12 sm:mt-14 lg:mt-20"
-      />
+      {/* Main Content */}
+      <main className="py-16 bg-white">
+        <Container className="px-6">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#001a33] mb-8 text-start flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
+            {t.servicesPage.coreServices.title}
+          </h2>
+
+          {/* Services Grid */}
+          <motion.div
+            variants={containerVariants}
+            initial={shouldReduceMotion ? 'visible' : 'hidden'}
+            whileInView="visible"
+            viewport={{ once: true, margin: '-20px' }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            data-purpose="services-grid"
+          >
+            {coreServices.map((service: any, index: number) => (
+              <motion.div key={index} variants={cardVariants} className="h-full">
+                <Card className="h-full bg-white border border-[#e5e7eb] rounded-[4px] shadow-[0_1px_3px_rgba(0,0,0,0.1)] relative overflow-hidden flex flex-col justify-between group">
+                  <CardContent className="p-6 text-start flex flex-col h-full">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[#001a33]/5 text-[#001a33] mb-4 group-hover:scale-105 transition-transform duration-300">
+                      <Icon icon={serviceIcons[index % serviceIcons.length]} className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-extrabold text-sm text-[#001a33] mb-3 leading-tight group-hover:text-[#8b0000] transition-colors duration-300">
+                      {service.title}
+                    </h3>
+                    <p className="text-[11px] leading-relaxed text-gray-500 font-medium">
+                      {service.desc}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Secondary Info Sections */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" data-purpose="secondary-info">
+            {/* How We Work */}
+            <div className="lg:col-span-4 border border-[#e5e7eb] rounded-[4px] p-6 min-h-[180px] bg-white text-start shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
+              <h4 className="font-extrabold text-base text-[#001a33] mb-4 border-b border-slate-100 pb-2">
+                {t.servicesPage.info.howWeWork.title}
+              </h4>
+              <p className="text-[11px] text-gray-500 font-semibold leading-relaxed">
+                {t.servicesPage.info.howWeWork.desc}
+              </p>
+            </div>
+
+            {/* Industries We Support */}
+            <div className="lg:col-span-5 border border-[#e5e7eb] rounded-[4px] p-6 min-h-[180px] bg-white text-start shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
+              <h4 className="font-extrabold text-base text-[#001a33] mb-4 border-b border-slate-100 pb-2">
+                {t.servicesPage.info.industries.title}
+              </h4>
+              <p className="text-[11px] text-gray-500 font-semibold leading-relaxed">
+                {t.servicesPage.info.industries.desc}
+              </p>
+            </div>
+
+            {/* Why Work With JAZ? */}
+            <div className="lg:col-span-3 border border-[#e5e7eb] rounded-[4px] p-6 bg-white flex flex-col text-start shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
+              <h4 className="font-extrabold text-base text-[#001a33] mb-4 border-b border-slate-100 pb-2">
+                {t.servicesPage.info.whyJaz.title}
+              </h4>
+              <ul className="text-[10px] space-y-2 text-gray-600 font-bold list-disc pl-4 rtl:pr-4 rtl:pl-0">
+                {whyJazItems.map((item: string, index: number) => (
+                  <li key={index} className="marker:text-[#cba76d]">{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Container>
+      </main>
+
+      {/* Call To Action */}
+      <section className="pb-16 bg-white">
+        <Container className="px-6">
+          <motion.div
+            initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-[#001a33] rounded-[4px] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-white border border-white/5 shadow-lg relative overflow-hidden"
+            data-purpose="cta-bar"
+          >
+            {/* Soft decorative visual glow */}
+            <div className="absolute right-0 top-0 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(203,167,109,0.08),transparent_70%)] pointer-events-none select-none" />
+            
+            <div className="text-start md:max-w-2xl mb-6 md:mb-0 relative z-10">
+              <h3 className="text-xl sm:text-2xl font-black mb-2 text-white leading-tight">
+                {t.servicesPage.cta.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 font-medium opacity-90">
+                {t.servicesPage.cta.description}
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-full md:w-auto shrink-0 justify-start relative z-10">
+              <Button
+                asChild
+                className="flex-grow md:flex-grow-0 px-8 py-5 bg-[#cba76d] text-[#001a33] font-bold hover:bg-[#bba362] rounded-[4px] text-xs shadow-md border-0 shrink-0 h-10"
+              >
+                <Link href="/contact?subject=cooperation">
+                  {t.servicesPage.cta.cooperation}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="flex-grow md:flex-grow-0 px-8 py-5 border border-white text-white font-bold hover:bg-white hover:text-[#001a33] rounded-[4px] text-xs transition-all duration-300 shrink-0 h-10"
+              >
+                <Link href="/contact">
+                  {t.servicesPage.cta.contact}
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
     </div>
-  );
+  )
 }

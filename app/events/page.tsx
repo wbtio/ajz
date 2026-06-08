@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { filterVisibleEvents } from "@/lib/events-visibility";
 import { EventsPageView } from "./events-page-view";
-import { mergeSectorWithContent } from "@/app/sectors/sector-content";
+import { mergeSectorWithContent } from "@/app/departments/department-content";
 
 export const metadata = {
   title: "Events and Exhibitions | JAZ",

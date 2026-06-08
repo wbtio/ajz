@@ -12,8 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { SectorRegistrationForm } from "@/app/sectors/components/sector-registration-form";
-import { getSectorContent } from "@/app/sectors/sector-content";
+import { SectorRegistrationForm } from "@/app/departments/components/sector-registration-form";
+import { getSectorContent } from "@/app/departments/department-content";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/database.types";
 import { GraduationCap, Mail, Users } from "lucide-react";
@@ -138,11 +138,11 @@ export default function TrainingPage() {
                 asChild
                 className="h-12 rounded-sm bg-[#0b1426] px-6 text-white transition-all duration-200 ease-out hover:bg-[#0b1426]/90 active:scale-[0.98] font-semibold cursor-pointer"
               >
-                <Link href="/sectors">
+                <Link href="/departments">
                   <Users className={`${isRTL ? "ml-2" : "mr-2"} h-4 w-4`} />
                   {isRTL
-                    ? "تصفح القطاعات الاستراتيجية"
-                    : "Explore Strategic Sectors"}
+                    ? "تصفح الأقسام"
+                    : "Explore Departments"}
                 </Link>
               </Button>
               <Button

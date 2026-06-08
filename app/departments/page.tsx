@@ -1,14 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
-import { SectorsClient } from "./sectors-client";
+import { DepartmentsClient } from "./departments-client";
 
 export const metadata = {
-  title: "Our Strategic Divisions | JAZ",
-  description: "Explore the strategic divisions we cover at JAZ",
+  title: "Our Departments | JAZ",
+  description: "Explore the departments we cover at JAZ",
 };
 
 const ESTABLISHED_YEAR = 2022;
 
-export default async function SectorsPage() {
+export default async function DepartmentsPage() {
   const supabase = await createClient();
 
   const [{ data: sectors }, { count: eventsCount }, { data: countriesRows }] =
@@ -43,5 +43,6 @@ export default async function SectorsPage() {
     divisions: (sectors || []).length || 4,
   };
 
-  return <SectorsClient sectors={sectors} stats={stats} />;
+  return <DepartmentsClient sectors={sectors} stats={stats} />;
 }
+

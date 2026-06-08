@@ -47,6 +47,11 @@
   --radius-4xl: calc(var(--radius) + 16px);
   --color-red-deep: #b42318;
   --color-red-deep-hover: #911b13;
+  --color-jaz-navy: #001a33;
+  --color-jaz-gold: #b08d4b;
+  --color-jaz-blue-accent: #1e3a5f;
+  --color-jaz-gray-bg: #f8f9fa;
+  --radius-jaz: 4px;
 }
 
 * {

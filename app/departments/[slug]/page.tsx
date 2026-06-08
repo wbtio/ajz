@@ -3,15 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 import {
   getSectorContent,
   mergeSectorWithContent,
-} from "@/app/sectors/sector-content";
-import { SectorPageClient } from "./sector-page-client";
+} from "@/app/departments/department-content";
+import { DepartmentPageClient } from "./department-page-client";
 import { filterVisibleEvents } from "@/lib/events-visibility";
 
-interface SectorPageProps {
+interface DepartmentPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: SectorPageProps) {
+export async function generateMetadata({ params }: DepartmentPageProps) {
   const { slug } = await params;
   const supabase = await createClient();
 
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: SectorPageProps) {
     .single();
 
   if (!sector) {
-    return { title: "Sector Not Found | JAZ" };
+    return { title: "Department Not Found | JAZ" };
   }
 
   const content = getSectorContent(sector);
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: SectorPageProps) {
   };
 }
 
-export default async function SectorPage({ params }: SectorPageProps) {
+export default async function DepartmentPage({ params }: DepartmentPageProps) {
   const { slug } = await params;
   const supabase = await createClient();
 
@@ -63,7 +63,7 @@ export default async function SectorPage({ params }: SectorPageProps) {
     .limit(6);
 
   return (
-    <SectorPageClient
+    <DepartmentPageClient
       slug={slug}
       sector={sectorView}
       content={sectorContent}
@@ -71,3 +71,4 @@ export default async function SectorPage({ params }: SectorPageProps) {
     />
   );
 }
+

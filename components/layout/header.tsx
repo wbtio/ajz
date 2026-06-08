@@ -96,11 +96,12 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
   const navigation = [
     { name: t.nav.home,     href: '/',         icon: 'solar:home-smile-angle-bold-duotone'    },
     { name: t.nav.partners, href: '/partners',  icon: 'solar:handshake-bold-duotone'            },
-    { name: t.nav.sectors,  href: '/sectors',   icon: 'solar:widget-3-bold-duotone'             },
+    { name: t.nav.sectors,  href: '/departments',   icon: 'solar:widget-3-bold-duotone'             },
     { name: t.nav.events,   href: '/events',    icon: 'solar:calendar-date-bold-duotone'        },
     { name: t.nav.training, href: '/training',  icon: 'solar:square-academic-cap-bold-duotone'  },
     { name: t.nav.blog,     href: '/blog',      icon: 'solar:notes-bold-duotone'                },
     { name: t.nav.services, href: '/services',  icon: 'solar:settings-bold-duotone'             },
+    { name: t.nav.invitationSupport, href: '/invitation-support', icon: 'solar:letter-bold-duotone' },
     { name: t.nav.about,    href: '/about',     icon: 'solar:info-circle-bold-duotone'          },
     { name: t.nav.contact,  href: '/contact',   icon: 'solar:letter-bold-duotone'               },
     { name: t.nav.links,    href: '/links',     icon: 'solar:link-round-bold-duotone'           },

@@ -13,7 +13,7 @@ import type { Sector } from '@/lib/database.types'
 import { RegistrationFormBuilder } from '@/components/shared/registration-form-builder'
 import type { FormField } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
-import { getSectorRegistrationFallback } from '@/app/sectors/sector-content'
+import { getSectorRegistrationFallback } from '@/app/departments/department-content'
 
 const iconMap: Record<string, any> = {
     Building2,

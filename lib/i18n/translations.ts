@@ -6,13 +6,14 @@ export const translations = {
       services: "الخدمات",
       about: "من نحن",
       events: "الفعاليات",
-      sectors: "القطاعات",
+      sectors: "الأقسام",
       blog: "المدونة",
       training: "التدريب",
       contact: "تواصل معنا",
       partners: "العلاقات",
       links: "الروابط",
       calendar: "التقويم",
+      invitationSupport: "دعم الدعوات",
     },
     // Partners Page
     partnersPage: {
@@ -126,6 +127,69 @@ export const translations = {
         visitors: "زائر",
         experience: "سنوات خبرة",
       },
+    },
+    homepage: {
+      hero: {
+        title: "ربط العراق بالمعارض والمؤتمرات الدولية والشراكات الاستراتيجية",
+        description: "جاز (منطقة التلاقي السنوية المشتركة) هي منصة العراق المخصصة لربط القطاعات الحكومية والتجارية والأكاديمية والمهنية بالمعارض والمؤتمرات الدولية والشركاء المؤسسيين. نحن نسهل المشاركة وننظم الوفود ونبني تعاوناً طويل الأمد يدفع النمو المستدام والأثر العالمي.",
+        ctaCooperation: "طلب تعاون",
+        ctaParticipation: "استكشاف المشاركة الدولية",
+        ctaPartner: "كن شريكاً في العراق",
+        ctaInvitation: "طلب دعم الدعوات",
+        statExpVal: "+10",
+        statExpLabel: "سنوات خبرة",
+        statConnectingVal: "البصرة • بغداد • أربيل",
+        statConnectingLabel: "نربط العالم",
+        statSectorsVal: "الوصول لقطاعات متعددة",
+        statSectorsLabel: "الصحة • التكنولوجيا • الصناعة • الأكاديميا",
+        statGovVal: "التنسيق الحكومي والتجاري",
+        statGovLabel: "علاقات استراتيجية"
+      },
+      sectors: {
+        title: "قطاعات تركيزنا",
+        medicalTitle: "الرعاية الصحية وعلوم الحياة",
+        medicalDesc: "ربط المؤسسات الصحية بالابتكار العالمي والتطورات الطبية.",
+        techTitle: "التحول الرقمي والتكنولوجيا",
+        techDesc: "تمكين المستقبل الرقمي للعراق من خلال معارض التكنولوجيا والشراكات العالمية.",
+        indTitle: "التطوير الصناعي والتجاري",
+        indDesc: "تعزيز النمو الصناعي، فرص التجارة، والتعاون الاستثماري.",
+        acadTitle: "الشؤون المهنية والأكاديمية",
+        acadDesc: "دعم التعاون الأكاديمي، التدريب، والتطوير المهني."
+      },
+      services: {
+        title: "خدماتنا",
+        items: [
+          "المشاركة في المعارض الدولية",
+          "إدارة الوفود",
+          "دعم خطابات الدعوة",
+          "تنسيق اللقاءات الثنائية والمؤسسية",
+          "تنظيم الفعاليات والتمثيل التجاري",
+          "تطوير الشراكات",
+          "دعم دخول السوق",
+          "التنسيق والاتصال بين الحكومة والشركات"
+        ]
+      },
+      events: {
+        title: "الفعاليات الدولية البارزة"
+      },
+      process: {
+        title: "عملية الشراكة لدينا",
+        subtitle: "تضمن عمليتنا المجربة بناء علاقات هادفة وتحقيق نتائج ملموسة.",
+        discoverTitle: "اكتشاف",
+        discoverDesc: "نفهم أهدافك وااحتياجاتك.",
+        connectTitle: "تواصل",
+        connectDesc: "نربطك بالفرص والشركاء المناسبين.",
+        collaborateTitle: "تعاون",
+        collaborateDesc: "نسهل المشاركة والاندماج وبناء الشراكات.",
+        growTitle: "نمو",
+        growDesc: "ندعم الأثر طويل الأمد والنجاح المستدام."
+      },
+      partners: {
+        title: "شركاء يثقون بنا"
+      },
+      news: {
+        title: "الأخبار والآراء"
+      }
     },
     // Events
     events: {
@@ -299,13 +363,13 @@ export const translations = {
     contact: {
       title: "تواصل معنا",
       subtitle:
-        "نحن هنا لمساعدتك. تواصل معنا لأي استفسار أو للحصول على مزيد من المعلومات حول خدماتنا.",
+        "نحن نثمن التعاون ومستعدون لدعم أهدافك. سواء كنت مهتماً بفرص التعاون، أو مناقشات الشراكة، أو المشاركة في فعالياتنا الدولية، أو بحاجة لدعم للحصول على دعوة رسمية، فإن فريقنا مستعد لمساعدتك.",
       address: "العنوان",
       phone: "الهاتف",
       email: "البريد الإلكتروني",
       workingHours: "ساعات العمل",
       workingDays: "الأحد - الخميس",
-      workingTime: "9:00 ص - 5:00 م",
+      workingTime: "8:30 ص - 4:30 م",
       fullName: "الاسم الكامل",
       subject: "الموضوع",
       message: "الرسالة",
@@ -325,6 +389,37 @@ export const translations = {
       selectEvent: "اختر الفعالية",
       selectSector: "اختر القسم الاستراتيجي",
       selectBlog: "اختر المقال",
+      heroDescription: "نحن نثمن التعاون ومستعدون لدعم أهدافك. سواء كنت مهتماً بفرص التعاون، أو مناقشات الشراكة، أو المشاركة في فعالياتنا الدولية، أو بحاجة لدعم للحصول على دعوة رسمية، فإن فريقنا مستعد لمساعدتك.",
+      cooperationTitle: "طلب التعاون",
+      cooperationDesc: "استكشف فرص التعاون المشترك مع JAZ للمشاريع والمبادرات.",
+      invitationTitle: "طلب دعم الدعوات",
+      invitationDesc: "طلب خطابات دعوة رسمية للحصول على تأشيرة الدخول، والفعاليات، والمعارض، والاجتماعات المؤسسية.",
+      partnerTitle: "كن شريكاً في العراق",
+      partnerDesc: "انضم إلى شبكتنا من المؤسسات والمنظمات لتعزيز شراكات مؤثرة.",
+      sendUsMessage: "أرسل لنا رسالة",
+      formSubtitle: "املأ النموذج أدناه وسيقوم فريقنا بالرد عليك في أقرب وقت ممكن.",
+      organization: "المؤسسة / الشركة",
+      organizationPlaceholder: "أدخل اسم مؤسستك أو شركتك",
+      agreeTerms: "أوافق على سياسة الخصوصية والشروط والأحكام.",
+      ourOffices: "مكاتبنا في العراق",
+      getDirections: "احصل على الاتجاهات",
+      basraOffice: "مكتب البصرة",
+      basraAddress: "مبنى شركة نفط وغاز البصرة\nشارع الكورنيش، البصرة\nالعراق",
+      baghdadOffice: "مكتب بغداد",
+      baghdadAddress: "حي المنصور\nشارع النضال، بغداد\nالعراق",
+      erbilOffice: "مكتب أربيل",
+      erbilAddress: "مجمع معرض أربيل الدولي\nشارع 60م، أربيل\nالعراق",
+      otherWaysTitle: "طرق أخرى للتواصل معنا",
+      callUs: "اتصل بنا",
+      callUsDesc: "الأحد-الخميس: 8:30 ص - 4:30 م",
+      emailUs: "راسلنا",
+      emailUsDesc: "نرد خلال 24 ساعة.",
+      visitWebsite: "قم بزيارة موقعنا",
+      visitWebsiteDesc: "استكشف خدماتنا وفعالياتنا.",
+      connectLinkedIn: "تواصل على لينكد إن",
+      connectLinkedInDesc: "تابعنا للحصول على آخر التحديثات.",
+      ourLocation: "موقعنا",
+      allOffices: "جميع المكاتب",
     },
     // About
     about: {
@@ -394,6 +489,125 @@ export const translations = {
         partners: "شريك",
         experience: "سنوات خبرة",
       },
+      whoWeAreTitle: "من نحن",
+      whoWeAreText: "جاز (المنطقة السنوية المشتركة) هي منصة عراقية مخصصة تربط الحكومة والشركات والأكاديميا والمهنيين بالمعارض والمؤتمرات الدولية والشركاء المؤسسيين. نحن نسهل المشاركة وننظم الوفود ونبني تعاوناً طويل الأمد يقود النمو المستدام والأثر العالمي.",
+      whereWeOperate: "أين نعمل",
+      erbilTitle: "أربيل",
+      erbilDesc: "خدمة إقليم كردستان والمحافظات الشمالية.",
+      baghdadTitle: "بغداد",
+      baghdadDesc: "ربط قلب العراق بالفرص العالمية.",
+      basraTitle: "البصرة",
+      basraDesc: "بوابتنا إلى الخليج والتجارة الدولية.",
+      whyJaz: "لماذا جاز",
+      whyJazItems: [
+        "تنسيق رسمي مع الجهات الحكومية.",
+        "الوصول إلى المعارض العالمية.",
+        "دعم مخصص للوفود والمشاركات.",
+        "تسهيل الشراكات الاستراتيجية.",
+        "دعم شامل من البداية للنهاية."
+      ],
+      ourValues: "قيمنا",
+      valuesItems: [
+        { title: "النزاهة", desc: "نتصرف بصدق وشفافية." },
+        { title: "التميز", desc: "نسعى لتحقيق الجودة دائماً." },
+        { title: "التعاون", desc: "الشراكات تخلق تأثيراً أعظم." },
+        { title: "الابتكار", desc: "نتبنى حلولاً جديدة." },
+        { title: "الأثر", desc: "مدفوعون بنتائج ملموسة." }
+      ],
+      leadership: "القيادة والحضور",
+      leadershipText: "يقع مقرنا الرئيسي في البصرة، مع مكاتب في بغداد وأربيل. نعمل وثيقاً مع الوزارات والجامعات وقادة القطاع الخاص.",
+      nationwideReach: "الانتشار على مستوى الدولة",
+      reachItems: [
+        { count: "3 مكاتب استراتيجية", label: "البصرة • بغداد • أربيل" },
+        { count: "20+ مؤسسة شريكة", label: "حكومي وأكاديمي وخاص" },
+        { count: "50+ شريك دولي", label: "منظمات وسفارات" },
+        { count: "100+ وفد مدعوم", label: "تمثيل العراق عالمياً" }
+      ],
+      ctaTitle: "دعونا نبني علاقات أقوى للعراق.",
+      ctaDesc: "شارك مع جاز للوصول إلى المنصات العالمية وخلق تأثير دائم.",
+      ctaCooperation: "طلب التعاون",
+      ctaContact: "اتصل بنا"
+    },
+    servicesPage: {
+      hero: {
+        title: "خدماتنا",
+        description: "تعمل جاز من خلال أربعة أقسام متكاملة تتعاون معاً لربط العراق بالفرص العالمية، ودفع عجلة الابتكار، وتحقيق أثر ملموس عبر القطاعات الرئيسية وفئات الشركاء المعنيين.",
+        ctaCooperation: "طلب التعاون",
+        ctaParticipation: "استكشاف المشاركات المفتوحة",
+        ctaInvitation: "طلب دعم الدعوات"
+      },
+      stats: {
+        expVal: "+10",
+        expLabel: "سنوات من الخبرة",
+        citiesVal: "البصرة • بغداد • أربيل",
+        citiesLabel: "ربط العراق بالعالم",
+        sectorsVal: "الوصول لقطاعات متعددة",
+        sectorsLabel: "الصحة • التكنولوجيا • الصناعة • الأكاديميا",
+        govVal: "التنسيق الحكومي والتجاري",
+        govLabel: "علاقات استراتيجية"
+      },
+      coreServices: {
+        title: "خدماتنا الأساسية",
+        items: [
+          {
+            title: "الوصول للفعاليات الدولية",
+            desc: "نحدد ونضمن إمكانية الوصول إلى المعارض والمؤتمرات والفعاليات التجارية الدولية الرائدة التي تتوافق مع أهدافك."
+          },
+          {
+            title: "تنسيق الوفود",
+            desc: "ننظم الوفود الرسمية لتمثيل مؤسستك أو شركتك في الفعاليات العالمية بأقصى أثر."
+          },
+          {
+            title: "دعم الدعوات والتسجيل",
+            desc: "نحصل على الدعوات الرسمية وندير التسجيل في الفعاليات لضمان الوصول السلس والامتثال التام."
+          },
+          {
+            title: "النشر والترويج الرسمي",
+            desc: "ننشر ونروج لمشاركتك عبر منصات جاز وشبكات الشركاء لزيادة حضورك الإعلامي."
+          },
+          {
+            title: "الشراكات المؤسسية",
+            desc: "نربط المؤسسات والمنظمات بشركاء عالميين للتعاون وتبادل المعرفة والمبادرات المشتركة."
+          },
+          {
+            title: "الوصول إلى السوق في العراق",
+            desc: "نجلب الفرص الدولية إلى مؤسستك ونربطك بالجهات الفاعلة والمعنية في العراق."
+          },
+          {
+            title: "تنسيق اللقاءات الثنائية",
+            desc: "نسهل عقد لقاءات ثنائية مستهدفة بين الشركات والمستثمرين والمنظمات لتحقيق النمو المشترك."
+          },
+          {
+            title: "الدعم اللوجستي والبروتوكول",
+            desc: "نقدم دعماً ميدانياً شاملاً يشمل تنسيق السفر، تسهيل الإجراءات والبروتوكول، خطابات التأشيرة، وغيرها."
+          }
+        ]
+      },
+      info: {
+        howWeWork: {
+          title: "كيف نعمل",
+          desc: "تضمن منهجيتنا المنظمة انتقالاً سلساً من الاستشارة الأولية إلى التمثيل الدولي النهائي. نقوم بتقييم الأهداف، وتصميم الاستراتيجيات، واختيار الفعاليات الكبرى، وإدارة مسارات الرحلات المخصصة، وبناء روابط مؤسسية ثنائية لضمان تحقيق نتائج متميزة."
+        },
+        industries: {
+          title: "قطاعات ندعمها",
+          desc: "نحن نقدم تمثيلاً مخصصاً ودعماً استراتيجياً في القطاعات الحيوية التي تقود تنمية العراق، بما في ذلك الرعاية الصحية وعلوم الحياة، والتكنولوجيا الرقمية، والتجارة والتبادل التجاري، والنفط والطاقة، والشؤون الأكاديمية."
+        },
+        whyJaz: {
+          title: "لماذا نعمل مع جاز؟",
+          items: [
+            "علاقات عميقة مع منظمي الفعاليات العالميين.",
+            "علاقات مؤسسية وحكومية قوية.",
+            "سجل حافل من المشاركات الناجحة.",
+            "حلول مخصصة تلبي أهداف كل عميل."
+          ]
+        }
+      },
+      cta: {
+        title: "دعونا نبني فرصاً عالمية معاً",
+        description: "سواء كنت مؤسسة، شركة، أو مهنياً طموحاً - جاز هي شريكتك للتواصل والأثر العالمي السليم.",
+        cooperation: "طلب التعاون",
+        contact: "اتصل بنا"
+      }
     },
     // Auth
     auth: {
@@ -521,13 +735,14 @@ export const translations = {
       services: "Services",
       about: "About Us",
       events: "Events",
-      sectors: "Sectors",
+      sectors: "Departments",
       blog: "Blog",
       training: "Training",
       contact: "Contact Us",
       partners: "Relations",
       links: "Links",
       calendar: "Calendar",
+      invitationSupport: "Invitation Support",
     },
     // Partners Page
     partnersPage: {
@@ -649,6 +864,69 @@ export const translations = {
         visitors: "Visitors",
         experience: "Years of Experience",
       },
+    },
+    homepage: {
+      hero: {
+        title: "Connecting Iraq to Global Exhibitions, Conferences & Strategic Partnerships",
+        description: "JAZ (Joint Annual Zone) is Iraq's dedicated platform that connects government, businesses, academia, and professionals with international exhibitions, conferences, and institutional partners. We facilitate participation, organize delegations, and build long-term cooperation that drives sustainable growth and global impact.",
+        ctaCooperation: "Request Cooperation",
+        ctaParticipation: "Explore International Participation",
+        ctaPartner: "Become a Partner in Iraq",
+        ctaInvitation: "Request Invitation Support",
+        statExpVal: "+10",
+        statExpLabel: "Years Experience",
+        statConnectingVal: "Basra • Baghdad • Erbil",
+        statConnectingLabel: "Connecting the World",
+        statSectorsVal: "Multi-sector Access",
+        statSectorsLabel: "Health • Tech • Industry • Academia",
+        statGovVal: "Government and Business Coordination",
+        statGovLabel: "Strategic Coordination"
+      },
+      sectors: {
+        title: "Our Focus Sectors",
+        medicalTitle: "Healthcare & Life Sciences",
+        medicalDesc: "Connecting health institutions with global innovation and medical advancements.",
+        techTitle: "Digital Transformation & Technology",
+        techDesc: "Empowering Iraq's digital future through global tech exhibitions and partnerships.",
+        indTitle: "Industrial & Commercial Development",
+        indDesc: "Advancing industrial growth, trade opportunities, and investment cooperation.",
+        acadTitle: "Professional & Academic Affairs",
+        acadDesc: "Supporting academic collaboration, training, and professional development."
+      },
+      services: {
+        title: "Our Services",
+        items: [
+          "International Exhibition Participation",
+          "Delegation Management",
+          "Invitation Letter Support",
+          "B2B & Institutional Matchmaking",
+          "Event Organization & Representation",
+          "Partnership Development",
+          "Market Entry Support",
+          "Government & Business Liaison"
+        ]
+      },
+      events: {
+        title: "Featured International Events"
+      },
+      process: {
+        title: "Our Partnership Process",
+        subtitle: "Our proven process ensures meaningful connections and measurable outcomes.",
+        discoverTitle: "Discover",
+        discoverDesc: "We understand your goals and needs.",
+        connectTitle: "Connect",
+        connectDesc: "We connect you with the right opportunities and partners.",
+        collaborateTitle: "Collaborate",
+        collaborateDesc: "We facilitate engagement, participation, and partnerships.",
+        growTitle: "Grow",
+        growDesc: "We support long-term impact and sustainable success."
+      },
+      partners: {
+        title: "Trusted by Institutions & Partners"
+      },
+      news: {
+        title: "News & Insights"
+      }
     },
     // Events
     events: {
@@ -824,13 +1102,13 @@ export const translations = {
     contact: {
       title: "Contact Us",
       subtitle:
-        "We are here to help. Contact us for any inquiries or for more information about our services.",
+        "We value collaboration and are here to support your goals. Whether you are interested in cooperation opportunities, partnership discussions, participating in our international events, or need support with official invitations, our team is ready to assist you.",
       address: "Address",
       phone: "Phone",
       email: "Email",
       workingHours: "Working Hours",
       workingDays: "Sunday - Thursday",
-      workingTime: "9:00 AM - 5:00 PM",
+      workingTime: "8:30 AM - 4:30 PM",
       fullName: "Full Name",
       subject: "Subject",
       message: "Message",
@@ -850,6 +1128,37 @@ export const translations = {
       selectEvent: "Select Event",
       selectSector: "Select Strategic Division",
       selectBlog: "Select Blog Post",
+      heroDescription: "We value collaboration and are here to support your goals. Whether you are interested in cooperation opportunities, partnership discussions, participating in our international events, or need support with official invitations, our team is ready to assist you.",
+      cooperationTitle: "Request Cooperation",
+      cooperationDesc: "Explore cooperation opportunities with JAZ for projects and initiatives.",
+      invitationTitle: "Request Invitation Support",
+      invitationDesc: "Request official invitation letters for visa, events, exhibitions, and institutional meetings.",
+      partnerTitle: "Become a Partner in Iraq",
+      partnerDesc: "Join our network of institutions and organizations advancing impactful partnerships.",
+      sendUsMessage: "Send Us a Message",
+      formSubtitle: "Fill out the form below and our team will get back to you as soon as possible.",
+      organization: "Organization / Company",
+      organizationPlaceholder: "Enter your organization or company",
+      agreeTerms: "I agree to the Privacy Policy and Terms & Conditions.",
+      ourOffices: "Our Offices in Iraq",
+      getDirections: "Get Directions",
+      basraOffice: "Basra Office",
+      basraAddress: "Basra Oil & Gas Company Building\nCorniche Road, Basra\nIraq",
+      baghdadOffice: "Baghdad Office",
+      baghdadAddress: "Al-Mansour District\nAl-Nidhal Street, Baghdad\nIraq",
+      erbilOffice: "Erbil Office",
+      erbilAddress: "Erbil International Fair Complex\n60m St, Erbil\nIraq",
+      otherWaysTitle: "Other Ways to Reach Us",
+      callUs: "Call Us",
+      callUsDesc: "Sun-Thu: 8:30 AM - 4:30 PM",
+      emailUs: "Email Us",
+      emailUsDesc: "We reply within 24 hours.",
+      visitWebsite: "Visit Our Website",
+      visitWebsiteDesc: "Explore our services & events.",
+      connectLinkedIn: "Connect on LinkedIn",
+      connectLinkedInDesc: "Follow us for updates.",
+      ourLocation: "Our Location",
+      allOffices: "All Offices",
     },
     // About
     about: {
@@ -920,6 +1229,125 @@ export const translations = {
         partners: "Partners",
         experience: "Years of Experience",
       },
+      whoWeAreTitle: "Who We Are",
+      whoWeAreText: "JAZ (Joint Annual Zone) is Iraq's dedicated platform that connects government, businesses, academia, and professionals with international exhibitions, conferences, and institutional partners. We facilitate participation, organize delegations, and build long-term cooperation that drives sustainable growth and global impact.",
+      whereWeOperate: "Where We Operate",
+      erbilTitle: "Erbil",
+      erbilDesc: "Serving the Kurdistan region and northern provinces.",
+      baghdadTitle: "Baghdad",
+      baghdadDesc: "Connecting the heart of Iraq with global opportunities.",
+      basraTitle: "Basra",
+      basraDesc: "Our gateway to the Gulf and international trade.",
+      whyJaz: "Why JAZ",
+      whyJazItems: [
+        "Official coordination with government agencies.",
+        "Direct access to global exhibitions.",
+        "Dedicated delegation and participation support.",
+        "Facilitation of strategic partnerships.",
+        "End-to-end comprehensive coordination."
+      ],
+      ourValues: "Our Values",
+      valuesItems: [
+        { title: "Integrity", desc: "We act with honesty and transparency." },
+        { title: "Excellence", desc: "We always strive for quality." },
+        { title: "Collaboration", desc: "Partnerships create greater impact." },
+        { title: "Innovation", desc: "We embrace new solutions." },
+        { title: "Impact", desc: "Driven by tangible results." }
+      ],
+      leadership: "Leadership & Presence",
+      leadershipText: "Our headquarters is located in Basra, with offices in Baghdad and Erbil. We work closely with ministries, universities, and private sector leaders.",
+      nationwideReach: "Nationwide Reach",
+      reachItems: [
+        { count: "3 Strategic Offices", label: "Basra • Baghdad • Erbil" },
+        { count: "20+ Partner Institutions", label: "Government, Academic & Private" },
+        { count: "50+ International Partners", label: "Organizations & Embassies" },
+        { count: "100+ Supported Delegations", label: "Representing Iraq Globally" }
+      ],
+      ctaTitle: "Let's build stronger relationships for Iraq.",
+      ctaDesc: "Partner with JAZ to access global platforms and create lasting impact.",
+      ctaCooperation: "Request Cooperation",
+      ctaContact: "Contact Us"
+    },
+    servicesPage: {
+      hero: {
+        title: "Our Services",
+        description: "JAZ operates through four integrated departments that work synergistically to connect Iraq with global opportunities, drive innovation, and deliver measurable impact across key sectors and stakeholder communities.",
+        ctaCooperation: "Request Cooperation",
+        ctaParticipation: "Explore Participation Open",
+        ctaInvitation: "Request Invitation Support"
+      },
+      stats: {
+        expVal: "+10",
+        expLabel: "Years Experience",
+        citiesVal: "Basra • Baghdad • Erbil",
+        citiesLabel: "Connecting the World",
+        sectorsVal: "Multi-sector Access",
+        sectorsLabel: "Health • Tech • Industry • Academia",
+        govVal: "Government and Business",
+        govLabel: "Coordination"
+      },
+      coreServices: {
+        title: "Our Core Services",
+        items: [
+          {
+            title: "International Event Access",
+            desc: "We identify and secure access to leading international exhibitions, conferences, and trade events that align with your goals."
+          },
+          {
+            title: "Delegation Coordination",
+            desc: "We organize official delegations to represent your organization, company, or institution at global events with impact."
+          },
+          {
+            title: "Invitation & Registration Support",
+            desc: "We obtain official invitations and manage registration for events, ensuring smooth access and compliance."
+          },
+          {
+            title: "Official Publication & Promotion",
+            desc: "We publish and promote your participation across JAZ platforms and partner networks to maximize visibility."
+          },
+          {
+            title: "Institutional Partnerships",
+            desc: "We connect institutions and organizations with global partners for collaboration, knowledge exchange, and joint initiatives."
+          },
+          {
+            title: "Market Outreach in Iraq",
+            desc: "We bring international opportunities to your organization and connect you with relevant stakeholders in Iraq."
+          },
+          {
+            title: "B2B Matchmaking",
+            desc: "We facilitate targeted B2B meetings between businesses, investors, and organizations for mutual growth."
+          },
+          {
+            title: "Logistics & Protocol Support",
+            desc: "We provide on-the-ground support including travel coordination, protocol facilitation, visa letters, and more."
+          }
+        ]
+      },
+      info: {
+        howWeWork: {
+          title: "How We Work",
+          desc: "Our structured methodology ensures a seamless transition from initial consultation to final international representation. We evaluate goals, design strategies, select premier events, manage custom itineraries, and build bilateral institutional links to guarantee outstanding results."
+        },
+        industries: {
+          title: "Industries We Support",
+          desc: "We provide dedicated representation and strategic support across vital sectors driving Iraq's development, including Healthcare & Life Sciences, Digital Technology, Commercial Trade, Oil & Energy, and Academic Affairs."
+        },
+        whyJaz: {
+          title: "Why Work With JAZ?",
+          items: [
+            "Deep connections with global event organizers.",
+            "Strong institutional and government relations.",
+            "Proven track record of successful participation.",
+            "Tailored solutions for each client's objectives."
+          ]
+        }
+      },
+      cta: {
+        title: "Let's Build Global Opportunities Together",
+        description: "Whether you’re an institution, business, or professional—JAZ is your partner for global engagement and impact.",
+        cooperation: "Request Cooperation",
+        contact: "Contact Us"
+      }
     },
     // Auth
     auth: {

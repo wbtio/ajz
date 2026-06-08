@@ -18,7 +18,7 @@ import dynamic from "next/dynamic";
 
 const SectorRegistrationForm = dynamic(
   () =>
-    import("@/app/sectors/components/sector-registration-form").then(
+    import("@/app/departments/components/sector-registration-form").then(
       (mod) => mod.SectorRegistrationForm,
     ),
   {
@@ -46,7 +46,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
-import type { SectorContentEntry } from "@/app/sectors/sector-content";
+import type { SectorContentEntry } from "@/app/departments/department-content";
 
 const iconMap: Record<
   string,
@@ -58,19 +58,19 @@ const iconMap: Record<
   GraduationCap,
 };
 
-interface SectorPageClientProps {
+interface DepartmentPageClientProps {
   slug: string;
   sector: Tables<"sectors">;
   content: SectorContentEntry;
   events: Tables<"events">[] | null;
 }
 
-export function SectorPageClient({
+export function DepartmentPageClient({
   slug,
   sector,
   content,
   events,
-}: SectorPageClientProps) {
+}: DepartmentPageClientProps) {
   const { locale, dir } = useI18n();
   const isArabic = locale === "ar";
   const IconComponent = iconMap[sector.icon || "Building2"] || Building2;
@@ -99,8 +99,8 @@ export function SectorPageClient({
             {isArabic ? "الرئيسية" : "Home"}
           </Link>
           <span className="text-slate-400">/</span>
-          <Link href="/sectors" className="hover:text-[#8b0000] transition-colors">
-            {isArabic ? "أقسامنا الاستراتيجية" : "Our Strategic Divisions"}
+          <Link href="/departments" className="hover:text-[#8b0000] transition-colors">
+            {isArabic ? "أقسامنا" : "Our Departments"}
           </Link>
           <span className="text-slate-400">/</span>
           <span className="font-medium text-slate-900">{primaryName}</span>
