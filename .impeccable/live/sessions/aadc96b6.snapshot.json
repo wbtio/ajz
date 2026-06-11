@@ -3,6 +3,8 @@
   "phase": "completed",
   "pageUrl": "/",
   "sourceFile": "components/layout/footer.tsx",
+  "previewFile": null,
+  "previewMode": null,
   "expectedVariants": 3,
   "arrivedVariants": 3,
   "visibleVariant": 1,

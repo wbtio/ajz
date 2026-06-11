@@ -29,7 +29,7 @@ export async function createPartnerCategory(data: any) {
         const { error } = await supabase.from('partner_categories').insert(data)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partners')
+        revalidatePath('/partnership')
         return { success: true }
     } catch (err: any) {
         console.error('createPartnerCategory failed:', err)
@@ -43,7 +43,7 @@ export async function updatePartnerCategory(id: string, data: any) {
         const { error } = await supabase.from('partner_categories').update(data).eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partners')
+        revalidatePath('/partnership')
         return { success: true }
     } catch (err: any) {
         console.error('updatePartnerCategory failed:', err)
@@ -57,7 +57,7 @@ export async function deletePartnerCategory(id: string) {
         const { error } = await supabase.from('partner_categories').delete().eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partners')
+        revalidatePath('/partnership')
         return { success: true }
     } catch (err: any) {
         console.error('deletePartnerCategory failed:', err)
@@ -88,7 +88,7 @@ export async function createPartnerOpportunity(data: any) {
         const { error } = await supabase.from('partner_opportunities').insert(data)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partners')
+        revalidatePath('/partnership')
         return { success: true }
     } catch (err: any) {
         console.error('createPartnerOpportunity failed:', err)
@@ -102,7 +102,7 @@ export async function updatePartnerOpportunity(id: string, data: any) {
         const { error } = await supabase.from('partner_opportunities').update(data).eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partners')
+        revalidatePath('/partnership')
         return { success: true }
     } catch (err: any) {
         console.error('updatePartnerOpportunity failed:', err)
@@ -116,7 +116,7 @@ export async function deletePartnerOpportunity(id: string) {
         const { error } = await supabase.from('partner_opportunities').delete().eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partners')
+        revalidatePath('/partnership')
         return { success: true }
     } catch (err: any) {
         console.error('deletePartnerOpportunity failed:', err)

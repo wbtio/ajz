@@ -3,6 +3,8 @@
   "phase": "steer_done",
   "pageUrl": "http://localhost:3000/",
   "sourceFile": null,
+  "previewFile": null,
+  "previewMode": null,
   "expectedVariants": 0,
   "arrivedVariants": 0,
   "visibleVariant": null,

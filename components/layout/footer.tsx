@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Globe, X, Instagram, Linkedin } from 'lucide-react'
+import { Globe, X, Instagram, Linkedin, Facebook } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { Container } from '@/components/ui/container'
 
@@ -18,6 +18,11 @@ const socialLinks = [
     name: 'Twitter',
     href: 'https://x.com',
     icon: X,
+  },
+  {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/ZointAnnualZone/',
+    icon: Facebook,
   },
   {
     name: 'Instagram',
@@ -52,6 +57,7 @@ export function Footer() {
 
   const normalizedPathname = pathname?.toLowerCase() ?? ''
   const isEventDetailsPage = /^\/events\/[^/]+\/?$/.test(normalizedPathname)
+  const isDepartmentsPage = normalizedPathname === '/departments'
 
   if (normalizedPathname.startsWith('/dashboard') || isEventDetailsPage) {
     return null
@@ -61,7 +67,7 @@ export function Footer() {
     <footer
       dir={dir}
       lang={locale}
-      className="bg-[#021c36] text-[#6f85a3] border-t border-[#c4c6ce]/10 py-8 sm:py-10"
+      className={`bg-[#021c36] text-[#6f85a3] py-8 sm:py-10${isDepartmentsPage ? '' : ' border-t border-[#c4c6ce]/10'}`}
     >
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 text-start">
@@ -146,7 +152,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partners">
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partnership">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
                   {locale === 'ar' ? 'الشراكات' : 'Partnerships'}
                 </Link>
@@ -185,7 +191,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partners">
+                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partnership">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
                   {locale === 'ar' ? 'الشراكات المؤسسية' : 'Institutional Partnerships'}
                 </Link>

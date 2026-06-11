@@ -446,3 +446,38 @@ html[lang="ar"] :is(button, input, textarea, select) {
   font-weight: 600;
   color: #0b1426;
 }
+
+/* JAZ Info Panels - Polished Accepted Design */
+.info-panel-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.info-panel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+  border-color: rgba(139, 0, 0, 0.15);
+}
+
+/* JAZ Focus Sectors - Polished Accepted Design */
+.sector-card-crimson {
+  border: 1px solid rgba(139, 0, 0, 0.075) !important;
+  background-color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+.sector-card-crimson:hover {
+  border-color: #8B0000 !important;
+  box-shadow: 0 8px 24px rgba(139, 0, 0, 0.06) !important;
+}
+.sector-card-crimson .w-10.h-10 {
+  background-color: rgba(139, 0, 0, 0.06) !important;
+  color: #8B0000 !important;
+}
+.sector-card-crimson:hover h3 {
+  color: #8B0000 !important;
+}
+.sector-card-crimson .absolute.-inset-px {
+  background: radial-gradient(100px circle at var(--x, 50%) var(--y, 50%), rgba(139, 0, 0, 0.08), transparent 80%) !important;
+}

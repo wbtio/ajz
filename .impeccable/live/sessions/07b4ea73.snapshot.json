@@ -3,6 +3,8 @@
   "phase": "completed",
   "pageUrl": "/",
   "sourceFile": "components/home/hero-section.tsx",
+  "previewFile": null,
+  "previewMode": null,
   "expectedVariants": 2,
   "arrivedVariants": 2,
   "visibleVariant": 1,

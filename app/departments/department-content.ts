@@ -23,6 +23,16 @@ export interface SectorContentEntry {
   registrationIntro: string;
   registrationIntroAr: string;
   accent: string;
+  aboutDescription?: string;
+  aboutDescriptionAr?: string;
+  vision?: string;
+  visionAr?: string;
+  mission?: string;
+  missionAr?: string;
+  services?: string[];
+  servicesAr?: string[];
+  whyJaz?: string[];
+  whyJazAr?: string[];
 }
 
 const sectorEntries: SectorContentEntry[] = [
@@ -56,6 +66,48 @@ const sectorEntries: SectorContentEntry[] = [
     registrationIntroAr:
       "لتسجيل اهتمام مؤسستكم في شراكات قسم الرعاية الصحية وعلوم الحياة، أو البرامج السريرية، أو البعثات الطبية الدولية في جاز، يرجى استكمال نموذج تقديم الطلب الرسمي أدناه. سيقوم مكتب التسجيل لدينا بمراجعة ملفكم والرد خلال 3 أيام عمل.",
     accent: "#b42318",
+    aboutDescription:
+      "JAZ Healthcare and Life Sciences is dedicated to supporting healthcare, medical, academic, and research institutions by connecting them with international organizations specialized in healthcare, medical technology, pharmaceuticals, laboratories, biotechnology, and life sciences. The department acts as a professional and knowledge bridge between Iraq's healthcare sector and global platforms by coordinating partnerships, supporting participation in medical conferences and exhibitions, and facilitating knowledge exchange that contributes to improving healthcare quality and advancing medical research.",
+    aboutDescriptionAr:
+      "يختص قسم الرعاية الصحية وعلوم الحياة في جاز بدعم مؤسسات الرعاية الصحية والطبية والأكاديمية والبحثية من خلال ربطها بالمنظمات الدولية المتخصصة في الرعاية الصحية والتكنولوجيا الطبية والأدوية والمختبرات والتكنولوجيا الحيوية وعلوم الحياة. يعمل القسم كجسر مهني ومعرفي بين القطاع الصحي العراقي والمنصات العالمية من خلال تنسيق الشراكات ودعم المشاركة في المؤتمرات والمعارض الطبية وتيسير تبادل المعرفة الذي يُسهم في تحسين جودة الرعاية الصحية والنهوض بالبحث الطبي.",
+    vision:
+      "To contribute to building a more advanced and globally connected Iraqi healthcare sector that supports medical innovation, improves the quality of healthcare services, and strengthens scientific research in medicine and life sciences.",
+    visionAr:
+      "المساهمة في بناء قطاع صحي عراقي أكثر تقدماً ومتصلاً عالمياً يدعم الابتكار الطبي ويحسن جودة خدمات الرعاية الصحية ويعزز البحث العلمي في الطب وعلوم الحياة.",
+    mission:
+      "To empower healthcare, academic, and research institutions to access modern medical knowledge, international partnerships, and professional opportunities that support capacity development, performance improvement, and sustainability within the healthcare sector.",
+    missionAr:
+      "تمكين مؤسسات الرعاية الصحية والأكاديمية والبحثية من الوصول إلى المعرفة الطبية الحديثة والشراكات الدولية والفرص المهنية التي تدعم تنمية القدرات وتحسين الأداء والاستدامة في القطاع الصحي.",
+    services: [
+      "Coordinating partnerships between Iraqi healthcare institutions and international medical organizations.",
+      "Facilitating medical and academic delegation participation in global healthcare conferences and exhibitions.",
+      "Supporting professional and knowledge-exchange programs for doctors, researchers, and healthcare professionals.",
+      "Connecting hospitals and medical centers with medical technology providers and advanced healthcare solutions.",
+      "Supporting research collaboration in medicine, laboratories, pharmaceuticals, biotechnology, and life sciences.",
+      "Organizing workshops and professional development programs in the healthcare and medical sectors.",
+    ],
+    servicesAr: [
+      "تنسيق الشراكات بين المؤسسات الصحية العراقية والمنظمات الطبية الدولية.",
+      "تيسير مشاركة الوفود الطبية والأكاديمية في المؤتمرات والمعارض الصحية العالمية.",
+      "دعم برامج التبادل المهني والمعرفي للأطباء والباحثين والمهنيين الصحيين.",
+      "ربط المستشفيات والمراكز الطبية بمزودي تكنولوجيا الرعاية الصحية والحلول الطبية المتقدمة.",
+      "دعم التعاون البحثي في الطب والمختبرات والأدوية والتكنولوجيا الحيوية وعلوم الحياة.",
+      "تنظيم ورش العمل وبرامج التطوير المهني في قطاعي الرعاية الصحية والطب.",
+    ],
+    whyJaz: [
+      "We act as a strategic link between Iraq's healthcare sector and international medical and scientific institutions.",
+      "We help institutions access the latest trends, technologies, and solutions in healthcare and life sciences.",
+      "We bring experience in coordinating medical and academic participation in global events.",
+      "We support partnerships that develop medical capabilities and improve healthcare service quality.",
+      "We strengthen Iraq's presence across international medical and research platforms.",
+    ],
+    whyJazAr: [
+      "نعمل كحلقة وصل استراتيجية بين القطاع الصحي العراقي والمؤسسات الطبية والعلمية الدولية.",
+      "نساعد المؤسسات على الوصول إلى أحدث الاتجاهات والتقنيات والحلول في مجالي الرعاية الصحية وعلوم الحياة.",
+      "نمتلك خبرة في تنسيق المشاركة الطبية والأكاديمية في الفعاليات العالمية.",
+      "ندعم الشراكات التي تطور القدرات الطبية وتحسن جودة خدمات الرعاية الصحية.",
+      "نعزز حضور العراق على المنصات الطبية والبحثية الدولية.",
+    ],
   },
   {
     key: "technology",
@@ -87,6 +139,48 @@ const sectorEntries: SectorContentEntry[] = [
     registrationIntroAr:
       "لطلب دعم البنية التحتية الرقمية، أو شراكات تكنولوجيا المؤسسات، أو عمليات نقل التكنولوجيا الدولية ضمن هذا القسم، يرجى تقديم تفاصيل مؤسستكم أدناه. سيقوم مكتب السجل التكنولوجي الرسمي بمراجعة طلبكم.",
     accent: "#0f766e",
+    aboutDescription:
+      "JAZ Digital Transformation and Technology is dedicated to empowering institutions and companies to develop their digital capabilities and adopt modern technological solutions that improve organizational performance, enhance operational efficiency, and prepare businesses for the future. The department serves as a strategic bridge between Iraqi institutions and international technology entities by coordinating digital partnerships, supporting technology transformation initiatives, and facilitating access to global exhibitions, conferences, and platforms specialized in technology and innovation.",
+    aboutDescriptionAr:
+      "يختص قسم التحول الرقمي والتكنولوجيا في جاز بتمكين المؤسسات والشركات من تطوير قدراتها الرقمية واعتماد الحلول التكنولوجية الحديثة التي تحسن الأداء المؤسسي وتعزز الكفاءة التشغيلية وتُهيئ الأعمال لمواجهة المستقبل. يُمثل القسم جسراً استراتيجياً بين المؤسسات العراقية والجهات التكنولوجية الدولية من خلال تنسيق الشراكات الرقمية ودعم مبادرات التحول التقني وتسهيل الوصول إلى المعارض والمؤتمرات والمنصات العالمية المتخصصة في التكنولوجيا والابتكار.",
+    vision:
+      "To contribute to building an advanced and globally connected Iraqi digital ecosystem that supports innovation, enhances institutional efficiency, and keeps pace with modern trends in technology and digital transformation.",
+    visionAr:
+      "المساهمة في بناء منظومة رقمية عراقية متقدمة ومتصلة عالمياً تدعم الابتكار وتعزز الكفاءة المؤسسية وتواكب الاتجاهات الحديثة في التكنولوجيا والتحول الرقمي.",
+    mission:
+      "To enable institutions to adopt effective and sustainable digital solutions by connecting them with international technology expertise, facilitating knowledge exchange, and supporting partnerships that strengthen digital infrastructure and institutional capabilities.",
+    missionAr:
+      "تمكين المؤسسات من اعتماد حلول رقمية فعّالة ومستدامة من خلال ربطها بالخبرات التكنولوجية الدولية وتيسير تبادل المعرفة ودعم الشراكات التي تعزز البنية التحتية الرقمية والقدرات المؤسسية.",
+    services: [
+      "Coordinating partnerships between Iraqi institutions and international technology companies.",
+      "Facilitating institutional and delegation participation in global technology exhibitions and conferences.",
+      "Supporting digital transformation projects and the development of organizational systems.",
+      "Organizing workshops and training programs in technology, innovation, and digital development.",
+      "Connecting local companies and institutions with technology solution providers and global innovation centers.",
+      "Supporting the adoption of smart systems, automation, and data management solutions.",
+    ],
+    servicesAr: [
+      "تنسيق الشراكات بين المؤسسات العراقية وشركات التكنولوجيا الدولية.",
+      "تيسير مشاركة المؤسسات والوفود في المعارض والمؤتمرات التكنولوجية العالمية.",
+      "دعم مشاريع التحول الرقمي وتطوير الأنظمة المؤسسية.",
+      "تنظيم ورش عمل وبرامج تدريبية في مجالات التكنولوجيا والابتكار والتطوير الرقمي.",
+      "ربط الشركات والمؤسسات المحلية بمزودي حلول التكنولوجيا ومراكز الابتكار العالمية.",
+      "دعم اعتماد الأنظمة الذكية والأتمتة وحلول إدارة البيانات.",
+    ],
+    whyJaz: [
+      "We act as a strategic bridge between the Iraqi market and the global technology sector.",
+      "We help institutions access modern digital solutions and international cooperation opportunities.",
+      "We bring experience in coordinating institutional participation in technology events and exhibitions.",
+      "We support building a more efficient and innovative business environment through technology.",
+      "We strengthen the presence of Iraqi institutions across international digital and technology platforms.",
+    ],
+    whyJazAr: [
+      "نعمل كجسر استراتيجي بين السوق العراقية وقطاع التكنولوجيا العالمي.",
+      "نساعد المؤسسات على الوصول إلى الحلول الرقمية الحديثة وفرص التعاون الدولي.",
+      "نمتلك خبرة في تنسيق مشاركة المؤسسات في الفعاليات والمعارض التكنولوجية.",
+      "ندعم بناء بيئة أعمال أكثر كفاءة وابتكاراً من خلال التكنولوجيا.",
+      "نعزز حضور المؤسسات العراقية على المنصات الرقمية والتكنولوجية الدولية.",
+    ],
   },
   {
     key: "academia",
@@ -118,6 +212,44 @@ const sectorEntries: SectorContentEntry[] = [
     registrationIntroAr:
       "لتأسيس شراكات مع الجامعات البحثية، أو اتفاقيات التبادل الأكاديمي، أو برامج التطوير المهني، يرجى تقديم ملف مؤسستكم أدناه. ستقوم لجنة الشؤون الأكاديمية بتنسيق الخطوات التالية.",
     accent: "#4338ca",
+    aboutDescription:
+      "JAZ Professional & Academic Affairs is dedicated to empowering academic and research institutions by building knowledge-based bridges between national universities, centers of excellence, and international scientific organizations. The department supports academic partnerships, facilitates participation in scientific events, and strengthens Iraq's presence across global academic, research, and professional platforms.",
+    aboutDescriptionAr:
+      "يختص قسم الشؤون المهنية والأكاديمية في جاز بتمكين المؤسسات الأكاديمية والبحثية من خلال بناء جسور معرفية بين الجامعات الوطنية ومراكز التميز والمنظمات العلمية الدولية. يدعم القسم الشراكات الأكاديمية، ويُسهل المشاركة في الفعاليات العلمية، ويُعزز حضور العراق على منصات التعاون المعرفي والمهني والبحثي العالمية.",
+    vision:
+      "To contribute to building a globally connected Iraqi academic environment that promotes scientific excellence, encourages research and innovation, and opens wider opportunities for international knowledge collaboration.",
+    visionAr:
+      "المساهمة في بناء بيئة أكاديمية عراقية متصلة عالمياً تعزز التميز العلمي وتشجع البحث والابتكار وتفتح آفاقاً أوسع للتعاون المعرفي الدولي.",
+    mission:
+      "To enhance the quality of higher education and professional development by facilitating academic exchange, coordinating international partnerships, and supporting initiatives that serve sustainable education and scientific research.",
+    missionAr:
+      "تحسين جودة التعليم العالي والتطوير المهني من خلال تيسير التبادل الأكاديمي وتنسيق الشراكات الدولية ودعم المبادرات التي تخدم التعليم المستدام والبحث العلمي.",
+    services: [
+      "Organizing scientific forums and joint research conferences in cooperation with international universities and institutions.",
+      "Coordinating knowledge-exchange and professional development programs for academics and researchers.",
+      "Managing educational institution delegations participating in international academic summits and conferences.",
+      "Developing research collaboration channels and platforms that connect local expertise with prestigious scientific centers.",
+      "Supporting institutional communication between Iraqi universities and international academic entities.",
+    ],
+    servicesAr: [
+      "تنظيم المنتديات العلمية ومؤتمرات البحث المشترك بالتعاون مع الجامعات والمؤسسات الدولية.",
+      "تنسيق برامج التبادل المعرفي والتطوير المهني للأكاديميين والباحثين.",
+      "إدارة وفود المؤسسات التعليمية المشاركة في القمم والمؤتمرات الأكاديمية الدولية.",
+      "تطوير قنوات ومنصات التعاون البحثي التي تربط الخبرات المحلية بالمراكز العلمية المرموقة.",
+      "دعم التواصل المؤسسي بين الجامعات العراقية والهيئات الأكاديمية الدولية.",
+    ],
+    whyJaz: [
+      "We act as a strategic bridge between the academic sector, professional institutions, and international partners.",
+      "We bring experience in managing knowledge-exchange programs and high-level academic partnerships.",
+      "We support scientific excellence by creating opportunities for communication, knowledge sharing, and exploration of modern academic trends.",
+      "We help educational institutions expand their international presence in an organized and professional manner.",
+    ],
+    whyJazAr: [
+      "نعمل كجسر استراتيجي بين القطاع الأكاديمي والمؤسسات المهنية والشركاء الدوليين.",
+      "نمتلك خبرة في إدارة برامج التبادل المعرفي والشراكات الأكاديمية رفيعة المستوى.",
+      "ندعم التميز العلمي من خلال إتاحة فرص التواصل ومشاركة المعرفة واستكشاف الاتجاهات الأكاديمية الحديثة.",
+      "نساعد المؤسسات التعليمية على توسيع حضورها الدولي بطريقة منظمة ومهنية.",
+    ],
   },
   {
     key: "industrie",
@@ -149,6 +281,48 @@ const sectorEntries: SectorContentEntry[] = [
     registrationIntroAr:
       "لتسجيل مؤسستكم للوصول إلى الأسواق الأوروبية، أو مراكز التصنيع الصناعي، أو البعثات التجارية الثنائية، يرجى تقديم طلبكم التجاري أدناه. سيتواصل معكم فريق التطوير التجاري لدينا.",
     accent: "#9a3412",
+    aboutDescription:
+      "JAZ Industrial and Commercial Development is dedicated to supporting industrial and commercial companies and institutions in Iraq by connecting them with international markets, solution providers, and specialized entities across industry, trade, manufacturing, supply chains, and commercial investment. The department acts as a strategic bridge between Iraq's industrial and commercial sectors and global platforms by coordinating partnerships, facilitating participation in trade fairs and industrial conferences, and supporting cooperation opportunities that contribute to business development and economic growth.",
+    aboutDescriptionAr:
+      "يختص قسم التطوير الصناعي والتجاري في جاز بدعم الشركات والمؤسسات الصناعية والتجارية في العراق من خلال ربطها بالأسواق الدولية ومزودي الحلول والجهات المتخصصة في الصناعة والتجارة والتصنيع وسلاسل التوريد والاستثمار التجاري. يعمل القسم كجسر استراتيجي بين القطاعين الصناعي والتجاري العراقيين والمنصات العالمية من خلال تنسيق الشراكات وتيسير المشاركة في المعارض التجارية والمؤتمرات الصناعية ودعم فرص التعاون التي تُسهم في تطوير الأعمال والنمو الاقتصادي.",
+    vision:
+      "To contribute to building a more competitive and globally connected Iraqi industrial and commercial sector that supports production, innovation, investment, and sustainable growth opportunities.",
+    visionAr:
+      "المساهمة في بناء قطاع صناعي وتجاري عراقي أكثر تنافسية ومتصل عالمياً يدعم الإنتاج والابتكار والاستثمار وفرص النمو المستدام.",
+    mission:
+      "To empower industrial and commercial institutions to access international cooperation opportunities, new markets, and modern solutions that enhance efficiency, support expansion, and contribute to the development of Iraq's business environment.",
+    missionAr:
+      "تمكين المؤسسات الصناعية والتجارية من الوصول إلى فرص التعاون الدولي والأسواق الجديدة والحلول الحديثة التي تعزز الكفاءة وتدعم التوسع وتُسهم في تطوير بيئة الأعمال في العراق.",
+    services: [
+      "Coordinating partnerships between Iraqi companies and international industrial and commercial entities.",
+      "Facilitating company and delegation participation in global trade and industrial exhibitions.",
+      "Supporting communication with manufacturers, suppliers, investors, and commercial solution providers.",
+      "Organizing business-matching programs and meetings between Iraqi institutions and international markets.",
+      "Supporting export, import, distribution, and commercial representation opportunities.",
+      "Connecting local companies with global platforms specialized in industry, trade, and commercial innovation.",
+    ],
+    servicesAr: [
+      "تنسيق الشراكات بين الشركات العراقية والجهات الصناعية والتجارية الدولية.",
+      "تيسير مشاركة الشركات والوفود في المعارض التجارية والصناعية العالمية.",
+      "دعم التواصل مع المصنّعين والموردين والمستثمرين ومزودي الحلول التجارية.",
+      "تنظيم برامج المقابلات التجارية والاجتماعات بين المؤسسات العراقية والأسواق الدولية.",
+      "دعم فرص التصدير والاستيراد والتوزيع والتمثيل التجاري.",
+      "ربط الشركات المحلية بالمنصات العالمية المتخصصة في الصناعة والتجارة والابتكار التجاري.",
+    ],
+    whyJaz: [
+      "We act as a strategic link between the Iraqi market and global industrial and commercial sectors.",
+      "We help companies access international partnership and expansion opportunities.",
+      "We bring experience in coordinating institutional participation in trade fairs and commercial events.",
+      "We support business growth by connecting institutions with relevant markets, suppliers, and solutions.",
+      "We strengthen the presence of Iraqi companies across international industrial and commercial platforms.",
+    ],
+    whyJazAr: [
+      "نعمل كحلقة وصل استراتيجية بين السوق العراقية والقطاعات الصناعية والتجارية العالمية.",
+      "نساعد الشركات على الوصول إلى فرص الشراكة الدولية والتوسع.",
+      "نمتلك خبرة في تنسيق مشاركة المؤسسات في المعارض التجارية والفعاليات الاقتصادية.",
+      "ندعم نمو الأعمال من خلال ربط المؤسسات بالأسواق والموردين والحلول ذات الصلة.",
+      "نعزز حضور الشركات العراقية على المنصات الصناعية والتجارية الدولية.",
+    ],
   },
 ];
 

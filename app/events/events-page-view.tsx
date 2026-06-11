@@ -7,6 +7,7 @@ import { MapPin } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { EventsHero } from './_components/events-hero'
 import { EventsFilter } from './events-filter'
+import { StatsBar, type StatsBarItem } from '@/components/shared/stats-bar'
 import type { Event, Sector } from '@/lib/database.types'
 
 interface EventsPageStats {
@@ -327,13 +328,24 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
     setParticipationTypes([])
   }
 
+  // Stats bar data
+  const statsItems: StatsBarItem[] = isRTL
+    ? [
+        { value: 250, label: 'الفعاليات القادمة', icon: 'solar:calendar-bold-duotone', suffix: '+' },
+        { value: 40, label: 'البلدان الشريكة', icon: 'solar:earth-bold-duotone', suffix: '+' },
+        { value: 4, label: 'القطاعات الاستراتيجية', icon: 'solar:widget-5-bold-duotone', suffix: '' },
+        { value: 5000, label: 'المشاركون العالميون', icon: 'solar:users-group-rounded-bold-duotone', suffix: '+', format: 'compact' },
+      ]
+    : [
+        { value: 250, label: 'Upcoming Events', icon: 'solar:calendar-bold-duotone', suffix: '+' },
+        { value: 40, label: 'Countries', icon: 'solar:earth-bold-duotone', suffix: '+' },
+        { value: 4, label: 'Key Sectors', icon: 'solar:widget-5-bold-duotone', suffix: '' },
+        { value: 5000, label: 'Global Participants', icon: 'solar:users-group-rounded-bold-duotone', suffix: '+', format: 'compact' },
+      ]
+
   // Localized texts for layout elements
   const pageTexts = isRTL
     ? {
-        statsUpcoming: 'الفعاليات القادمة',
-        statsCountries: 'البلدان الشريكة',
-        statsSectors: 'القطاعات الاستراتيجية',
-        statsParticipants: 'المشاركون العالميون',
         noResultsTitle: 'لم يتم العثور على فعاليات مطابقة',
         noResultsDesc: 'يرجى تجربة تغيير خيارات التصفية أو البحث للوصول إلى فعاليات أخرى.',
         ctaTitle: 'هل تحتاج إلى دعوة أو دعم للمشاركة؟',
@@ -344,10 +356,6 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         sectorLabel: 'القطاع الاستراتيجي',
       }
     : {
-        statsUpcoming: 'Upcoming Events',
-        statsCountries: 'Countries',
-        statsSectors: 'Key Sectors',
-        statsParticipants: 'Global Participants',
         noResultsTitle: 'No Matching Events Found',
         noResultsDesc: 'Try adjusting your search queries or filter categories to discover other events.',
         ctaTitle: 'Need Invitation or Participation Support?',
@@ -368,34 +376,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
       />
 
       {/* Stats Bar */}
-      <section className="bg-[#001a33] px-4 sm:px-6 md:px-12 lg:px-20 -mt-2 pb-6" data-purpose="stats-bar">
-        <div className="max-w-7xl mx-auto bg-[#0a2a4d]/50 border-t border-gray-700 py-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-white text-center">
-          <div className="border-e border-gray-700 last:border-0">
-            <div className="text-lg sm:text-2xl font-bold">+250+</div>
-            <div className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase tracking-wider">
-              {pageTexts.statsUpcoming}
-            </div>
-          </div>
-          <div className="border-e border-gray-700 last:border-0">
-            <div className="text-lg sm:text-2xl font-bold">+{uniqueCountries.length > 0 ? uniqueCountries.length + 35 : 40}+</div>
-            <div className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase tracking-wider">
-              {pageTexts.statsCountries}
-            </div>
-          </div>
-          <div className="border-e border-gray-700 last:border-0">
-            <div className="text-lg sm:text-2xl font-bold">{sectors.length || 4}</div>
-            <div className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase tracking-wider">
-              {pageTexts.statsSectors}
-            </div>
-          </div>
-          <div>
-            <div className="text-lg sm:text-2xl font-bold">5K+</div>
-            <div className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase tracking-wider">
-              {pageTexts.statsParticipants}
-            </div>
-          </div>
-        </div>
-      </section>
+      <StatsBar items={statsItems} overlap={false} />
 
       {/* Main Grid Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20 py-12 flex flex-col lg:flex-row gap-12">

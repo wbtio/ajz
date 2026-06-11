@@ -3,6 +3,8 @@
   "phase": "completed",
   "pageUrl": "/sectors",
   "sourceFile": "app/sectors/sectors-client.tsx",
+  "previewFile": null,
+  "previewMode": null,
   "expectedVariants": 3,
   "arrivedVariants": 3,
   "visibleVariant": 3,

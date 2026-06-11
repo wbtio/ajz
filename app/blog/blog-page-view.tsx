@@ -390,7 +390,7 @@ export function BlogPageView({ posts }: BlogPageViewProps) {
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
-              href="/partners"
+              href="/partnership"
               className="bg-[#a68233] hover:bg-[#8c6e2a] text-white px-5 sm:px-6 py-2.5 rounded-[4px] flex items-center gap-2 text-xs sm:text-sm font-semibold transition-all shadow-md shrink-0"
             >
               <span>{labels.btnExplore}</span>

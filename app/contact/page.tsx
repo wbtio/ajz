@@ -235,7 +235,7 @@ export default function ContactPage() {
       <section
         ref={sectionRef}
         style={heroStyle}
-        className="text-white pt-16 pb-24 px-6 md:px-12 lg:px-24 relative overflow-hidden"
+        className="text-white pt-28 md:pt-36 pb-36 px-6 md:px-12 lg:px-24 relative overflow-hidden"
       >
         {/* Animated Aurora overlay */}
         <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none z-0">
@@ -265,7 +265,7 @@ export default function ContactPage() {
               {t.contact.title}
             </motion.h1>
             
-            <motion.div variants={heroItemVariants} className="mb-12">
+            <motion.div variants={heroItemVariants} className="mb-10">
               <BlurText
                 text={t.contact.heroDescription}
                 delay={20}
@@ -280,20 +280,19 @@ export default function ContactPage() {
               {/* Request Cooperation */}
               <div
                 onClick={handleRequestCooperationClick}
-                className="action-card flex items-center justify-between p-6 bg-jaz-gold bg-opacity-90 rounded-jaz border border-jaz-gold/50 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-gold bg-opacity-90 rounded-jaz border border-jaz-gold/50 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
               >
-                <div className="flex items-center gap-4 text-start">
-                  <div className="bg-white/10 p-3 rounded-jaz shrink-0">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">{t.contact.cooperationTitle}</h3>
-                    <p className="text-sm text-white/80">{t.contact.cooperationDesc}</p>
+                    <h3 className="font-bold text-base">{t.contact.cooperationTitle}</h3>
                   </div>
                 </div>
-                <svg className={`w-6 h-6 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                 </svg>
               </div>
@@ -301,41 +300,39 @@ export default function ContactPage() {
               {/* Request Invitation Support */}
               <Link
                 href="/invitation-support"
-                className="action-card flex items-center justify-between p-6 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
-                <div className="flex items-center gap-4 text-start">
-                  <div className="bg-white/10 p-3 rounded-jaz shrink-0">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">{t.contact.invitationTitle}</h3>
-                    <p className="text-sm text-white/80">{t.contact.invitationDesc}</p>
+                    <h3 className="font-bold text-base">{t.contact.invitationTitle}</h3>
                   </div>
                 </div>
-                <svg className={`w-6 h-6 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                 </svg>
               </Link>
 
               {/* Become a Partner in Iraq */}
               <Link
-                href="/partners"
-                className="action-card flex items-center justify-between p-6 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
+                href="/partnership"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
-                <div className="flex items-center gap-4 text-start">
-                  <div className="bg-white/10 p-3 rounded-jaz shrink-0">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">{t.contact.partnerTitle}</h3>
-                    <p className="text-sm text-white/80">{t.contact.partnerDesc}</p>
+                    <h3 className="font-bold text-base">{t.contact.partnerTitle}</h3>
                   </div>
                 </div>
-                <svg className={`w-6 h-6 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                 </svg>
               </Link>
@@ -345,321 +342,335 @@ export default function ContactPage() {
       </section>
 
       {/* Main Grid Content */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 -mt-10 mb-16 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-30">
-        {/* Form Column */}
-        <div ref={formRef} className="lg:col-span-7 bg-white p-6 rounded-jaz shadow-sm border border-slate-100 text-start">
-          <header className="mb-6">
-            <h2 className="text-2xl font-bold text-jaz-navy mb-1.5">{t.contact.sendUsMessage}</h2>
-            <p className="text-slate-500 text-xs">{t.contact.formSubtitle}</p>
+      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 -mt-20 mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-30">
+        <div ref={formRef} className="variant-card lg:col-span-7 bg-white p-8 rounded-jaz border border-slate-200 text-start shadow-sm hover:shadow-md transition-all duration-300">
+          <header className="mb-8">
+            <span className="text-xs font-bold text-[#8B0000] tracking-wider uppercase mb-1 block">
+              {isRTL ? "مكتب الاستفسارات الرسمي" : "OFFICIAL INQUIRY DESK"}
+            </span>
+            <h2 className="text-2xl font-bold text-jaz-navy mb-2">{t.contact.sendUsMessage}</h2>
+            <div className="h-px bg-slate-200 w-full mt-4"></div>
           </header>
 
-          {success ? (
-            <div className="text-center py-12 flex flex-col items-center justify-center h-full">
-              <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {t.contact.success}
-              </h3>
-              <p className="text-slate-500 max-w-md text-sm">
-                {t.contact.successMessage}
-              </p>
-              <button
-                className="mt-6 h-11 px-6 rounded-jaz hover:bg-jaz-navy hover:text-white border border-slate-200 text-jaz-navy font-semibold transition-all duration-200"
-                onClick={() => setSuccess(false)}
-              >
-                {t.contact.sendAnother}
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {t.contact.fullName} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="contact-name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3"
-                    placeholder={isRTL ? "أدخل الاسم الكامل" : "Enter your full name"}
-                    type="text"
-                  />
+              {success ? (
+                <div className="text-center py-12 flex flex-col items-center justify-center h-full">
+                  <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-[#8B0000]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                    {t.contact.success}
+                  </h3>
+                  <p className="text-slate-500 max-w-md text-sm">
+                    {t.contact.successMessage}
+                  </p>
+                  <button
+                    className="mt-6 h-11 px-6 rounded-jaz hover:bg-[#8B0000] hover:text-white border border-slate-300 text-slate-700 font-semibold transition-all duration-200"
+                    onClick={() => setSuccess(false)}
+                  >
+                    {t.contact.sendAnother}
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {t.contact.organization} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3"
-                    placeholder={isRTL ? "أدخل اسم المؤسسة أو الشركة" : "Enter your organization or company"}
-                    type="text"
-                  />
-                </div>
-              </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        {t.contact.fullName} <span className="text-[#8B0000]">*</span>
+                      </label>
+                      <input
+                        id="contact-name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                        placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
+                        type="text"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        {t.contact.organization} <span className="text-[#8B0000]">*</span>
+                      </label>
+                      <input
+                        name="organization"
+                        value={formData.organization}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                        placeholder={isRTL ? "المؤسسة / الشركة" : "Organization / Company"}
+                        type="text"
+                      />
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {t.contact.email} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3"
-                    placeholder="name@domain.com"
-                    type="email"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {t.contact.phone}
-                  </label>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        {t.contact.email} <span className="text-[#8B0000]">*</span>
+                      </label>
+                      <input
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                        placeholder="name@domain.com"
+                        type="email"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        {t.contact.phone}
+                      </label>
+                      <div className="flex gap-2">
+                        <select
+                           name="phoneCode"
+                           value={formData.phoneCode}
+                           onChange={handleChange}
+                           className="w-32 rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                        >
+                          <option value="+964">+964</option>
+                          <option value="+965">+965</option>
+                          <option value="+968">+968</option>
+                          <option value="+971">+971</option>
+                          <option value="+33">+33</option>
+                        </select>
+                        <input
+                          name="phoneNumber"
+                          value={formData.phoneNumber}
+                          onChange={handleChange}
+                          className="flex-1 rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                          placeholder="7XX XXX XXXX"
+                          type="text"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      {t.contact.subject} <span className="text-[#8B0000]">*</span>
+                    </label>
                     <select
-                      name="phoneCode"
-                      value={formData.phoneCode}
-                      onChange={handleChange}
-                      className="w-32 rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3"
+                      name="inquiryType"
+                      value={
+                        formData.category === 'event' ? 'event' :
+                        formData.category === 'sector' ? 'sector' :
+                        formData.category === 'service' ? 'service' :
+                        formData.subject === 'Cooperation Request' ? 'cooperation' :
+                        formData.subject === 'Visa & Invitations' ? 'visa' :
+                        formData.subject === 'Other' ? 'other' :
+                        formData.subject ? 'general' : ''
+                      }
+                      onChange={(e) => {
+                        const val = e.target.value
+                        let subject = 'General Inquiry'
+                        let category = 'general'
+                        
+                        switch (val) {
+                          case 'general':
+                            subject = 'General Inquiry'
+                            category = 'general'
+                            break
+                          case 'cooperation':
+                            subject = 'Cooperation Request'
+                            category = 'general'
+                            break
+                          case 'event':
+                            subject = 'Sponsorship & Events'
+                            category = 'event'
+                            break
+                          case 'sector':
+                            subject = 'Strategic Division Inquiry'
+                            category = 'sector'
+                            break
+                          case 'visa':
+                            subject = 'Visa & Invitations'
+                            category = 'general'
+                            break
+                          case 'service':
+                            subject = 'Service Request'
+                            category = 'service'
+                            break
+                          case 'other':
+                            subject = 'Other'
+                            category = 'general'
+                            break
+                        }
+                        
+                        setFormData(prev => ({
+                          ...prev,
+                          subject,
+                          category,
+                          related_id: '',
+                          related_title: ''
+                        }))
+                      }}
+                      required
+                      className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200 text-slate-900"
                     >
-                      <option value="+964">+964</option>
-                      <option value="+965">+965</option>
-                      <option value="+968">+968</option>
-                      <option value="+971">+971</option>
-                      <option value="+33">+33</option>
+                      <option value="">{isRTL ? "اختر سبب الاستفسار..." : "Select reason for inquiry..."}</option>
+                      <option value="general">{isRTL ? "استفسار عام" : "General Inquiry"}</option>
+                      <option value="cooperation">{isRTL ? "طلب تعاون" : "Cooperation Request"}</option>
+                      <option value="event">{isRTL ? "رعاية وفعاليات (مؤتمر / معرض)" : "Sponsorship & Events (Conference / Exhibition)"}</option>
+                      <option value="sector">{isRTL ? "استفسار عن قسم استراتيجي" : "Strategic Division Inquiry"}</option>
+                      <option value="visa">{isRTL ? "طلب دعم التأشيرات والدعوات" : "Visa & Invitation Support"}</option>
+                      <option value="service">{isRTL ? "طلب خدمة تنظيم" : "Service / Organizing Request"}</option>
+                      <option value="other">{isRTL ? "أخرى" : "Other"}</option>
                     </select>
-                    <input
-                      name="phoneNumber"
-                      value={formData.phoneNumber}
+                  </div>
+
+                  {['event', 'sector'].includes(formData.category) && (
+                    <div className="space-y-1 text-start">
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        {formData.category === 'event' && t.contact.selectEvent}
+                        {formData.category === 'sector' && t.contact.selectSector}
+                      </label>
+                      <select
+                        name="related_id"
+                        value={formData.related_id}
+                        onChange={handleChange}
+                        required
+                        disabled={isFetchingItems}
+                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-white transition-all duration-200"
+                      >
+                        <option value="">{isRTL ? 'اختر...' : 'Select...'}</option>
+                        {relatedItems.map(item => (
+                          <option key={item.id} value={item.id}>{item.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      {t.contact.message} <span className="text-[#8B0000]">*</span>
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
                       onChange={handleChange}
-                      className="flex-1 rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3"
-                      placeholder="7XX XXX XXXX"
-                      type="text"
+                      required
+                      className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                      placeholder={t.contact.messagePlaceholder}
+                      rows={4}
                     />
                   </div>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {t.contact.subject} <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className={`w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3 ${!formData.subject ? 'text-slate-400' : 'text-slate-900'}`}
-                  >
-                    <option value="">{isRTL ? "اختر موضوع الرسالة" : "Select a subject"}</option>
-                    <option value="Cooperation Request">{isRTL ? "طلب تعاون" : "Cooperation Request"}</option>
-                    <option value="Sponsorship & Events">{isRTL ? "رعاية وفعاليات" : "Sponsorship & Events"}</option>
-                    <option value="Visa & Invitations">{isRTL ? "تأشيرات ودعوات" : "Visa & Invitations"}</option>
-                    <option value="General Inquiry">{isRTL ? "استفسار عام" : "General Inquiry"}</option>
-                    <option value="Other">{isRTL ? "أخرى" : "Other"}</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {t.contact.category} <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3 text-slate-900"
-                  >
-                    <option value="general">{t.contact.categories.general}</option>
-                    <option value="event">{t.contact.categories.event}</option>
-                    <option value="sector">{t.contact.categories.sector}</option>
-                    <option value="service">{t.contact.categories.service}</option>
-                  </select>
-                </div>
-              </div>
-
-              {['event', 'sector'].includes(formData.category) && (
-                <div className="space-y-1 text-start">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    {formData.category === 'event' && t.contact.selectEvent}
-                    {formData.category === 'sector' && t.contact.selectSector}
-                  </label>
-                  <select
-                    name="related_id"
-                    value={formData.related_id}
-                    onChange={handleChange}
-                    required
-                    disabled={isFetchingItems}
-                    className="w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3 bg-white"
-                  >
-                    <option value="">{isRTL ? 'اختر...' : 'Select...'}</option>
-                    {relatedItems.map(item => (
-                      <option key={item.id} value={item.id}>{item.title}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  {t.contact.message} <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-jaz border-slate-300 focus:border-jaz-navy focus:ring-jaz-navy text-sm p-3"
-                  placeholder={t.contact.messagePlaceholder}
-                  rows={4}
-                />
-              </div>
-
-              {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-jaz flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 shrink-0" />
-                  <p className="text-sm font-medium">{error}</p>
-                </div>
-              )}
-
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-4">
-                <label className="flex items-center gap-3 text-sm text-slate-500 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="agree"
-                    checked={formData.agree}
-                    onChange={handleChange}
-                    required
-                    className="rounded border-slate-300 text-jaz-navy focus:ring-jaz-navy"
-                  />
-                  <span>
-                    {isRTL ? (
-                      <>
-                        أوافق على <Link href="/privacy" className="underline hover:text-jaz-navy">سياسة الخصوصية</Link> و <Link href="/terms" className="underline hover:text-jaz-navy">الشروط والأحكام</Link>.
-                      </>
-                    ) : (
-                      <>
-                        I agree to the <Link href="/privacy" className="underline hover:text-jaz-navy">Privacy Policy</Link> and <Link href="/terms" className="underline hover:text-jaz-navy">Terms & Conditions</Link>.
-                      </>
-                    )}
-                  </span>
-                </label>
-                <button
-                  disabled={isLoading}
-                  className="bg-jaz-navy text-white px-8 py-3 rounded-jaz hover:bg-jaz-blue-accent transition-colors flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-70 disabled:cursor-not-allowed"
-                  type="submit"
-                >
-                  {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4 shrink-0" />
+                  {error && (
+                    <div className="bg-red-50 text-red-600 p-4 border-l-2 border-[#8B0000] flex items-center gap-3">
+                      <AlertCircle className="w-5 h-5 shrink-0" />
+                      <p className="text-sm font-medium">{error}</p>
+                    </div>
                   )}
-                  {t.contact.send}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-4">
+                    <label className="flex items-center gap-3 text-sm text-slate-500 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="agree"
+                        checked={formData.agree}
+                        onChange={handleChange}
+                        required
+                        className="rounded border-slate-300 text-[#8B0000] focus:ring-[#8B0000]"
+                      />
+                      <span>
+                        {isRTL ? (
+                          <>
+                            أوافق على <Link href="/privacy" className="underline hover:text-jaz-navy">سياسة الخصوصية</Link> و <Link href="/terms" className="underline hover:text-jaz-navy">الشروط والأحكام</Link>.
+                          </>
+                        ) : (
+                          <>
+                            I agree to the <Link href="/privacy" className="underline hover:text-jaz-navy">Privacy Policy</Link> and <Link href="/terms" className="underline hover:text-jaz-navy">Terms & Conditions</Link>.
+                          </>
+                        )}
+                      </span>
+                    </label>
+                    <button
+                      disabled={isLoading}
+                      className="bg-jaz-navy text-white px-8 py-3 rounded-none border border-jaz-navy hover:bg-[#8B0000] hover:border-[#8B0000] transition-colors flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-70 disabled:cursor-not-allowed"
+                      type="submit"
+                    >
+                      {isLoading ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4 shrink-0" />
+                      )}
+                      {t.contact.send}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
 
         {/* Offices Column */}
-        <div className="lg:col-span-5 text-start">
+        <div className="variant-card lg:col-span-5 bg-white p-8 rounded-jaz border border-slate-200 text-start shadow-sm hover:shadow-md transition-all duration-300 lg:flex lg:flex-col lg:h-full">
           <header className="mb-6">
-            <h2 className="text-2xl font-bold text-jaz-navy mb-2">{t.contact.ourOffices}</h2>
+            <span className="text-xs font-bold text-[#8B0000] tracking-wider uppercase mb-1 block">OFFICIAL PRESENCE</span>
+            <h2 className="text-xl font-bold text-jaz-navy mb-2">{t.contact.ourOffices}</h2>
+            <div className="h-px bg-slate-200 w-full mt-4"></div>
           </header>
-          <div className="space-y-4">
-            {/* Basra Office */}
+          <div className="flex flex-col gap-4 lg:flex-1 lg:justify-between mt-4">
             <article
               onClick={() => handleOfficeSelect('basra')}
-              className="bg-white rounded-jaz border border-slate-100 overflow-hidden shadow-sm transition-all duration-300 cursor-pointer hover:border-slate-200 hover:shadow-md"
-              data-purpose="office-card"
+              className="variant-card bg-slate-50 p-4 rounded-jaz border border-slate-100 flex items-center gap-4 cursor-pointer hover:bg-slate-100/60 hover:border-slate-200 hover:shadow-sm transition-all duration-300 group h-full"
             >
-              <div className="w-full h-24 relative">
+              <div className="w-24 h-20 relative shrink-0 rounded-jaz overflow-hidden border border-slate-200/50">
                 <Image
                   alt="Basra Office View"
-                  className="object-cover"
-                  src="https://lh3.googleusercontent.com/aida/AP1WRLs-jZ2Dd5ZFJWhxbFEwf6t-22X4dBGg33GW-22Uc28nP3LmcPGmYBFEdsTnXutWhoGMCZ2qYlolEFOPjT5FyHyMf9HqF6gSy8Sw0G2vDI06-A0N9Xhd-cuPkUa8Ryl3S6PRxD3LakXkHUu3GZpzMgzU8Y-Vfn7kFFixIs2Pleu8UjHJhQiu-GnRjPvxyMF4DGLUO1tuIT43wsnJrJV20AM42OeG9R9qs1FQQ6duD4GXBIm6_zGvCfaW5C4"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  src="/images/basra-office.png"
                   fill
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                />
+                  sizes="96px"
+                >
+                </Image>
               </div>
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 text-jaz-navy shrink-0">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-jaz-navy mb-0.5 text-base">{t.contact.basraOffice}</h3>
-                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.basraAddress}</p>
-                  </div>
-                </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-jaz-navy text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.basraOffice}</h3>
+                <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.basraAddress}</p>
               </div>
             </article>
 
-            {/* Baghdad Office */}
             <article
               onClick={() => handleOfficeSelect('baghdad')}
-              className="bg-white rounded-jaz border border-slate-100 overflow-hidden shadow-sm transition-all duration-300 cursor-pointer hover:border-slate-200 hover:shadow-md"
-              data-purpose="office-card"
+              className="variant-card bg-slate-50 p-4 rounded-jaz border border-slate-100 flex items-center gap-4 cursor-pointer hover:bg-slate-100/60 hover:border-slate-200 hover:shadow-sm transition-all duration-300 group h-full"
             >
-              <div className="w-full h-24 relative">
+              <div className="w-24 h-20 relative shrink-0 rounded-jaz overflow-hidden border border-slate-200/50">
                 <Image
                   alt="Baghdad Office View"
-                  className="object-cover"
-                  src="https://lh3.googleusercontent.com/aida/AP1WRLsHzFZ5l4G2iwOi4VM0XECrvBWyZhV6lEmKYkurbW-7sfAS9riMpJZrV_q4uTplwieXS0UdxGyjpuKoS4wVSmJw2UZAIQN-bFJwugyu6CixU4-hFDXTcUzOAFTv0Djq8NwLGUgNk7RHFuFZoNMQfNptw4D8OmS1WT37rNYBKcyNAqyRs8v7Kuob7GZKvHJBHjJO0FiRy2HYXTlDhb5aVtDFqeoETPsrddOCkPRAAbh2d4GCq1nk_iXJDw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  src="/images/baghdad-office.png"
                   fill
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                />
+                  sizes="96px"
+                >
+                </Image>
               </div>
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 text-jaz-navy shrink-0">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-jaz-navy mb-0.5 text-base">{t.contact.baghdadOffice}</h3>
-                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.baghdadAddress}</p>
-                  </div>
-                </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-jaz-navy text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.baghdadOffice}</h3>
+                <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.baghdadAddress}</p>
               </div>
             </article>
 
-            {/* Erbil Office */}
             <article
               onClick={() => handleOfficeSelect('erbil')}
-              className="bg-white rounded-jaz border border-slate-100 overflow-hidden shadow-sm transition-all duration-300 cursor-pointer hover:border-slate-200 hover:shadow-md"
-              data-purpose="office-card"
+              className="variant-card bg-slate-50 p-4 rounded-jaz border border-slate-100 flex items-center gap-4 cursor-pointer hover:bg-slate-100/60 hover:border-slate-200 hover:shadow-sm transition-all duration-300 group h-full"
             >
-              <div className="w-full h-24 relative">
+              <div className="w-24 h-20 relative shrink-0 rounded-jaz overflow-hidden border border-slate-200/50">
                 <Image
                   alt="Erbil Office View"
-                  className="object-cover"
-                  src="https://lh3.googleusercontent.com/aida/AP1WRLu4VC4PMLvWTW4_QuhoOyOmfamAaD8pY6Gdo2OtHSOuEUEGHRUxk6HRD3AF8jnJG_gvjwaI5q6vBblyYirxgomzzvsAcz9H0VwhSggb-g71ptNkHch1NrSrOLqTJnA1yc6kahgInVai80I6QyQOoxrZkz7Em2MdyS7tS8Fup3yAopZND-buS-aJA0nqB-1S6OKqZFACpj-OXhwDSQUCyCgyLrNmGDGqUnoIQOai-4FpIAIqoX1sieyOS44"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  src="/images/erbil-office.png"
                   fill
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                />
+                  sizes="96px"
+                >
+                </Image>
               </div>
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 text-jaz-navy shrink-0">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-jaz-navy mb-0.5 text-base">{t.contact.erbilOffice}</h3>
-                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.erbilAddress}</p>
-                  </div>
-                </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-jaz-navy text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.erbilOffice}</h3>
+                <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.erbilAddress}</p>
               </div>
             </article>
           </div>
@@ -667,62 +678,48 @@ export default function ContactPage() {
       </section>
 
       {/* Other Ways Section */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mb-16 text-start">
+      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mb-20 text-start">
         <h2 className="text-2xl font-bold text-jaz-navy mb-8">{t.contact.otherWaysTitle}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Call Us */}
-          <a href="tel:+9647701112444" className="bg-white p-6 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-slate-200 hover:shadow-sm transition-all duration-200">
-            <div className="bg-jaz-navy p-3 rounded-full text-white shrink-0">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <a href="tel:+9647719000600" className="group bg-white p-4 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-[#8B0000]/30 hover:shadow-sm transition-all duration-200">
+            <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-full text-[#8B0000] shrink-0 transition-colors">
+              <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
               </svg>
             </div>
             <div>
               <h4 className="font-bold text-jaz-navy text-sm">{t.contact.callUs}</h4>
-              <p className="text-jaz-navy font-semibold text-xs mt-0.5">+964 770 111 2444</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{t.contact.callUsDesc}</p>
+              <p className="text-slate-900 font-extrabold text-sm mt-0.5">+964 771 900 0600</p>
+              <p className="text-[10px] text-slate-400 mt-1">{t.contact.callUsDesc}</p>
             </div>
           </a>
 
           {/* Email Us */}
-          <a href="mailto:info@jaz-iq.com" className="bg-white p-6 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-slate-200 hover:shadow-sm transition-all duration-200">
-            <div className="bg-jaz-navy p-3 rounded-full text-white shrink-0">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <a href="mailto:info@jaz-iq.com" className="group bg-white p-4 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-[#8B0000]/30 hover:shadow-sm transition-all duration-200">
+            <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-full text-[#8B0000] shrink-0 transition-colors">
+              <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
               </svg>
             </div>
             <div>
               <h4 className="font-bold text-jaz-navy text-sm">{t.contact.emailUs}</h4>
-              <p className="text-jaz-navy font-semibold text-xs mt-0.5">info@jaz-iq.com</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{t.contact.emailUsDesc}</p>
-            </div>
-          </a>
-
-          {/* Website */}
-          <a href="https://www.jaz-iq.com" target="_blank" rel="noopener noreferrer" className="bg-white p-6 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-slate-200 hover:shadow-sm transition-all duration-200">
-            <div className="bg-jaz-navy p-3 rounded-full text-white shrink-0">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-              </svg>
-            </div>
-            <div>
-              <h4 className="font-bold text-jaz-navy text-sm">{t.contact.visitWebsite}</h4>
-              <p className="text-jaz-navy font-semibold text-xs mt-0.5">www.jaz-iq.com</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{t.contact.visitWebsiteDesc}</p>
+              <p className="text-slate-900 font-extrabold text-sm mt-0.5">info@jaz-iq.com</p>
+              <p className="text-[10px] text-slate-400 mt-1">{t.contact.emailUsDesc}</p>
             </div>
           </a>
 
           {/* LinkedIn */}
-          <a href="https://www.linkedin.com/company/jaz" target="_blank" rel="noopener noreferrer" className="bg-white p-6 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-slate-200 hover:shadow-sm transition-all duration-200">
-            <div className="bg-jaz-navy p-3 rounded-full text-white shrink-0">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <a href="https://www.linkedin.com/company/jaz" target="_blank" rel="noopener noreferrer" className="group bg-white p-4 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-[#8B0000]/30 hover:shadow-sm transition-all duration-200">
+            <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-full text-[#8B0000] shrink-0 transition-colors">
+              <svg className="w-5.5 h-5.5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
               </svg>
             </div>
             <div>
               <h4 className="font-bold text-jaz-navy text-sm">{t.contact.connectLinkedIn}</h4>
-              <p className="text-jaz-navy font-semibold text-xs mt-0.5">JAZ - Joint Annual Zone</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{t.contact.connectLinkedInDesc}</p>
+              <p className="text-slate-900 font-extrabold text-sm mt-0.5">JAZ - Joint Annual Zone</p>
+              <p className="text-[10px] text-slate-400 mt-1">{t.contact.connectLinkedInDesc}</p>
             </div>
           </a>
         </div>

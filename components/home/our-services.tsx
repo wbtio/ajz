@@ -8,7 +8,7 @@ export function OurServices() {
   const { t, locale, dir } = useI18n()
   const shouldReduceMotion = useReducedMotion() ?? false
 
-  const services = t.homepage.services.items || []
+  const services = (t.homepage.services.items || []).slice(0, 4)
 
   // Nice premium icons for the 8 services
   const icons = [
@@ -24,12 +24,12 @@ export function OurServices() {
 
   return (
     <div className="w-full text-start" data-purpose="our-services">
-      <h2 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-100 pb-3 flex items-center gap-2">
+      <h2 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-200/60 pb-3 flex items-center gap-2">
         <span className="w-1.5 h-6 bg-[#8B0000] rounded-sm"></span>
         {t.homepage.services.title}
       </h2>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
         {services.map((service: string, index: number) => (
           <motion.div
             key={index}
@@ -40,10 +40,10 @@ export function OurServices() {
             whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
             className="border border-slate-200/60 bg-slate-50/50 hover:bg-white hover:border-[#8B0000]/20 p-4 rounded-xl text-center flex flex-col items-center justify-center min-h-[96px] transition-all duration-300 hover:shadow-md group"
           >
-            <div className="text-slate-400 group-hover:text-[#8B0000] transition-colors duration-300 mb-2">
+            <div className="text-slate-500 group-hover:text-[#8B0000] transition-colors duration-300 mb-2">
               <Icon icon={icons[index % icons.length]} className="w-5.5 h-5.5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-700 leading-tight text-center max-w-[14ch]">
+            <span className="text-xs sm:text-sm font-bold text-slate-800 leading-snug text-center max-w-[20ch]">
               {service}
             </span>
           </motion.div>

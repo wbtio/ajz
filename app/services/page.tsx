@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { useI18n } from '@/lib/i18n'
 import { Icon } from '@iconify/react'
+import { StatsBar, type StatsBarItem } from '@/components/shared/stats-bar'
 
 export default function ServicesPage() {
   const { t, locale, dir } = useI18n()
@@ -40,43 +40,29 @@ export default function ServicesPage() {
   }
 
   // Stats bar data from the HTML
-  const stats = [
-    {
-      val: '+10',
-      label: isRTL ? t.servicesPage.stats.expLabel : t.servicesPage.stats.expLabel,
-      icon: 'solar:medal-ribbons-star-bold-duotone',
-    },
-    {
-      val: isRTL ? t.servicesPage.stats.citiesVal : t.servicesPage.stats.citiesVal,
-      label: isRTL ? t.servicesPage.stats.citiesLabel : t.servicesPage.stats.citiesLabel,
-      icon: 'solar:globus-bold-duotone',
-    },
-    {
-      val: isRTL ? t.servicesPage.stats.sectorsVal : t.servicesPage.stats.sectorsVal,
-      label: isRTL ? t.servicesPage.stats.sectorsLabel : t.servicesPage.stats.sectorsLabel,
-      icon: 'solar:widget-5-bold-duotone',
-    },
-    {
-      val: isRTL ? t.servicesPage.stats.govVal : t.servicesPage.stats.govVal,
-      label: isRTL ? t.servicesPage.stats.govLabel : t.servicesPage.stats.govLabel,
-      icon: 'solar:users-group-two-rounded-bold-duotone',
-    },
-  ]
+  const stats: StatsBarItem[] = isRTL
+    ? [
+        { value: 10, label: 'سنوات من التنسيق', icon: 'solar:medal-ribbons-star-bold-duotone', suffix: '+' },
+        { value: 3, label: 'مكاتب العراق', icon: 'solar:globus-bold-duotone', suffix: '' },
+        { value: 4, label: 'قطاعات نشطة', icon: 'solar:widget-5-bold-duotone', suffix: '+' },
+        { value: 50, label: 'شراكات قنصلية', icon: 'solar:users-group-two-rounded-bold-duotone', suffix: '+' },
+      ]
+    : [
+        { value: 10, label: 'Years of Coordination', icon: 'solar:medal-ribbons-star-bold-duotone', suffix: '+' },
+        { value: 3, label: 'Iraq Offices', icon: 'solar:globus-bold-duotone', suffix: '' },
+        { value: 4, label: 'Active Industries', icon: 'solar:widget-5-bold-duotone', suffix: '+' },
+        { value: 50, label: 'Consular Partnerships', icon: 'solar:users-group-two-rounded-bold-duotone', suffix: '+' },
+      ]
 
-  // Icons matching each of the 8 services
+  // Icons matching each of the 4 service pillars
   const serviceIcons = [
-    'solar:globus-bold-duotone',                  // International Event Access
-    'solar:users-group-two-rounded-bold-duotone', // Delegation Coordination
-    'solar:letter-bold-duotone',                  // Invitation & Registration
-    'solar:share-bold-duotone',                   // Official Pub & Promotion
-    'solar:link-bold-duotone',                    // Institutional Partnerships
-    'solar:compass-bold-duotone',                 // Market Outreach
-    'solar:handshake-bold-duotone',               // B2B Matchmaking
-    'solar:shield-user-bold-duotone'              // Logistics & Protocol
+    'solar:globus-bold-duotone',                  // Global Event & Delegation Access
+    'solar:handshake-bold-duotone',               // Bilateral Institutional Alliances
+    'solar:compass-bold-duotone',                 // In-Country Market Representation
+    'solar:shield-user-bold-duotone'              // Consular Logistics & Media Integration
   ]
 
   const coreServices = t.servicesPage.coreServices.items || []
-  const whyJazItems = t.servicesPage.info.whyJaz.items || []
 
   return (
     <div className="min-h-screen bg-white text-[#001a33]" dir={dir} lang={locale}>
@@ -117,7 +103,7 @@ export default function ServicesPage() {
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#001a33] to-transparent"></div>
         </div>
 
-        <Container className="relative z-10 w-full text-start px-6 py-16 lg:py-24">
+        <Container className="relative z-10 w-full text-start py-16 lg:py-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -127,13 +113,13 @@ export default function ServicesPage() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 tracking-tight leading-tight">
               {t.servicesPage.hero.title}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-8 font-medium">
+            <p className="text-sm text-slate-300 leading-relaxed mb-8 font-medium">
               {t.servicesPage.hero.description}
             </p>
             <div className="flex flex-wrap gap-3">
               <Button
                 asChild
-                className="bg-[#cba76d] hover:bg-[#bba362] text-[#001a33] font-bold px-6 py-5 rounded-[4px] text-xs shadow-md border-0 shrink-0"
+                className="bg-[#cba76d] hover:bg-[#bba362] text-[#001a33] font-bold px-6 py-5 rounded-[6px] text-xs shadow-md border-0 shrink-0"
               >
                 <Link href="/contact?subject=cooperation">
                   {t.servicesPage.hero.ctaCooperation}
@@ -142,16 +128,7 @@ export default function ServicesPage() {
               <Button
                 asChild
                 variant="outline"
-                className="bg-[#001a33] border border-blue-900 text-white font-bold px-6 py-5 rounded-[4px] text-xs hover:bg-blue-900 shrink-0"
-              >
-                <Link href="/events">
-                  {t.servicesPage.hero.ctaParticipation}
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="bg-[#001a33] border border-blue-900 text-white font-bold px-6 py-5 rounded-[4px] text-xs hover:bg-blue-900 shrink-0"
+                className="bg-[#001a33] border border-blue-900 text-white font-bold px-6 py-5 rounded-[6px] text-xs hover:bg-blue-900 shrink-0"
               >
                 <Link href="/invitation-support">
                   {t.servicesPage.hero.ctaInvitation}
@@ -161,111 +138,55 @@ export default function ServicesPage() {
           </motion.div>
         </Container>
       </section>
-
+ 
       {/* Stats Bar */}
-      <section
-        className="bg-[#001226] text-white py-5 border-t border-blue-900/40 relative z-10"
-        data-purpose="stats-bar"
-      >
-        <Container className="px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x sm:rtl:divide-x-reverse divide-white/10">
-            {stats.map((stat, index) => (
-              <div key={index} className="flex flex-col items-center justify-center p-2 sm:p-0">
-                <span className="text-base sm:text-lg font-black text-white leading-none mb-1.5 flex items-center gap-1.5 justify-center">
-                  <Icon icon={stat.icon} className="text-[#cba76d] h-5 w-5 shrink-0" />
-                  {stat.val}
-                </span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
+      <StatsBar items={stats} overlap={false} />
+ 
       {/* Main Content */}
       <main className="py-16 bg-white">
-        <Container className="px-6">
-          <h2 className="text-2xl sm:text-3xl font-black text-[#001a33] mb-8 text-start flex items-center gap-2">
+        <Container>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#001a33] mb-10 text-start flex items-center gap-2">
             <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
             {t.servicesPage.coreServices.title}
           </h2>
-
+ 
           {/* Services Grid */}
           <motion.div
             variants={containerVariants}
             initial={shouldReduceMotion ? 'visible' : 'hidden'}
             whileInView="visible"
             viewport={{ once: true, margin: '-20px' }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12 mb-16"
             data-purpose="services-grid"
           >
             {coreServices.map((service: any, index: number) => (
-              <motion.div key={index} variants={cardVariants} className="h-full">
-                <Card className="h-full bg-white border border-[#e5e7eb] rounded-[4px] shadow-[0_1px_3px_rgba(0,0,0,0.1)] relative overflow-hidden flex flex-col justify-between group">
-                  <CardContent className="p-6 text-start flex flex-col h-full">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[#001a33]/5 text-[#001a33] mb-4 group-hover:scale-105 transition-transform duration-300">
-                      <Icon icon={serviceIcons[index % serviceIcons.length]} className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-extrabold text-sm text-[#001a33] mb-3 leading-tight group-hover:text-[#8b0000] transition-colors duration-300">
-                      {service.title}
-                    </h3>
-                    <p className="text-[11px] leading-relaxed text-gray-500 font-medium">
-                      {service.desc}
-                    </p>
-                  </CardContent>
-                </Card>
+              <motion.div key={index} variants={cardVariants} className="flex gap-5 items-start text-start">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#001a33]/5 text-[#001a33] shrink-0 mt-1">
+                  <Icon icon={serviceIcons[index % serviceIcons.length]} className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-[#001a33] mb-2 leading-tight">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-slate-600 font-medium max-w-md">
+                    {service.desc}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </motion.div>
-
-          {/* Secondary Info Sections */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" data-purpose="secondary-info">
-            {/* How We Work */}
-            <div className="lg:col-span-4 border border-[#e5e7eb] rounded-[4px] p-6 min-h-[180px] bg-white text-start shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
-              <h4 className="font-extrabold text-base text-[#001a33] mb-4 border-b border-slate-100 pb-2">
-                {t.servicesPage.info.howWeWork.title}
-              </h4>
-              <p className="text-[11px] text-gray-500 font-semibold leading-relaxed">
-                {t.servicesPage.info.howWeWork.desc}
-              </p>
-            </div>
-
-            {/* Industries We Support */}
-            <div className="lg:col-span-5 border border-[#e5e7eb] rounded-[4px] p-6 min-h-[180px] bg-white text-start shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
-              <h4 className="font-extrabold text-base text-[#001a33] mb-4 border-b border-slate-100 pb-2">
-                {t.servicesPage.info.industries.title}
-              </h4>
-              <p className="text-[11px] text-gray-500 font-semibold leading-relaxed">
-                {t.servicesPage.info.industries.desc}
-              </p>
-            </div>
-
-            {/* Why Work With JAZ? */}
-            <div className="lg:col-span-3 border border-[#e5e7eb] rounded-[4px] p-6 bg-white flex flex-col text-start shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
-              <h4 className="font-extrabold text-base text-[#001a33] mb-4 border-b border-slate-100 pb-2">
-                {t.servicesPage.info.whyJaz.title}
-              </h4>
-              <ul className="text-[10px] space-y-2 text-gray-600 font-bold list-disc pl-4 rtl:pr-4 rtl:pl-0">
-                {whyJazItems.map((item: string, index: number) => (
-                  <li key={index} className="marker:text-[#cba76d]">{item}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </Container>
       </main>
-
+ 
       {/* Call To Action */}
       <section className="pb-16 bg-white">
-        <Container className="px-6">
+        <Container>
           <motion.div
             initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-[#001a33] rounded-[4px] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-white border border-white/5 shadow-lg relative overflow-hidden"
+            className="bg-[#001a33] rounded-xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-white border border-white/5 shadow-md relative overflow-hidden"
             data-purpose="cta-bar"
           >
             {/* Soft decorative visual glow */}
@@ -283,7 +204,7 @@ export default function ServicesPage() {
             <div className="flex gap-4 w-full md:w-auto shrink-0 justify-start relative z-10">
               <Button
                 asChild
-                className="flex-grow md:flex-grow-0 px-8 py-5 bg-[#cba76d] text-[#001a33] font-bold hover:bg-[#bba362] rounded-[4px] text-xs shadow-md border-0 shrink-0 h-10"
+                className="flex-grow md:flex-grow-0 px-8 py-5 bg-[#cba76d] text-[#001a33] font-bold hover:bg-[#bba362] rounded-[6px] text-xs shadow-md border-0 shrink-0 h-10"
               >
                 <Link href="/contact?subject=cooperation">
                   {t.servicesPage.cta.cooperation}
@@ -292,7 +213,7 @@ export default function ServicesPage() {
               <Button
                 asChild
                 variant="outline"
-                className="flex-grow md:flex-grow-0 px-8 py-5 border border-white text-white font-bold hover:bg-white hover:text-[#001a33] rounded-[4px] text-xs transition-all duration-300 shrink-0 h-10"
+                className="flex-grow md:flex-grow-0 px-8 py-5 border border-white text-white font-bold hover:bg-white hover:text-[#001a33] rounded-[6px] text-xs transition-all duration-300 shrink-0 h-10"
               >
                 <Link href="/contact">
                   {t.servicesPage.cta.contact}

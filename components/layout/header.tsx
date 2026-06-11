@@ -5,7 +5,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Icon as Iconify } from '@iconify/react'
-import { Container } from '@/components/ui/container'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -85,17 +84,12 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
   }
 
   // ── resolve effective theme ──
-  const baseTheme = resolveBaseTheme(normalizedPathname)
-  // On home or blog, flip from dark→light once we scroll past the navy hero section
-  const isDarkHeroPage = isHomePage || normalizedPathname.replace(/\/$/, '') === '/blog'
-  const effectiveTheme: HeaderTheme =
-    isDarkHeroPage && pastHero ? 'light' : baseTheme
-  const isDark = effectiveTheme === 'dark'
+  const isDark = false
 
   // ── navigation items ──
   const navigation = [
     { name: t.nav.home,     href: '/',         icon: 'solar:home-smile-angle-bold-duotone'    },
-    { name: t.nav.partners, href: '/partners',  icon: 'solar:handshake-bold-duotone'            },
+    { name: t.nav.partners, href: '/partnership',  icon: 'solar:handshake-bold-duotone'            },
     { name: t.nav.sectors,  href: '/departments',   icon: 'solar:widget-3-bold-duotone'             },
     { name: t.nav.events,   href: '/events',    icon: 'solar:calendar-date-bold-duotone'        },
     { name: t.nav.training, href: '/training',  icon: 'solar:square-academic-cap-bold-duotone'  },
@@ -107,22 +101,19 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
     { name: t.nav.links,    href: '/links',     icon: 'solar:link-round-bold-duotone'           },
   ]
 
+
   const toggleLocale = () => setLocale(locale === 'ar' ? 'en' : 'ar')
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Colour tokens — all switching on isDark + scrolled
+  // Colour tokens — dynamic glassmorphic styles
   // ──────────────────────────────────────────────────────────────────────────
 
-  // Outer pill
-  const pillCn = cn(
-    'flex items-center justify-between gap-3 rounded-[1.75rem] border shadow-2xl transition-all duration-500 px-4 py-2.5 sm:py-3',
-    isDark
-      ? scrolled
-        ? 'border-white/18 bg-navy-950/92 text-white backdrop-blur-2xl shadow-black/25'
-        : 'border-white/10 bg-navy-950/35 text-white backdrop-blur-xl shadow-black/10'
-      : scrolled
-        ? 'border-slate-200 bg-white/97 text-slate-900 backdrop-blur-2xl shadow-slate-900/8'
-        : 'border-slate-200/70 bg-white/82 text-slate-800 backdrop-blur-xl shadow-slate-900/5'
+  // Outer header class (touches top/left/right, with bottom border and glassmorphism)
+  const headerClass = cn(
+    'w-full transition-all duration-500 border-b px-4 py-3 sm:py-4',
+    scrolled
+      ? 'border-slate-200 bg-white text-slate-900 shadow-md shadow-slate-900/5'
+      : 'border-slate-200/60 bg-white text-slate-800 shadow-sm shadow-slate-900/2'
   )
 
   // Active indicator pill behind nav item
@@ -160,6 +151,15 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
       : 'border-slate-200 bg-white/90 text-slate-700 hover:bg-slate-100'
   )
 
+  // Mobile drawer - always solid white with dark text
+  const drawerBg = 'bg-white text-slate-900'
+  const drawerBorder = 'border-slate-200'
+  const drawerActiveBg = 'bg-navy-950 text-white'
+  const drawerInactiveText = 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+  const drawerActiveText = 'text-white'
+  const drawerIconInactive = 'text-slate-400'
+  const drawerIconActive = 'text-red-500'
+
   // ── drawer animation: slides from the inline-start edge ──
   // In LTR: left. In RTL: right.
   const drawerVariants = {
@@ -173,10 +173,10 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
       <header
         dir={isRtl ? 'rtl' : 'ltr'}
         lang={locale}
-        className="fixed inset-x-0 top-0 z-50 pointer-events-auto"
+        className="fixed inset-x-0 top-0 z-50 w-full pointer-events-auto"
       >
-        <Container className="pt-4 max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16 w-full">
-          <div className={pillCn}>
+        <div className={headerClass}>
+          <div className="mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16 w-full flex items-center justify-between gap-3">
 
             {/* ── Logo ── */}
             <Link href="/" className="group block shrink-0">
@@ -195,14 +195,16 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
             {/* ── Navigation (desktop only: lg+) ── */}
             <nav
               aria-label={isRtl ? 'القائمة الرئيسية' : 'Main navigation'}
-              className="hidden lg:flex flex-1 items-center justify-start overflow-x-auto scrollbar-none py-1 mx-4"
+              className="hidden lg:flex flex-1 items-center justify-start py-1 mx-2"
             >
-              <div className="flex items-center gap-0.5 xl:gap-1.5 2xl:gap-3 mx-auto min-w-max">
+              <div className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5 2xl:gap-3 mx-auto min-w-max">
                 {navigation.map((item) => {
                   const isActive =
                     item.href === '/'
                       ? pathname === '/'
                       : pathname.startsWith(item.href)
+
+                  const isLinks = item.href === '/links'
 
                   return (
                     <Link
@@ -211,9 +213,9 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
                       title={item.name}
                       className={cn(
                         'group relative isolate flex items-center justify-center rounded-full transition-all duration-200 shrink-0',
-                        item.href === '/links'
+                        isLinks
                           ? 'p-2 w-9 h-9'
-                          : 'gap-1 xl:gap-1.5 px-2 lg:px-2.5 xl:px-4 py-1.5 text-[11.5px] xl:text-[13.5px] 2xl:text-sm font-bold whitespace-nowrap',
+                          : 'px-1.5 lg:px-2 xl:px-3 py-1.5 text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-sm font-bold whitespace-nowrap',
                         isActive ? activeTabText : inactiveTabText
                       )}
                     >
@@ -227,16 +229,14 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                         />
                       )}
-                      <Iconify
-                        icon={item.icon}
-                        className={cn(
-                          "shrink-0 transition-transform duration-300 group-hover:scale-110",
-                          item.href === '/links'
-                            ? "w-[19px] h-[19px] xl:w-[21px] xl:h-[21px]"
-                            : "w-[17px] h-[17px] xl:w-[19px] xl:h-[19px] hidden xl:inline"
-                        )}
-                      />
-                      {item.href !== '/links' && <span>{item.name}</span>}
+                      {isLinks ? (
+                        <Iconify
+                          icon={item.icon}
+                          className="shrink-0 transition-transform duration-300 group-hover:scale-110 w-[19px] h-[19px] xl:w-[21px] xl:h-[21px]"
+                        />
+                      ) : (
+                        <span>{item.name}</span>
+                      )}
                     </Link>
                   )
                 })}
@@ -275,7 +275,7 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
             </div>
 
           </div>
-        </Container>
+        </div>
       </header>
 
       {/* ── Mobile Drawer ── */}
@@ -289,37 +289,35 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-[60] bg-black/80 lg:hidden"
               aria-hidden="true"
               onClick={() => setMobileOpen(false)}
             />
 
-             {/* Drawer panel */}
-             <motion.div
-               key="mobile-drawer"
-               id="mobile-nav-drawer"
-               role="dialog"
-               aria-modal="true"
-               aria-label={isRtl ? 'القائمة الرئيسية' : 'Main navigation'}
-               dir={isRtl ? 'rtl' : 'ltr'}
-               variants={drawerVariants}
-               initial="hidden"
-               animate="visible"
-               exit="exit"
-               transition={{ type: 'spring', stiffness: 320, damping: 34, mass: 0.8 }}
-               className={cn(
-                 'fixed top-0 bottom-0 z-[70] flex flex-col w-72 max-w-[85vw] lg:hidden',
-                 isRtl ? 'right-0' : 'left-0',
-                 isDark
-                   ? 'bg-navy-950 text-white shadow-2xl'
-                   : 'bg-white text-slate-900 shadow-xl'
-               )}
-             >
-               {/* Drawer header */}
-               <div className={cn(
-                 'flex items-center justify-between px-5 pt-6 pb-4',
-                 isDark ? 'border-b border-white/10' : 'border-b border-slate-200'
-               )}>
+              {/* Drawer panel */}
+              <motion.div
+                key="mobile-drawer"
+                id="mobile-nav-drawer"
+                role="dialog"
+                aria-modal="true"
+                aria-label={isRtl ? 'القائمة الرئيسية' : 'Main navigation'}
+                dir={isRtl ? 'rtl' : 'ltr'}
+                variants={drawerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ type: 'spring', stiffness: 320, damping: 34, mass: 0.8 }}
+                className={cn(
+                  'fixed top-0 bottom-0 z-[70] flex flex-col w-72 max-w-[85vw] lg:hidden shadow-2xl',
+                  isRtl ? 'right-0' : 'left-0',
+                  drawerBg
+                )}
+              >
+                {/* Drawer header */}
+                <div className={cn(
+                  'flex items-center justify-between px-5 pt-6 pb-4',
+                  drawerBorder
+                )}>
                  <Link
                    href="/"
                    onClick={() => setMobileOpen(false)}
@@ -341,24 +339,22 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
                    </div>
                  </Link>
 
-                 <button
-                   ref={closeButtonRef}
-                   id="header-mobile-menu-close"
-                   type="button"
-                   onClick={() => {
-                     setMobileOpen(false)
-                     openButtonRef.current?.focus()
-                   }}
-                   aria-label={isRtl ? 'إغلاق القائمة' : 'Close menu'}
-                   className={cn(
-                     'flex h-9 w-9 items-center justify-center rounded-xl border transition-colors',
-                     isDark
-                       ? 'border-white/12 bg-white/6 text-white hover:bg-white/14'
-                       : 'border-slate-200 bg-white/90 text-slate-800 hover:bg-slate-50'
-                   )}
-                 >
-                   <Iconify icon="solar:close-circle-bold-duotone" className="w-5 h-5" />
-                 </button>
+                  <button
+                    ref={closeButtonRef}
+                    id="header-mobile-menu-close"
+                    type="button"
+                    onClick={() => {
+                      setMobileOpen(false)
+                      openButtonRef.current?.focus()
+                    }}
+                    aria-label={isRtl ? 'إغلاق القائمة' : 'Close menu'}
+                    className={cn(
+                      'flex h-9 w-9 items-center justify-center rounded-xl border transition-colors',
+                      'border-slate-200 bg-white text-slate-800 hover:bg-slate-50'
+                    )}
+                  >
+                    <Iconify icon="solar:close-circle-bold-duotone" className="w-5 h-5" />
+                  </button>
                </div>
 
                {/* Nav items */}
@@ -379,39 +375,31 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
                          animate={{ opacity: 1, x: 0 }}
                          transition={{ delay: 0.06 + idx * 0.04, duration: 0.22 }}
                        >
-                         <Link
-                           href={item.href}
-                           onClick={() => setMobileOpen(false)}
-                           className={cn(
-                             'flex items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-semibold transition-all duration-150',
-                             isActive
-                               ? isDark
-                                 ? 'bg-white text-navy-900 shadow-md'
-                                 : 'bg-slate-900 text-white shadow-md'
-                               : isDark
-                                 ? 'text-slate-300 hover:bg-white/8 hover:text-white'
-                                 : 'text-slate-500 hover:bg-slate-100/70 hover:text-slate-900'
-                           )}
-                         >
-                           <Iconify
-                             icon={item.icon}
-                             className={cn('w-5 h-5 shrink-0', 
-                               isActive 
-                                 ? isDark
-                                   ? 'text-red-700'
-                                   : 'text-red-500'
-                                 : isDark
-                                   ? 'text-slate-400'
-                                   : 'text-slate-500'
-                             )}
-                           />
-                           <span>{item.name}</span>
-                            {isActive && (
-                              <span className={cn(
-                                'ms-auto w-1.5 h-1.5 rounded-full shrink-0',
-                                isDark ? 'bg-red-700' : 'bg-red-500'
-                              )} />
+                          <Link
+                            href={item.href}
+                            onClick={() => setMobileOpen(false)}
+                            className={cn(
+                              'flex items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-semibold transition-all duration-150',
+                              isActive
+                                ? drawerActiveBg
+                                : drawerInactiveText
                             )}
+                          >
+                            <Iconify
+                              icon={item.icon}
+                              className={cn('w-5 h-5 shrink-0', 
+                                isActive 
+                                  ? drawerIconActive
+                                  : drawerIconInactive
+                              )}
+                            />
+                            <span className={isActive ? drawerActiveText : drawerInactiveText}>{item.name}</span>
+                             {isActive && (
+                               <span className={cn(
+                                 'ms-auto w-1.5 h-1.5 rounded-full shrink-0',
+                                 'bg-red-500'
+                               )} />
+                             )}
                          </Link>
                        </motion.li>
                      )
@@ -419,31 +407,27 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
                  </ul>
                </nav>
 
-               {/* Drawer footer — language toggle */}
-               <div className={cn(
-                 'px-5 py-5',
-                 isDark ? 'border-t border-white/10' : 'border-t border-slate-200'
-               )}>
-                 <button
-                   type="button"
-                   onClick={() => { toggleLocale(); setMobileOpen(false) }}
-                   aria-label={isRtl ? 'تغيير اللغة إلى الإنجليزية' : 'Switch to Arabic'}
-                   className={cn(
-                     'flex w-full items-center gap-3 rounded-2xl border transition-colors px-4 py-3 text-[15px] font-semibold',
-                     isDark
-                       ? 'border-white/12 bg-white/6 text-white hover:bg-white/14'
-                       : 'border-slate-200 bg-white/90 text-slate-800 hover:bg-slate-50'
-                   )}
-                 >
-                   <Iconify
-                     icon="solar:global-bold-duotone"
-                     className={cn('w-5 h-5 shrink-0', 
-                       isDark ? 'text-slate-400' : 'text-slate-500'
-                     )}
-                   />
-                   <span>{isRtl ? 'English' : 'العربية'}</span>
-                 </button>
-               </div>
+                {/* Drawer footer — language toggle */}
+                <div className={cn(
+                  'px-5 py-5',
+                  drawerBorder
+                )}>
+                  <button
+                    type="button"
+                    onClick={() => { toggleLocale(); setMobileOpen(false) }}
+                    aria-label={isRtl ? 'تغيير اللغة إلى الإنجليزية' : 'Switch to Arabic'}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-2xl border transition-colors px-4 py-3 text-[15px] font-semibold',
+                      'border-slate-200 bg-white text-slate-800 hover:bg-slate-50'
+                    )}
+                  >
+                    <Iconify
+                      icon="solar:global-bold-duotone"
+                      className="w-5 h-5 shrink-0 text-slate-500"
+                    />
+                    <span>{isRtl ? 'English' : 'العربية'}</span>
+                  </button>
+                </div>
             </motion.div>
           </>
         )}

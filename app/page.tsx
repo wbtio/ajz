@@ -59,19 +59,17 @@ export default async function Home() {
           </div>
           
           {/* Bottom Row Container: Partnership, Trusted Partners, & News */}
-          <div className="border border-slate-200/80 rounded-2xl p-8 bg-white shadow-sm" data-purpose="info-blocks">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              <div className="lg:col-span-5">
-                <PartnershipProcess />
-              </div>
-              
-              <div className="lg:col-span-4">
-                <TrustedPartners />
-              </div>
-              
-              <div className="lg:col-span-3">
-                <NewsInsights posts={posts || []} />
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-5 info-panel-card p-8 flex flex-col justify-between">
+              <PartnershipProcess />
+            </div>
+
+            <div className="lg:col-span-4 info-panel-card p-8 flex flex-col justify-between">
+              <TrustedPartners />
+            </div>
+
+            <div className="lg:col-span-3 info-panel-card p-8 flex flex-col justify-between">
+              <NewsInsights posts={posts || []} />
             </div>
           </div>
         </Container>

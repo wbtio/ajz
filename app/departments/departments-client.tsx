@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Icon as Iconify } from "@iconify/react";
 import type { Tables } from "@/lib/database.types";
 import { useI18n } from "@/lib/i18n";
@@ -19,13 +20,6 @@ const translationsContent = {
         title: "Healthcare & Life Sciences",
         description:
           "Advancing healthcare systems, medical innovation, and life sciences through global partnerships, exhibitions, and knowledge exchange.",
-        bullets: [
-          "International Health Exhibitions",
-          "Medical Partnerships & Delegations",
-          "Healthcare Investment Facilitation",
-          "Life Sciences & Biotech Innovation",
-          "Capacity Building & Training",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtsY4UUmC9TD6oSqkKphpcJbWL8sZmm4jJ34FcysFP9gSNO5Vp9el_GAKlQ8MhRxnxWXKJH9dTXmkuJkVHWYUQSLyzissZgJ2s_Kk2TZMySbTjivMNlfGnLiHyAMQUMi0uY9kPDUPVoPxfWJQzFlGtb3v5bEooiuHLcmj8b5gXtOy_rIHaYRv8QigSVLErSfL-NCKAtLcMGFn-kKD_W1zamVJa4Vlw0CNGKHps-7NdNsDDTYz45TPx4Ck0",
         icon: "solar:heart-bold-duotone",
@@ -35,13 +29,6 @@ const translationsContent = {
         title: "Digital Transformation & Technology",
         description:
           "Empowering Iraq's digital future by connecting technology leaders, enabling innovation, and accelerating digital transformation.",
-        bullets: [
-          "Tech Exhibitions & Conferences",
-          "Digital Government & Smart Solutions",
-          "ICT Partnerships & Investment",
-          "AI, Cybersecurity & Emerging Tech",
-          "Digital Skills & Innovation Programs",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLvGTBekZcvHqm7N_vXxKbBpia_f_jNhqevl_O75wQ4TK9g5gQqYDecKFlXamJVxxVCEHzU7tWBVxoc57zsdplCP1Hj4eqT88Ig2HIwStwyKdNlMChnGMg93Ldt3-7iR52_OBkNslMINODDlNcgAKnbsSrvLZppP0-NemhzjwjCVffvLnBOQ9i-lAtJbGxYlCULVBB0uYRHXqrPOXaZ8bdJztkmlFUSSz7Vg9y49h9TyhWPapW9QgIlSFrE",
         icon: "solar:cpu-bold-duotone",
@@ -51,13 +38,6 @@ const translationsContent = {
         title: "Industrial & Commercial Development",
         description:
           "Driving industrial growth, trade, and sustainable development by connecting businesses, investors, and global markets.",
-        bullets: [
-          "Industry & Trade Exhibitions",
-          "Investment Promotion & Facilitation",
-          "Supply Chain & Logistics Solutions",
-          "Infrastructure & Industrial Projects",
-          "Sustainable Development Initiatives",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLuk7UztS2hVIu9xIkG9xXbWkEcW8suoCErbbKKlOLvfvpk8zBp17krsepaxcXmiplSGIwPn43awogB_vPtx2J2j_v3nZ-4ep8EvSmKsjmQ2xPHt2dlOcaKsclJ397FaQ0Qqa0CoNs9SK8xFOa2FLy_fl5VFfKf_jKIdK1XlWWOzG_MFDPllZLw-IGU8o2Oj2ChLe0liENqpxPyhmaOSyAKSAOrIQn8zJEW1BuBZlFe6wU7w5a-9ivYYxpw",
         icon: "solar:city-bold-duotone",
@@ -67,13 +47,6 @@ const translationsContent = {
         title: "Professional & Academic Affairs",
         description:
           "Strengthening academic institutions, professional networks, and research collaboration to build knowledge-driven communities.",
-        bullets: [
-          "Academic Partnerships & MoUs",
-          "Conferences & Academic Events",
-          "Professional Development Programs",
-          "Research Collaboration & Innovation",
-          "Scholarships & Exchange Programs",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtyF7fetE60NNg0VrvyIJMQ1O3imIeX6iMzqDOLUytKFVuDJqgvcmFHsDcD8J8A6oVLqQ02CFyan17hYa5VdhwEozN_WUNAsv_nFHUzckC5fxOh52snVzFz44mhaeIFr6wQo2Sf_kGsepJq5V0DlOOenjYL4dWuwErLLrxQIgyZCXaKPtxzPqK_OEoC1H00p8TBKl8Py2paHTWPcOoHo0zZXA8wKLyKsQJFNhw6tSt3VNPXnNHgsfc07Dk",
         icon: "solar:square-academic-cap-bold-duotone",
@@ -111,13 +84,6 @@ const translationsContent = {
         title: "الرعاية الصحية وعلوم الحياة",
         description:
           "الارتقاء بأنظمة الرعاية الصحية، والابتكار الطبي، وعلوم الحياة من خلال الشراكات العالمية، والمعارض، وتبادل المعرفة.",
-        bullets: [
-          "المعارض الصحية الدولية",
-          "الشراكات والوفود الطبية",
-          "تسهيل الاستثمارات الصحية",
-          "ابتكارات علوم الحياة والتقنية الحيوية",
-          "بناء القدرات والتدريب",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtsY4UUmC9TD6oSqkKphpcJbWL8sZmm4jJ34FcysFP9gSNO5Vp9el_GAKlQ8MhRxnxWXKJH9dTXmkuJkVHWYUQSLyzissZgJ2s_Kk2TZMySbTjivMNlfGnLiHyAMQUMi0uY9kPDUPVoPxfWJQzFlGtb3v5bEooiuHLcmj8b5gXtOy_rIHaYRv8QigSVLErSfL-NCKAtLcMGFn-kKD_W1zamVJa4Vlw0CNGKHps-7NdNsDDTYz45TPx4Ck0",
         icon: "solar:heart-bold-duotone",
@@ -127,13 +93,6 @@ const translationsContent = {
         title: "التحول الرقمي والتكنولوجيا",
         description:
           "تمكين المستقبل الرقمي للعراق من خلال ربط قادة التكنولوجيا، وتمكين الابتكار، وتسريع التحول الرقمي.",
-        bullets: [
-          "معارض ومؤتمرات التكنولوجيا",
-          "الحكومة الرقمية والحلول الذكية",
-          "شراكات واستثمارات الاتصالات وتكنولوجيا المعلومات",
-          "الذكاء الاصطناعي، الأمن السيبراني والتكنولوجيا الناشئة",
-          "برامج المهارات الرقمية والابتكار",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLvGTBekZcvHqm7N_vXxKbBpia_f_jNhqevl_O75wQ4TK9g5gQqYDecKFlXamJVxxVCEHzU7tWBVxoc57zsdplCP1Hj4eqT88Ig2HIwStwyKdNlMChnGMg93Ldt3-7iR52_OBkNslMINODDlNcgAKnbsSrvLZppP0-NemhzjwjCVffvLnBOQ9i-lAtJbGxYlCULVBB0uYRHXqrPOXaZ8bdJztkmlFUSSz7Vg9y49h9TyhWPapW9QgIlSFrE",
         icon: "solar:cpu-bold-duotone",
@@ -143,13 +102,6 @@ const translationsContent = {
         title: "التطوير الصناعي والتجاري",
         description:
           "دفع عجلة النمو الصناعي والتجارة والتنمية المستدامة من خلال ربط الشركات والمستثمرين والأسواق العالمية.",
-        bullets: [
-          "معارض الصناعة والتجارة",
-          "ترويج وتسهيل الاستثمار",
-          "حلول سلاسل التوريد والخدمات اللوجستية",
-          "مشاريع البنية التحتية والمشاريع الصناعية",
-          "مبادرات التنمية المستدامة",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLuk7UztS2hVIu9xIkG9xXbWkEcW8suoCErbbKKlOLvfvpk8zBp17krsepaxcXmiplSGIwPn43awogB_vPtx2J2j_v3nZ-4ep8EvSmKsjmQ2xPHt2dlOcaKsclJ397FaQ0Qqa0CoNs9SK8xFOa2FLy_fl5VFfKf_jKIdK1XlWWOzG_MFDPllZLw-IGU8o2Oj2ChLe0liENqpxPyhmaOSyAKSAOrIQn8zJEW1BuBZlFe6wU7w5a-9ivYYxpw",
         icon: "solar:city-bold-duotone",
@@ -159,13 +111,6 @@ const translationsContent = {
         title: "الشؤون المهنية والأكاديمية",
         description:
           "تعزيز المؤسسات الأكاديمية والشبكات المهنية والتعاون البحثي لبناء مجتمعات قائمة على المعرفة.",
-        bullets: [
-          "الشراكات الأكاديمية ومذكرات التفاهم",
-          "المؤتمرات والفعاليات الأكاديمية",
-          "برامج التطوير المهني",
-          "التعاون البحثي والابتكار",
-          "المنح الدراسية وبرامج التبادل",
-        ],
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtyF7fetE60NNg0VrvyIJMQ1O3imIeX6iMzqDOLUytKFVuDJqgvcmFHsDcD8J8A6oVLqQ02CFyan17hYa5VdhwEozN_WUNAsv_nFHUzckC5fxOh52snVzFz44mhaeIFr6wQo2Sf_kGsepJq5V0DlOOenjYL4dWuwErLLrxQIgyZCXaKPtxzPqK_OEoC1H00p8TBKl8Py2paHTWPcOoHo0zZXA8wKLyKsQJFNhw6tSt3VNPXnNHgsfc07Dk",
         icon: "solar:square-academic-cap-bold-duotone",
@@ -224,6 +169,13 @@ const getSlugForDept = (key: string, sectors: Tables<"sectors">[] | null) => {
   return key;
 };
 
+const bgImageMap: Record<string, string> = {
+  medical: "/images/bg-medical.png",
+  technology: "/images/bg-technology.png",
+  industrie: "/images/bg-industrie.png",
+  academia: "/images/bg-academia.png",
+};
+
 export function DepartmentsClient({
   sectors,
   stats,
@@ -233,10 +185,11 @@ export function DepartmentsClient({
 }) {
   const { locale, dir } = useI18n();
   const isRTL = locale === "ar";
+  const Arrow = isRTL ? ArrowLeft : ArrowRight;
   const content = isRTL ? translationsContent.ar : translationsContent.en;
 
   return (
-    <div className="min-h-screen bg-white" dir={dir} lang={locale}>
+    <div className="min-h-screen bg-white flex flex-col" dir={dir} lang={locale}>
       {/* CSS overrides inside a styled tag to ensure colors/overlay look exactly like the HTML request */}
       <style dangerouslySetInnerHTML={{ __html: `
         .hero-container {
@@ -272,42 +225,30 @@ export function DepartmentsClient({
           box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
           border-color: #cbd5e1;
         }
-        .bullet-list li {
-          position: relative;
-          padding-left: 1.25rem;
-          margin-bottom: 0.25rem;
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
-        .bullet-list li::before {
-          content: "•";
-          position: absolute;
-          left: 0;
-          color: #000;
-        }
-        [dir="rtl"] .bullet-list li {
-          padding-left: 0;
-          padding-right: 1.25rem;
-        }
-        [dir="rtl"] .bullet-list li::before {
-          left: auto;
-          right: 0;
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       ` }} />
 
       {/* BEGIN: Hero Section */}
-      <section className="hero-container relative bg-[#001224] text-white py-20 px-6 md:px-16 lg:py-24">
+      <section className="hero-container relative bg-[#001224] text-white py-10 xs:py-12 sm:py-16 md:py-20 lg:py-24 px-4 xs:px-5 sm:px-6 md:px-16">
         <div className="globe-overlay"></div>
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-5 tracking-tight text-white">
+          <div className="max-w-3xl mt-6 xs:mt-8 sm:mt-10 lg:mt-12">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 xs:mb-5 tracking-tight text-white">
               {content.heroTitle}
             </h1>
-            <p className="text-gray-300 text-base sm:text-lg mb-10 leading-relaxed max-w-2xl">
+            <p className="text-gray-300 text-sm xs:text-base sm:text-lg mb-6 xs:mb-8 sm:mb-10 leading-relaxed max-w-2xl">
               {content.heroSubtitle}
             </p>
-            <div className="flex flex-wrap gap-6 md:gap-10 text-xs sm:text-sm font-semibold text-gray-400">
+            <div className="flex flex-wrap gap-4 xs:gap-5 sm:gap-6 md:gap-10 text-[10px] xs:text-xs sm:text-sm font-semibold text-gray-400">
               {content.heroBadges.map((badge, idx) => (
-                <span key={idx} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[#dcc18b] rounded-full" />
+                <span key={idx} className="flex items-center gap-1.5 xs:gap-2">
+                  <span className="w-1 h-1.5 xs:w-1.5 xs:h-1.5 bg-[#dcc18b] rounded-full" />
                   {badge}
                 </span>
               ))}
@@ -318,41 +259,35 @@ export function DepartmentsClient({
       {/* END: Hero Section */}
 
       {/* BEGIN: Departments Grid */}
-      <section className="py-20 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="py-8 xs:py-10 sm:py-12 md:py-14 px-4 xs:px-5 sm:px-6 md:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 xs:gap-4 sm:gap-5">
           {content.cards.map((card) => {
             const slug = getSlugForDept(card.key, sectors);
             return (
               <div
                 key={card.key}
-                className="department-card p-4 rounded-xl bg-white flex flex-col h-full"
+                className="department-card p-3 xs:p-3.5 rounded-xl bg-white flex flex-col h-full"
               >
-                <div className="relative mb-5 overflow-hidden rounded-lg">
+                <div className="relative mb-2 xs:mb-2.5 sm:mb-3 overflow-hidden rounded-lg">
                   <img
                     alt={card.title}
-                    className="w-full h-44 object-cover transform hover:scale-105 transition-transform duration-550"
-                    src={card.image}
+                    className="w-full h-24 xs:h-28 sm:h-32 md:h-36 object-cover transform hover:scale-105 transition-transform duration-500"
+                    src={bgImageMap[card.key] || card.image}
                   />
-                  <div className="absolute bottom-3 left-3 rtl:left-auto rtl:right-3 w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center shadow-md">
-                    <Iconify icon={card.icon} className="w-5.5 h-5.5 text-white" />
+                  <div className="absolute bottom-1.5 xs:bottom-2 left-1.5 xs:left-2 rtl:left-auto rtl:right-1.5 rtl:xs:left-auto rtl:xs:right-2 w-8 xs:w-9 h-8 xs:h-9 bg-white rounded-lg flex items-center justify-center shadow-md">
+                    <Iconify icon={card.icon} className="w-4 xs:w-5 h-4 xs:h-5 text-gray-900" />
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 mb-3 leading-snug">
+                <h3 className="text-xs xs:text-sm sm:text-base font-bold text-slate-900 mb-1 xs:mb-1.5 sm:mb-2 leading-snug line-clamp-2">
                   {card.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-600 mb-6 leading-relaxed flex-grow">
+                <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-600 mb-2.5 xs:mb-3 sm:mb-4 leading-snug line-clamp-3">
                   {card.description}
                 </p>
 
-                <ul className="bullet-list text-xs sm:text-sm text-gray-800 mb-8 space-y-1">
-                  {card.bullets.map((bullet, idx) => (
-                    <li key={idx}>{bullet}</li>
-                  ))}
-                </ul>
-
                 <Link href={`/departments/${slug}`} className="w-full mt-auto block">
-                  <button className="w-full py-2.5 bg-gray-900 text-white text-xs sm:text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors shadow-sm">
+                  <button className="w-full py-1.5 xs:py-2 bg-gray-900 text-white text-[10px] xs:text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors shadow-sm">
                     {content.exploreBtn}
                   </button>
                 </Link>
@@ -364,55 +299,77 @@ export function DepartmentsClient({
       {/* END: Departments Grid */}
 
       {/* BEGIN: Statistics Bar */}
-      <section className="bg-gray-50 border-y border-slate-100 py-12 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center lg:items-start gap-10">
-          <div className="max-w-md text-center lg:text-start">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-3">
+      <section className="bg-gray-50 border-y border-slate-100 py-4 xs:py-5 sm:py-6 md:py-7 px-4 xs:px-5 sm:px-6 md:px-12 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-4 xs:gap-5 sm:gap-6 lg:gap-10">
+          <div className="max-w-[16rem] xs:max-w-xs sm:max-w-sm text-center lg:text-start shrink-0">
+            <h2 className="text-sm xs:text-base sm:text-lg md:text-xl font-extrabold text-slate-900 mb-1 xs:mb-1 sm:mb-1.5 leading-tight">
               {content.statsBar.title}
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-600 leading-snug">
               {content.statsBar.description}
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center lg:justify-end gap-8 sm:gap-12 text-center">
-            {content.statsBar.items.map((stat, idx) => (
-              <div key={idx} className="w-28 flex flex-col items-center">
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
-                  {stat.value}
+          <div className="w-full lg:w-auto overflow-x-auto lg:overflow-visible scrollbar-hide">
+            <div className="flex justify-start lg:justify-end items-center gap-2 xs:gap-3 sm:gap-4 md:gap-5 lg:gap-5 xl:gap-8 text-center min-w-max lg:min-w-0 px-2 xs:px-4 sm:px-0">
+              {content.statsBar.items.map((stat, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-0.5 xs:gap-0.5 sm:gap-1 min-w-[3.5rem] xs:min-w-[4rem] sm:min-w-[4.5rem] md:min-w-[5rem] shrink-0">
+                  <div className="text-base xs:text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 leading-none tabular-nums">
+                    {stat.value}
+                  </div>
+                  <div className="text-[7px] xs:text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wide text-gray-500 font-semibold leading-tight max-w-[3.5rem] xs:max-w-[4.5rem] sm:max-w-[5rem] md:max-w-[7.5rem]">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-[10px] uppercase tracking-wider text-gray-500 font-bold leading-tight max-w-[100px]">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
       {/* END: Statistics Bar */}
 
       {/* BEGIN: CTA Bar */}
-      <section className="bg-[#001224] py-10 px-6 md:px-12 border-t border-white/5">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
-          <div className="text-center lg:text-start text-white">
-            <h2 className="text-xl sm:text-2xl font-extrabold mb-2">
+      <section className="mt-auto bg-[#021c36] text-[#6f85a3] py-6 xs:py-8 sm:py-10 px-4 xs:px-5 sm:px-6 md:px-12 border-t border-b border-[#6f85a3]/10">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 xs:gap-6 sm:gap-8">
+          <div className="text-center lg:text-start px-2">
+            <h2 className="text-base xs:text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 xs:mb-1.5 sm:mb-2">
               {content.ctaBar.title}
             </h2>
-            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-xl">
+            <p className="text-[10px] xs:text-[11px] sm:text-xs md:text-sm text-[#6f85a3]/80 leading-relaxed max-w-xl">
               {content.ctaBar.description}
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Link href="/contact?type=cooperation" className="w-full sm:w-auto">
-              <button className="w-full bg-[#dcc18b] hover:bg-[#d4af37] text-gray-900 px-8 py-3 rounded-lg font-bold text-xs sm:text-sm transition-colors shadow-sm min-w-[200px]">
-                {content.ctaBar.cooperation}
-              </button>
+          <div className="flex w-full flex-col sm:flex-row gap-2 xs:gap-3 items-center px-2 lg:px-0">
+            <Link
+              href="/contact?type=cooperation"
+              className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 xs:gap-2.5 rounded-full bg-[#f7e382] px-4 xs:px-5 sm:px-6 py-2.5 xs:py-3 text-[10px] xs:text-xs sm:text-sm font-bold text-[#000000] transition-all duration-300 hover:bg-[#f7e382]/90 active:scale-95"
+            >
+              <Iconify
+                icon="solar:hand-shake-bold-duotone"
+                className="h-3.5 xs:h-4 w-3.5 xs:w-4 shrink-0 text-[#000000]/80"
+                aria-hidden
+              />
+              <span>{content.ctaBar.cooperation}</span>
+              <Arrow
+                className="h-3 xs:h-3.5 w-3 xs:w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+                aria-hidden
+              />
             </Link>
-            <Link href="/contact" className="w-full sm:w-auto">
-              <button className="w-full border border-white hover:bg-white/10 text-white px-8 py-3 rounded-lg font-bold text-xs sm:text-sm transition-colors min-w-[200px]">
-                {content.ctaBar.contact}
-              </button>
+            <Link
+              href="/contact"
+              className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 xs:gap-2.5 rounded-full border border-[#6f85a3]/30 px-4 xs:px-5 sm:px-6 py-2.5 xs:py-3 text-[10px] xs:text-xs sm:text-sm font-semibold text-[#6f85a3] transition-all duration-300 hover:border-[#f7e382] hover:text-[#f7e382] active:scale-95"
+            >
+              <Iconify
+                icon="solar:letter-bold-duotone"
+                className="h-3.5 xs:h-4 w-3.5 xs:w-4 shrink-0 transition-colors duration-300 group-hover:text-[#f7e382]"
+                aria-hidden
+              />
+              <span>{content.ctaBar.contact}</span>
+              <Arrow
+                className="h-3 xs:h-3.5 w-3 xs:w-3.5 shrink-0 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#f7e382] rtl:group-hover:-translate-x-1"
+                aria-hidden
+              />
             </Link>
           </div>
         </div>

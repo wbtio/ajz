@@ -3,8 +3,10 @@
   "phase": "completed",
   "pageUrl": "/sectors",
   "sourceFile": "app/sectors/sectors-client.tsx",
+  "previewFile": null,
+  "previewMode": null,
   "expectedVariants": 4,
-  "arrivedVariants": 3,
+  "arrivedVariants": 4,
   "visibleVariant": 3,
   "paramValues": {
     "transparent-bg": true

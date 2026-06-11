@@ -56,12 +56,12 @@ export function NewsInsights({ posts = [] }: NewsInsightsProps) {
 
   return (
     <div className="w-full text-start" data-purpose="news-insights">
-      <h2 className="text-xl font-black text-slate-900 mb-8 border-b border-slate-100 pb-3 flex items-center gap-2">
-        <span className="w-1.5 h-5 bg-[#8B0000] rounded-sm"></span>
+      <h2 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-200/60 pb-3 flex items-center gap-2">
+        <span className="w-1.5 h-6 bg-[#8B0000] rounded-sm"></span>
         {t.homepage.news.title}
       </h2>
       
-      <div className="flex gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {displayPosts.map((post, index) => (
           <motion.div
             key={post.id}
@@ -70,7 +70,7 @@ export function NewsInsights({ posts = [] }: NewsInsightsProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: index * 0.08 }}
             whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.02 }}
-            className="flex-1 aspect-[4/5] relative bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden shadow-sm group cursor-pointer"
+            className="flex-1 aspect-[16/10] sm:aspect-[4/5] relative bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden shadow-sm group cursor-pointer"
           >
             <Link href={`/blog/${post.slug}`} className="absolute inset-0 z-20" aria-label={post.title || undefined} />
             <Image
@@ -78,13 +78,13 @@ export function NewsInsights({ posts = [] }: NewsInsightsProps) {
               alt={post.title || ''}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-108"
-              sizes="(max-width: 768px) 100px, 150px"
+              sizes="(max-width: 768px) 100vw, 150px"
             />
-            {/* Soft text overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-300 z-10" />
+            {/* Soft text overlay - darker gradient for guaranteed contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300 z-10" />
             
-            <div className="absolute inset-x-0 bottom-0 p-3 z-15 flex flex-col justify-end h-full">
-              <span className="text-[9px] font-bold text-slate-200 leading-tight line-clamp-2">
+            <div className="absolute inset-x-0 bottom-0 p-3.5 z-15 flex flex-col justify-end h-full">
+              <span className="text-xs sm:text-sm font-extrabold text-white leading-snug line-clamp-2 group-hover:text-slate-100 transition-colors duration-300">
                 {post.title}
               </span>
             </div>

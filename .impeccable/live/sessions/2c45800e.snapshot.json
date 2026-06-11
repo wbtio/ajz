@@ -3,6 +3,8 @@
   "phase": "completed",
   "pageUrl": "/partners",
   "sourceFile": "app/partners/page.tsx",
+  "previewFile": null,
+  "previewMode": null,
   "expectedVariants": 4,
   "arrivedVariants": 4,
   "visibleVariant": 1,

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 export interface StatsBarItem {
   value: number;
   label: string;
-  icon: string;
+  icon?: string;
   suffix?: string;
   format?: "compact";
 }
@@ -24,6 +24,8 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
   if (items.length === 0) return null;
+
+  const gridCols = items.length <= 2 ? 'sm:grid-cols-2' : items.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4';
 
   return (
     <div
@@ -43,7 +45,10 @@ export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
               hidden: {},
               visible: { transition: { staggerChildren: 0.08 } },
             }}
-            className="grid grid-cols-2 divide-white/10 sm:grid-cols-4 sm:gap-2 sm:gap-x-4 md:divide-x rtl:md:divide-x-reverse"
+            className={cn(
+              "grid grid-cols-2 divide-white/10 sm:gap-2 sm:gap-x-4 md:divide-x rtl:md:divide-x-reverse",
+              gridCols
+            )}
           >
             {items.map((item) => (
               <motion.li
@@ -58,17 +63,17 @@ export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
                 }}
                 className="flex items-center justify-center gap-2.5 py-3 sm:gap-3.5 sm:py-3.5 md:gap-4"
               >
-                <Icon
-                  icon={item.icon}
-                  className="h-7 w-7 shrink-0 text-white/90 sm:h-8 sm:w-8 md:h-9 md:w-9"
-                  aria-hidden
-                />
+                {item.icon && (
+                  <Icon
+                    icon={item.icon}
+                    className="h-7 w-7 shrink-0 text-white/90 sm:h-8 sm:w-8 md:h-9 md:w-9"
+                    aria-hidden
+                  />
+                )}
                 <div className="flex min-w-0 flex-col items-start text-start leading-none">
                   <span className="flex items-baseline gap-0.5 font-black text-white text-base sm:text-lg md:text-xl lg:text-2xl">
                     <CountingNumber
                       number={item.value}
-                      inView
-                      inViewOnce
                       className="tabular-nums"
                     />
                     {item.suffix && (

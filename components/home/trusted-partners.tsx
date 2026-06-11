@@ -20,8 +20,8 @@ export function TrustedPartners() {
 
   return (
     <div className="w-full text-start" data-purpose="trusted-partners">
-      <h2 className="text-xl font-black text-slate-900 mb-8 border-b border-slate-100 pb-3 flex items-center gap-2">
-        <span className="w-1.5 h-5 bg-[#8B0000] rounded-sm"></span>
+      <h2 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-200/60 pb-3 flex items-center gap-2">
+        <span className="w-1.5 h-6 bg-[#8B0000] rounded-sm"></span>
         {t.homepage.partners.title}
       </h2>
       
@@ -34,10 +34,10 @@ export function TrustedPartners() {
             viewport={{ once: true }}
             transition={{ duration: 0.3, delay: index * 0.04 }}
             whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
-            className="w-12 h-12 rounded-full border border-slate-200 bg-slate-50 flex items-center justify-center mx-auto hover:border-[#8B0000]/30 hover:bg-white hover:shadow-sm transition-all duration-300 group cursor-pointer"
+            className="w-12 h-12 rounded-full border border-slate-200/80 bg-slate-50 flex items-center justify-center mx-auto hover:border-[#8B0000]/30 hover:bg-white hover:shadow-sm transition-all duration-300 group cursor-pointer"
             title={partner.name}
           >
-            <span className="text-[9px] font-black text-slate-500 group-hover:text-[#8B0000] transition-colors duration-300 font-mono tracking-tighter">
+            <span className="text-[10px] sm:text-xs font-extrabold text-slate-600 group-hover:text-[#8B0000] transition-colors duration-300 font-mono tracking-tight">
               {partner.label}
             </span>
           </motion.div>
