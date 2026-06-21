@@ -12,7 +12,7 @@ export default function TrainingPage() {
     <div className="bg-white pt-28 sm:pt-32 lg:pt-36 pb-12" dir={isRTL ? "rtl" : "ltr"}>
       <Container>
         {/* Core Content Container — Solid, prestigious executive surface */}
-        <div className="relative overflow-hidden rounded-xl border border-[#0b1426]/10 bg-white p-8 lg:p-12">
+        <div className="relative overflow-hidden rounded-xl border border-[#001a33]/10 bg-white p-8 lg:p-12">
           {/* Elegant decorative background pattern */}
           <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_right,rgba(139,0,0,0.04),transparent_50%)]" />
           
@@ -21,7 +21,7 @@ export default function TrainingPage() {
               <GraduationCap className="h-8 w-8 animate-pulse" />
             </div>
 
-            <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-[#0b1426] lg:text-4xl">
+            <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-[#001a33] lg:text-4xl">
               {isRTL ? "قريباً" : "Coming Soon"}
             </h2>
             

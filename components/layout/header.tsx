@@ -122,7 +122,7 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
     : 'bg-slate-900 shadow-slate-900/10'
 
   // Active nav text (must contrast with its background)
-  const activeTabText = isDark ? 'text-navy-900 font-extrabold' : 'text-white font-extrabold'
+  const activeTabText = isDark ? 'text-slate-900 font-extrabold' : 'text-white font-extrabold'
 
   // Inactive nav text
   const inactiveTabText = isDark
@@ -154,7 +154,7 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
   // Mobile drawer - always solid white with dark text
   const drawerBg = 'bg-white text-slate-900'
   const drawerBorder = 'border-slate-200'
-  const drawerActiveBg = 'bg-navy-950 text-white'
+  const drawerActiveBg = 'bg-[#001a33] text-white'
   const drawerInactiveText = 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
   const drawerActiveText = 'text-white'
   const drawerIconInactive = 'text-slate-400'

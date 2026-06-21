@@ -119,7 +119,7 @@ export function EventCard({ event }: EventCardProps) {
         <div data-impeccable-variant="original">
           <Link
             href={`/events/${event.id}`}
-            className="group flex w-full flex-col overflow-hidden rounded-lg border border-[#0b1426]/10 bg-white transition-all duration-300 hover:border-[#8B0000]/30 hover:shadow-[0_4px_12px_rgba(15,23,42,0.03)]"
+            className="group flex w-full flex-col overflow-hidden rounded-lg border border-[#001a33]/10 bg-white transition-all duration-300 hover:border-[#8B0000]/30 hover:shadow-[0_4px_12px_rgba(15,23,42,0.03)]"
           >
             {/* Image Header — compact widescreen aspect ratio */}
             <div data-impeccable-variants="2bfb7f4a" data-impeccable-variant-count="4" style={{ display: "contents" }}>
@@ -136,7 +136,7 @@ export function EventCard({ event }: EventCardProps) {
                       className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                     />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center bg-[#0b1426] p-4 text-center select-none relative">
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-[#001a33] p-4 text-center select-none relative">
                       <Calendar size={20} className="text-white/20 mb-1.5" />
                       <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#8B0000]">
                         {event.sector ? (isRTL ? 'القطاع الاستراتيجي' : 'Strategic Sector') : (isRTL ? 'فعالية JAZ' : 'JAZ Event')}
@@ -157,7 +157,7 @@ export function EventCard({ event }: EventCardProps) {
                         </span>
                       )}
                       {eventTypeLabel && (
-                        <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#0b1426] shadow-sm">
+                        <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#001a33] shadow-sm">
                           {event.status === 'published' && (
                             <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
                           )}
@@ -171,7 +171,7 @@ export function EventCard({ event }: EventCardProps) {
 
                     <span
                       className={`inline-flex items-center rounded-sm px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap shadow-sm ${
-                        isFree ? 'bg-[#16a34a] text-white' : 'bg-[#0b1426] text-white'
+                        isFree ? 'bg-[#16a34a] text-white' : 'bg-[#001a33] text-white'
                       }`}
                     >
                       {priceLabel}
@@ -203,7 +203,7 @@ export function EventCard({ event }: EventCardProps) {
                     align-items: center;
                     justify-content: space-between;
                     padding: 0.5rem 0.75rem;
-                    background: rgba(11, 20, 38, 0.85);
+                    background: rgba(0, 26, 51, 0.85);
                     border-top: 1px solid rgba(255, 255, 255, 0.08);
                     z-index: 10;
                   }
@@ -278,7 +278,7 @@ export function EventCard({ event }: EventCardProps) {
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
-                    background: #0b1426;
+                    background: #001a33;
                     padding: 0.5rem;
                     color: white;
                     border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -345,7 +345,7 @@ export function EventCard({ event }: EventCardProps) {
                       className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                     />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[#0b1426] to-[#1e3a5f] p-4 text-center select-none relative">
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[#001a33] to-[#1e3a5f] p-4 text-center select-none relative">
                       <Calendar size={20} className="text-white/20 mb-1.5" />
                       <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#8B0000]">
                         {event.sector ? (isRTL ? 'القطاع الاستراتيجي' : 'Strategic Sector') : (isRTL ? 'فعالية JAZ' : 'JAZ Event')}
@@ -401,7 +401,7 @@ export function EventCard({ event }: EventCardProps) {
                       className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                     />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center bg-[#0b1426] p-4 text-center select-none relative">
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-[#001a33] p-4 text-center select-none relative">
                       <Calendar size={20} className="text-white/20 mb-1.5" />
                     </div>
                   )}
@@ -423,12 +423,12 @@ export function EventCard({ event }: EventCardProps) {
                       </span>
                     )}
                     {eventTypeLabel && (
-                      <span className="inline-flex items-center gap-1.5 rounded-sm bg-[#0b1426] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-white shadow-md border border-white/10">
+                      <span className="inline-flex items-center gap-1.5 rounded-sm bg-[#001a33] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-white shadow-md border border-white/10">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
                         {eventTypeLabel}
                       </span>
                     )}
-                    <span className="inline-flex items-center rounded-sm bg-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-[#0b1426] shadow-md">
+                    <span className="inline-flex items-center rounded-sm bg-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-[#001a33] shadow-md">
                       {priceLabel}
                     </span>
                   </div>
@@ -510,7 +510,7 @@ export function EventCard({ event }: EventCardProps) {
                       className="v4-img object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
                     />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center bg-[#0b1426] p-4 text-center select-none relative">
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-[#001a33] p-4 text-center select-none relative">
                       <Calendar size={20} className="text-white/20 mb-1.5" />
                       <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#8B0000]">
                         {event.sector ? (isRTL ? 'القطاع الاستراتيجي' : 'Strategic Sector') : (isRTL ? 'فعالية JAZ' : 'JAZ Event')}
@@ -531,7 +531,7 @@ export function EventCard({ event }: EventCardProps) {
                         </span>
                       )}
                       {eventTypeLabel && (
-                        <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#0b1426] shadow-sm">
+                        <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#001a33] shadow-sm">
                           <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
                           {eventTypeLabel}
                         </span>
@@ -550,7 +550,7 @@ export function EventCard({ event }: EventCardProps) {
             {/* Card Content — spacious layout with optimized visual rhythm */}
             <div className="flex flex-1 flex-col gap-3 p-5 text-start">
               {/* Title — Title tier per DESIGN.md */}
-              <h3 className="line-clamp-2 text-base font-bold leading-snug text-[#0b1426] transition-colors group-hover:text-[#8B0000]">
+              <h3 className="line-clamp-2 text-base font-bold leading-snug text-[#001a33] transition-colors group-hover:text-[#8B0000]">
                 {title}
               </h3>
 
@@ -570,8 +570,8 @@ export function EventCard({ event }: EventCardProps) {
               )}
 
               {/* Bottom metadata row — unified, clean action layout */}
-              <div className="mt-auto pt-3.5 border-t border-[#0b1426]/5 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0b1426]">
+              <div className="mt-auto pt-3.5 border-t border-[#001a33]/5 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#001a33]">
                   <Calendar size={13} className="shrink-0 text-slate-400" />
                   <span className="line-clamp-1">
                     {formatEventDate(event.date, event.end_date, locale)}
@@ -640,7 +640,7 @@ export function EventCard({ event }: EventCardProps) {
               overflow: hidden;
               border-radius: 8px;
               border: 1px solid rgba(15, 23, 42, 0.1);
-              background: #0b1426;
+              background: #001a33;
               border-top: 3px solid #8B0000;
               transition: all 0.3s ease;
               padding: 1.5rem;
@@ -648,7 +648,7 @@ export function EventCard({ event }: EventCardProps) {
               text-decoration: none;
             }
             :scope[data-p-accent-tint="true"] .v2-card-link {
-              background: linear-gradient(135deg, #8B0000 0%, #0b1426 100%);
+              background: linear-gradient(135deg, #8B0000 0%, #001a33 100%);
               border-top-color: #f7e382;
             }
             :scope > .v2-card-link:hover {
@@ -720,7 +720,7 @@ export function EventCard({ event }: EventCardProps) {
                   className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                 />
               ) : (
-                <div className="flex h-full w-full flex-col items-center justify-center bg-[#0b1426] p-2 text-center select-none relative">
+                <div className="flex h-full w-full flex-col items-center justify-center bg-[#001a33] p-2 text-center select-none relative">
                   <Calendar size={20} className="text-white/20" />
                 </div>
               )}
@@ -736,13 +736,13 @@ export function EventCard({ event }: EventCardProps) {
                     </span>
                   )}
                   {eventTypeLabel && (
-                    <span className="inline-flex items-center gap-1 rounded-sm bg-[#f5f7fa] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#0b1426]">
+                    <span className="inline-flex items-center gap-1 rounded-sm bg-[#f5f7fa] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#001a33]">
                       {eventTypeLabel}
                     </span>
                   )}
                 </div>
 
-                <h3 className="line-clamp-1 text-sm font-bold text-[#0b1426] group-hover:text-[#8B0000] transition-colors">
+                <h3 className="line-clamp-1 text-sm font-bold text-[#001a33] group-hover:text-[#8B0000] transition-colors">
                   {title}
                 </h3>
 
@@ -753,7 +753,7 @@ export function EventCard({ event }: EventCardProps) {
                 )}
               </div>
 
-              <div className="pt-2 border-t border-[#0b1426]/5 flex items-center justify-between">
+              <div className="pt-2 border-t border-[#001a33]/5 flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8B0000]">
                   {priceLabel}
                 </span>
@@ -853,7 +853,7 @@ export function EventCard({ event }: EventCardProps) {
                   className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                 />
               ) : (
-                <div className="flex h-full w-full flex-col items-center justify-center bg-[#0b1426] p-4 text-center select-none relative">
+                <div className="flex h-full w-full flex-col items-center justify-center bg-[#001a33] p-4 text-center select-none relative">
                   <Calendar size={20} className="text-white/20 mb-1.5" />
                   <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#8B0000]">
                     {event.sector ? (isRTL ? 'القطاع الاستراتيجي' : 'Strategic Sector') : (isRTL ? 'فعالية JAZ' : 'JAZ Event')}
@@ -871,7 +871,7 @@ export function EventCard({ event }: EventCardProps) {
                     </span>
                   )}
                   {eventTypeLabel && (
-                    <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#0b1426] shadow-sm">
+                    <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#001a33] shadow-sm">
                       {event.status === 'published' && (
                         <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
                       )}
@@ -879,14 +879,14 @@ export function EventCard({ event }: EventCardProps) {
                     </span>
                   )}
                 </div>
-                <span className="inline-flex items-center rounded-sm bg-[#0b1426] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap text-white shadow-sm">
+                <span className="inline-flex items-center rounded-sm bg-[#001a33] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap text-white shadow-sm">
                   {priceLabel}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-1 flex-col gap-3 p-5 text-start">
-              <h3 className="line-clamp-2 text-base font-bold leading-snug text-[#0b1426] transition-colors group-hover:text-[#8B0000]">
+              <h3 className="line-clamp-2 text-base font-bold leading-snug text-[#001a33] transition-colors group-hover:text-[#8B0000]">
                 {title}
               </h3>
               {description && (
@@ -895,8 +895,8 @@ export function EventCard({ event }: EventCardProps) {
                 </p>
               )}
 
-              <div className="mt-auto pt-3.5 border-t border-[#0b1426]/5 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0b1426]">
+              <div className="mt-auto pt-3.5 border-t border-[#001a33]/5 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#001a33]">
                   <Calendar size={13} className="shrink-0 text-slate-400" />
                   <span className="line-clamp-1">
                     {formatEventDate(event.date, event.end_date, locale)}

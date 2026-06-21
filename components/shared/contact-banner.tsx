@@ -33,7 +33,7 @@ export function ContactBanner({
       dir={dir}
       lang={locale}
       className={cn(
-        "relative overflow-hidden bg-[#0b1426] py-8 text-white sm:py-10",
+        "relative overflow-hidden bg-[#001a33] py-8 text-white sm:py-10",
         className,
       )}
       aria-label={isArabic ? "دعوة للتواصل" : "Contact call to action"}

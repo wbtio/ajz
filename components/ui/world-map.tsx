@@ -88,8 +88,8 @@ export function WorldMap({
             <stop offset="100%" stopColor="#8B0000" stopOpacity="0" />
           </radialGradient>
           <radialGradient id="cityGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#b5a36e" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#b5a36e" stopOpacity="0" />
+            <stop offset="0%" stopColor="#b08d4b" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#b08d4b" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -111,14 +111,14 @@ export function WorldMap({
               <path
                 d={`M ${conn.from.x} ${conn.from.y} Q ${conn.cx} ${conn.cy} ${conn.to.x} ${conn.to.y}`}
                 fill="none"
-                stroke="rgba(181, 163, 110, 0.12)"
+                stroke="rgba(176, 141, 75, 0.12)"
                 strokeWidth="1.5"
               />
               {/* Animating dotted overlay path */}
               <path
                 d={`M ${conn.from.x} ${conn.from.y} Q ${conn.cx} ${conn.cy} ${conn.to.x} ${conn.to.y}`}
                 fill="none"
-                stroke="rgba(181, 163, 110, 0.65)"
+                stroke="rgba(176, 141, 75, 0.65)"
                 strokeWidth="1"
                 className="flow-connection"
               />
@@ -129,7 +129,7 @@ export function WorldMap({
         {/* 3. Glowing Pulsing Cities */}
         <g id="cities">
           {CITIES.map((city, idx) => {
-            const color = city.isHub ? '#ef4444' : '#b5a36e'
+            const color = city.isHub ? '#ef4444' : '#b08d4b'
             const glowId = city.isHub ? 'url(#hubGlow)' : 'url(#cityGlow)'
             
             return (

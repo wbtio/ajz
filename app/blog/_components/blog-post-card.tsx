@@ -59,7 +59,7 @@ export function BlogPostCard({ post, variant = 'default' }: BlogPostCardProps) {
                 @media (min-width: 768px) { height: 9rem; }
                 width: 100%;
                 overflow: hidden;
-                background: #0b1426;
+                background: #001a33;
                 border-bottom: 2px solid #8B0000;
               }
               :scope .v1-image {
@@ -115,7 +115,7 @@ export function BlogPostCard({ post, variant = 'default' }: BlogPostCardProps) {
                 @media (min-width: 768px) { height: 9rem; }
                 width: 100%;
                 overflow: hidden;
-                background: #0b1426;
+                background: #001a33;
               }
               :scope .v2-image-wrap {
                 position: absolute;
@@ -126,7 +126,7 @@ export function BlogPostCard({ post, variant = 'default' }: BlogPostCardProps) {
               :scope .v2-slash {
                 position: absolute;
                 inset: 0;
-                background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(11, 20, 38, 0.98));
+                background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(0, 26, 51, 0.98));
                 clip-path: polygon(0 0, 60% 0, 40% 100%, 0% 100%);
                 z-index: 10;
                 display: flex;
@@ -162,7 +162,7 @@ export function BlogPostCard({ post, variant = 'default' }: BlogPostCardProps) {
                 height: 7rem;
                 @media (min-width: 640px) { height: 8rem; }
                 @media (min-width: 768px) { height: 9rem; }
-                background: #0b1426;
+                background: #001a33;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -197,7 +197,7 @@ export function BlogPostCard({ post, variant = 'default' }: BlogPostCardProps) {
                 position: absolute;
                 top: 0.5rem;
                 right: 0.5rem;
-                background: rgba(11, 20, 38, 0.85);
+                background: rgba(0, 26, 51, 0.85);
                 border: 1px dashed rgba(255, 255, 255, 0.3);
                 color: #ffffff;
                 font-size: 0.6rem;

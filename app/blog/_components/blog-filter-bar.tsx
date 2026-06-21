@@ -76,7 +76,7 @@ export function BlogFilterBar({
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder={t.blogPage.searchPlaceholder}
           className={cn(
-            'h-9 w-full rounded-sm border border-slate-200 bg-white text-sm text-[#0b1426] outline-none transition-all',
+            'h-9 w-full rounded-sm border border-slate-200 bg-white text-sm text-[#001a33] outline-none transition-all',
             'placeholder:text-slate-400',
             'focus:border-[#8B0000] focus:ring-2 focus:ring-[#8B0000]/20',
             isRTL ? 'pr-11 pl-11' : 'pl-11 pr-11'
@@ -87,7 +87,7 @@ export function BlogFilterBar({
             type="button"
             onClick={() => onQueryChange('')}
             className={cn(
-              'absolute top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-[#0b1426]',
+              'absolute top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-[#001a33]',
               isRTL ? 'left-3' : 'right-3'
             )}
             aria-label={t.blogPage.clearFilters}
@@ -114,7 +114,7 @@ export function BlogFilterBar({
                 'group inline-flex shrink-0 items-center gap-2 rounded-sm border px-4 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200',
                 isActive
                   ? 'border-[#8B0000] bg-[#8B0000] text-white'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-[#0b1426]'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-[#001a33]'
               )}
               aria-pressed={isActive}
             >

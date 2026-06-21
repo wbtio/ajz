@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform, Variants } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Send, AlertCircle } from 'lucide-react'
+import { Send, AlertCircle } from 'lucide-react'
 import { submitContactForm } from './actions'
 import { useI18n } from '@/lib/i18n/context'
 import { createClient } from '@/lib/supabase/client'
 import Aurora from '@/components/home/aurora'
 import BlurText from '@/components/ui/blur-text'
+import { Container } from '@/components/ui/container'
+import { SectionHeader } from '@/components/home'
 
 export default function ContactPage() {
   const { t, locale } = useI18n()
@@ -230,7 +232,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="bg-jaz-gray-bg min-h-screen pb-16 font-sans text-slate-900" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="bg-white min-h-screen font-sans text-slate-900" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Hero Section */}
       <section
         ref={sectionRef}
@@ -341,410 +343,410 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Main Grid Content */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 -mt-20 mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-30">
-        <div ref={formRef} className="variant-card lg:col-span-7 bg-white p-8 rounded-jaz border border-slate-200 text-start shadow-sm hover:shadow-md transition-all duration-300">
-          <header className="mb-8">
-            <span className="text-xs font-bold text-[#8B0000] tracking-wider uppercase mb-1 block">
-              {isRTL ? "مكتب الاستفسارات الرسمي" : "OFFICIAL INQUIRY DESK"}
-            </span>
-            <h2 className="text-2xl font-bold text-jaz-navy mb-2">{t.contact.sendUsMessage}</h2>
-            <div className="h-px bg-slate-200 w-full mt-4"></div>
-          </header>
+      {/* Main Grid Content — white band */}
+      <section className="bg-white py-16 lg:py-24">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            {/* Form */}
+            <div ref={formRef} className="lg:col-span-7 text-start">
+              <SectionHeader title={t.contact.sendUsMessage} subtitle={t.contact.formSubtitle} />
 
-              {success ? (
-                <div className="text-center py-12 flex flex-col items-center justify-center h-full">
-                  <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-[#8B0000]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+              <div className="mt-8">
+                {success ? (
+                  <div className="text-center py-12 flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-4">
+                      <svg className="w-8 h-8 text-[#8B0000]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">
+                      {t.contact.success}
+                    </h3>
+                    <p className="text-slate-500 max-w-md text-sm">
+                      {t.contact.successMessage}
+                    </p>
+                    <button
+                      className="mt-6 h-11 px-6 rounded-md hover:bg-[#8B0000] hover:text-white border border-slate-300 text-slate-700 font-semibold transition-all duration-200"
+                      onClick={() => setSuccess(false)}
+                    >
+                      {t.contact.sendAnother}
+                    </button>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">
-                    {t.contact.success}
-                  </h3>
-                  <p className="text-slate-500 max-w-md text-sm">
-                    {t.contact.successMessage}
-                  </p>
-                  <button
-                    className="mt-6 h-11 px-6 rounded-jaz hover:bg-[#8B0000] hover:text-white border border-slate-300 text-slate-700 font-semibold transition-all duration-200"
-                    onClick={() => setSuccess(false)}
-                  >
-                    {t.contact.sendAnother}
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {t.contact.fullName} <span className="text-[#8B0000]">*</span>
-                      </label>
-                      <input
-                        id="contact-name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
-                        placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
-                        type="text"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {t.contact.organization} <span className="text-[#8B0000]">*</span>
-                      </label>
-                      <input
-                        name="organization"
-                        value={formData.organization}
-                        onChange={handleChange}
-                        required
-                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
-                        placeholder={isRTL ? "المؤسسة / الشركة" : "Organization / Company"}
-                        type="text"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {t.contact.email} <span className="text-[#8B0000]">*</span>
-                      </label>
-                      <input
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
-                        placeholder="name@domain.com"
-                        type="email"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {t.contact.phone}
-                      </label>
-                      <div className="flex gap-2">
-                        <select
-                           name="phoneCode"
-                           value={formData.phoneCode}
-                           onChange={handleChange}
-                           className="w-32 rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
-                        >
-                          <option value="+964">+964</option>
-                          <option value="+965">+965</option>
-                          <option value="+968">+968</option>
-                          <option value="+971">+971</option>
-                          <option value="+33">+33</option>
-                        </select>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                          {t.contact.fullName} <span className="text-[#8B0000]">*</span>
+                        </label>
                         <input
-                          name="phoneNumber"
-                          value={formData.phoneNumber}
+                          id="contact-name"
+                          name="name"
+                          value={formData.name}
                           onChange={handleChange}
-                          className="flex-1 rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
-                          placeholder="7XX XXX XXXX"
+                          required
+                          className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                          placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
+                          type="text"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                          {t.contact.organization} <span className="text-[#8B0000]">*</span>
+                        </label>
+                        <input
+                          name="organization"
+                          value={formData.organization}
+                          onChange={handleChange}
+                          required
+                          className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                          placeholder={isRTL ? "المؤسسة / الشركة" : "Organization / Company"}
                           type="text"
                         />
                       </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      {t.contact.subject} <span className="text-[#8B0000]">*</span>
-                    </label>
-                    <select
-                      name="inquiryType"
-                      value={
-                        formData.category === 'event' ? 'event' :
-                        formData.category === 'sector' ? 'sector' :
-                        formData.category === 'service' ? 'service' :
-                        formData.subject === 'Cooperation Request' ? 'cooperation' :
-                        formData.subject === 'Visa & Invitations' ? 'visa' :
-                        formData.subject === 'Other' ? 'other' :
-                        formData.subject ? 'general' : ''
-                      }
-                      onChange={(e) => {
-                        const val = e.target.value
-                        let subject = 'General Inquiry'
-                        let category = 'general'
-                        
-                        switch (val) {
-                          case 'general':
-                            subject = 'General Inquiry'
-                            category = 'general'
-                            break
-                          case 'cooperation':
-                            subject = 'Cooperation Request'
-                            category = 'general'
-                            break
-                          case 'event':
-                            subject = 'Sponsorship & Events'
-                            category = 'event'
-                            break
-                          case 'sector':
-                            subject = 'Strategic Division Inquiry'
-                            category = 'sector'
-                            break
-                          case 'visa':
-                            subject = 'Visa & Invitations'
-                            category = 'general'
-                            break
-                          case 'service':
-                            subject = 'Service Request'
-                            category = 'service'
-                            break
-                          case 'other':
-                            subject = 'Other'
-                            category = 'general'
-                            break
-                        }
-                        
-                        setFormData(prev => ({
-                          ...prev,
-                          subject,
-                          category,
-                          related_id: '',
-                          related_title: ''
-                        }))
-                      }}
-                      required
-                      className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200 text-slate-900"
-                    >
-                      <option value="">{isRTL ? "اختر سبب الاستفسار..." : "Select reason for inquiry..."}</option>
-                      <option value="general">{isRTL ? "استفسار عام" : "General Inquiry"}</option>
-                      <option value="cooperation">{isRTL ? "طلب تعاون" : "Cooperation Request"}</option>
-                      <option value="event">{isRTL ? "رعاية وفعاليات (مؤتمر / معرض)" : "Sponsorship & Events (Conference / Exhibition)"}</option>
-                      <option value="sector">{isRTL ? "استفسار عن قسم استراتيجي" : "Strategic Division Inquiry"}</option>
-                      <option value="visa">{isRTL ? "طلب دعم التأشيرات والدعوات" : "Visa & Invitation Support"}</option>
-                      <option value="service">{isRTL ? "طلب خدمة تنظيم" : "Service / Organizing Request"}</option>
-                      <option value="other">{isRTL ? "أخرى" : "Other"}</option>
-                    </select>
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                          {t.contact.email} <span className="text-[#8B0000]">*</span>
+                        </label>
+                        <input
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                          placeholder="name@domain.com"
+                          type="email"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                          {t.contact.phone}
+                        </label>
+                        <div className="flex gap-2">
+                          <select
+                             name="phoneCode"
+                             value={formData.phoneCode}
+                             onChange={handleChange}
+                             className="w-32 rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                          >
+                            <option value="+964">+964</option>
+                            <option value="+965">+965</option>
+                            <option value="+968">+968</option>
+                            <option value="+971">+971</option>
+                            <option value="+33">+33</option>
+                          </select>
+                          <input
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                            className="flex-1 rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                            placeholder="7XX XXX XXXX"
+                            type="text"
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-                  {['event', 'sector'].includes(formData.category) && (
-                    <div className="space-y-1 text-start">
+                    <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {formData.category === 'event' && t.contact.selectEvent}
-                        {formData.category === 'sector' && t.contact.selectSector}
+                        {t.contact.subject} <span className="text-[#8B0000]">*</span>
                       </label>
                       <select
-                        name="related_id"
-                        value={formData.related_id}
-                        onChange={handleChange}
+                        name="inquiryType"
+                        value={
+                          formData.category === 'event' ? 'event' :
+                          formData.category === 'sector' ? 'sector' :
+                          formData.category === 'service' ? 'service' :
+                          formData.subject === 'Cooperation Request' ? 'cooperation' :
+                          formData.subject === 'Visa & Invitations' ? 'visa' :
+                          formData.subject === 'Other' ? 'other' :
+                          formData.subject ? 'general' : ''
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value
+                          let subject = 'General Inquiry'
+                          let category = 'general'
+
+                          switch (val) {
+                            case 'general':
+                              subject = 'General Inquiry'
+                              category = 'general'
+                              break
+                            case 'cooperation':
+                              subject = 'Cooperation Request'
+                              category = 'general'
+                              break
+                            case 'event':
+                              subject = 'Sponsorship & Events'
+                              category = 'event'
+                              break
+                            case 'sector':
+                              subject = 'Strategic Division Inquiry'
+                              category = 'sector'
+                              break
+                            case 'visa':
+                              subject = 'Visa & Invitations'
+                              category = 'general'
+                              break
+                            case 'service':
+                              subject = 'Service Request'
+                              category = 'service'
+                              break
+                            case 'other':
+                              subject = 'Other'
+                              category = 'general'
+                              break
+                          }
+
+                          setFormData(prev => ({
+                            ...prev,
+                            subject,
+                            category,
+                            related_id: '',
+                            related_title: ''
+                          }))
+                        }}
                         required
-                        disabled={isFetchingItems}
-                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-white transition-all duration-200"
+                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200 text-slate-900"
                       >
-                        <option value="">{isRTL ? 'اختر...' : 'Select...'}</option>
-                        {relatedItems.map(item => (
-                          <option key={item.id} value={item.id}>{item.title}</option>
-                        ))}
+                        <option value="">{isRTL ? "اختر سبب الاستفسار..." : "Select reason for inquiry..."}</option>
+                        <option value="general">{isRTL ? "استفسار عام" : "General Inquiry"}</option>
+                        <option value="cooperation">{isRTL ? "طلب تعاون" : "Cooperation Request"}</option>
+                        <option value="event">{isRTL ? "رعاية وفعاليات (مؤتمر / معرض)" : "Sponsorship & Events (Conference / Exhibition)"}</option>
+                        <option value="sector">{isRTL ? "استفسار عن قسم استراتيجي" : "Strategic Division Inquiry"}</option>
+                        <option value="visa">{isRTL ? "طلب دعم التأشيرات والدعوات" : "Visa & Invitation Support"}</option>
+                        <option value="service">{isRTL ? "طلب خدمة تنظيم" : "Service / Organizing Request"}</option>
+                        <option value="other">{isRTL ? "أخرى" : "Other"}</option>
                       </select>
                     </div>
-                  )}
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      {t.contact.message} <span className="text-[#8B0000]">*</span>
-                    </label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
-                      placeholder={t.contact.messagePlaceholder}
-                      rows={4}
-                    />
-                  </div>
+                    {['event', 'sector'].includes(formData.category) && (
+                      <div className="space-y-1 text-start">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                          {formData.category === 'event' && t.contact.selectEvent}
+                          {formData.category === 'sector' && t.contact.selectSector}
+                        </label>
+                        <select
+                          name="related_id"
+                          value={formData.related_id}
+                          onChange={handleChange}
+                          required
+                          disabled={isFetchingItems}
+                          className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-white transition-all duration-200"
+                        >
+                          <option value="">{isRTL ? 'اختر...' : 'Select...'}</option>
+                          {relatedItems.map(item => (
+                            <option key={item.id} value={item.id}>{item.title}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
 
-                  {error && (
-                    <div className="bg-red-50 text-red-600 p-4 border-l-2 border-[#8B0000] flex items-center gap-3">
-                      <AlertCircle className="w-5 h-5 shrink-0" />
-                      <p className="text-sm font-medium">{error}</p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-4">
-                    <label className="flex items-center gap-3 text-sm text-slate-500 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="agree"
-                        checked={formData.agree}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        {t.contact.message} <span className="text-[#8B0000]">*</span>
+                      </label>
+                      <textarea
+                        name="message"
+                        value={formData.message}
                         onChange={handleChange}
                         required
-                        className="rounded border-slate-300 text-[#8B0000] focus:ring-[#8B0000]"
+                        className="w-full rounded-none border-b border-t-0 border-x-0 border-slate-300 focus:border-[#8B0000] focus:ring-0 text-sm p-3 bg-transparent transition-all duration-200"
+                        placeholder={t.contact.messagePlaceholder}
+                        rows={4}
                       />
-                      <span>
-                        {isRTL ? (
-                          <>
-                            أوافق على <Link href="/privacy" className="underline hover:text-jaz-navy">سياسة الخصوصية</Link> و <Link href="/terms" className="underline hover:text-jaz-navy">الشروط والأحكام</Link>.
-                          </>
+                    </div>
+
+                    {error && (
+                      <div className="bg-red-50 text-red-600 p-4 border-l-2 border-[#8B0000] flex items-center gap-3">
+                        <AlertCircle className="w-5 h-5 shrink-0" />
+                        <p className="text-sm font-medium">{error}</p>
+                      </div>
+                    )}
+
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-4">
+                      <label className="flex items-center gap-3 text-sm text-slate-500 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="agree"
+                          checked={formData.agree}
+                          onChange={handleChange}
+                          required
+                          className="rounded border-slate-300 text-[#8B0000] focus:ring-[#8B0000]"
+                        />
+                        <span>
+                          {isRTL ? (
+                            <>
+                              أوافق على <Link href="/privacy" className="underline hover:text-jaz-navy">سياسة الخصوصية</Link> و <Link href="/terms" className="underline hover:text-jaz-navy">الشروط والأحكام</Link>.
+                            </>
+                          ) : (
+                            <>
+                              I agree to the <Link href="/privacy" className="underline hover:text-jaz-navy">Privacy Policy</Link> and <Link href="/terms" className="underline hover:text-jaz-navy">Terms & Conditions</Link>.
+                            </>
+                          )}
+                        </span>
+                      </label>
+                      <button
+                        disabled={isLoading}
+                        className="bg-[#001a33] text-white px-8 py-3 rounded-md border border-[#001a33] hover:bg-[#8B0000] hover:border-[#8B0000] transition-colors flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-70 disabled:cursor-not-allowed"
+                        type="submit"
+                      >
+                        {isLoading ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
-                          <>
-                            I agree to the <Link href="/privacy" className="underline hover:text-jaz-navy">Privacy Policy</Link> and <Link href="/terms" className="underline hover:text-jaz-navy">Terms & Conditions</Link>.
-                          </>
+                          <Send className="w-4 h-4 shrink-0" />
                         )}
-                      </span>
-                    </label>
-                    <button
-                      disabled={isLoading}
-                      className="bg-jaz-navy text-white px-8 py-3 rounded-none border border-jaz-navy hover:bg-[#8B0000] hover:border-[#8B0000] transition-colors flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-70 disabled:cursor-not-allowed"
-                      type="submit"
-                    >
-                      {isLoading ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Send className="w-4 h-4 shrink-0" />
-                      )}
-                      {t.contact.send}
-                    </button>
+                        {t.contact.send}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
+
+            {/* Offices */}
+            <div className="lg:col-span-5 lg:border-s lg:border-slate-200/70 lg:ps-8 text-start">
+              <SectionHeader title={t.contact.ourOffices} subtitle={t.contact.officesSubtitle} />
+
+              <div className="flex flex-col gap-4 mt-8">
+                <article
+                  onClick={() => handleOfficeSelect('basra')}
+                  className="group bg-white p-4 rounded-2xl border border-slate-200/70 flex items-center gap-4 cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all duration-300"
+                >
+                  <div className="w-24 h-20 relative shrink-0 rounded-xl overflow-hidden border border-slate-200/50">
+                    <Image
+                      alt="Basra Office View"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      src="/images/basra-office.png"
+                      fill
+                      sizes="96px"
+                    />
                   </div>
-                </form>
-              )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.basraOffice}</h3>
+                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.basraAddress}</p>
+                  </div>
+                </article>
+
+                <article
+                  onClick={() => handleOfficeSelect('baghdad')}
+                  className="group bg-white p-4 rounded-2xl border border-slate-200/70 flex items-center gap-4 cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all duration-300"
+                >
+                  <div className="w-24 h-20 relative shrink-0 rounded-xl overflow-hidden border border-slate-200/50">
+                    <Image
+                      alt="Baghdad Office View"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      src="/images/baghdad-office.png"
+                      fill
+                      sizes="96px"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.baghdadOffice}</h3>
+                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.baghdadAddress}</p>
+                  </div>
+                </article>
+
+                <article
+                  onClick={() => handleOfficeSelect('erbil')}
+                  className="group bg-white p-4 rounded-2xl border border-slate-200/70 flex items-center gap-4 cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all duration-300"
+                >
+                  <div className="w-24 h-20 relative shrink-0 rounded-xl overflow-hidden border border-slate-200/50">
+                    <Image
+                      alt="Erbil Office View"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      src="/images/erbil-office.png"
+                      fill
+                      sizes="96px"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.erbilOffice}</h3>
+                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.erbilAddress}</p>
+                  </div>
+                </article>
+              </div>
             </div>
-
-        {/* Offices Column */}
-        <div className="variant-card lg:col-span-5 bg-white p-8 rounded-jaz border border-slate-200 text-start shadow-sm hover:shadow-md transition-all duration-300 lg:flex lg:flex-col lg:h-full">
-          <header className="mb-6">
-            <span className="text-xs font-bold text-[#8B0000] tracking-wider uppercase mb-1 block">OFFICIAL PRESENCE</span>
-            <h2 className="text-xl font-bold text-jaz-navy mb-2">{t.contact.ourOffices}</h2>
-            <div className="h-px bg-slate-200 w-full mt-4"></div>
-          </header>
-          <div className="flex flex-col gap-4 lg:flex-1 lg:justify-between mt-4">
-            <article
-              onClick={() => handleOfficeSelect('basra')}
-              className="variant-card bg-slate-50 p-4 rounded-jaz border border-slate-100 flex items-center gap-4 cursor-pointer hover:bg-slate-100/60 hover:border-slate-200 hover:shadow-sm transition-all duration-300 group h-full"
-            >
-              <div className="w-24 h-20 relative shrink-0 rounded-jaz overflow-hidden border border-slate-200/50">
-                <Image
-                  alt="Basra Office View"
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  src="/images/basra-office.png"
-                  fill
-                  sizes="96px"
-                >
-                </Image>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-jaz-navy text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.basraOffice}</h3>
-                <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.basraAddress}</p>
-              </div>
-            </article>
-
-            <article
-              onClick={() => handleOfficeSelect('baghdad')}
-              className="variant-card bg-slate-50 p-4 rounded-jaz border border-slate-100 flex items-center gap-4 cursor-pointer hover:bg-slate-100/60 hover:border-slate-200 hover:shadow-sm transition-all duration-300 group h-full"
-            >
-              <div className="w-24 h-20 relative shrink-0 rounded-jaz overflow-hidden border border-slate-200/50">
-                <Image
-                  alt="Baghdad Office View"
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  src="/images/baghdad-office.png"
-                  fill
-                  sizes="96px"
-                >
-                </Image>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-jaz-navy text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.baghdadOffice}</h3>
-                <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.baghdadAddress}</p>
-              </div>
-            </article>
-
-            <article
-              onClick={() => handleOfficeSelect('erbil')}
-              className="variant-card bg-slate-50 p-4 rounded-jaz border border-slate-100 flex items-center gap-4 cursor-pointer hover:bg-slate-100/60 hover:border-slate-200 hover:shadow-sm transition-all duration-300 group h-full"
-            >
-              <div className="w-24 h-20 relative shrink-0 rounded-jaz overflow-hidden border border-slate-200/50">
-                <Image
-                  alt="Erbil Office View"
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  src="/images/erbil-office.png"
-                  fill
-                  sizes="96px"
-                >
-                </Image>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-jaz-navy text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.erbilOffice}</h3>
-                <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.erbilAddress}</p>
-              </div>
-            </article>
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* Other Ways Section */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mb-20 text-start">
-        <h2 className="text-2xl font-bold text-jaz-navy mb-8">{t.contact.otherWaysTitle}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* Call Us */}
-          <a href="tel:+9647719000600" className="group bg-white p-4 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-[#8B0000]/30 hover:shadow-sm transition-all duration-200">
-            <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-full text-[#8B0000] shrink-0 transition-colors">
-              <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-              </svg>
-            </div>
-            <div>
-              <h4 className="font-bold text-jaz-navy text-sm">{t.contact.callUs}</h4>
-              <p className="text-slate-900 font-extrabold text-sm mt-0.5">+964 771 900 0600</p>
-              <p className="text-[10px] text-slate-400 mt-1">{t.contact.callUsDesc}</p>
-            </div>
-          </a>
+      {/* Other Ways Section — platinum band */}
+      <section className="bg-[#f5f7fa] py-16 lg:py-24">
+        <Container>
+          <SectionHeader title={t.contact.otherWaysTitle} subtitle={t.contact.otherWaysSubtitle} />
 
-          {/* Email Us */}
-          <a href="mailto:info@jaz-iq.com" className="group bg-white p-4 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-[#8B0000]/30 hover:shadow-sm transition-all duration-200">
-            <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-full text-[#8B0000] shrink-0 transition-colors">
-              <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-              </svg>
-            </div>
-            <div>
-              <h4 className="font-bold text-jaz-navy text-sm">{t.contact.emailUs}</h4>
-              <p className="text-slate-900 font-extrabold text-sm mt-0.5">info@jaz-iq.com</p>
-              <p className="text-[10px] text-slate-400 mt-1">{t.contact.emailUsDesc}</p>
-            </div>
-          </a>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 lg:gap-6 mt-10 lg:mt-12">
+            {/* Call Us */}
+            <a href="tel:+9647719000600" className="group bg-white p-5 rounded-2xl border border-slate-200/70 flex items-center gap-4 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+              <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-xl text-[#8B0000] shrink-0 transition-colors">
+                <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm">{t.contact.callUs}</h4>
+                <p className="text-slate-900 font-extrabold text-sm mt-0.5">+964 771 900 0600</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t.contact.callUsDesc}</p>
+              </div>
+            </a>
 
-          {/* LinkedIn */}
-          <a href="https://www.linkedin.com/company/jaz" target="_blank" rel="noopener noreferrer" className="group bg-white p-4 rounded-jaz border border-slate-100 flex items-center gap-4 hover:border-[#8B0000]/30 hover:shadow-sm transition-all duration-200">
-            <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-full text-[#8B0000] shrink-0 transition-colors">
-              <svg className="w-5.5 h-5.5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
-              </svg>
-            </div>
-            <div>
-              <h4 className="font-bold text-jaz-navy text-sm">{t.contact.connectLinkedIn}</h4>
-              <p className="text-slate-900 font-extrabold text-sm mt-0.5">JAZ - Joint Annual Zone</p>
-              <p className="text-[10px] text-slate-400 mt-1">{t.contact.connectLinkedInDesc}</p>
-            </div>
-          </a>
-        </div>
+            {/* Email Us */}
+            <a href="mailto:info@jaz-iq.com" className="group bg-white p-5 rounded-2xl border border-slate-200/70 flex items-center gap-4 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+              <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-xl text-[#8B0000] shrink-0 transition-colors">
+                <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm">{t.contact.emailUs}</h4>
+                <p className="text-slate-900 font-extrabold text-sm mt-0.5">info@jaz-iq.com</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t.contact.emailUsDesc}</p>
+              </div>
+            </a>
+
+            {/* LinkedIn */}
+            <a href="https://www.linkedin.com/company/jaz" target="_blank" rel="noopener noreferrer" className="group bg-white p-5 rounded-2xl border border-slate-200/70 flex items-center gap-4 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+              <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-xl text-[#8B0000] shrink-0 transition-colors">
+                <svg className="w-5.5 h-5.5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm">{t.contact.connectLinkedIn}</h4>
+                <p className="text-slate-900 font-extrabold text-sm mt-0.5">JAZ - Joint Annual Zone</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t.contact.connectLinkedInDesc}</p>
+              </div>
+            </a>
+          </div>
+        </Container>
       </section>
 
-      {/* Map Section */}
-      <section ref={mapSectionRef} className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mb-24 text-start">
-        <h2 className="text-2xl font-bold text-jaz-navy mb-6">{t.contact.ourLocation}</h2>
+      {/* Map Section — white band */}
+      <section ref={mapSectionRef} className="bg-white py-16 lg:py-24 text-start">
+        <Container>
+          <SectionHeader title={t.contact.ourLocation} subtitle={t.contact.ourLocationSubtitle} />
 
-        <div className="w-full bg-white rounded-jaz border border-slate-100 overflow-hidden shadow-sm p-2">
-          {/* Map IFrame */}
-          <div className="w-full h-[450px] bg-slate-200 rounded-jaz overflow-hidden relative">
-            <iframe
-              src="https://maps.google.com/maps?q=30.505715,47.830616&t=&z=16&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Basra Office Location Map"
-              className="w-full h-full"
-            />
+          <div className="w-full bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm p-2 mt-10 lg:mt-12">
+            {/* Map IFrame */}
+            <div className="w-full h-[450px] bg-slate-200 rounded-xl overflow-hidden relative">
+              <iframe
+                src="https://maps.google.com/maps?q=30.505715,47.830616&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Basra Office Location Map"
+                className="w-full h-full"
+              />
+            </div>
           </div>
-        </div>
+        </Container>
       </section>
     </div>
   )

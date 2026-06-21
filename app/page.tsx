@@ -1,21 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
-import { Container } from '@/components/ui/container'
 import {
   HeroSection,
   FocusSectors,
   OurServices,
-  FeaturedEvents,
-  PartnershipProcess,
-  TrustedPartners,
-  NewsInsights
+  FeaturedEvents
 } from '@/components/home'
 import { filterVisibleEvents } from '@/lib/events-visibility'
 
 export default async function Home() {
   const supabase = await createClient()
 
-  // Fetch sectors, events, and blog posts in parallel
-  const [{ data: sectors }, { data: events }, { data: posts }] = await Promise.all([
+  // Fetch sectors and events in parallel
+  const [{ data: sectors }, { data: events }] = await Promise.all([
     supabase
       .from('sectors')
       .select('*')
@@ -26,13 +22,7 @@ export default async function Home() {
       .select('*')
       .eq('status', 'published')
       .gte('date', new Date().toISOString())
-      .order('date', { ascending: true }),
-    supabase
-      .from('posts')
-      .select('*')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(3)
+      .order('date', { ascending: true })
   ])
 
   const visibleEvents = filterVisibleEvents(events)
@@ -40,39 +30,16 @@ export default async function Home() {
   return (
     <>
       <HeroSection />
-      
-      <main className="py-16 bg-white" data-purpose="main-content">
-        <Container>
-          {/* Top Row: Focus Sectors, Our Services, & Featured Events */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
-            <div className="lg:col-span-5">
-              <FocusSectors sectors={sectors || []} />
-            </div>
-            
-            <div className="lg:col-span-4">
-              <OurServices />
-            </div>
-            
-            <div className="lg:col-span-3">
-              <FeaturedEvents events={visibleEvents} />
-            </div>
-          </div>
-          
-          {/* Bottom Row Container: Partnership, Trusted Partners, & News */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-5 info-panel-card p-8 flex flex-col justify-between">
-              <PartnershipProcess />
-            </div>
 
-            <div className="lg:col-span-4 info-panel-card p-8 flex flex-col justify-between">
-              <TrustedPartners />
-            </div>
+      <main data-purpose="main-content">
+        {/* White — focus domains */}
+        <FocusSectors sectors={sectors || []} />
 
-            <div className="lg:col-span-3 info-panel-card p-8 flex flex-col justify-between">
-              <NewsInsights posts={posts || []} />
-            </div>
-          </div>
-        </Container>
+        {/* Navy — capabilities catalog (rhythmic contrast) */}
+        <OurServices />
+
+        {/* White — upcoming proof */}
+        <FeaturedEvents events={visibleEvents} />
       </main>
     </>
   )

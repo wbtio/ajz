@@ -6,6 +6,7 @@ import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Tracker } from "@/components/analytics/tracker";
+import { ChatWidget } from "@/components/chatbot/chat-widget";
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
@@ -53,6 +54,7 @@ export default async function RootLayout({
           <Header isAdmin={isAdmin} />
           <main className="min-h-screen">{children}</main>
           <Footer />
+          <ChatWidget />
         </Providers>
       {/* impeccable-live-start */}
 <script src="http://localhost:8400/live.js"></script>

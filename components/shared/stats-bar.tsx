@@ -35,7 +35,7 @@ export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
         className,
       )}
     >
-      <div className="w-full border-y border-white/10 bg-[#0b1426]/95 shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+      <div className="w-full border-y border-white/10 bg-[#001a33]/95 shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-xl">
         <Container className="max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16">
           <motion.ul
             initial="hidden"

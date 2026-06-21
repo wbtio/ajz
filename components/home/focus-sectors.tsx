@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { motion, useMotionValue, useMotionTemplate, useSpring, useReducedMotion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
 import { Icon } from '@iconify/react'
+import { Container } from '@/components/ui/container'
+import { SectionHeader } from './section-header'
 import type { Sector } from '@/lib/database.types'
 
 interface FocusSectorsProps {
@@ -22,7 +24,7 @@ const sectorMeta = {
   },
   industrie: {
     icon: 'solar:city-bold-duotone',
-    accent: '#b5a36e',
+    accent: '#b08d4b',
   },
   academia: {
     icon: 'solar:square-academic-cap-bold-duotone',
@@ -41,20 +43,23 @@ interface SectorCardProps {
       accent: string
     }
   }
+  index: number
 }
 
-function SectorCard({ sector }: SectorCardProps) {
+function SectorCard({ sector, index }: SectorCardProps) {
   const shouldReduceMotion = useReducedMotion() ?? false
   const [isHovered, setIsHovered] = useState(false)
-  
+
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  
+
   const rawIconX = useMotionValue(0)
   const rawIconY = useMotionValue(0)
-  
+
   const iconX = useSpring(rawIconX, { stiffness: 120, damping: 12 })
   const iconY = useSpring(rawIconY, { stiffness: 120, damping: 12 })
+
+  const glow = useMotionTemplate`radial-gradient(120px circle at ${mouseX}px ${mouseY}px, ${sector.meta.accent}10, transparent 75%)`
 
   function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
     if (shouldReduceMotion) return
@@ -63,13 +68,12 @@ function SectorCard({ sector }: SectorCardProps) {
     const y = clientY - top
     mouseX.set(x)
     mouseY.set(y)
-    
-    // Magnetic pull towards cursor relative to icon's approximate center (center of card horizontally, ~44px down)
+
     const iconCenterX = width / 2
-    const iconCenterY = 44
+    const iconCenterY = 48
     const deltaX = x - iconCenterX
     const deltaY = y - iconCenterY
-    
+
     const maxPull = 6
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
     if (distance > 0) {
@@ -90,61 +94,79 @@ function SectorCard({ sector }: SectorCardProps) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      whileHover={shouldReduceMotion ? {} : { y: -3 }}
-      className="sector-card-crimson border border-slate-200/60 p-5 rounded-xl bg-white text-center flex flex-col justify-between transition-all duration-300 min-h-[200px] relative group overflow-hidden"
+      initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={shouldReduceMotion ? {} : { y: -4 }}
+      className="relative flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 lg:p-6 min-h-[200px] overflow-hidden transition-colors duration-300"
       style={{
-        borderColor: !shouldReduceMotion && isHovered ? `${sector.meta.accent}30` : undefined,
-        boxShadow: !shouldReduceMotion && isHovered ? `0 8px 24px ${sector.meta.accent}05` : undefined
+        borderColor: !shouldReduceMotion && isHovered ? `${sector.meta.accent}40` : undefined,
       }}
     >
-      <Link href={`/departments/${sector.slug}`} className="absolute inset-0 z-10" aria-label={sector.title} />
-      
-      {/* Interactive Vector Grid & Glow Backdrop */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-xl z-0 select-none">
-        <svg 
-          className="absolute inset-0 w-full h-full opacity-[0.03] stroke-slate-900 transition-opacity duration-300 group-hover:opacity-[0.06]" 
-          width="100%" 
-          height="100%"
-        >
-          <defs>
-            <pattern id={`grid-${sector.id}`} width="18" height="18" patternUnits="userSpaceOnUse">
-              <path d="M 18 0 L 0 0 0 18" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#grid-${sector.id})`} />
-        </svg>
-        
-        {!shouldReduceMotion && (
-          <motion.div
-            className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"
-            style={{
-              background: useMotionTemplate`radial-gradient(90px circle at ${mouseX}px ${mouseY}px, ${sector.meta.accent}08, transparent 80%)`
-            }}
-          />
-        )}
-      </div>
+      <Link
+        href={`/departments/${sector.slug}`}
+        className="absolute inset-0 z-10"
+        aria-label={sector.title}
+      />
 
-      <div className="flex flex-col items-center relative z-10">
-        <motion.div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105"
-          style={{ 
-            backgroundColor: `${sector.meta.accent}08`, 
-            color: sector.meta.accent,
-            x: shouldReduceMotion ? 0 : iconX,
-            y: shouldReduceMotion ? 0 : iconY
-          }}
-        >
-          <Icon icon={sector.meta.icon} className="w-5.5 h-5.5" />
-        </motion.div>
-        
-        <h3 className="font-extrabold text-slate-800 text-sm sm:text-base leading-tight mb-2 group-hover:text-[#8B0000] transition-colors duration-300">
-          {sector.title}
-        </h3>
-      </div>
-      
-      <p className="text-[12px] font-medium text-slate-600 leading-relaxed mt-auto relative z-10">
+      {/* Cursor glow */}
+      {!shouldReduceMotion && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none rounded-2xl z-0"
+          style={{ background: glow }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
+
+      {/* Icon */}
+      <motion.div
+        className="relative z-10 w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300"
+        style={{
+          backgroundColor: `${sector.meta.accent}0d`,
+          color: sector.meta.accent,
+          x: shouldReduceMotion ? 0 : iconX,
+          y: shouldReduceMotion ? 0 : iconY,
+        }}
+      >
+        <Icon icon={sector.meta.icon} className="w-6 h-6" />
+      </motion.div>
+
+      {/* Title */}
+      <h3
+        className="relative z-10 font-extrabold text-slate-900 text-base lg:text-lg leading-snug mb-2.5 transition-colors duration-300"
+        style={{ color: isHovered ? sector.meta.accent : undefined }}
+      >
+        {sector.title}
+      </h3>
+
+      {/* Description */}
+      <p className="relative z-10 text-sm text-slate-600 leading-relaxed mt-auto">
         {sector.description}
       </p>
+
+      {/* Explore affordance */}
+      <div
+        className="relative z-10 mt-4 flex items-center gap-2 text-xs font-bold transition-colors duration-300"
+        style={{ color: isHovered ? sector.meta.accent : '#94a3b8' }}
+      >
+        <span className="h-px w-5 bg-current opacity-50" />
+        <svg
+          className="w-3.5 h-3.5 rtl:rotate-180"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path
+            d="M9 5l7 7-7 7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </div>
     </motion.div>
   )
 }
@@ -153,7 +175,6 @@ export function FocusSectors({ sectors = [] }: FocusSectorsProps) {
   const { t, locale } = useI18n()
   const isRTL = locale === 'ar'
 
-  // Fallback static sectors if DB is empty
   const staticSectors = [
     {
       id: 'medical',
@@ -185,31 +206,34 @@ export function FocusSectors({ sectors = [] }: FocusSectorsProps) {
     },
   ]
 
-  // Map dynamic sectors from DB to get their corresponding styles
-  const displaySectors = staticSectors.map(s => {
-    const dbSector = sectors.find(db => db.slug === s.slug)
+  const displaySectors = staticSectors.map((s) => {
+    const dbSector = sectors.find((db) => db.slug === s.slug)
     if (dbSector) {
       return {
         ...s,
         title: isRTL ? dbSector.name_ar || dbSector.name : dbSector.name || dbSector.name_ar,
-        description: isRTL ? dbSector.description_ar || dbSector.description : dbSector.description || dbSector.description_ar,
+        description: isRTL
+          ? dbSector.description_ar || dbSector.description
+          : dbSector.description || dbSector.description_ar,
       }
     }
     return s
   })
 
   return (
-    <div className="w-full text-start" data-purpose="focus-sectors">
-      <h2 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-200/60 pb-3 flex items-center gap-2">
-        <span className="w-1.5 h-6 bg-[#8B0000] rounded-sm"></span>
-        {t.homepage.sectors.title}
-      </h2>
+    <section className="bg-white py-8 lg:py-12" data-purpose="focus-sectors">
+      <Container>
+        <SectionHeader
+          title={t.homepage.sectors.title}
+          subtitle={t.homepage.sectors.subtitle}
+        />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {displaySectors.map((sector) => (
-          <SectorCard key={sector.id} sector={sector} />
-        ))}
-      </div>
-    </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 mt-6 lg:mt-8">
+          {displaySectors.map((sector, index) => (
+            <SectorCard key={sector.id} sector={sector} index={index} />
+          ))}
+        </div>
+      </Container>
+    </section>
   )
 }

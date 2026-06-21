@@ -5,10 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Container } from '@/components/ui/container'
-import { Button } from '@/components/ui/button'
 import { useI18n } from '@/lib/i18n'
 import { Icon } from '@iconify/react'
+import { Handshake, Mail } from 'lucide-react'
 import { StatsBar, type StatsBarItem } from '@/components/shared/stats-bar'
+import { SectionHeader } from '@/components/home'
 
 export default function ServicesPage() {
   const { t, locale, dir } = useI18n()
@@ -117,23 +118,38 @@ export default function ServicesPage() {
               {t.servicesPage.hero.description}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button
-                asChild
-                className="bg-[#cba76d] hover:bg-[#bba362] text-[#001a33] font-bold px-6 py-5 rounded-[6px] text-xs shadow-md border-0 shrink-0"
+              <Link
+                href="/contact?subject=cooperation"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
-                <Link href="/contact?subject=cooperation">
-                  {t.servicesPage.hero.ctaCooperation}
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="bg-[#001a33] border border-blue-900 text-white font-bold px-6 py-5 rounded-[6px] text-xs hover:bg-blue-900 shrink-0"
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <Handshake className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base">{t.servicesPage.hero.ctaCooperation}</h3>
+                  </div>
+                </div>
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
+              </Link>
+              <Link
+                href="/invitation-support"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
-                <Link href="/invitation-support">
-                  {t.servicesPage.hero.ctaInvitation}
-                </Link>
-              </Button>
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base">{t.servicesPage.hero.ctaInvitation}</h3>
+                  </div>
+                </div>
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
+              </Link>
             </div>
           </motion.div>
         </Container>
@@ -143,84 +159,92 @@ export default function ServicesPage() {
       <StatsBar items={stats} overlap={false} />
  
       {/* Main Content */}
-      <main className="py-16 bg-white">
+      <main className="bg-white py-16 lg:py-24">
         <Container>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#001a33] mb-10 text-start flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
-            {t.servicesPage.coreServices.title}
-          </h2>
- 
-          {/* Services Grid */}
+          <SectionHeader
+            title={t.servicesPage.coreServices.title}
+            subtitle={t.servicesPage.coreServices.subtitle}
+          />
+
+          {/* Services Grid — ruled 2-column index */}
           <motion.div
             variants={containerVariants}
             initial={shouldReduceMotion ? 'visible' : 'hidden'}
             whileInView="visible"
             viewport={{ once: true, margin: '-20px' }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12 mb-16"
+            className="grid grid-cols-1 md:grid-cols-2 mt-10 lg:mt-14"
             data-purpose="services-grid"
           >
-            {coreServices.map((service: any, index: number) => (
-              <motion.div key={index} variants={cardVariants} className="flex gap-5 items-start text-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#001a33]/5 text-[#001a33] shrink-0 mt-1">
-                  <Icon icon={serviceIcons[index % serviceIcons.length]} className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-base text-[#001a33] mb-2 leading-tight">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-slate-600 font-medium max-w-md">
-                    {service.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+            {coreServices.map((service: { title: string; desc: string }, index: number) => {
+              const isOdd = index % 2 === 0
+              const isLast = index === coreServices.length - 1
+              const isLastRow = index >= coreServices.length - 2
+              return (
+                <motion.div
+                  key={index}
+                  variants={cardVariants}
+                  className={[
+                    'group flex gap-4 items-start text-start p-5 lg:p-6',
+                    'border-b border-slate-200/70',
+                    isOdd ? 'md:border-e md:border-slate-200/70' : '',
+                    isLast && isOdd ? 'md:border-b-0' : '',
+                    isLastRow ? 'md:border-b-0' : '',
+                  ].join(' ')}
+                >
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#001a33]/[0.04] border border-slate-200/60 text-[#001a33] shrink-0 transition-all duration-300 group-hover:bg-[#8b0000] group-hover:border-[#8b0000] group-hover:text-white">
+                    <Icon icon={serviceIcons[index % serviceIcons.length]} className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900 mb-2 leading-tight transition-colors duration-300 group-hover:text-[#8b0000]">
+                      {service.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-slate-600 font-medium">
+                      {service.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              )
+            })}
           </motion.div>
         </Container>
       </main>
  
       {/* Call To Action */}
-      <section className="pb-16 bg-white">
+      <section className="bg-[#0b1426] text-white py-14 lg:py-20" data-purpose="cta-bar">
         <Container>
-          <motion.div
-            initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="bg-[#001a33] rounded-xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-white border border-white/5 shadow-md relative overflow-hidden"
-            data-purpose="cta-bar"
-          >
-            {/* Soft decorative visual glow */}
-            <div className="absolute right-0 top-0 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(203,167,109,0.08),transparent_70%)] pointer-events-none select-none" />
-            
-            <div className="text-start md:max-w-2xl mb-6 md:mb-0 relative z-10">
-              <h3 className="text-xl sm:text-2xl font-black mb-2 text-white leading-tight">
-                {t.servicesPage.cta.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300 font-medium opacity-90">
-                {t.servicesPage.cta.description}
-              </p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="flex items-start gap-5">
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10 shrink-0">
+                <Handshake className="h-8 w-8 text-[#b08d4b]" />
+              </div>
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 text-balance">
+                  {t.servicesPage.cta.title}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
+                  {t.servicesPage.cta.description}
+                </p>
+              </div>
             </div>
-            
-            <div className="flex gap-4 w-full md:w-auto shrink-0 justify-start relative z-10">
-              <Button
-                asChild
-                className="flex-grow md:flex-grow-0 px-8 py-5 bg-[#cba76d] text-[#001a33] font-bold hover:bg-[#bba362] rounded-[6px] text-xs shadow-md border-0 shrink-0 h-10"
+            <div className="flex flex-wrap gap-3 shrink-0">
+              <Link
+                href="/contact?subject=cooperation"
+                className="group inline-flex items-center justify-center gap-2 rounded-md bg-[#8b0000] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#6b0000] active:scale-95"
               >
-                <Link href="/contact?subject=cooperation">
-                  {t.servicesPage.cta.cooperation}
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="flex-grow md:flex-grow-0 px-8 py-5 border border-white text-white font-bold hover:bg-white hover:text-[#001a33] rounded-[6px] text-xs transition-all duration-300 shrink-0 h-10"
+                <span>{t.servicesPage.cta.cooperation}</span>
+                <svg className="w-4 h-4 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                </svg>
+              </Link>
+              <Link
+                href="/contact"
+                className="group inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/10 active:scale-95"
               >
-                <Link href="/contact">
-                  {t.servicesPage.cta.contact}
-                </Link>
-              </Button>
+                <Mail className="h-4 w-4 shrink-0" />
+                <span>{t.servicesPage.cta.contact}</span>
+              </Link>
             </div>
-          </motion.div>
+          </div>
         </Container>
       </section>
     </div>

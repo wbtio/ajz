@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Calendar, ArrowRight, ArrowLeft, Mail, Check } from 'lucide-react'
+import { Calendar, ArrowRight, ArrowLeft, Mail, Check, Handshake } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import type { Database } from '@/lib/database.types'
 
@@ -391,17 +391,31 @@ export function BlogPageView({ posts }: BlogPageViewProps) {
           <div className="flex flex-wrap gap-4">
             <Link
               href="/partnership"
-              className="bg-[#a68233] hover:bg-[#8c6e2a] text-white px-5 sm:px-6 py-2.5 rounded-[4px] flex items-center gap-2 text-xs sm:text-sm font-semibold transition-all shadow-md shrink-0"
+              className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
             >
-              <span>{labels.btnExplore}</span>
-              <ArrowRight className="w-4 h-4" />
+              <div className="flex items-center gap-3 text-start">
+                <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                  <Handshake className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base">{labels.btnExplore}</h3>
+                </div>
+              </div>
+              <ArrowRight className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} />
             </Link>
             <Link
               href="/events"
-              className="border border-white/30 hover:bg-white/10 text-white px-5 sm:px-6 py-2.5 rounded-[4px] flex items-center gap-2 text-xs sm:text-sm font-semibold transition-all shrink-0"
+              className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
             >
-              <Calendar className="w-4 h-4" />
-              <span>{labels.btnEvents}</span>
+              <div className="flex items-center gap-3 text-start">
+                <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                  <Calendar className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base">{labels.btnEvents}</h3>
+                </div>
+              </div>
+              <ArrowRight className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} />
             </Link>
           </div>
         </div>

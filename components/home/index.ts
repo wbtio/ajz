@@ -1,4 +1,5 @@
 export { HeroSection } from './hero-section'
+export { SectionHeader } from './section-header'
 export { UpcomingEvents } from './upcoming-events'
 export { EventCard } from './event-card'
 export { CountdownTimer } from './countdown-timer'

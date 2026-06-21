@@ -46,11 +46,11 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
     >
       <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
         {t.blogPage.pagination.page}{' '}
-        <span className="font-mono tabular-nums text-[#0b1426]">
+        <span className="font-mono tabular-nums text-[#001a33]">
           {String(currentPage).padStart(2, '0')}
         </span>{' '}
         {t.blogPage.pagination.of}{' '}
-        <span className="font-mono tabular-nums text-[#0b1426]">
+        <span className="font-mono tabular-nums text-[#001a33]">
           {String(totalPages).padStart(2, '0')}
         </span>
       </p>
@@ -62,7 +62,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
           disabled={currentPage === 1}
           className={cn(
             'inline-flex h-10 items-center gap-1.5 rounded-sm border border-slate-200 bg-white px-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-600 transition-all',
-            'hover:border-slate-400 hover:text-[#0b1426]',
+            'hover:border-slate-400 hover:text-[#001a33]',
             'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600'
           )}
         >
@@ -93,7 +93,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
                 'inline-flex h-10 w-10 items-center justify-center rounded-sm border text-sm font-bold tabular-nums transition-all',
                 isActive
                   ? 'border-[#8B0000] bg-[#8B0000] text-white'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-[#0b1426]'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-[#001a33]'
               )}
             >
               {String(p).padStart(2, '0')}
@@ -107,7 +107,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
           disabled={currentPage === totalPages}
           className={cn(
             'inline-flex h-10 items-center gap-1.5 rounded-sm border border-slate-200 bg-white px-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-600 transition-all',
-            'hover:border-slate-400 hover:text-[#0b1426]',
+            'hover:border-slate-400 hover:text-[#001a33]',
             'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600'
           )}
         >

@@ -1,54 +1,123 @@
 'use client'
 
+import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
 import { Icon } from '@iconify/react'
+import { Container } from '@/components/ui/container'
+import { SectionHeader } from './section-header'
+
+const SERVICE_ICONS = [
+  'solar:globus-bold-duotone',
+  'solar:users-group-two-rounded-bold-duotone',
+  'solar:letter-bold-duotone',
+  'solar:handshake-bold-duotone',
+  'solar:calendar-mark-bold-duotone',
+  'solar:link-bold-duotone',
+  'solar:compass-bold-duotone',
+  'solar:shield-user-bold-duotone',
+]
 
 export function OurServices() {
-  const { t, locale, dir } = useI18n()
+  const { t } = useI18n()
   const shouldReduceMotion = useReducedMotion() ?? false
 
-  const services = (t.homepage.services.items || []).slice(0, 4)
-
-  // Nice premium icons for the 8 services
-  const icons = [
-    'solar:globus-bold-duotone',                         // International Exhibition
-    'solar:users-group-two-rounded-bold-duotone',        // Delegation Management
-    'solar:letter-bold-duotone',                         // Invitation Letter
-    'solar:handshake-bold-duotone',                      // B2B Matchmaking
-    'solar:calendar-mark-bold-duotone',                  // Event Org
-    'solar:link-bold-duotone',                           // Partnership Dev
-    'solar:compass-bold-duotone',                        // Market Entry
-    'solar:shield-user-bold-duotone'                     // Gov Liaison
-  ]
+  const services = (t.homepage.services.items ?? []).slice(0, 4)
+  const half = Math.ceil(services.length / 2)
 
   return (
-    <div className="w-full text-start" data-purpose="our-services">
-      <h2 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-200/60 pb-3 flex items-center gap-2">
-        <span className="w-1.5 h-6 bg-[#8B0000] rounded-sm"></span>
-        {t.homepage.services.title}
-      </h2>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-        {services.map((service: string, index: number) => (
-          <motion.div
-            key={index}
-            initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: index * 0.04 }}
-            whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
-            className="border border-slate-200/60 bg-slate-50/50 hover:bg-white hover:border-[#8B0000]/20 p-4 rounded-xl text-center flex flex-col items-center justify-center min-h-[96px] transition-all duration-300 hover:shadow-md group"
+    <section
+      className="relative bg-[#0b1426] text-white py-8 lg:py-12 overflow-hidden"
+      data-purpose="our-services"
+    >
+      <Container className="relative">
+        <SectionHeader
+          title={t.homepage.services.title}
+          subtitle={t.homepage.services.subtitle}
+          action={{ label: t.homepage.services.viewAll, href: '/services' }}
+          dark
+        />
+
+        <ul className="grid grid-cols-1 md:grid-cols-2 mt-6 lg:mt-8">
+          {services.map((service, index) => {
+            const isOdd = index % 2 === 0
+            const isLastMobile = index === services.length - 1
+            const isLastRowDesktop = index >= services.length - 2
+            return (
+              <motion.li
+                key={index}
+                initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.4, delay: (index % half) * 0.05 }}
+                className={[
+                  'group relative flex items-center gap-4 px-2 py-3.5 lg:px-4 lg:py-4',
+                  'border-b border-white/10',
+                  isOdd ? 'md:border-e md:border-white/10' : '',
+                  isLastMobile ? 'border-b-0' : '',
+                  isLastRowDesktop ? 'md:border-b-0' : '',
+                ].join(' ')}
+              >
+                <Link
+                  href="/services"
+                  className="absolute inset-0 z-10"
+                  aria-label={service}
+                />
+
+                {/* Icon */}
+                <span className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-white/[0.04] border border-white/10 text-slate-300 transition-all duration-300 group-hover:bg-[#8B0000] group-hover:border-[#8B0000] group-hover:text-white">
+                  <Icon icon={SERVICE_ICONS[index % SERVICE_ICONS.length]} className="w-5 h-5" />
+                </span>
+
+                {/* Label */}
+                <span className="flex-1 text-sm sm:text-base font-bold text-slate-100 leading-snug transition-colors duration-300 group-hover:text-white">
+                  {service}
+                </span>
+
+                {/* Arrow */}
+                <svg
+                  className="w-4 h-4 shrink-0 text-slate-500 transition-all duration-300 rtl:rotate-180 group-hover:text-[#c0392b] group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path
+                    d="M9 5l7 7-7 7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                  />
+                </svg>
+              </motion.li>
+            )
+          })}
+        </ul>
+
+        {/* CTA */}
+        <div className="mt-8 flex justify-start">
+          <Link
+            href="/contact?subject=cooperation"
+            className="inline-flex items-center gap-2 rounded-md bg-[#8B0000] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#6B0000] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B0000]"
           >
-            <div className="text-slate-500 group-hover:text-[#8B0000] transition-colors duration-300 mb-2">
-              <Icon icon={icons[index % icons.length]} className="w-5.5 h-5.5" />
-            </div>
-            <span className="text-xs sm:text-sm font-bold text-slate-800 leading-snug text-center max-w-[20ch]">
-              {service}
-            </span>
-          </motion.div>
-        ))}
-      </div>
-    </div>
+            {t.homepage.hero.ctaCooperation}
+            <svg
+              className="w-4 h-4 rtl:rotate-180"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              <path
+                d="M9 5l7 7-7 7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+              />
+            </svg>
+          </Link>
+        </div>
+      </Container>
+    </section>
   )
 }

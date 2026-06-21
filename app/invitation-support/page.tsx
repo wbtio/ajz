@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, Mail, Phone, ArrowUpRight, HelpCircle, ChevronDown, Award } from 'lucide-react'
+import { Check, Mail, Phone, ArrowUpRight, HelpCircle, ChevronDown, Award, Calendar } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { StatsBar, type StatsBarItem } from '@/components/shared/stats-bar'
 
@@ -227,15 +227,35 @@ export default function InvitationSupportPage() {
             <div className="flex flex-wrap gap-4">
               <a
                 href="#request-form"
-                className="bg-[#c2b080] text-[#001a33] font-bold px-6 py-3 rounded-[4px] text-xs sm:text-sm hover:bg-[#b09e6d] transition-all"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
-                {pageContent.btnRequest}
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base">{pageContent.btnRequest}</h3>
+                  </div>
+                </div>
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
               </a>
               <Link
                 href="/events"
-                className="bg-[#002a52] border border-white/20 text-white font-bold px-6 py-3 rounded-[4px] text-xs sm:text-sm hover:bg-white hover:text-[#001a33] transition-all"
+                className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
-                {pageContent.btnEvents}
+                <div className="flex items-center gap-3 text-start">
+                  <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base">{pageContent.btnEvents}</h3>
+                  </div>
+                </div>
+                <svg className={`w-5 h-5 text-white shrink-0 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
               </Link>
             </div>
           </div>
@@ -250,7 +270,8 @@ export default function InvitationSupportPage() {
         
         {/* Step-by-Step Flow: How it Works */}
         <section className="bg-gray-50/50 border border-gray-150 p-8 rounded-[4px]">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#001a33] mb-8 border-b border-gray-200/60 pb-4 text-start">
+          <h2 className="text-2xl font-black text-slate-900 mb-6 border-b border-slate-200/60 pb-3 flex items-center gap-2 text-start">
+            <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
             {pageContent.howItWorksTitle}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -260,7 +281,7 @@ export default function InvitationSupportPage() {
                 {i < pageContent.howItWorksSteps.length - 1 && (
                   <div className="hidden md:block absolute top-4 start-10 end-0 h-[2px] bg-gray-200 z-0" />
                 )}
-                <div className="h-9 w-9 rounded-full bg-[#001a33]/5 text-[#001a33] flex items-center justify-center text-sm font-bold shrink-0 mb-4 z-10 group-hover:bg-[#c2b080] group-hover:text-white transition-colors">
+                <div className="h-9 w-9 rounded-full bg-[#001a33]/5 text-[#001a33] flex items-center justify-center text-sm font-bold shrink-0 mb-4 z-10 group-hover:bg-[#b08d4b] group-hover:text-white transition-colors">
                   {i + 1}
                 </div>
                 <h3 className="font-extrabold text-sm text-[#001a33] mb-2">{step.title}</h3>
@@ -275,7 +296,8 @@ export default function InvitationSupportPage() {
           
           {/* Required Documents (Left, Col-span 7) */}
           <div className="lg:col-span-7 border border-gray-200 p-6 sm:p-8 rounded-[4px] bg-white text-start" data-purpose="required-documents">
-            <h2 className="text-xl font-bold mb-2 text-[#001a33]">
+            <h2 className="text-2xl font-black text-slate-900 mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
               {pageContent.docsTitle}
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 mb-6">
@@ -284,7 +306,7 @@ export default function InvitationSupportPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {pageContent.docsList.map((doc, i) => (
                 <div key={i} className="flex items-start gap-3 text-xs sm:text-sm text-gray-700 bg-gray-50/50 p-3 rounded-[4px] border border-gray-100">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#c2b080] shrink-0 mt-2" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#b08d4b] shrink-0 mt-2" />
                   <span className="font-medium">{doc}</span>
                 </div>
               ))}
@@ -299,14 +321,15 @@ export default function InvitationSupportPage() {
 
           {/* Benefits of Support (Right, Col-span 5) */}
           <div className="lg:col-span-5 border border-gray-200 p-6 sm:p-8 rounded-[4px] bg-white text-start" data-purpose="benefits">
-            <h2 className="text-xl font-bold mb-6 text-[#001a33] border-b border-gray-100 pb-3">
+            <h2 className="text-2xl font-black text-slate-900 mb-6 border-b border-slate-200/60 pb-3 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
               {pageContent.benefitsTitle}
             </h2>
             <div className="space-y-6">
               {pageContent.benefitsList.map((benefit, i) => (
                 <div key={i} className="flex gap-3 items-start">
-                  <div className="bg-[#c2b080]/10 p-1 rounded-sm shrink-0 mt-0.5">
-                    <Check className="h-4 w-4 text-[#c2b080]" />
+                  <div className="bg-[#b08d4b]/10 p-1 rounded-sm shrink-0 mt-0.5">
+                    <Check className="h-4 w-4 text-[#b08d4b]" />
                   </div>
                   <div>
                     <h3 className="font-bold text-sm text-gray-800">{benefit.title}</h3>
@@ -321,7 +344,8 @@ export default function InvitationSupportPage() {
 
         {/* FAQ Section */}
         <section data-purpose="faq-section" className="border border-gray-200 p-6 sm:p-8 rounded-[4px] bg-white text-start">
-          <h2 className="text-xl sm:text-2xl font-bold mb-6 text-[#001a33] border-b border-gray-100 pb-4">
+          <h2 className="text-2xl font-black text-slate-900 mb-6 border-b border-slate-200/60 pb-3 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
             {pageContent.faqTitle}
           </h2>
           <div className="space-y-3">
@@ -338,7 +362,7 @@ export default function InvitationSupportPage() {
                     className="w-full flex items-center justify-between p-4 text-start font-bold text-sm sm:text-base text-gray-800 hover:bg-gray-50/50 focus:outline-none"
                   >
                     <span className="flex items-center gap-2">
-                      <HelpCircle className="h-4 w-4 text-[#c2b080] shrink-0" />
+                      <HelpCircle className="h-4 w-4 text-[#b08d4b] shrink-0" />
                       <span>{faq.q}</span>
                     </span>
                     <ChevronDown
@@ -360,7 +384,8 @@ export default function InvitationSupportPage() {
 
         {/* Full-width Request Form */}
         <section className="border border-gray-200 p-6 sm:p-8 rounded-[4px] bg-white text-start scroll-mt-28" id="request-form">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-[#001a33]">
+          <h2 className="text-2xl font-black text-slate-900 mb-2 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-[#8b0000] rounded-sm"></span>
             {pageContent.formTitle}
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 mb-8 border-b border-gray-100 pb-4">
@@ -536,7 +561,7 @@ export default function InvitationSupportPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full md:w-auto bg-[#c2b080] text-[#001a33] font-bold px-8 py-3 rounded-[4px] shadow-sm hover:bg-[#b09e6d] transition-all uppercase text-xs sm:text-sm disabled:opacity-50"
+                  className="w-full md:w-auto bg-[#b08d4b] text-[#001a33] font-bold px-8 py-3 rounded-[4px] shadow-sm hover:bg-[#b09e6d] transition-all uppercase text-xs sm:text-sm disabled:opacity-50"
                 >
                   {isSubmitting ? pageContent.formSubmitting : pageContent.formSubmit}
                 </button>
@@ -558,7 +583,7 @@ export default function InvitationSupportPage() {
               <span className="block text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1">
                 {pageContent.footerCall}
               </span>
-              <a href="tel:+9647719000600" className="text-lg sm:text-xl font-bold tracking-wide hover:text-[#c2b080] transition-colors flex items-center gap-2">
+              <a href="tel:+9647719000600" className="text-lg sm:text-xl font-bold tracking-wide hover:text-[#b08d4b] transition-colors flex items-center gap-2">
                 <Phone className="h-4 w-4" />
                 <span>+9647719000600</span>
               </a>
@@ -567,7 +592,7 @@ export default function InvitationSupportPage() {
               <span className="block text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1">
                 {pageContent.footerEmail}
               </span>
-              <a href="mailto:info@jaz.iq" className="text-lg sm:text-xl font-bold tracking-wide hover:text-[#c2b080] transition-colors flex items-center gap-2">
+              <a href="mailto:info@jaz.iq" className="text-lg sm:text-xl font-bold tracking-wide hover:text-[#b08d4b] transition-colors flex items-center gap-2">
                 <Mail className="h-4 w-4" />
                 <span>info@jaz.iq</span>
               </a>

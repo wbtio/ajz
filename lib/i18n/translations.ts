@@ -143,10 +143,11 @@ export const translations = {
         statJointInitiativesVal: "250",
         statJointInitiativesLabel: "مبادرة مشتركة",
         statYouthBeneficiariesVal: "1000",
-        statYouthBeneficiariesLabel: "مستفيد من الشباب",
+        statYouthBeneficiariesLabel: "شاب مستفيد",
       },
       sectors: {
         title: "قطاعات تركيزنا",
+        subtitle: "أربعة محاور نركّز عليها لربط المؤسسات العراقية بالأسواق العالمية.",
         medicalTitle: "الرعاية الصحية وعلوم الحياة",
         medicalDesc: "ربط المؤسسات الصحية بالابتكار العالمي والتطورات الطبية.",
         techTitle: "التحول الرقمي والتكنولوجيا",
@@ -158,6 +159,8 @@ export const translations = {
       },
       services: {
         title: "خدماتنا",
+        subtitle: "مسارات خدمية متكاملة تغطي التسجيل وإدارة الوفود وتطوير الشراكات.",
+        viewAll: "استعرض كل الخدمات",
         items: [
           "المشاركة في المعارض الدولية",
           "إدارة الوفود",
@@ -170,13 +173,14 @@ export const translations = {
         ]
       },
       events: {
-        title: "الفعاليات الدولية البارزة"
+        title: "الفعاليات الدولية البارزة",
+        viewAll: "استعرض كل الفعاليات"
       },
       process: {
         title: "عملية الشراكة لدينا",
         subtitle: "تضمن عمليتنا المجربة بناء علاقات هادفة وتحقيق نتائج ملموسة.",
         discoverTitle: "اكتشاف",
-        discoverDesc: "نفهم أهدافك وااحتياجاتك.",
+        discoverDesc: "نفهم أهدافك واحتياجاتك.",
         connectTitle: "تواصل",
         connectDesc: "نربطك بالفرص والشركاء المناسبين.",
         collaborateTitle: "تعاون",
@@ -185,10 +189,12 @@ export const translations = {
         growDesc: "ندعم الأثر طويل الأمد والنجاح المستدام."
       },
       partners: {
-        title: "شركاء يثقون بنا"
+        title: "شركاء يثقون بنا",
+        subtitle: "وزارات وغرف ومؤسسات وطنية تعمل مع منصة جاز."
       },
       news: {
-        title: "الأخبار والآراء"
+        title: "الأخبار والآراء",
+        viewAll: "استعرض كل المقالات"
       }
     },
     // Events
@@ -398,6 +404,7 @@ export const translations = {
       partnerDesc: "انضم إلى شبكتنا من المؤسسات والمنظمات لتعزيز شراكات مؤثرة.",
       sendUsMessage: "أرسل لنا رسالة",
       formSubtitle: "املأ النموذج أدناه وسيقوم فريقنا بالرد عليك في أقرب وقت ممكن.",
+      officesSubtitle: "ثلاث مكاتب تغطي العراق من الشمال إلى الجنوب.",
       organization: "المؤسسة / الشركة",
       organizationPlaceholder: "أدخل اسم مؤسستك أو شركتك",
       agreeTerms: "أوافق على سياسة الخصوصية والشروط والأحكام.",
@@ -410,6 +417,7 @@ export const translations = {
       erbilOffice: "مكتب أربيل",
       erbilAddress: "مجمع معرض أربيل الدولي\nشارع 60م، أربيل\nالعراق",
       otherWaysTitle: "طرق أخرى للتواصل معنا",
+      otherWaysSubtitle: "هاتف، بريد إلكتروني، أو لينكد إن — اختر ما يناسبك.",
       callUs: "اتصل بنا",
       callUsDesc: "الأحد-الخميس: 8:30 ص - 4:30 م",
       emailUs: "راسلنا",
@@ -421,6 +429,7 @@ export const translations = {
       followFacebook: "تابعنا على فيسبوك",
       followFacebookDesc: "ابقَ على تواصل مع مجتمعنا.",
       ourLocation: "موقعنا",
+      ourLocationSubtitle: "مكتب البصرة الرئيسي على الخريطة.",
       allOffices: "جميع المكاتب",
     },
     // About
@@ -492,8 +501,10 @@ export const translations = {
         experience: "سنوات خبرة",
       },
       whoWeAreTitle: "من نحن",
+      whoWeAreSubtitle: "منصة عراقية تربط الحكومة والشركات والأكاديميا بالمعارض والشركاء الدوليين.",
       whoWeAreText: "جاز (المنطقة السنوية المشتركة) هي منصة عراقية مخصصة تربط الحكومة والشركات والأكاديميا والمهنيين بالمعارض والمؤتمرات الدولية والشركاء المؤسسيين. نحن نسهل المشاركة وننظم الوفود ونبني تعاوناً طويل الأمد يقود النمو المستدام والأثر العالمي.",
       whereWeOperate: "أين نعمل",
+      whereWeOperateSubtitle: "ثلاث مكاتب استراتيجية تغطي العراق من الشمال إلى الجنوب.",
       erbilTitle: "أربيل",
       erbilDesc: "خدمة إقليم كردستان والمحافظات الشمالية.",
       baghdadTitle: "بغداد",
@@ -501,6 +512,7 @@ export const translations = {
       basraTitle: "البصرة",
       basraDesc: "بوابتنا إلى الخليج والتجارة الدولية.",
       whyJaz: "لماذا جاز",
+      whyJazSubtitle: "خمس مزايا تجعل التعاون مع منصة جاز قراراً موثوقاً.",
       whyJazItems: [
         "تنسيق رسمي مع الجهات الحكومية.",
         "الوصول إلى المعارض العالمية.",
@@ -509,6 +521,7 @@ export const translations = {
         "دعم شامل من البداية للنهاية."
       ],
       ourValues: "قيمنا",
+      ourValuesSubtitle: "خمسة مبادئ توجّه كل شراكة ومشاركة نقوم بها.",
       valuesItems: [
         { title: "النزاهة", desc: "نتصرف بصدق وشفافية." },
         { title: "التميز", desc: "نسعى لتحقيق الجودة دائماً." },
@@ -536,7 +549,7 @@ export const translations = {
       statJointInitiativesVal: "250",
       statJointInitiativesLabel: "مبادرة مشتركة",
       statYouthBeneficiariesVal: "1000",
-      statYouthBeneficiariesLabel: "مستفيد من الشباب"
+      statYouthBeneficiariesLabel: "شاب مستفيد"
     },
     servicesPage: {
       hero: {
@@ -558,6 +571,7 @@ export const translations = {
       },
       coreServices: {
         title: "ركائز الخدمات",
+        subtitle: "أربعة مسارات خدمية تغطي الوصول للفعاليات، التحالفات المؤسسية، التمثيل الميداني، واللوجستيات القنصلية.",
         items: [
           {
             title: "الوصول للفعاليات والوفود العالمية",
@@ -876,6 +890,7 @@ export const translations = {
       },
       sectors: {
         title: "Our Focus Sectors",
+        subtitle: "Four domains we focus on to connect Iraqi institutions with global markets.",
         medicalTitle: "Healthcare & Life Sciences",
         medicalDesc: "Connecting health institutions with global innovation and medical advancements.",
         techTitle: "Digital Transformation & Technology",
@@ -887,6 +902,8 @@ export const translations = {
       },
       services: {
         title: "Our Services",
+        subtitle: "Integrated service tracks covering registration, delegation management, and partnership development.",
+        viewAll: "Browse all services",
         items: [
           "International Exhibition Participation",
           "Delegation Management",
@@ -899,7 +916,8 @@ export const translations = {
         ]
       },
       events: {
-        title: "Featured International Events"
+        title: "Featured International Events",
+        viewAll: "Browse all events"
       },
       process: {
         title: "Our Partnership Process",
@@ -914,10 +932,12 @@ export const translations = {
         growDesc: "We support long-term impact and sustainable success."
       },
       partners: {
-        title: "Trusted by Institutions & Partners"
+        title: "Trusted by Institutions & Partners",
+        subtitle: "Ministries, chambers, and national institutions working with JAZ."
       },
       news: {
-        title: "News & Insights"
+        title: "News & Insights",
+        viewAll: "Browse all articles"
       }
     },
     // Events
@@ -1129,6 +1149,7 @@ export const translations = {
       partnerDesc: "Join our network of institutions and organizations advancing impactful partnerships.",
       sendUsMessage: "Send Us a Message",
       formSubtitle: "Fill out the form below and our team will get back to you as soon as possible.",
+      officesSubtitle: "Three offices covering Iraq from north to south.",
       organization: "Organization / Company",
       organizationPlaceholder: "Enter your organization or company",
       agreeTerms: "I agree to the Privacy Policy and Terms & Conditions.",
@@ -1141,6 +1162,7 @@ export const translations = {
       erbilOffice: "Erbil Office",
       erbilAddress: "Erbil International Fair Complex\n60m St, Erbil\nIraq",
       otherWaysTitle: "Other Ways to Reach Us",
+      otherWaysSubtitle: "Phone, email, or LinkedIn — pick what suits you.",
       callUs: "Call Us",
       callUsDesc: "Sun-Thu: 8:30 AM - 4:30 PM",
       emailUs: "Email Us",
@@ -1152,6 +1174,7 @@ export const translations = {
       followFacebook: "Follow on Facebook",
       followFacebookDesc: "Stay connected with our community.",
       ourLocation: "Our Location",
+      ourLocationSubtitle: "The main Basra office on the map.",
       allOffices: "All Offices",
     },
     // About
@@ -1224,8 +1247,10 @@ export const translations = {
         experience: "Years of Experience",
       },
       whoWeAreTitle: "Who We Are",
+      whoWeAreSubtitle: "Iraq's platform connecting government, business, and academia with international exhibitions and partners.",
       whoWeAreText: "JAZ (Joint Annual Zone) is Iraq's dedicated platform that connects government, businesses, academia, and professionals with international exhibitions, conferences, and institutional partners. We facilitate participation, organize delegations, and build long-term cooperation that drives sustainable growth and global impact.",
       whereWeOperate: "Where We Operate",
+      whereWeOperateSubtitle: "Three strategic offices covering Iraq from north to south.",
       erbilTitle: "Erbil",
       erbilDesc: "Serving the Kurdistan region and northern provinces.",
       baghdadTitle: "Baghdad",
@@ -1233,6 +1258,7 @@ export const translations = {
       basraTitle: "Basra",
       basraDesc: "Our gateway to the Gulf and international trade.",
       whyJaz: "Why JAZ",
+      whyJazSubtitle: "Five advantages that make partnering with JAZ a trusted choice.",
       whyJazItems: [
         "Official coordination with government agencies.",
         "Direct access to global exhibitions.",
@@ -1241,6 +1267,7 @@ export const translations = {
         "End-to-end comprehensive coordination."
       ],
       ourValues: "Our Values",
+      ourValuesSubtitle: "Five principles that guide every partnership and participation we undertake.",
       valuesItems: [
         { title: "Integrity", desc: "We act with honesty and transparency." },
         { title: "Excellence", desc: "We always strive for quality." },
@@ -1290,6 +1317,7 @@ export const translations = {
       },
       coreServices: {
         title: "Service Pillars",
+        subtitle: "Four service tracks covering event access, institutional alliances, in-country representation, and consular logistics.",
         items: [
           {
             title: "Global Event & Delegation Access",

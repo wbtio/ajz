@@ -78,7 +78,7 @@ export function EventsHero({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder={content.placeholder}
-            className="flex-grow p-3 sm:p-4 text-gray-800 rounded-s-[4px] border-none focus:ring-2 focus:ring-[#d9b382] focus:outline-none text-xs sm:text-sm bg-white"
+            className="flex-grow p-3 sm:p-4 text-gray-800 rounded-s-[4px] border-none focus:ring-2 focus:ring-[#b08d4b] focus:outline-none text-xs sm:text-sm bg-white"
           />
           <button
             type="submit"

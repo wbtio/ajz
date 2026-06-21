@@ -67,7 +67,7 @@ export function Footer() {
     <footer
       dir={dir}
       lang={locale}
-      className={`bg-[#021c36] text-[#6f85a3] py-8 sm:py-10${isDepartmentsPage ? '' : ' border-t border-[#c4c6ce]/10'}`}
+      className={`bg-[#001a33] text-[#6f85a3] py-8 sm:py-10${isDepartmentsPage ? '' : ' border-t border-[#c4c6ce]/10'}`}
     >
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 text-start">

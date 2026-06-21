@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Icon as Iconify } from "@iconify/react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Tables } from "@/lib/database.types";
 import { useI18n } from "@/lib/i18n";
+import { Container } from "@/components/ui/container";
+import { SectionHeader } from "@/components/home";
 
 // Dynamic content block to support both English and Arabic
 const translationsContent = {
@@ -14,6 +17,8 @@ const translationsContent = {
       "JAZ operates through four integrated departments that work synergistically to connect Iraq with global opportunities, drive innovation, and deliver measurable impact across key sectors and stakeholder communities.",
     heroBadges: ["Integrated Expertise", "Shared Resources", "Unified Impact"],
     exploreBtn: "Explore Department",
+    gridSubtitle:
+      "Four integrated departments working in concert to connect Iraq with global opportunities.",
     cards: [
       {
         key: "medical",
@@ -72,12 +77,13 @@ const translationsContent = {
       contact: "Contact Us",
     },
   },
-  ar: {
-    heroTitle: "أقسامنا",
+  ar: {    heroTitle: "أقسامنا",
     heroSubtitle:
       "تعمل جاز من خلال أربعة أقسام متكاملة تتعاون معاً لربط العراق بالفرص العالمية، ودفع عجلة الابتكار، وتحقيق أثر ملموس عبر القطاعات الرئيسية وفئات الشركاء المعنيين.",
     heroBadges: ["خبرات متكاملة", "موارد مشتركة", "أثر موحد"],
     exploreBtn: "استكشاف القسم",
+    gridSubtitle:
+      "أربعة أقسام متكاملة تعمل معاً لربط العراق بالفرص العالمية وقيادة الابتكار.",
     cards: [
       {
         key: "medical",
@@ -187,13 +193,14 @@ export function DepartmentsClient({
   const isRTL = locale === "ar";
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
   const content = isRTL ? translationsContent.ar : translationsContent.en;
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   return (
     <div className="min-h-screen bg-white flex flex-col" dir={dir} lang={locale}>
       {/* CSS overrides inside a styled tag to ensure colors/overlay look exactly like the HTML request */}
       <style dangerouslySetInnerHTML={{ __html: `
         .hero-container {
-          background: #001224;
+          background: #001a33;
           position: relative;
           overflow: hidden;
         }
@@ -235,7 +242,7 @@ export function DepartmentsClient({
       ` }} />
 
       {/* BEGIN: Hero Section */}
-      <section className="hero-container relative bg-[#001224] text-white py-10 xs:py-12 sm:py-16 md:py-20 lg:py-24 px-4 xs:px-5 sm:px-6 md:px-16">
+      <section className="hero-container relative bg-[#001a33] text-white py-10 xs:py-12 sm:py-16 md:py-20 lg:py-24 px-4 xs:px-5 sm:px-6 md:px-16">
         <div className="globe-overlay"></div>
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="max-w-3xl mt-6 xs:mt-8 sm:mt-10 lg:mt-12">
@@ -259,43 +266,13 @@ export function DepartmentsClient({
       {/* END: Hero Section */}
 
       {/* BEGIN: Departments Grid */}
-      <section className="py-8 xs:py-10 sm:py-12 md:py-14 px-4 xs:px-5 sm:px-6 md:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 xs:gap-4 sm:gap-5">
-          {content.cards.map((card) => {
-            const slug = getSlugForDept(card.key, sectors);
-            return (
-              <div
-                key={card.key}
-                className="department-card p-3 xs:p-3.5 rounded-xl bg-white flex flex-col h-full"
-              >
-                <div className="relative mb-2 xs:mb-2.5 sm:mb-3 overflow-hidden rounded-lg">
-                  <img
-                    alt={card.title}
-                    className="w-full h-24 xs:h-28 sm:h-32 md:h-36 object-cover transform hover:scale-105 transition-transform duration-500"
-                    src={bgImageMap[card.key] || card.image}
-                  />
-                  <div className="absolute bottom-1.5 xs:bottom-2 left-1.5 xs:left-2 rtl:left-auto rtl:right-1.5 rtl:xs:left-auto rtl:xs:right-2 w-8 xs:w-9 h-8 xs:h-9 bg-white rounded-lg flex items-center justify-center shadow-md">
-                    <Iconify icon={card.icon} className="w-4 xs:w-5 h-4 xs:h-5 text-gray-900" />
-                  </div>
-                </div>
-
-                <h3 className="text-xs xs:text-sm sm:text-base font-bold text-slate-900 mb-1 xs:mb-1.5 sm:mb-2 leading-snug line-clamp-2">
-                  {card.title}
-                </h3>
-                <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-600 mb-2.5 xs:mb-3 sm:mb-4 leading-snug line-clamp-3">
-                  {card.description}
-                </p>
-
-                <Link href={`/departments/${slug}`} className="w-full mt-auto block">
-                  <button className="w-full py-1.5 xs:py-2 bg-gray-900 text-white text-[10px] xs:text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors shadow-sm">
-                    {content.exploreBtn}
-                  </button>
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <DepartmentsGrid
+        cards={content.cards}
+        exploreBtn={content.exploreBtn}
+        subtitle={content.gridSubtitle}
+        sectors={sectors}
+        shouldReduceMotion={shouldReduceMotion}
+      />
       {/* END: Departments Grid */}
 
       {/* BEGIN: Statistics Bar */}
@@ -329,52 +306,152 @@ export function DepartmentsClient({
       {/* END: Statistics Bar */}
 
       {/* BEGIN: CTA Bar */}
-      <section className="mt-auto bg-[#021c36] text-[#6f85a3] py-6 xs:py-8 sm:py-10 px-4 xs:px-5 sm:px-6 md:px-12 border-t border-b border-[#6f85a3]/10">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 xs:gap-6 sm:gap-8">
-          <div className="text-center lg:text-start px-2">
-            <h2 className="text-base xs:text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 xs:mb-1.5 sm:mb-2">
-              {content.ctaBar.title}
-            </h2>
-            <p className="text-[10px] xs:text-[11px] sm:text-xs md:text-sm text-[#6f85a3]/80 leading-relaxed max-w-xl">
-              {content.ctaBar.description}
-            </p>
+      <section className="mt-auto bg-[#0b1426] text-white py-14 lg:py-20">
+        <Container>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="flex items-start gap-5">
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10 shrink-0">
+                <Iconify
+                  icon="solar:hand-shake-bold-duotone"
+                  className="h-8 w-8 text-[#b08d4b]"
+                  aria-hidden
+                />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold mb-2 text-balance">
+                  {content.ctaBar.title}
+                </h2>
+                <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
+                  {content.ctaBar.description}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 shrink-0">
+              <Link
+                href="/contact?type=cooperation"
+                className="group inline-flex items-center justify-center gap-2 rounded-md bg-[#8b0000] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#6b0000] active:scale-95"
+              >
+                <span>{content.ctaBar.cooperation}</span>
+                <Arrow
+                  className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+                  aria-hidden
+                />
+              </Link>
+              <Link
+                href="/contact"
+                className="group inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/10 active:scale-95"
+              >
+                <Iconify
+                  icon="solar:letter-bold-duotone"
+                  className="h-4 w-4 shrink-0"
+                  aria-hidden
+                />
+                <span>{content.ctaBar.contact}</span>
+              </Link>
+            </div>
           </div>
-
-          <div className="flex w-full flex-col sm:flex-row gap-2 xs:gap-3 items-center px-2 lg:px-0">
-            <Link
-              href="/contact?type=cooperation"
-              className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 xs:gap-2.5 rounded-full bg-[#f7e382] px-4 xs:px-5 sm:px-6 py-2.5 xs:py-3 text-[10px] xs:text-xs sm:text-sm font-bold text-[#000000] transition-all duration-300 hover:bg-[#f7e382]/90 active:scale-95"
-            >
-              <Iconify
-                icon="solar:hand-shake-bold-duotone"
-                className="h-3.5 xs:h-4 w-3.5 xs:w-4 shrink-0 text-[#000000]/80"
-                aria-hidden
-              />
-              <span>{content.ctaBar.cooperation}</span>
-              <Arrow
-                className="h-3 xs:h-3.5 w-3 xs:w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
-                aria-hidden
-              />
-            </Link>
-            <Link
-              href="/contact"
-              className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 xs:gap-2.5 rounded-full border border-[#6f85a3]/30 px-4 xs:px-5 sm:px-6 py-2.5 xs:py-3 text-[10px] xs:text-xs sm:text-sm font-semibold text-[#6f85a3] transition-all duration-300 hover:border-[#f7e382] hover:text-[#f7e382] active:scale-95"
-            >
-              <Iconify
-                icon="solar:letter-bold-duotone"
-                className="h-3.5 xs:h-4 w-3.5 xs:w-4 shrink-0 transition-colors duration-300 group-hover:text-[#f7e382]"
-                aria-hidden
-              />
-              <span>{content.ctaBar.contact}</span>
-              <Arrow
-                className="h-3 xs:h-3.5 w-3 xs:w-3.5 shrink-0 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#f7e382] rtl:group-hover:-translate-x-1"
-                aria-hidden
-              />
-            </Link>
-          </div>
-        </div>
+        </Container>
       </section>
       {/* END: CTA Bar */}
     </div>
+  );
+}
+
+type DeptCard = {
+  key: string;
+  title: string;
+  description: string;
+  image: string;
+  icon: string;
+};
+
+function DepartmentsGrid({
+  cards,
+  exploreBtn,
+  subtitle,
+  sectors,
+  shouldReduceMotion,
+}: {
+  cards: DeptCard[];
+  exploreBtn: string;
+  subtitle: string;
+  sectors: Tables<"sectors">[] | null;
+  shouldReduceMotion: boolean;
+}) {
+  const { locale } = useI18n();
+  const isRTL = locale === "ar";
+
+  return (
+    <section className="bg-white py-16 lg:py-24">
+      <Container>
+        <SectionHeader title={isRTL ? "أقسامنا" : "Our Departments"} subtitle={subtitle} />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 mt-10 lg:mt-12">
+          {cards.map((card, index) => {
+            const slug = getSlugForDept(card.key, sectors);
+            const imgSrc = bgImageMap[card.key] || card.image;
+            return (
+              <motion.article
+                key={card.key}
+                initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={shouldReduceMotion ? {} : { y: -5 }}
+                className="group relative flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/70 transition-colors duration-300 hover:border-slate-300"
+              >
+                <Link
+                  href={`/departments/${slug}`}
+                  className="absolute inset-0 z-20"
+                  aria-label={card.title}
+                />
+
+                {/* Image */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt={card.title}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    src={imgSrc}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 to-transparent" />
+                  <div className="absolute bottom-3 start-3 w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
+                    <Iconify icon={card.icon} className="w-5 h-5 text-slate-900" />
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="relative flex flex-col p-5 lg:p-6 flex-1">
+                  <h3 className="font-extrabold text-slate-900 text-base lg:text-lg leading-snug mb-2.5 text-balance transition-colors duration-300 group-hover:text-[#8b0000]">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                    {card.description}
+                  </p>
+
+                  <div className="mt-5 pt-4 border-t border-slate-200/60 flex items-center gap-2 text-xs font-bold text-slate-500 transition-colors duration-300 group-hover:text-[#8b0000]">
+                    <span>{exploreBtn}</span>
+                    <svg
+                      className="w-3.5 h-3.5 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path
+                        d="M9 5l7 7-7 7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
+      </Container>
+    </section>
   );
 }

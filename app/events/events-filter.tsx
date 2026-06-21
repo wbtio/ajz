@@ -2,12 +2,15 @@
 
 import { useI18n } from '@/lib/i18n'
 import type { Sector } from '@/lib/database.types'
+import { getSectorKey, SUB_SECTORS } from './sub-sectors'
 
 interface EventsFilterProps {
   sectors: Sector[]
   uniqueCountries: string[]
   selectedSector: string
   setSelectedSector: (val: string) => void
+  selectedSubSector: string
+  setSelectedSubSector: (val: string) => void
   selectedCountry: string
   setSelectedCountry: (val: string) => void
   selectedMonth: string
@@ -22,6 +25,8 @@ export function EventsFilter({
   uniqueCountries,
   selectedSector,
   setSelectedSector,
+  selectedSubSector,
+  setSelectedSubSector,
   selectedCountry,
   setSelectedCountry,
   selectedMonth,
@@ -33,16 +38,22 @@ export function EventsFilter({
   const { locale, dir } = useI18n()
   const isRTL = locale === 'ar'
 
+  // Sub-sectors available for the currently selected main sector
+  const sectorKey = getSectorKey(selectedSector)
+  const subSectorOptions = sectorKey ? SUB_SECTORS[sectorKey] : []
+
   // Localized texts
   const labels = isRTL
     ? {
         filterTitle: 'تصفية الفعاليات',
         sectorLabel: 'القطاع الاستراتيجي',
+        subSectorLabel: 'القطاع الفرعي',
         countryLabel: 'البلد / المنطقة',
         monthLabel: 'الشهر',
         participationLabel: 'نوع المشاركة',
         clearBtn: 'مسح الفلاتر',
         allSectors: 'كل القطاعات',
+        allSubSectors: 'كل القطاعات الفرعية',
         allCountries: 'كل البلدان',
         allMonths: 'كل الأشهر',
         participationTypes: [
@@ -69,11 +80,13 @@ export function EventsFilter({
     : {
         filterTitle: 'Filter Events',
         sectorLabel: 'Strategic Sector',
+        subSectorLabel: 'Sub-sector',
         countryLabel: 'Country / Region',
         monthLabel: 'Month',
         participationLabel: 'Participation Type',
         clearBtn: 'Clear Filters',
         allSectors: 'All Sectors',
+        allSubSectors: 'All Sub-sectors',
         allCountries: 'All Countries',
         allMonths: 'All Months',
         participationTypes: [
@@ -130,6 +143,27 @@ export function EventsFilter({
           ))}
         </select>
       </div>
+
+      {/* Sub-sector Select — only shown when a main sector is selected */}
+      {subSectorOptions.length > 0 && (
+        <div className="mb-6">
+          <label className="block font-semibold text-xs text-gray-700 mb-2 uppercase tracking-wider">
+            {labels.subSectorLabel}
+          </label>
+          <select
+            value={selectedSubSector}
+            onChange={(e) => setSelectedSubSector(e.target.value)}
+            className="w-full border border-gray-300 rounded-[4px] py-2 px-3 text-sm text-gray-800 bg-white focus:border-[#001a33] focus:ring-0 focus:outline-none"
+          >
+            <option value="">{labels.allSubSectors}</option>
+            {subSectorOptions.map((sub) => (
+              <option key={sub.slug} value={sub.slug}>
+                {isRTL ? sub.ar : sub.en}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Country Select */}
       <div className="mb-6">

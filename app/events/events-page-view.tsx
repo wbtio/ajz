@@ -4,10 +4,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useMemo } from 'react'
 import { MapPin } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
 import { EventsHero } from './_components/events-hero'
 import { EventsFilter } from './events-filter'
 import { StatsBar, type StatsBarItem } from '@/components/shared/stats-bar'
+import { Container } from '@/components/ui/container'
 import type { Event, Sector } from '@/lib/database.types'
 
 interface EventsPageStats {
@@ -58,7 +60,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     mentorship_ar: null,
     registration_config: null,
     sector_id: null,
-    sub_sector: null,
+    sub_sector: 'ict',
     sub_sector_ar: null,
     updated_at: null,
     participation_roles: ['participation', 'exhibitor', 'visitor'],
@@ -94,7 +96,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     mentorship_ar: null,
     registration_config: null,
     sector_id: null,
-    sub_sector: null,
+    sub_sector: 'healthcare-pharma',
     sub_sector_ar: null,
     updated_at: null,
     participation_roles: ['participation', 'speaker', 'exhibitor'],
@@ -130,7 +132,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     mentorship_ar: null,
     registration_config: null,
     sector_id: null,
-    sub_sector: null,
+    sub_sector: 'chemistry-energy-materials',
     sub_sector_ar: null,
     updated_at: null,
     participation_roles: ['participation', 'visitor'],
@@ -166,7 +168,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     mentorship_ar: null,
     registration_config: null,
     sector_id: null,
-    sub_sector: null,
+    sub_sector: 'construction',
     sub_sector_ar: null,
     updated_at: null,
     participation_roles: ['participation', 'speaker'],
@@ -202,7 +204,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     mentorship_ar: null,
     registration_config: null,
     sector_id: null,
-    sub_sector: null,
+    sub_sector: 'education-training',
     sub_sector_ar: null,
     updated_at: null,
     participation_roles: ['participation', 'visitor'],
@@ -238,13 +240,21 @@ function parseDateForBadge(dateStr: string, locale: string) {
 export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) {
   const { locale, dir } = useI18n()
   const isRTL = locale === 'ar'
+  const shouldReduceMotion = useReducedMotion() ?? false
 
   // Filter States
   const [search, setSearch] = useState('')
   const [selectedSector, setSelectedSector] = useState('')
+  const [selectedSubSector, setSelectedSubSector] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
   const [selectedMonth, setSelectedMonth] = useState('')
   const [participationTypes, setParticipationTypes] = useState<string[]>([])
+
+  // Changing the main sector resets any selected sub-sector
+  const handleSectorChange = (val: string) => {
+    setSelectedSector(val)
+    setSelectedSubSector('')
+  }
 
   // Combine database events with mock events
   const allEvents = useMemo(() => {
@@ -287,6 +297,11 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         if (event.sector !== selectedSector) return false
       }
 
+      // 2b. Sub-sector Filter
+      if (selectedSubSector) {
+        if (event.sub_sector !== selectedSubSector) return false
+      }
+
       // 3. Country Filter
       if (selectedCountry) {
         const eventCountry = isRTL ? event.country_ar || event.country : event.country || event.country_ar
@@ -308,21 +323,24 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
 
       return true
     })
-  }, [allEvents, search, selectedSector, selectedCountry, selectedMonth, participationTypes, isRTL])
+  }, [allEvents, search, selectedSector, selectedSubSector, selectedCountry, selectedMonth, participationTypes, isRTL])
 
   const handlePopularSearch = (query: string, sectorSlug?: string) => {
     if (sectorSlug) {
       setSelectedSector(sectorSlug)
+      setSelectedSubSector('')
       setSearch('')
     } else {
       setSearch(query)
       setSelectedSector('')
+      setSelectedSubSector('')
     }
   }
 
   const handleClearFilters = () => {
     setSearch('')
     setSelectedSector('')
+    setSelectedSubSector('')
     setSelectedCountry('')
     setSelectedMonth('')
     setParticipationTypes([])
@@ -354,6 +372,9 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         ctaBtnContact: 'اتصل بفريقنا',
         supportBadge: 'دعم الدعوة متاح',
         sectorLabel: 'القطاع الاستراتيجي',
+        gridTitle: 'الفعاليات والمعارض',
+        gridSubtitle: 'تصفّح الفعاليات القادمة والمكتملة وسجّل حضورك عبر منصة جاز.',
+        resultsCount: (n: number) => `${n} فعالية`,
       }
     : {
         noResultsTitle: 'No Matching Events Found',
@@ -364,6 +385,9 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         ctaBtnContact: 'Contact Our Team',
         supportBadge: 'Invitation Support Available',
         sectorLabel: 'Sector',
+        gridTitle: 'Events & Exhibitions',
+        gridSubtitle: 'Browse upcoming and completed events and register your attendance through JAZ.',
+        resultsCount: (n: number) => `${n} events`,
       }
 
   return (
@@ -379,129 +403,153 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
       <StatsBar items={statsItems} overlap={false} />
 
       {/* Main Grid Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20 py-12 flex flex-col lg:flex-row gap-12">
-        {/* Sidebar Filters */}
-        <EventsFilter
-          sectors={sectors}
-          uniqueCountries={uniqueCountries}
-          selectedSector={selectedSector}
-          setSelectedSector={setSelectedSector}
-          selectedCountry={selectedCountry}
-          setSelectedCountry={setSelectedCountry}
-          selectedMonth={selectedMonth}
-          setSelectedMonth={setSelectedMonth}
-          participationTypes={participationTypes}
-          setParticipationTypes={setParticipationTypes}
-          onClear={handleClearFilters}
-        />
+      <main className="bg-white py-16 lg:py-24">
+        <Container>
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
+            {/* Sidebar Filters */}
+            <EventsFilter
+              sectors={sectors}
+              uniqueCountries={uniqueCountries}
+              selectedSector={selectedSector}
+              setSelectedSector={handleSectorChange}
+              selectedSubSector={selectedSubSector}
+              setSelectedSubSector={setSelectedSubSector}
+              selectedCountry={selectedCountry}
+              setSelectedCountry={setSelectedCountry}
+              selectedMonth={selectedMonth}
+              setSelectedMonth={setSelectedMonth}
+              participationTypes={participationTypes}
+              setParticipationTypes={setParticipationTypes}
+              onClear={handleClearFilters}
+            />
 
-        {/* Events Grid Section */}
-        <section className="flex-grow">
-          {filteredEvents.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6">
-              {filteredEvents.map((event) => {
-                const title = isRTL ? event.title_ar || event.title : event.title || event.title_ar || ''
-                const locationText = isRTL
-                  ? [event.location_ar || event.location, event.country_ar || event.country].filter(Boolean).join('، ')
-                  : [event.location || event.location_ar, event.country || event.country_ar].filter(Boolean).join(', ')
-                const locationDetails = isRTL ? event.location_ar : event.location
-                const sectorName = getSectorName(event.sector, isRTL)
-                const { day, month, year } = parseDateForBadge(event.date, locale)
+            {/* Events Grid Section */}
+            <section className="flex-grow min-w-0">
+              {/* Section header + count */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8 lg:mb-10">
+                <div>
+                  <span aria-hidden className="block w-10 h-1 rounded-full bg-[#8B0000] mb-4" />
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-[1.15] text-balance">
+                    {pageTexts.gridTitle}
+                  </h2>
+                  <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl">
+                    {pageTexts.gridSubtitle}
+                  </p>
+                </div>
+                <span className="text-sm font-bold text-slate-500 shrink-0">
+                  {pageTexts.resultsCount(filteredEvents.length)}
+                </span>
+              </div>
 
-                return (
-                  <article
-                    key={event.id}
-                    className="border border-gray-200 rounded-[4px] overflow-hidden flex flex-col hover:shadow-lg transition-shadow bg-white relative group"
-                  >
-                    {/* Event Card Image */}
-                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100 shrink-0">
-                      {event.image_url ? (
-                        <Image
-                          src={event.image_url}
-                          alt={title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-b from-sky-100 via-white to-lime-500" />
-                      )}
+              {filteredEvents.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5">
+                  {filteredEvents.map((event, index) => {
+                    const title = isRTL ? event.title_ar || event.title : event.title || event.title_ar || ''
+                    const locationText = isRTL
+                      ? [event.location_ar || event.location, event.country_ar || event.country].filter(Boolean).join('، ')
+                      : [event.location || event.location_ar, event.country || event.country_ar].filter(Boolean).join(', ')
+                    const sectorName = getSectorName(event.sector, isRTL)
+                    const { day, month, year } = parseDateForBadge(event.date, locale)
 
-                      {/* Date Badge Overlay */}
-                      <div className="absolute top-0 start-3 bg-[#001a33] text-white px-3 py-2 text-center z-10 leading-tight rounded-b-[4px]">
-                        <span className="block text-lg sm:text-xl font-bold">{day}</span>
-                        <span className="block text-[10px] uppercase font-semibold">{month}</span>
-                        <span className="block text-[10px]">{year}</span>
-                      </div>
-                    </div>
+                    return (
+                      <motion.article
+                        key={event.id}
+                        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-60px' }}
+                        transition={{ duration: 0.45, delay: (index % 6) * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                        whileHover={shouldReduceMotion ? {} : { y: -5 }}
+                        className="group relative flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/70 transition-colors duration-300 hover:border-slate-300"
+                      >
+                        <Link href={`/events/${event.id}`} className="absolute inset-0 z-20" aria-label={title} />
 
-                    {/* Event Content */}
-                    <div className="p-4 flex-grow flex flex-col">
-                      <Link href={`/events/${event.id}`}>
-                        <h3 className="text-base sm:text-lg font-bold mb-2 text-[#001a33] hover:text-[#d9b382] transition-colors leading-snug line-clamp-2">
-                          {title}
-                        </h3>
-                      </Link>
-
-                      {/* Location with Pin */}
-                      <div className="flex items-start gap-2 mb-4 text-xs text-gray-600">
-                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                        <div>
-                          <p className="font-semibold text-gray-800 line-clamp-1">{locationText}</p>
-                          {locationDetails && (
-                            <p className="text-[10px] text-gray-500 line-clamp-1">{locationDetails}</p>
+                        {/* Event Card Image */}
+                        <div className="relative aspect-[21/9] w-full overflow-hidden bg-slate-100 shrink-0">
+                          {event.image_url ? (
+                            <Image
+                              src={event.image_url}
+                              alt={title}
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-b from-sky-100 via-white to-lime-500" />
                           )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
+
+                          {/* Date Badge */}
+                          <div className="absolute top-0 start-3 bg-white text-slate-900 px-3 py-2 text-center z-10 leading-tight rounded-b-lg shadow-sm">
+                            <span className="block text-lg sm:text-xl font-black">{day}</span>
+                            <span className="block text-[10px] uppercase font-bold text-slate-500">{month}</span>
+                            <span className="block text-[10px] font-semibold text-slate-400">{year}</span>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Sector */}
-                      <div className="mb-4 mt-auto">
-                        <span className="text-[10px] font-bold block mb-1 text-gray-400 uppercase tracking-wider">
-                          {pageTexts.sectorLabel}
-                        </span>
-                        <span className="text-xs text-gray-600 font-medium">{sectorName}</span>
-                      </div>
-                    </div>
+                        {/* Event Content */}
+                        <div className="p-4 flex-grow flex flex-col">
+                          <h3 className="text-sm lg:text-base font-extrabold mb-2 text-slate-900 transition-colors duration-300 group-hover:text-[#8b0000] leading-snug line-clamp-2 text-balance">
+                            {title}
+                          </h3>
 
-                    {/* Bottom Status bar */}
-                    <div className="bg-gray-100 text-center py-2 text-[10px] text-gray-500 uppercase tracking-wider font-semibold border-t border-gray-200">
-                      {pageTexts.supportBadge}
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-16 px-4 border border-dashed border-gray-200 rounded-[4px] bg-gray-50">
-              <h3 className="text-lg font-bold text-[#001a33] mb-2">{pageTexts.noResultsTitle}</h3>
-              <p className="text-sm text-gray-500 max-w-md mx-auto">{pageTexts.noResultsDesc}</p>
-            </div>
-          )}
-        </section>
+                          {/* Location */}
+                          <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-3">
+                            <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                            <p className="font-semibold text-slate-700 line-clamp-1">{locationText}</p>
+                          </div>
+
+                          {/* Sector pill */}
+                          <span className="mt-auto inline-flex w-fit items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">
+                            {sectorName}
+                          </span>
+                        </div>
+                      </motion.article>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-16 px-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{pageTexts.noResultsTitle}</h3>
+                  <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">{pageTexts.noResultsDesc}</p>
+                </div>
+              )}
+            </section>
+          </div>
+        </Container>
       </main>
 
       {/* Bottom CTA Banner */}
-      <section className="bg-[#001a33] py-12 px-4 sm:px-6 md:px-12 lg:px-20 text-white" data-purpose="cta-banner">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{pageTexts.ctaTitle}</h2>
-            <p className="text-gray-400 text-sm max-w-2xl">{pageTexts.ctaDesc}</p>
+      <section className="bg-[#0b1426] text-white py-14 lg:py-20" data-purpose="cta-banner">
+        <Container>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="flex items-start gap-5">
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10 shrink-0">
+                <MapPin className="h-8 w-8 text-[#b08d4b]" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold mb-2 text-balance">{pageTexts.ctaTitle}</h2>
+                <p className="text-slate-400 text-sm leading-relaxed max-w-xl">{pageTexts.ctaDesc}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 shrink-0">
+              <Link
+                href="/invitation-support"
+                className="group inline-flex items-center justify-center gap-2 rounded-md bg-[#8b0000] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#6b0000] active:scale-95"
+              >
+                <span>{pageTexts.ctaBtnRequest}</span>
+                <svg className="w-4 h-4 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                </svg>
+              </Link>
+              <Link
+                href="/contact"
+                className="group inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/10 active:scale-95"
+              >
+                <span>{pageTexts.ctaBtnContact}</span>
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-4 shrink-0 w-full md:w-auto">
-            <Link
-              href="/contact"
-              className="flex-1 md:flex-none text-center bg-[#d9b382] text-[#001a33] font-bold px-6 py-3 rounded-[4px] hover:bg-opacity-90 transition-all text-xs sm:text-sm whitespace-nowrap"
-            >
-              {pageTexts.ctaBtnRequest}
-            </Link>
-            <Link
-              href="/contact"
-              className="flex-1 md:flex-none text-center border border-gray-500 text-white font-bold px-6 py-3 rounded-[4px] hover:bg-white hover:text-[#001a33] transition-all text-xs sm:text-sm whitespace-nowrap"
-            >
-              {pageTexts.ctaBtnContact}
-            </Link>
-          </div>
-        </div>
+        </Container>
       </section>
     </div>
   )

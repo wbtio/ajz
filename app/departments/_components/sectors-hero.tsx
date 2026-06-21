@@ -50,18 +50,18 @@ export function SectorsHero() {
       ref={sectionRef}
       dir={dir}
       lang={locale}
-      className="relative z-20 flex flex-col justify-between bg-[#0b1426] text-white pt-24 pb-8 sm:pt-26 lg:pt-28 sm:pb-10 lg:pb-12 overflow-hidden"
+      className="relative z-20 flex flex-col justify-between bg-[#001a33] text-white pt-24 pb-8 sm:pt-26 lg:pt-28 sm:pb-10 lg:pb-12 overflow-hidden"
     >
       {/* Aurora dynamic animated background with readability overlays */}
       <div className="absolute inset-0 overflow-hidden">
         <Aurora
           className="absolute inset-0"
-          colorStops={['#052511', '#8B0000', '#0b1426']}
+          colorStops={['#052511', '#8B0000', '#001a33']}
           amplitude={1.2}
           blend={0.6}
           speed={0.4}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,20,38,0.75)_0%,rgba(11,20,38,0.55)_35%,rgba(11,20,38,0.35)_65%,#0b1426_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0, 26, 51,0.75)_0%,rgba(0, 26, 51,0.55)_35%,rgba(0, 26, 51,0.35)_65%,#001a33_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.05),transparent_36%),radial-gradient(circle_at_72%_34%,rgba(139,0,0,0.08),transparent_30%),radial-gradient(circle_at_18%_26%,rgba(22,163,74,0.06),transparent_26%)]" />
         
         {/* Responsive Minimalist Sectors Background Overlay */}
@@ -118,7 +118,7 @@ export function SectorsHero() {
                   delay={80}
                   animateBy="words"
                   direction="top"
-                  className={`text-start text-navy-200/90 ${
+                  className={`text-start text-slate-300 ${
                     isRTL
                       ? 'max-w-2xl text-[1.04rem] leading-[2.05] sm:text-[1.15rem] md:text-[1.3rem]'
                       : 'max-w-xl text-base leading-relaxed sm:text-lg md:text-xl'

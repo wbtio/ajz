@@ -45,7 +45,7 @@ export function BlogFeatured({ post }: BlogFeaturedProps) {
 
           {/* Image overlay tag */}
           {post.category && (
-            <div className="absolute top-5 start-5 z-10 flex items-center gap-2 rounded-sm bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-[#0b1426] shadow-sm backdrop-blur-sm">
+            <div className="absolute top-5 start-5 z-10 flex items-center gap-2 rounded-sm bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-[#001a33] shadow-sm backdrop-blur-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-[#8B0000]" aria-hidden="true" />
               {formatCategoryName(post.category, isRTL)}
             </div>
@@ -69,7 +69,7 @@ export function BlogFeatured({ post }: BlogFeaturedProps) {
           </div>
 
           {/* Title */}
-          <h2 className="mb-2 text-lg font-black leading-[1.1] tracking-[-0.02em] text-[#0b1426] sm:text-xl lg:text-2xl">
+          <h2 className="mb-2 text-lg font-black leading-[1.1] tracking-[-0.02em] text-[#001a33] sm:text-xl lg:text-2xl">
             {title}
           </h2>
 
@@ -87,9 +87,9 @@ export function BlogFeatured({ post }: BlogFeaturedProps) {
               </span>
             </div>
 
-            <span className="inline-flex items-center gap-2 text-sm font-bold text-[#0b1426] transition-colors group-hover:text-[#8B0000]">
+            <span className="inline-flex items-center gap-2 text-sm font-bold text-[#001a33] transition-colors group-hover:text-[#8B0000]">
               {t.blogPage.readArticle}
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0b1426] text-white transition-all duration-300 group-hover:bg-[#8B0000]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#001a33] text-white transition-all duration-300 group-hover:bg-[#8B0000]">
                 <ReadArrow className="h-4 w-4" />
               </span>
             </span>

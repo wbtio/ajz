@@ -29,8 +29,8 @@ import { DynamicForm } from '@/components/shared/dynamic-form'
 import type { FormField } from '@/lib/types'
 import { useI18n } from '@/lib/i18n'
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from 'framer-motion'
-import { Icon } from '@iconify/react'
 import { StatsBar, type StatsBarItem } from '@/components/shared/stats-bar'
+import { SectionHeader } from '@/components/home'
 
 const startupFormFields: FormField[] = [
     { id: 'الاسم الكامل / Full Name', label_ar: 'الاسم الكامل / Full Name', label_en: 'Full Name', type: 'text', required: true },
@@ -69,8 +69,7 @@ const modelsData = [
         titleEn: 'Official Representation in Iraq',
         descAr: 'تمثيل حصري للدول والمنظمات الدولية في المعارض والمؤتمرات لتطوير الوصول إلى السوق والمشاركة.',
         descEn: 'Exclusive country representation for international exhibitions and conferences to develop market access and participation.',
-        color: 'text-jaz-gold',
-        bgColor: 'bg-jaz-gold/10',
+        accent: '#b08d4b',
     },
     {
         icon: Megaphone,
@@ -78,8 +77,7 @@ const modelsData = [
         titleEn: 'Promotion & Outreach Partner',
         descAr: 'الترويج المشترك للفعاليات والمبادرات من خلال التسويق المشترك والتغطية الإعلامية وإشراك أصحاب المصلحة.',
         descEn: 'Co-promote events and initiatives through joint marketing, media coverage, and stakeholder engagement.',
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-600/10',
+        accent: '#1e3a5f',
     },
     {
         icon: UsersRound,
@@ -87,8 +85,7 @@ const modelsData = [
         titleEn: 'Delegation Support Partner',
         descAr: 'التعاون لتنظيم وتسهيل وفود المشترين والبائعين والزيارات وبرامج التواصل التجاري.',
         descEn: 'Collaborate to organize and facilitate buyer/seller delegations, visits, and B2B matchmaking programs.',
-        color: 'text-[#8b0000]',
-        bgColor: 'bg-[#8b0000]/10',
+        accent: '#8b0000',
     },
     {
         icon: HandshakeIcon,
@@ -96,8 +93,7 @@ const modelsData = [
         titleEn: 'Institutional Cooperation',
         descAr: 'الشراكة مع المؤسسات في البحث وتبادل المعرفة والحوار السياسي وبناء القدرات.',
         descEn: 'Partner with institutions on research, knowledge exchange, policy dialogue, and capacity building.',
-        color: 'text-emerald-600',
-        bgColor: 'bg-emerald-600/10',
+        accent: '#0f766e',
     },
 ]
 
@@ -118,32 +114,6 @@ const processSteps = [
     { icon: BarChart3, titleAr: 'تقييم', titleEn: 'Evaluate', descAr: 'قياس الأثر والتخطيط للمستقبل.', descEn: 'Measure impact & future plans.' },
 ]
 
-const sectionVariants: Variants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-    },
-}
-
-const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 30, scale: 0.97 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-    },
-}
-
-const staggerVariants: Variants = {
-    hidden: {},
-    visible: {
-        transition: { staggerChildren: 0.12, delayChildren: 0.1 },
-    },
-}
-
 const formSectionData = [
     {
         categoryAr: 'للأفراد',
@@ -159,11 +129,10 @@ const formSectionData = [
         formFields: startupFormFields,
         submitTitle: 'إرسال الفكرة (Submit Idea)',
         successMessage: 'تم استلام بيانات مشروعك بنجاح! فريقنا سيقوم بمراجعة الفكرة والتواصل معك قريباً.',
-        colorClass: 'text-jaz-gold',
-        bgClass: 'bg-jaz-gold/10',
-        hoverBorder: 'hover:border-jaz-gold/40',
-        badge: 'border-jaz-gold/20 bg-jaz-gold/5 text-jaz-gold',
-        btnClass: 'bg-jaz-gold hover:bg-jaz-gold/80 text-jaz-navy shadow-[0_12px_24px_rgba(176,141,75,0.15)] hover:shadow-[0_16px_32px_rgba(176,141,75,0.25)]',
+        badge: 'border-[#b08d4b]/30 bg-[#b08d4b]/[0.06] text-[#b08d4b]',
+        iconColor: 'text-[#b08d4b]',
+        iconBg: 'bg-[#b08d4b]/[0.08]',
+        btnClass: 'bg-[#b08d4b] hover:bg-[#b08d4b]/85 text-white',
     },
     {
         categoryAr: 'للمؤسسات',
@@ -179,11 +148,10 @@ const formSectionData = [
         formFields: committeesFormFields,
         submitTitle: 'إرسال الطلب (Submit Application)',
         successMessage: 'تم استلام طلب انضمامك بنجاح! سيتم مراجعة الطلب من قبل قسم الموارد البشرية وتحديد موعد للمقابلة قريباً.',
-        colorClass: 'text-[#8b0000]',
-        bgClass: 'bg-[#8b0000]/10',
-        hoverBorder: 'hover:border-[#8b0000]/40',
-        badge: 'border-[#8b0000]/20 bg-[#8b0000]/5 text-[#8b0000]',
-        btnClass: 'bg-[#8b0000] hover:bg-[#8b0000]/80 text-white shadow-[0_12px_24px_rgba(139,0,0,0.15)] hover:shadow-[0_16px_32px_rgba(139,0,0,0.25)]',
+        badge: 'border-[#8b0000]/30 bg-[#8b0000]/[0.06] text-[#8b0000]',
+        iconColor: 'text-[#8b0000]',
+        iconBg: 'bg-[#8b0000]/[0.08]',
+        btnClass: 'bg-[#8b0000] hover:bg-[#8b0000]/85 text-white',
     },
     {
         categoryAr: 'للشركات',
@@ -199,11 +167,10 @@ const formSectionData = [
         formFields: corporateFormFields,
         submitTitle: 'تقديم الطلب (Request Brief)',
         successMessage: 'تم استلام طلب مؤسستكم بنجاح! سيتم مراجعة الطلب من قبل قسم الشركات للتواصل معكم وتنسيق اجتماع قريباً.',
-        colorClass: 'text-blue-600',
-        bgClass: 'bg-blue-600/10',
-        hoverBorder: 'hover:border-blue-600/40',
-        badge: 'border-blue-600/20 bg-blue-600/5 text-blue-600',
-        btnClass: 'bg-blue-600 hover:bg-blue-600/80 text-white shadow-[0_12px_24px_rgba(37,99,235,0.15)] hover:shadow-[0_16px_32px_rgba(37,99,235,0.25)]',
+        badge: 'border-[#1e3a5f]/30 bg-[#1e3a5f]/[0.06] text-[#1e3a5f]',
+        iconColor: 'text-[#1e3a5f]',
+        iconBg: 'bg-[#1e3a5f]/[0.08]',
+        btnClass: 'bg-[#1e3a5f] hover:bg-[#1e3a5f]/85 text-white',
     },
 ]
 
@@ -253,9 +220,13 @@ export default function PartnershipOpportunitiesPage() {
             { value: 1000, label: 'Youth Beneficiaries', icon: 'solar:user-heart-bold-duotone', suffix: '+' },
         ]
 
+    // Process timeline geometry (5 steps, centers at 10/30/50/70/90%)
+    const start = isArabic ? 90 : 10
+    const end = isArabic ? 10 : 90
+
     return (
-        <div className="relative overflow-hidden bg-white min-h-screen" dir={dir} lang={locale}>
-            {/* ============ HERO SECTION ============ */}
+        <div className="relative bg-white min-h-screen" dir={dir} lang={locale}>
+            {/* ============ HERO SECTION (unchanged) ============ */}
             <motion.section
                 ref={heroRef}
                 className="relative bg-jaz-navy text-white overflow-hidden"
@@ -302,10 +273,16 @@ export default function PartnershipOpportunitiesPage() {
                         >
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <Button className="bg-jaz-gold hover:bg-jaz-gold/80 text-jaz-navy font-bold border-0 shadow-lg">
-                                        <Handshake className="h-5 w-5 ml-2" />
-                                        {isArabic ? 'كن شريكاً في العراق' : 'Become a Partner in Iraq'}
-                                        <ChevronRight className="h-4 w-4 mr-2" />
+                                    <Button className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200 focus:outline-none focus:ring-0">
+                                        <div className="flex items-center gap-3 text-start">
+                                            <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                                                <Handshake className="w-6 h-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-base">{isArabic ? 'كن شريكاً في العراق' : 'Become a Partner in Iraq'}</h3>
+                                            </div>
+                                        </div>
+                                        <ChevronRight className={`w-5 h-5 text-white shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent
@@ -342,10 +319,16 @@ export default function PartnershipOpportunitiesPage() {
 
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <Button className="border border-white/30 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium">
-                                        <Globe className="h-5 w-5 ml-2" />
-                                        {isArabic ? 'استكشف المشاركة الدولية' : 'Explore International Participation'}
-                                        <ChevronRight className="h-4 w-4 mr-2" />
+                                    <Button className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200 focus:outline-none focus:ring-0">
+                                        <div className="flex items-center gap-3 text-start">
+                                            <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                                                <Globe className="w-6 h-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-base">{isArabic ? 'استكشف المشاركة الدولية' : 'Explore International Participation'}</h3>
+                                            </div>
+                                        </div>
+                                        <ChevronRight className={`w-5 h-5 text-white shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent
@@ -382,9 +365,16 @@ export default function PartnershipOpportunitiesPage() {
 
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <Button className="border border-white/30 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium">
-                                        <ChevronRight className="h-4 w-4 ml-2" />
-                                        {isArabic ? 'طلب معلومات الشراكة' : 'Request Partnership Information'}
+                                    <Button className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200 focus:outline-none focus:ring-0">
+                                        <div className="flex items-center gap-3 text-start">
+                                            <div className="bg-white/10 p-2 rounded-jaz shrink-0">
+                                                <HandshakeIcon className="w-6 h-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-base">{isArabic ? 'طلب معلومات الشراكة' : 'Request Partnership Information'}</h3>
+                                            </div>
+                                        </div>
+                                        <ChevronRight className={`w-5 h-5 text-white shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent
@@ -425,91 +415,204 @@ export default function PartnershipOpportunitiesPage() {
                 <StatsBar items={statsItems} overlap={false} />
             </motion.section>
 
-            {/* ============ PARTNERSHIP MODELS ============ */}
-            <motion.section
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-80px' }}
-                className="py-20 bg-white"
-            >
-                <Container>
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                        <div className="lg:col-span-7">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-jaz-navy mb-8">
-                                {isArabic ? 'نماذج شراكتنا' : 'Our Partnership Models'}
-                            </h2>
-                            <motion.div
-                                variants={staggerVariants}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true }}
-                                className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-                            >
-                                {modelsData.map((model, index) => {
-                                    const ModelIcon = model.icon
-                                    return (
-                                        <motion.div
-                                            key={index}
-                                            variants={cardVariants}
-                                            className="p-6 border border-gray-100 rounded-lg bg-gray-50 text-center hover:shadow-lg transition-shadow"
+            <main>
+                {/* ============ PARTNERSHIP MODELS — white band ============ */}
+                <section className="bg-white py-16 lg:py-24">
+                    <Container>
+                        <SectionHeader
+                            title={isArabic ? 'نماذج شراكتنا' : 'Our Partnership Models'}
+                            subtitle={isArabic
+                                ? 'أربعة مسارات للتعاون مع المنظمين الدوليين والمؤسسات وغرف التجارة.'
+                                : 'Four tracks for collaborating with international organizers, institutions, and chambers of commerce.'}
+                        />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 mt-10 lg:mt-12">
+                            {modelsData.map((model, index) => {
+                                const ModelIcon = model.icon
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: '-60px' }}
+                                        transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                                        whileHover={shouldReduceMotion ? {} : { y: -4 }}
+                                        className="relative flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 lg:p-7 min-h-[240px] transition-colors duration-300 hover:border-slate-300"
+                                        style={{ borderColor: undefined }}
+                                    >
+                                        <div
+                                            className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                                            style={{ backgroundColor: `${model.accent}0d`, color: model.accent }}
                                         >
-                                            <div className={`flex justify-center mb-4 ${model.bgColor} w-14 h-14 mx-auto rounded-full items-center justify-center`}>
-                                                <ModelIcon className={`h-7 w-7 ${model.color}`} />
-                                            </div>
-                                            <h3 className="font-bold text-jaz-navy mb-3">
-                                                {isArabic ? model.titleAr : model.titleEn}
-                                            </h3>
-                                            <p className="text-sm text-gray-600 leading-relaxed">
-                                                {isArabic ? model.descAr : model.descEn}
-                                            </p>
-                                        </motion.div>
-                                    )
-                                })}
-                            </motion.div>
+                                            <ModelIcon className="h-6 w-6" />
+                                        </div>
+
+                                        <h3 className="font-extrabold text-slate-900 text-base lg:text-lg leading-snug mb-3">
+                                            {isArabic ? model.titleAr : model.titleEn}
+                                        </h3>
+
+                                        <p className="text-sm text-slate-600 leading-relaxed mt-auto">
+                                            {isArabic ? model.descAr : model.descEn}
+                                        </p>
+
+                                        <div
+                                            className="mt-5 flex items-center gap-2 text-xs font-bold"
+                                            style={{ color: model.accent }}
+                                        >
+                                            <span className="h-px w-5 bg-current opacity-50" />
+                                            <svg className="w-3.5 h-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                                <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                                            </svg>
+                                        </div>
+                                    </motion.div>
+                                )
+                            })}
                         </div>
+                    </Container>
+                </section>
 
-                        <div className="lg:col-span-5 space-y-12">
-                            <motion.div variants={sectionVariants}>
-                                <h2 className="text-2xl sm:text-3xl font-bold text-jaz-navy mb-8">
-                                    {isArabic ? 'لماذا الشراكة مع JAZ' : 'Why Partner With JAZ'}
-                                </h2>
-                                <ul className="space-y-4">
-                                    {whyItems.map((item, i) => (
-                                        <li key={i} className="flex items-start">
-                                            <span className="bg-jaz-gold/10 text-jaz-gold p-1 rounded-full ml-3 shrink-0">
-                                                <Check className="h-3.5 w-3.5" />
-                                            </span>
-                                            <span className="text-gray-700 font-medium">
-                                                {isArabic ? item.ar : item.en}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </motion.div>
+                {/* ============ WHY PARTNER — navy band (rhythmic contrast) ============ */}
+                <section className="relative bg-[#0b1426] text-white py-16 lg:py-24">
+                    <Container className="relative">
+                        <SectionHeader
+                            dark
+                            title={isArabic ? 'لماذا الشراكة مع JAZ' : 'Why Partner With JAZ'}
+                            subtitle={isArabic
+                                ? 'ست مزايا تجعل التعاون مع منصة جاز قراراً مؤسسياً مدروساً.'
+                                : 'Six advantages that make partnering with JAZ a deliberate institutional choice.'}
+                        />
 
-                            <motion.div variants={sectionVariants}>
-                                <h2 className="text-2xl sm:text-3xl font-bold text-jaz-navy mb-8">
-                                    {isArabic ? 'عملية الشراكة' : 'Our Partnership Process'}
-                                </h2>
-                                <div className="relative space-y-6 pt-4 text-start">
-                                    {processSteps.map((step, i) => {
+                        <ul className="grid grid-cols-1 md:grid-cols-2 mt-10 lg:mt-14">
+                            {whyItems.map((item, index) => {
+                                const isOdd = index % 2 === 0
+                                const isLastMobile = index === whyItems.length - 1
+                                const isLastRowDesktop = index >= whyItems.length - 2
+                                return (
+                                    <motion.li
+                                        key={index}
+                                        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: '-40px' }}
+                                        transition={{ duration: 0.4, delay: (index % 3) * 0.05 }}
+                                        className={[
+                                            'group flex items-center gap-4 px-2 py-5 lg:px-4 lg:py-6',
+                                            'border-b border-white/10',
+                                            isOdd ? 'md:border-e md:border-white/10' : '',
+                                            isLastMobile ? 'border-b-0' : '',
+                                            isLastRowDesktop ? 'md:border-b-0' : '',
+                                        ].join(' ')}
+                                    >
+                                        <span className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-white/[0.04] border border-white/10 text-slate-300 transition-colors duration-300 group-hover:bg-[#8B0000] group-hover:border-[#8B0000] group-hover:text-white">
+                                            <Check className="h-5 w-5" />
+                                        </span>
+                                        <span className="flex-1 text-sm sm:text-base font-bold text-slate-100 leading-snug">
+                                            {isArabic ? item.ar : item.en}
+                                        </span>
+                                    </motion.li>
+                                )
+                            })}
+                        </ul>
+                    </Container>
+                </section>
+
+                {/* ============ PARTNERSHIP PROCESS — platinum band ============ */}
+                <section className="bg-[#f5f7fa] py-16 lg:py-24">
+                    <Container>
+                        <SectionHeader
+                            title={isArabic ? 'عملية الشراكة' : 'Our Partnership Process'}
+                            subtitle={isArabic
+                                ? 'خمس مراحل واضحة من الاستكشاف حتى قياس الأثر.'
+                                : 'Five clear stages from exploration to impact measurement.'}
+                        />
+
+                        <div className="relative mt-12 lg:mt-16">
+                            {/* DESKTOP TIMELINE */}
+                            <div className="hidden md:block relative pb-2">
+                                <div className="absolute left-0 right-0 top-7 h-[4px] -z-0">
+                                    <svg className="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                                        <line x1={`${start}%`} y1="50%" x2={`${end}%`} y2="50%" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="5 5" />
+                                        <motion.line
+                                            x1={`${start}%`}
+                                            y1="50%"
+                                            x2={`${end}%`}
+                                            y2="50%"
+                                            stroke="#64748b"
+                                            strokeWidth="2"
+                                            initial={{ pathLength: 0 }}
+                                            whileInView={{ pathLength: 1 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.9, ease: 'easeInOut' }}
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div className="grid grid-cols-5 gap-4 relative z-10">
+                                    {processSteps.map((step, index) => {
                                         const StepIcon = step.icon
                                         return (
-                                            <div key={i} className="flex gap-4 relative items-start group">
-                                                {/* Connecting line */}
-                                                {i < processSteps.length - 1 && (
-                                                    <div className="absolute start-4 top-8 bottom-0 w-[2px] bg-gray-200 -z-0" />
-                                                )}
-                                                <div className="w-8 h-8 rounded-full bg-jaz-gold text-jaz-navy flex items-center justify-center font-bold text-sm shrink-0 z-10 group-hover:scale-105 transition-transform duration-300">
-                                                    {i + 1}
-                                                </div>
-                                                <div className="pt-0.5">
-                                                    <h4 className="font-extrabold text-sm text-jaz-navy flex items-center gap-1.5 leading-none mb-1">
-                                                        <StepIcon className="h-4 w-4 text-jaz-gold shrink-0" />
+                                            <div key={index} className="flex flex-col items-center text-center group">
+                                                <motion.div
+                                                    initial={shouldReduceMotion ? { scale: 1 } : { scale: 0.8, opacity: 0 }}
+                                                    whileInView={{ scale: 1, opacity: 1 }}
+                                                    viewport={{ once: true }}
+                                                    transition={{ duration: 0.35, delay: index * 0.1 }}
+                                                    className="w-14 h-14 rounded-full border-2 bg-[#f5f7fa] flex items-center justify-center mb-6 transition-colors duration-300 relative border-slate-300 text-slate-400 group-hover:border-[#8B0000] group-hover:text-[#8B0000]"
+                                                >
+                                                    <StepIcon className="h-6 w-6" />
+                                                </motion.div>
+
+                                                <h4 className="font-extrabold text-sm lg:text-base mb-2.5 text-slate-800 group-hover:text-[#8B0000] transition-colors duration-300">
+                                                    {isArabic ? step.titleAr : step.titleEn}
+                                                </h4>
+
+                                                <p className="text-sm text-slate-600 leading-relaxed max-w-[22ch]">
+                                                    {isArabic ? step.descAr : step.descEn}
+                                                </p>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* MOBILE TIMELINE */}
+                            <div className="md:hidden relative ps-8 pe-2">
+                                <div className="absolute top-5 bottom-4 start-5 w-[4px] -z-0 -translate-x-1/2 rtl:translate-x-1/2">
+                                    <svg className="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                                        <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="5 5" />
+                                        <motion.line
+                                            x1="50%"
+                                            y1="0%"
+                                            x2="50%"
+                                            y2="100%"
+                                            stroke="#64748b"
+                                            strokeWidth="2"
+                                            initial={{ pathLength: 0 }}
+                                            whileInView={{ pathLength: 1 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.9, ease: 'easeInOut' }}
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div className="flex flex-col gap-8 relative z-10">
+                                    {processSteps.map((step, index) => {
+                                        const StepIcon = step.icon
+                                        return (
+                                            <div key={index} className="flex gap-4 items-start group">
+                                                <motion.div
+                                                    initial={shouldReduceMotion ? { scale: 1 } : { scale: 0.8, opacity: 0 }}
+                                                    whileInView={{ scale: 1, opacity: 1 }}
+                                                    viewport={{ once: true }}
+                                                    transition={{ duration: 0.35, delay: index * 0.1 }}
+                                                    className="w-10 h-10 rounded-full border-2 bg-[#f5f7fa] flex items-center justify-center shrink-0 transition-colors duration-300 relative border-slate-300 text-slate-400 group-hover:border-[#8B0000] group-hover:text-[#8B0000]"
+                                                >
+                                                    <StepIcon className="h-5 w-5" />
+                                                </motion.div>
+                                                <div className="pt-1 text-start">
+                                                    <h4 className="font-extrabold text-sm mb-1.5 text-slate-800 group-hover:text-[#8B0000] transition-colors duration-300">
                                                         {isArabic ? step.titleAr : step.titleEn}
                                                     </h4>
-                                                    <p className="text-xs text-gray-500 leading-normal">
+                                                    <p className="text-sm text-slate-600 leading-relaxed max-w-[44ch]">
                                                         {isArabic ? step.descAr : step.descEn}
                                                     </p>
                                                 </div>
@@ -517,181 +620,165 @@ export default function PartnershipOpportunitiesPage() {
                                         )
                                     })}
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
-                    </div>
-                </Container>
-            </motion.section>
+                    </Container>
+                </section>
 
-            {/* ============ OPPORTUNITIES SECTION (Keep the original 3 cards) ============ */}
-            <motion.section
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-80px' }}
-                className="py-20 bg-white"
-            >
-                <Container>
-                    <motion.div
-                        variants={staggerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: '-80px' }}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8 text-start"
-                    >
-                        {formSectionData.map((section, index) => {
-                            const Icon = section.icon
-                            return (
-                                <motion.article
-                                    key={section.titleAr}
-                                    variants={cardVariants}
-                                    whileHover={{ y: -6, scale: 1.01 }}
-                                    transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] as [number, number, number, number] }}
-                                    className={`group relative h-full overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.03)] hover:shadow-[0_40px_100px_rgba(15,23,42,0.08)] transition-all duration-300 ${section.hoverBorder}`}
-                                >
-                                    <div className="absolute inset-0 pointer-events-none opacity-[0.025]"
-                                        style={{
-                                            backgroundImage: `
-                                                radial-gradient(circle, rgba(139,0,0,0.4) 1px, transparent 1px),
-                                                linear-gradient(to right, rgba(15,23,42,0.03) 1px, transparent 1px),
-                                                linear-gradient(to bottom, rgba(15,23,42,0.03) 1px, transparent 1px)
-                                            `,
-                                            backgroundSize: '24px 24px',
-                                        }}
-                                    />
-                                    <div className="absolute right-[-15%] top-[-15%] h-[50%] w-[50%] rounded-full bg-gradient-to-br from-slate-500/5 to-slate-300/5 blur-[80px] transition-all duration-700 group-hover:scale-125 group-hover:from-slate-500/10" />
+                {/* ============ OPPORTUNITIES — white band ============ */}
+                <section className="bg-white py-16 lg:py-24">
+                    <Container>
+                        <SectionHeader
+                            title={isArabic ? 'فرص التقدم' : 'Ways to Apply'}
+                            subtitle={isArabic
+                                ? 'ثلاث قنوات للأفراد والمؤسسات والشركات للانضمام إلى شبكة جاز.'
+                                : 'Three channels for individuals, organizations, and companies to join the JAZ network.'}
+                        />
 
-                                    <div className="relative z-10 p-5 sm:p-6 lg:p-7 flex flex-col h-full">
-                                        <div className="mb-4 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
-                                            <div>
-                                                <div className={`mb-2 inline-flex items-center rounded-full border ${section.badge} px-3 py-0.5 text-xs font-bold tracking-wide`}>
-                                                    {isArabic ? section.categoryAr : section.categoryEn}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mt-10 lg:mt-12 text-start">
+                            {formSectionData.map((section, index) => {
+                                const Icon = section.icon
+                                return (
+                                    <motion.article
+                                        key={section.titleAr}
+                                        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: '-60px' }}
+                                        transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                                        whileHover={shouldReduceMotion ? {} : { y: -5 }}
+                                        className="group relative flex flex-col rounded-2xl bg-white border border-slate-200/70 transition-colors duration-300 hover:border-slate-300"
+                                    >
+                                        <div className="relative flex flex-col p-6 lg:p-7 flex-1">
+                                            <div className="mb-5 flex items-start justify-between gap-3">
+                                                <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${section.iconBg} ${section.iconColor}`}>
+                                                    <Icon className="h-6 w-6" />
                                                 </div>
-                                                <h2 className={`text-xl font-extrabold leading-tight text-slate-900 sm:text-2xl lg:text-2xl group-hover:${section.colorClass} transition-colors duration-300`}>
-                                                    {isArabic ? section.titleAr : section.titleEn}
-                                                </h2>
+                                                <span className={`inline-flex items-center rounded-full border ${section.badge} px-3 py-1 text-[11px] font-bold tracking-wide`}>
+                                                    {isArabic ? section.categoryAr : section.categoryEn}
+                                                </span>
                                             </div>
-                                            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[1rem] border-2 border-slate-700/10 ${section.bgClass} ${section.colorClass} shadow-sm transition-transform duration-500 group-hover:rotate-6 ${isArabic ? 'lg:mr-auto' : 'lg:ml-auto'}`}>
-                                                <Icon className="h-6 w-6" />
+
+                                            <h3 className="text-lg font-extrabold leading-snug text-slate-900 mb-3 text-balance">
+                                                {isArabic ? section.titleAr : section.titleEn}
+                                            </h3>
+
+                                            <p className="text-sm leading-relaxed text-slate-600">
+                                                {isArabic ? section.descriptionAr : section.descriptionEn}
+                                            </p>
+
+                                            <div className="mt-6 pt-5 border-t border-slate-200/60">
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button className={`h-11 w-full rounded-md border-0 px-6 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 active:scale-98 ${section.btnClass}`}>
+                                                            {isArabic ? section.actionLabelAr : section.actionLabelEn}
+                                                            <ArrowIcon className={`h-4 w-4 ${isArabic ? 'mr-2' : 'ml-2'}`} />
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent
+                                                        dir={dir}
+                                                        lang={locale}
+                                                        className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
+                                                    >
+                                                        <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
+                                                            <DialogHeader className="space-y-2 text-start">
+                                                                <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
+                                                                    {section.formTitle}
+                                                                </DialogTitle>
+                                                                <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
+                                                                    {isArabic
+                                                                        ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
+                                                                        : 'Please complete the fields below. Items marked with (*) are required.'}
+                                                                </DialogDescription>
+                                                            </DialogHeader>
+                                                        </div>
+                                                        <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
+                                                            <DynamicForm
+                                                                fields={section.formFields}
+                                                                onSubmit={async (data) => {
+                                                                    await submitStaticPartnerForm(data, section.titleAr)
+                                                                }}
+                                                                submitLabel={section.submitTitle}
+                                                                successMessage={section.successMessage}
+                                                            />
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
                                             </div>
                                         </div>
+                                    </motion.article>
+                                )
+                            })}
+                        </div>
+                    </Container>
+                </section>
 
-                                        <p className="mb-4 text-sm leading-relaxed text-slate-600 lg:max-w-4xl">
-                                            {isArabic ? section.descriptionAr : section.descriptionEn}
-                                        </p>
-
-                                        <div className="mt-auto flex justify-end border-t border-slate-200/50 pt-3">
-                                            <Dialog>
-                                                <DialogTrigger asChild>
-                                                    <Button className={`h-11 w-full rounded-2xl border-0 px-6 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 sm:w-auto active:scale-98 ${section.btnClass}`}>
-                                                        {isArabic ? section.actionLabelAr : section.actionLabelEn}
-                                                        <ArrowIcon className={`h-5 w-5 ${isArabic ? 'mr-3' : 'ml-3'}`} />
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent
-                                                    dir={dir}
-                                                    lang={locale}
-                                                    className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
-                                                >
-                                                    <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
-                                                        <DialogHeader className="space-y-2 text-start">
-                                                            <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
-                                                                {section.formTitle}
-                                                            </DialogTitle>
-                                                            <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
-                                                                {isArabic
-                                                                    ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
-                                                                    : 'Please complete the fields below. Items marked with (*) are required.'}
-                                                            </DialogDescription>
-                                                        </DialogHeader>
-                                                    </div>
-                                                    <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
-                                                        <DynamicForm
-                                                            fields={section.formFields}
-                                                            onSubmit={async (data) => {
-                                                                await submitStaticPartnerForm(data, section.titleAr)
-                                                            }}
-                                                            submitLabel={section.submitTitle}
-                                                            successMessage={section.successMessage}
-                                                        />
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
+                {/* ============ FINAL CTA — navy band ============ */}
+                <section className="bg-[#0b1426] text-white py-14 lg:py-20">
+                    <Container>
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                            <div className="flex items-start gap-5">
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/10 shrink-0">
+                                    <Handshake className="h-8 w-8 text-[#b08d4b]" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl sm:text-2xl font-bold mb-2 text-balance">
+                                        {isArabic ? 'أسّس حضورك في العراق' : 'Establish Your Footprint in Iraq'}
+                                    </h2>
+                                    <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
+                                        {isArabic
+                                            ? 'انضم إلى شبكتنا المؤسسية لتطوير برامج التبادل التجاري، والاستثمار، والتوسع المشترك.'
+                                            : 'Connect with our institutional network to develop long-term trade, investment, and market expansion programs.'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap gap-3 shrink-0">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button className="bg-[#8b0000] hover:bg-[#6b0000] text-white font-bold transition-colors duration-200">
+                                            {isArabic ? 'أبدِ اهتمامك' : 'Express Interest'}
+                                            <ChevronRight className={`h-4 w-4 ${isArabic ? 'mr-2 rotate-180' : 'ml-2'}`} />
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent
+                                        dir={dir}
+                                        lang={locale}
+                                        className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
+                                    >
+                                        <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
+                                            <DialogHeader className="space-y-2 text-start">
+                                                <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
+                                                    {isArabic ? 'طلب خدمة للشركات' : 'Corporate Inquiry'}
+                                                </DialogTitle>
+                                                <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
+                                                    {isArabic
+                                                        ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
+                                                        : 'Please complete the fields below. Items marked with (*) are required.'}
+                                                </DialogDescription>
+                                            </DialogHeader>
                                         </div>
-                                    </div>
-                                </motion.article>
-                            )
-                        })}
-                    </motion.div>
-                </Container>
-            </motion.section>
-
-            {/* ============ FINAL CTA ============ */}
-            <section className="py-12 bg-jaz-navy text-white border-t border-jaz-gold/20 relative overflow-hidden">
-                <Container>
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div className="flex items-center">
-                            <div className="ml-6 bg-white/5 p-4 rounded-lg border border-white/10">
-                                <Handshake className="h-8 w-8 text-jaz-gold" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold mb-1">
-                                    {isArabic ? 'أسّس حضورك في العراق' : 'Establish Your Footprint in Iraq'}
-                                </h2>
-                                <p className="text-gray-400 text-sm">
-                                    {isArabic
-                                        ? 'انضم إلى شبكتنا المؤسسية لتطوير برامج التبادل التجاري، والاستثمار، والتوسع المشترك.'
-                                        : 'Connect with our institutional network to develop long-term trade, investment, and market expansion programs.'}
-                                </p>
+                                        <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
+                                            <DynamicForm
+                                                fields={corporateFormFields}
+                                                onSubmit={async (data) => {
+                                                    await submitStaticPartnerForm(data, 'corporate-cta')
+                                                }}
+                                                submitLabel={isArabic ? 'تقديم الطلب' : 'Request Brief'}
+                                                successMessage={isArabic
+                                                    ? 'تم استلام طلب مؤسستكم بنجاح! سيتم مراجعة الطلب من قبل قسم الشركات للتواصل معكم وتنسيق اجتماع قريباً.'
+                                                    : 'Your request has been received! Our corporate team will review and contact you to arrange a meeting.'}
+                                            />
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                                <Button className="border border-white/20 bg-white/5 hover:bg-white/10 text-white font-medium">
+                                    <Download className={`h-5 w-5 ${isArabic ? 'ml-3' : 'mr-3'}`} />
+                                    {isArabic ? 'تحميل دليل الشراكة' : 'Download Partnership Guide'}
+                                </Button>
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-4">
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="bg-jaz-gold hover:bg-jaz-gold/80 text-jaz-navy font-bold shadow-lg hover:scale-105 transition-all">
-                                        {isArabic ? 'أبدِ اهتمامك' : 'Express Interest'}
-                                        <ChevronRight className="h-4 w-4 mr-2" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent
-                                    dir={dir}
-                                    lang={locale}
-                                    className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
-                                >
-                                    <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
-                                        <DialogHeader className="space-y-2 text-start">
-                                            <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
-                                                {isArabic ? 'طلب خدمة للشركات' : 'Corporate Inquiry'}
-                                            </DialogTitle>
-                                            <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
-                                                {isArabic
-                                                    ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
-                                                    : 'Please complete the fields below. Items marked with (*) are required.'}
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                    </div>
-                                    <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
-                                        <DynamicForm
-                                            fields={corporateFormFields}
-                                            onSubmit={async (data) => {
-                                                await submitStaticPartnerForm(data, 'corporate-cta')
-                                            }}
-                                            submitLabel={isArabic ? 'تقديم الطلب' : 'Request Brief'}
-                                            successMessage={isArabic
-                                                ? 'تم استلام طلب مؤسستكم بنجاح! سيتم مراجعة الطلب من قبل قسم الشركات للتواصل معكم وتنسيق اجتماع قريباً.'
-                                                : 'Your request has been received! Our corporate team will review and contact you to arrange a meeting.'}
-                                        />
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                            <Button className="border border-white/20 bg-white/5 hover:bg-white/10 text-white font-medium">
-                                <Download className="h-5 w-5 ml-3" />
-                                {isArabic ? 'تحميل دليل الشراكة' : 'Download Partnership Guide'}
-                            </Button>
-                        </div>
-                    </div>
-                </Container>
-            </section>
+                    </Container>
+                </section>
+            </main>
         </div>
     )
 }
