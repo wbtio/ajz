@@ -105,25 +105,71 @@ export default async function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'JAZ — Joint Annual Zone',
-              alternateName: ['JAZ Iraq', 'الجاز', 'المنطقة السنوية المشتركة'],
+              name: 'JAZ',
+              legalName: 'Joint Annual Zone',
+              alternateName: ['JAZ Iraq', 'الجاز', 'المنطقة السنوية المشتركة', 'Joint Annual Zone Iraq'],
               url: 'https://jaz.iq',
-              logo: 'https://jaz.iq/Joint%20Annual%20Zone%20logo.png',
-              description:
-                'JAZ (Joint Annual Zone) is Iraq\'s leading platform for international exhibitions and conferences, connecting businesses, government, and academia with global opportunities.',
-              address: [
-                { '@type': 'PostalAddress', addressLocality: 'Basra', addressCountry: 'IQ' },
-                { '@type': 'PostalAddress', addressLocality: 'Baghdad', addressCountry: 'IQ' },
-                { '@type': 'PostalAddress', addressLocality: 'Erbil', addressCountry: 'IQ' },
-              ],
-              contactPoint: {
-                '@type': 'ContactPoint',
-                telephone: '+964-771-900-0600',
-                contactType: 'customer service',
-                email: 'contact@jaz.iq',
-                availableLanguage: ['Arabic', 'English'],
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://jaz.iq/Joint%20Annual%20Zone%20logo.png',
+                width: 512,
+                height: 512,
               },
-              sameAs: [],
+              image: 'https://jaz.iq/og-image.png',
+              description: 'JAZ (Joint Annual Zone) is Iraq\'s leading platform for international exhibitions and conferences, connecting businesses, government, and academia with global opportunities.',
+              foundingDate: '2013',
+              foundingLocation: {
+                '@type': 'Place',
+                name: 'Basra, Iraq',
+              },
+              numberOfEmployees: { '@type': 'QuantitativeValue', value: 20 },
+              areaServed: ['IQ', 'Middle East', 'International'],
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Basra',
+                addressCountry: 'IQ',
+              },
+              location: [
+                { '@type': 'Place', name: 'Basra Office', address: { '@type': 'PostalAddress', addressLocality: 'Basra', addressCountry: 'IQ' } },
+                { '@type': 'Place', name: 'Baghdad Office', address: { '@type': 'PostalAddress', addressLocality: 'Baghdad', addressCountry: 'IQ' } },
+                { '@type': 'Place', name: 'Erbil Office', address: { '@type': 'PostalAddress', addressLocality: 'Erbil', addressCountry: 'IQ' } },
+              ],
+              contactPoint: [
+                {
+                  '@type': 'ContactPoint',
+                  telephone: '+964-771-900-0600',
+                  contactType: 'customer service',
+                  email: 'contact@jaz.iq',
+                  availableLanguage: ['Arabic', 'English'],
+                },
+                {
+                  '@type': 'ContactPoint',
+                  contactType: 'sales',
+                  email: 'contact@jaz.iq',
+                  availableLanguage: ['Arabic', 'English'],
+                },
+              ],
+              employee: [
+                {
+                  '@type': 'Person',
+                  jobTitle: 'Chief Executive Officer',
+                  worksFor: { '@type': 'Organization', name: 'JAZ' },
+                },
+              ],
+              knowsAbout: [
+                'International Exhibitions',
+                'Trade Fairs',
+                'Conferences',
+                'Business Delegations',
+                'Iraq Business',
+                'Professional Training',
+                'Strategic Partnerships',
+              ],
+              sameAs: [
+                'https://www.instagram.com/jaz.iq',
+                'https://www.facebook.com/jaz.iq',
+                'https://www.linkedin.com/company/jaz-iraq',
+              ],
             }),
           }}
         />
