@@ -426,15 +426,11 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
             {/* Events Grid Section */}
             <section className="flex-grow min-w-0">
               {/* Section header + count */}
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8 lg:mb-10">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-8 lg:mb-10">
                 <div>
-                  <span aria-hidden className="block w-10 h-1 rounded-full bg-[#8B0000] mb-4" />
                   <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-[1.15] text-balance">
                     {pageTexts.gridTitle}
                   </h2>
-                  <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl">
-                    {pageTexts.gridSubtitle}
-                  </p>
                 </div>
                 <span className="text-sm font-bold text-slate-500 shrink-0">
                   {pageTexts.resultsCount(filteredEvents.length)}
@@ -519,7 +515,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
       </main>
 
       {/* Bottom CTA Banner */}
-      <section className="bg-[#0b1426] text-white py-14 lg:py-20" data-purpose="cta-banner">
+      <section className="bg-[#0b1426] text-white py-5 lg:py-8" data-purpose="cta-banner">
         <Container>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div className="flex items-start gap-5">

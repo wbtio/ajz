@@ -27,8 +27,8 @@ export default function TrainingPage() {
             
             <p className="text-slate-500 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
               {isRTL 
-                ? "نحن نعمل على إعداد وتصميم برامجنا التدريبية لعام 2026. ترقبوا إطلاقها قريباً!"
-                : "We are currently preparing and designing our training programs for 2026. Stay tuned for the upcoming launch!"}
+                ? "انتهت برامجنا التدريبية لعام 2026. ترقبوا إطلاق برامج جديدة في عام 2027!"
+                : "Our 2026 training programs have concluded. Stay tuned for our upcoming 2027 programs!"}
             </p>
           </div>
         </div>

@@ -21,8 +21,8 @@ export default async function Home() {
       .from('events')
       .select('*')
       .eq('status', 'published')
-      .gte('date', new Date().toISOString())
-      .order('date', { ascending: true })
+      .order('date', { ascending: false })
+      .limit(6)
   ])
 
   const visibleEvents = filterVisibleEvents(events)
@@ -31,16 +31,16 @@ export default async function Home() {
     <>
       <HeroSection />
 
-      <main data-purpose="main-content">
-        {/* White — focus domains */}
-        <FocusSectors sectors={sectors || []} />
+      <div data-purpose="main-content">
+        {/* White — upcoming proof */}
+        <FeaturedEvents events={visibleEvents} />
 
         {/* Navy — capabilities catalog (rhythmic contrast) */}
         <OurServices />
 
-        {/* White — upcoming proof */}
-        <FeaturedEvents events={visibleEvents} />
-      </main>
+        {/* White — focus domains */}
+        <FocusSectors sectors={sectors || []} />
+      </div>
     </>
   )
 }

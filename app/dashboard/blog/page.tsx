@@ -7,13 +7,12 @@ import {
   Trash2,
   Eye,
   Search,
-  Filter,
   BookOpen,
   FileText,
   CheckCircle2,
-  BarChart3,
   Image as ImageIcon,
-  Inbox
+  Inbox,
+  ExternalLink,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import Link from 'next/link'
 import { getPosts, deletePost } from './actions'
 import { BlogForm } from './components/blog-form-enhanced'
 import type { Tables } from '@/lib/database.types'
@@ -303,6 +303,18 @@ export default function BlogDashboardPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
+                        {post.status === 'published' && (
+                          <Link
+                            href={`/blog/${post.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="عرض على الموقع"
+                          >
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <ExternalLink className="w-4 h-4 text-sky-500" />
+                            </Button>
+                          </Link>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"

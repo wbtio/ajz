@@ -225,15 +225,12 @@ export function Footer() {
             <div className="space-y-3.5 text-xs text-[#6f85a3]">
               <div>
                 <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب البصرة' : 'Basra Office'}</p>
-                <p className="text-[11px] opacity-80">{locale === 'ar' ? 'شارع الكورنيش، البصرة' : 'Al Corniche St., Basra'}</p>
               </div>
               <div>
                 <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب بغداد' : 'Baghdad Office'}</p>
-                <p className="text-[11px] opacity-80">{locale === 'ar' ? 'المنصور، بغداد' : 'Al Mansour, Baghdad'}</p>
               </div>
               <div>
                 <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب أربيل' : 'Erbil Office'}</p>
-                <p className="text-[11px] opacity-80">{locale === 'ar' ? 'شارع الـ 60م، أربيل' : '60m St., Erbil'}</p>
               </div>
               <div className="pt-1.5 space-y-0.5 border-t border-[#6f85a3]/10">
                 <a href="tel:+9647719000600" className="block text-white/90 hover:text-[#f7e382] transition-colors font-medium" dir="ltr">

@@ -65,54 +65,20 @@ export function AboutClient() {
 
   return (
     <div className="min-h-screen bg-white text-[#001a33]" dir={dir} lang={locale}>
-      {/* Hero Section */}
-      <section
-        ref={sectionRef}
-        className="relative h-[360px] bg-black text-white overflow-hidden flex items-center"
-        data-purpose="hero"
-      >
-        <div className="absolute inset-0 z-0 select-none pointer-events-none">
-          <Image
-            src="/about-hero-bg.png"
-            alt="About JAZ Background"
-            fill
-            priority
-            className="object-cover object-right opacity-60"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l from-black via-black/75 to-transparent"></div>
-        </div>
-
-        <Container className="relative z-10 w-full text-start px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-2xl"
-          >
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 tracking-tight leading-tight">
-              {t.about.title}
-            </h1>
-            <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed max-w-xl font-normal opacity-90">
-              {t.about.sectionSubtitle}
-            </p>
-          </motion.div>
-        </Container>
-      </section>
 
       {/* Stats Bar */}
       <StatsBar items={statsItems} overlap={false} className="relative z-10 w-full" />
 
       <main>
         {/* ============ IDENTITY — white band ============ */}
-        <section className="bg-white py-16 lg:py-24">
+        <section className="bg-white py-8 lg:py-12">
           <Container>
             <SectionHeader
               title={t.about.whoWeAreTitle}
               subtitle={t.about.whoWeAreSubtitle}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mt-10 lg:mt-14">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 mt-6">
               {/* Who We Are text */}
               <motion.div
                 initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
@@ -121,7 +87,7 @@ export function AboutClient() {
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="lg:col-span-7"
               >
-                <p className="text-base lg:text-lg leading-relaxed text-slate-700 font-medium max-w-prose">
+                <p className="text-sm lg:text-base leading-relaxed text-slate-700 font-medium max-w-prose">
                   {t.about.whoWeAreText}
                 </p>
               </motion.div>
@@ -132,26 +98,26 @@ export function AboutClient() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-5 lg:border-s lg:border-slate-200/70 lg:ps-8"
+                className="lg:col-span-5 lg:border-s lg:border-slate-200/70 lg:ps-6"
               >
-                <div className="space-y-6">
+                <div className="space-y-3">
                   {/* Mission */}
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon icon="solar:target-bold-duotone" className="h-5 w-5 text-[#8B0000] shrink-0" />
-                      <h4 className="text-sm font-extrabold text-slate-900">{t.about.mission}</h4>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Icon icon="solar:target-bold-duotone" className="h-4 w-4 text-[#8B0000] shrink-0" />
+                      <h4 className="text-xs font-extrabold text-slate-900">{t.about.mission}</h4>
                     </div>
-                    <p className="text-sm text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-600 leading-relaxed">
                       {t.about.missionText}
                     </p>
                   </div>
                   {/* Vision */}
-                  <div className="pt-6 border-t border-slate-200/70">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon icon="solar:eye-bold-duotone" className="h-5 w-5 text-[#16a34a] shrink-0" />
-                      <h4 className="text-sm font-extrabold text-slate-900">{t.about.vision}</h4>
+                  <div className="pt-3 border-t border-slate-200/70">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Icon icon="solar:eye-bold-duotone" className="h-4 w-4 text-[#16a34a] shrink-0" />
+                      <h4 className="text-xs font-extrabold text-slate-900">{t.about.vision}</h4>
                     </div>
-                    <p className="text-sm text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-600 leading-relaxed">
                       {t.about.visionText}
                     </p>
                   </div>
@@ -162,7 +128,7 @@ export function AboutClient() {
         </section>
 
         {/* ============ VALUES — navy band ============ */}
-        <section className="bg-[#0b1426] text-white py-16 lg:py-24">
+        <section className="bg-[#0b1426] text-white py-8 lg:py-12">
           <Container>
             <SectionHeader
               dark
@@ -208,8 +174,98 @@ export function AboutClient() {
           </Container>
         </section>
 
+        {/* ============ CEO MESSAGE — white band ============ */}
+        <section className="bg-white py-12 lg:py-20">
+          <Container>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+
+              {/* Left — photo + stats */}
+              <motion.div
+                initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -28 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-4 flex flex-col items-center lg:items-start gap-6"
+              >
+                {/* Photo frame */}
+                <div className="relative w-52 h-52 lg:w-64 lg:h-64 shrink-0">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#8b0000]/20 via-[#b08d4b]/10 to-[#001a33]/20 blur-xl" />
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-[#b08d4b]/30 shadow-2xl bg-[#0b1426]">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                      <div className="w-20 h-20 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                        <Icon icon="solar:user-bold-duotone" className="w-10 h-10 text-[#b08d4b]" />
+                      </div>
+                      <span className="text-xs text-white/40 font-medium">{t.about.ceoName}</span>
+                    </div>
+                  </div>
+                  {/* Gold corner accent */}
+                  <span className="absolute -bottom-3 -end-3 w-10 h-10 rounded-xl bg-[#b08d4b] flex items-center justify-center shadow-lg">
+                    <Icon icon="solar:crown-bold-duotone" className="w-5 h-5 text-white" />
+                  </span>
+                </div>
+
+                {/* Name & title */}
+                <div className="text-center lg:text-start">
+                  <p className="font-black text-lg text-slate-900 leading-tight">{t.about.ceoName}</p>
+                  <p className="text-sm text-[#8b0000] font-semibold mt-0.5">{t.about.ceoTitle}</p>
+                  <p className="text-xs text-[#b08d4b] font-medium mt-1">{t.about.ceoTagline}</p>
+                </div>
+
+                {/* Mini stats row */}
+                <div className="grid grid-cols-3 gap-3 w-full">
+                  {[
+                    { val: t.about.ceoStat1Val, label: t.about.ceoStat1Label },
+                    { val: t.about.ceoStat2Val, label: t.about.ceoStat2Label },
+                    { val: t.about.ceoStat3Val, label: t.about.ceoStat3Label },
+                  ].map((s, i) => (
+                    <div key={i} className="flex flex-col items-center gap-0.5 rounded-xl border border-slate-200/70 bg-[#f5f7fa] py-3 px-2 text-center">
+                      <span className="font-black text-base text-[#8b0000] leading-none">{s.val}</span>
+                      <span className="text-[10px] text-slate-500 font-semibold leading-tight">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Right — quote */}
+              <motion.div
+                initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-8 flex flex-col justify-center"
+              >
+                {/* Label */}
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="h-px w-8 bg-[#b08d4b]" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#b08d4b]">
+                    {t.about.ceoSectionLabel}
+                  </span>
+                </div>
+
+                {/* Big quote icon */}
+                <Icon
+                  icon="solar:quote-bold-duotone"
+                  className="w-10 h-10 text-[#8b0000]/20 mb-4"
+                />
+
+                {/* Quote text */}
+                <blockquote className="text-lg lg:text-xl font-semibold text-slate-800 leading-relaxed mb-8 border-s-4 border-[#8b0000] ps-5">
+                  {t.about.ceoQuote}
+                </blockquote>
+
+                {/* Decorative divider */}
+                <div className="flex items-center gap-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-[#8b0000]/30 to-transparent" />
+                  <Icon icon="solar:star-bold-duotone" className="w-4 h-4 text-[#b08d4b]" />
+                  <div className="h-px flex-1 bg-gradient-to-l from-[#8b0000]/30 to-transparent" />
+                </div>
+              </motion.div>
+            </div>
+          </Container>
+        </section>
+
         {/* ============ WHERE WE OPERATE — platinum band ============ */}
-        <section className="bg-[#f5f7fa] py-16 lg:py-24">
+        <section className="bg-[#f5f7fa] py-8 lg:py-12">
           <Container>
             <SectionHeader
               title={t.about.whereWeOperate}
@@ -246,7 +302,7 @@ export function AboutClient() {
         </section>
 
         {/* ============ WHY JAZ + REACH — white band ============ */}
-        <section className="bg-white py-16 lg:py-24">
+        <section className="bg-white py-8 lg:py-12">
           <Container>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
               {/* Why JAZ — ruled checklist */}
@@ -327,7 +383,7 @@ export function AboutClient() {
         </section>
 
         {/* ============ CTA — navy band ============ */}
-        <section className="bg-[#0b1426] text-white py-14 lg:py-20" data-purpose="cta-bar">
+        <section className="bg-[#0b1426] text-white py-5 lg:py-8" data-purpose="cta-bar">
           <Container>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="flex items-start gap-5">

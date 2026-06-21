@@ -31,10 +31,10 @@ interface BlogFormProps {
 
 const CATEGORIES = [
   { value: 'news', label: 'أخبار' },
-  { value: 'tutorial', label: 'دروس تعليمية' },
-  { value: 'announcement', label: 'إعلانات' },
-  { value: 'event', label: 'فعاليات' },
-  { value: 'article', label: 'مقالات' },
+  { value: 'events', label: 'فعاليات' },
+  { value: 'partnerships', label: 'شراكات' },
+  { value: 'insights', label: 'رؤى وتحليلات' },
+  { value: 'updates', label: 'تحديثات' },
 ]
 
 export function BlogForm({ post, onClose }: BlogFormProps) {

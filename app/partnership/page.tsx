@@ -10,7 +10,6 @@ import {
     Rocket,
     BookOpen,
     Building2,
-    Globe,
     Handshake,
     Landmark,
     Megaphone,
@@ -269,145 +268,16 @@ export default function PartnershipOpportunitiesPage() {
                         </motion.p>
                         <motion.div
                             variants={heroItemVariants}
-                            className="flex flex-wrap justify-start gap-3"
+                            className="flex flex-wrap items-center justify-start gap-3"
                         >
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200 focus:outline-none focus:ring-0">
-                                        <div className="flex items-center gap-3 text-start">
-                                            <div className="bg-white/10 p-2 rounded-jaz shrink-0">
-                                                <Handshake className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-base">{isArabic ? 'كن شريكاً في العراق' : 'Become a Partner in Iraq'}</h3>
-                                            </div>
-                                        </div>
-                                        <ChevronRight className={`w-5 h-5 text-white shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent
-                                    dir={dir}
-                                    lang={locale}
-                                    className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
-                                >
-                                    <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
-                                        <DialogHeader className="space-y-2 text-start">
-                                            <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
-                                                {isArabic ? 'أرسل تفاصيل مشروعك' : 'Submit Your Project'}
-                                            </DialogTitle>
-                                            <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
-                                                {isArabic
-                                                    ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
-                                                    : 'Please complete the fields below. Items marked with (*) are required.'}
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                    </div>
-                                    <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
-                                        <DynamicForm
-                                            fields={startupFormFields}
-                                            onSubmit={async (data) => {
-                                                await submitStaticPartnerForm(data, 'startup')
-                                            }}
-                                            submitLabel={isArabic ? 'إرسال الفكرة' : 'Submit Idea'}
-                                            successMessage={isArabic
-                                                ? 'تم استلام بيانات مشروعك بنجاح! فريقنا سيقوم بمراجعة الفكرة والتواصل معك قريباً.'
-                                                : 'Your project has been received successfully! Our team will review it and contact you soon.'}
-                                        />
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200 focus:outline-none focus:ring-0">
-                                        <div className="flex items-center gap-3 text-start">
-                                            <div className="bg-white/10 p-2 rounded-jaz shrink-0">
-                                                <Globe className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-base">{isArabic ? 'استكشف المشاركة الدولية' : 'Explore International Participation'}</h3>
-                                            </div>
-                                        </div>
-                                        <ChevronRight className={`w-5 h-5 text-white shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent
-                                    dir={dir}
-                                    lang={locale}
-                                    className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
-                                >
-                                    <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
-                                        <DialogHeader className="space-y-2 text-start">
-                                            <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
-                                                {isArabic ? 'طلب انضمام للجان التنظيمية' : 'Committee Application'}
-                                            </DialogTitle>
-                                            <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
-                                                {isArabic
-                                                    ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
-                                                    : 'Please complete the fields below. Items marked with (*) are required.'}
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                    </div>
-                                    <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
-                                        <DynamicForm
-                                            fields={committeesFormFields}
-                                            onSubmit={async (data) => {
-                                                await submitStaticPartnerForm(data, 'committee')
-                                            }}
-                                            submitLabel={isArabic ? 'إرسال الطلب' : 'Submit Application'}
-                                            successMessage={isArabic
-                                                ? 'تم استلام طلب انضمامك بنجاح! سيتم مراجعة طلبك من قبل قسم الموارد البشرية وتحديد موعد للمقابلة قريباً.'
-                                                : 'Your application has been received! HR will review it and schedule an interview soon.'}
-                                        />
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200 focus:outline-none focus:ring-0">
-                                        <div className="flex items-center gap-3 text-start">
-                                            <div className="bg-white/10 p-2 rounded-jaz shrink-0">
-                                                <HandshakeIcon className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-base">{isArabic ? 'طلب معلومات الشراكة' : 'Request Partnership Information'}</h3>
-                                            </div>
-                                        </div>
-                                        <ChevronRight className={`w-5 h-5 text-white shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent
-                                    dir={dir}
-                                    lang={locale}
-                                    className="max-h-[92vh] w-[calc(100vw-1.25rem)] max-w-xl gap-0 overflow-hidden border-slate-200/90 bg-white p-0 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.2)] sm:w-full sm:rounded-2xl"
-                                >
-                                    <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
-                                        <DialogHeader className="space-y-2 text-start">
-                                            <DialogTitle className="text-start text-xl font-bold leading-snug tracking-tight text-slate-900">
-                                                {isArabic ? 'طلب خدمة للشركات' : 'Corporate Inquiry'}
-                                            </DialogTitle>
-                                            <DialogDescription className="text-start text-sm leading-relaxed text-slate-600 font-medium">
-                                                {isArabic
-                                                    ? 'املأ الحقول التالية بدقة. الحقول التي تحمل علامة (*) إلزامية.'
-                                                    : 'Please complete the fields below. Items marked with (*) are required.'}
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                    </div>
-                                    <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
-                                        <DynamicForm
-                                            fields={corporateFormFields}
-                                            onSubmit={async (data) => {
-                                                await submitStaticPartnerForm(data, 'corporate')
-                                            }}
-                                            submitLabel={isArabic ? 'تقديم الطلب' : 'Request Brief'}
-                                            successMessage={isArabic
-                                                ? 'تم استلام طلب مؤسستكم بنجاح! سيتم مراجعة الطلب من قبل قسم الشركات للتواصل معكم وتنسيق اجتماع قريباً.'
-                                                : 'Your request has been received! Our corporate team will review and contact you to arrange a meeting.'}
-                                        />
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
+                            <a
+                                href="#apply"
+                                className="inline-flex items-center gap-2.5 rounded-jaz bg-[#b08d4b] px-6 py-3 text-base font-bold text-white shadow-sm transition-all duration-200 hover:bg-[#9a7a3f] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b08d4b]"
+                            >
+                                <Handshake className="h-5 w-5 shrink-0" />
+                                {isArabic ? 'كن شريكاً في العراق' : 'Become a Partner in Iraq'}
+                                <ChevronRight className={`h-5 w-5 shrink-0 ${isArabic ? 'rotate-180' : ''}`} />
+                            </a>
                         </motion.div>
                     </motion.div>
                 </Container>
@@ -626,7 +496,7 @@ export default function PartnershipOpportunitiesPage() {
                 </section>
 
                 {/* ============ OPPORTUNITIES — white band ============ */}
-                <section className="bg-white py-16 lg:py-24">
+                <section id="apply" className="scroll-mt-24 bg-white py-16 lg:py-24">
                     <Container>
                         <SectionHeader
                             title={isArabic ? 'فرص التقدم' : 'Ways to Apply'}
@@ -713,7 +583,7 @@ export default function PartnershipOpportunitiesPage() {
                 </section>
 
                 {/* ============ FINAL CTA — navy band ============ */}
-                <section className="bg-[#0b1426] text-white py-14 lg:py-20">
+                <section className="bg-[#0b1426] text-white py-5 lg:py-8">
                     <Container>
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
                             <div className="flex items-start gap-5">

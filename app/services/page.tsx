@@ -210,7 +210,7 @@ export default function ServicesPage() {
       </main>
  
       {/* Call To Action */}
-      <section className="bg-[#0b1426] text-white py-14 lg:py-20" data-purpose="cta-bar">
+      <section className="bg-[#0b1426] text-white py-5 lg:py-8" data-purpose="cta-bar">
         <Container>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div className="flex items-start gap-5">

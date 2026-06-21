@@ -627,7 +627,6 @@ export default function ContactPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.basraOffice}</h3>
-                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.basraAddress}</p>
                   </div>
                 </article>
 
@@ -646,7 +645,6 @@ export default function ContactPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.baghdadOffice}</h3>
-                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.baghdadAddress}</p>
                   </div>
                 </article>
 
@@ -665,7 +663,6 @@ export default function ContactPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-[#8B0000] transition-colors">{t.contact.erbilOffice}</h3>
-                    <p className="text-xs text-slate-500 whitespace-pre-line leading-relaxed">{t.contact.erbilAddress}</p>
                   </div>
                 </article>
               </div>

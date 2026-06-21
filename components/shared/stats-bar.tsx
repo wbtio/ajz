@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { Container } from "@/components/ui/container";
 import { CountingNumber } from "@/components/ui/counting-number";
@@ -23,6 +23,8 @@ interface StatsBarProps {
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
+
   if (items.length === 0) return null;
 
   const gridCols = items.length <= 2 ? 'sm:grid-cols-2' : items.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4';
@@ -35,10 +37,10 @@ export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
         className,
       )}
     >
-      <div className="w-full border-y border-white/10 bg-[#001a33]/95 shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-        <Container className="max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-16">
+      <div className="w-full border-y border-white/10 bg-[#0b1426]/95 shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+        <Container className="max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.ul
-            initial="hidden"
+            initial={shouldReduceMotion ? "visible" : "hidden"}
             whileInView="visible"
             viewport={{ once: true, margin: "-40px" }}
             variants={{
@@ -61,7 +63,7 @@ export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
                     transition: { duration: 0.5, ease },
                   },
                 }}
-                className="flex items-center justify-center gap-2.5 py-3 sm:gap-3.5 sm:py-3.5 md:gap-4"
+                className="flex items-center justify-center gap-2.5 py-2.5 sm:gap-3 sm:py-3 md:gap-3.5"
               >
                 {item.icon && (
                   <Icon
@@ -80,7 +82,7 @@ export function StatsBar({ items, overlap = true, className }: StatsBarProps) {
                       <span className="text-red-deep">{item.suffix}</span>
                     )}
                   </span>
-                  <span className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400 sm:text-[10px] md:text-[11px] rtl:tracking-normal rtl:normal-case">
+                  <span className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/60 sm:text-[10px] md:text-[11px] rtl:tracking-normal rtl:normal-case">
                     {item.label}
                   </span>
                 </div>

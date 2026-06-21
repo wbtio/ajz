@@ -572,7 +572,7 @@ export default function InvitationSupportPage() {
       </main>
 
       {/* Bottom Assistance banner */}
-      <section className="bg-[#001a33] text-white py-12 px-6" data-purpose="contact-footer">
+      <section className="bg-[#001a33] text-white py-5 px-6" data-purpose="contact-footer">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h4 className="text-xl sm:text-2xl font-bold">{pageContent.footerTitle}</h4>

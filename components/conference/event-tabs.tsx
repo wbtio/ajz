@@ -453,7 +453,7 @@ export function EventTabs({ eventId, conferenceConfig, templateConferenceConfig,
             {/* ===== Full-Width Tabs Bar ===== */}
             <div className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
                 <Container>
-                    <div className="flex items-center justify-center overflow-x-auto scrollbar-hide -mb-px">
+                    <div className="flex items-center justify-center overflow-x-auto scrollbar-none -mb-px">
                         {enabledSections.map(section => {
                             const SIcon = section.icon
                             const isActive = activeTab === section.key

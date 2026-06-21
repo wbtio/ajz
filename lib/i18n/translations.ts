@@ -130,8 +130,8 @@ export const translations = {
     },
     homepage: {
       hero: {
-        title: "ربط العراق بالمعارض الدولية والشراكات الاستراتيجية",
-        description: "جاز هي المنصة العراقية لربط القطاعات والمؤسسات بالمعارض والمؤتمرات الدولية. نسهل المشاركة وننظم الوفود ونبني شراكات مستدامة ذات أثر عالمي.",
+        title: "بوابة العراق للمعارض والشراكات الدولية",
+        description: "نربط المؤسسات بالمعارض الدولية ونبني شراكات مستدامة.",
         ctaCooperation: "طلب تعاون",
         ctaParticipation: "المشاركة الدولية",
         ctaPartner: "شراكة في العراق",
@@ -148,6 +148,7 @@ export const translations = {
       sectors: {
         title: "قطاعات تركيزنا",
         subtitle: "أربعة محاور نركّز عليها لربط المؤسسات العراقية بالأسواق العالمية.",
+        viewAll: "استعرض كل الأقسام",
         medicalTitle: "الرعاية الصحية وعلوم الحياة",
         medicalDesc: "ربط المؤسسات الصحية بالابتكار العالمي والتطورات الطبية.",
         techTitle: "التحول الرقمي والتكنولوجيا",
@@ -174,6 +175,7 @@ export const translations = {
       },
       events: {
         title: "الفعاليات الدولية البارزة",
+        subtitle: "مجموعة مختارة من المعارض والقمم والمنتديات الدولية القادمة.",
         viewAll: "استعرض كل الفعاليات"
       },
       process: {
@@ -538,6 +540,17 @@ export const translations = {
         { count: "50+ شريك دولي", label: "منظمات وسفارات" },
         { count: "100+ وفد مدعوم", label: "تمثيل العراق عالمياً" }
       ],
+      ceoSectionLabel: "كلمة القيادة",
+      ceoName: "أ. أحمد جاسم",
+      ceoTitle: "الرئيس التنفيذي، جاز",
+      ceoQuote: "\"لقد بنينا جاز على اقتناع راسخ: أن العراق يستحق حضوراً دولياً حقيقياً. كل معرض ندخله، وكل شراكة نُبرمها، وكل وفد ندعمه — هو خطوة نحو مستقبل يكون فيه المهنيون العراقيون شركاء حقيقيين في صنع الاقتصاد العالمي.\"",
+      ceoTagline: "١٠+ سنوات من تحويل الطموح إلى تأثير دائم",
+      ceoStat1Val: "١٠+",
+      ceoStat1Label: "سنوات خبرة",
+      ceoStat2Val: "٥٠+",
+      ceoStat2Label: "شريك دولي",
+      ceoStat3Val: "٢٥٠+",
+      ceoStat3Label: "مبادرة أشرف عليها",
       ctaTitle: "دعونا نبني علاقات أقوى للعراق.",
       ctaDesc: "شارك مع جاز للوصول إلى المنصات العالمية وخلق تأثير دائم.",
       ctaCooperation: "طلب التعاون",
@@ -873,8 +886,8 @@ export const translations = {
     },
     homepage: {
       hero: {
-        title: "Connecting Iraq to Global Exhibitions & Strategic Partnerships",
-        description: "JAZ connects Iraqi institutions and businesses with international exhibitions and conferences. We facilitate participation, organize delegations, and build sustainable global partnerships.",
+        title: "Iraq's Gateway to Global Exhibitions & Partnerships",
+        description: "Connecting institutions with international exhibitions and sustainable partnerships.",
         ctaCooperation: "Request Cooperation",
         ctaParticipation: "International Participation",
         ctaPartner: "Partner in Iraq",
@@ -891,6 +904,7 @@ export const translations = {
       sectors: {
         title: "Our Focus Sectors",
         subtitle: "Four domains we focus on to connect Iraqi institutions with global markets.",
+        viewAll: "Browse all sectors",
         medicalTitle: "Healthcare & Life Sciences",
         medicalDesc: "Connecting health institutions with global innovation and medical advancements.",
         techTitle: "Digital Transformation & Technology",
@@ -917,6 +931,7 @@ export const translations = {
       },
       events: {
         title: "Featured International Events",
+        subtitle: "A curated selection of upcoming international exhibitions, summits, and forums.",
         viewAll: "Browse all events"
       },
       process: {
@@ -1284,6 +1299,17 @@ export const translations = {
         { count: "50+ International Partners", label: "Organizations & Embassies" },
         { count: "100+ Supported Delegations", label: "Representing Iraq Globally" }
       ],
+      ceoSectionLabel: "A Word from Leadership",
+      ceoName: "Mr. Ahmed Jasim",
+      ceoTitle: "Chief Executive Officer, JAZ",
+      ceoQuote: "\"We built JAZ on a firm conviction: Iraq deserves genuine international presence. Every exhibition we enter, every partnership we forge, every delegation we support — is a step toward a future where Iraqi professionals are true partners in shaping the global economy.\"",
+      ceoTagline: "10+ years of turning ambition into lasting impact",
+      ceoStat1Val: "10+",
+      ceoStat1Label: "Years of Experience",
+      ceoStat2Val: "50+",
+      ceoStat2Label: "International Partners",
+      ceoStat3Val: "250+",
+      ceoStat3Label: "Initiatives Overseen",
       ctaTitle: "Let's build stronger relationships for Iraq.",
       ctaDesc: "Partner with JAZ to access global platforms and create lasting impact.",
       ctaCooperation: "Request Cooperation",

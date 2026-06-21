@@ -101,7 +101,7 @@ export function BlogHero({ totalPosts }: BlogHeroProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="mt-6 sm:mt-10 lg:mt-14 flex w-full max-w-2xl lg:max-w-3xl flex-col items-start text-start"
+            className="mt-16 sm:mt-20 lg:mt-24 flex w-full max-w-2xl lg:max-w-3xl flex-col items-start text-start"
           >
             {/* Main Title */}
             <motion.div variants={itemVariants} className="mb-4">

@@ -27,18 +27,17 @@ export function OurServices() {
 
   return (
     <section
-      className="relative bg-[#0b1426] text-white py-8 lg:py-12 overflow-hidden"
+      className="relative bg-[#0b1426] text-white py-4 lg:py-6 overflow-hidden"
       data-purpose="our-services"
     >
       <Container className="relative">
         <SectionHeader
           title={t.homepage.services.title}
-          subtitle={t.homepage.services.subtitle}
           action={{ label: t.homepage.services.viewAll, href: '/services' }}
           dark
         />
 
-        <ul className="grid grid-cols-1 md:grid-cols-2 mt-6 lg:mt-8">
+        <ul className="grid grid-cols-1 md:grid-cols-2 mt-4 lg:mt-5">
           {services.map((service, index) => {
             const isOdd = index % 2 === 0
             const isLastMobile = index === services.length - 1
@@ -51,8 +50,8 @@ export function OurServices() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.4, delay: (index % half) * 0.05 }}
                 className={[
-                  'group relative flex items-center gap-4 px-2 py-3.5 lg:px-4 lg:py-4',
-                  'border-b border-white/10',
+                  'group relative flex items-center gap-4 px-2 py-2.5 lg:px-3 lg:py-3',
+                  'border-b border-white/10 transition-colors duration-300 group-hover:bg-white/[0.02]',
                   isOdd ? 'md:border-e md:border-white/10' : '',
                   isLastMobile ? 'border-b-0' : '',
                   isLastRowDesktop ? 'md:border-b-0' : '',
@@ -60,7 +59,7 @@ export function OurServices() {
               >
                 <Link
                   href="/services"
-                  className="absolute inset-0 z-10"
+                  className="absolute inset-0 z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#8B0000]"
                   aria-label={service}
                 />
 
@@ -76,7 +75,7 @@ export function OurServices() {
 
                 {/* Arrow */}
                 <svg
-                  className="w-4 h-4 shrink-0 text-slate-500 transition-all duration-300 rtl:rotate-180 group-hover:text-[#c0392b] group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+                  className="w-4 h-4 shrink-0 text-white/45 transition-all duration-300 rtl:rotate-180 group-hover:text-[#c0392b] group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -93,30 +92,6 @@ export function OurServices() {
             )
           })}
         </ul>
-
-        {/* CTA */}
-        <div className="mt-8 flex justify-start">
-          <Link
-            href="/contact?subject=cooperation"
-            className="inline-flex items-center gap-2 rounded-md bg-[#8B0000] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#6B0000] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B0000]"
-          >
-            {t.homepage.hero.ctaCooperation}
-            <svg
-              className="w-4 h-4 rtl:rotate-180"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <path
-                d="M9 5l7 7-7 7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-              />
-            </svg>
-          </Link>
-        </div>
       </Container>
     </section>
   )
