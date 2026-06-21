@@ -4,8 +4,17 @@ import { EventsPageView } from "./events-page-view";
 import { mergeSectorWithContent } from "@/app/departments/department-content";
 
 export const metadata = {
-  title: "Events and Exhibitions | JAZ",
-  description: "Browse all upcoming events and exhibitions in Iraq",
+  title: 'الفعاليات والمعارض — JAZ Iraq | Joint Annual Zone',
+  description:
+    'تصفّح جميع الفعاليات والمعارض والمؤتمرات الدولية التي تنظّمها JAZ في العراق والعالم. سجّل مشاركتك وانضم إلى وفودنا الدولية.',
+  keywords: ['فعاليات JAZ', 'معارض دولية العراق', 'مؤتمرات عراق', 'JAZ events Iraq', 'معارض تجارية'],
+  openGraph: {
+    title: 'الفعاليات والمعارض | JAZ Iraq',
+    description: 'تصفّح الفعاليات والمعارض الدولية التي تنظّمها JAZ.',
+    url: 'https://jaz.iq/events',
+    images: [{ url: '/about-banner.png', width: 1200, height: 630, alt: 'JAZ Events' }],
+  },
+  alternates: { canonical: 'https://jaz.iq/events' },
 };
 
 interface EventsPageProps {

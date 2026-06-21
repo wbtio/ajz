@@ -23,9 +23,59 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "JAZ | منصة الفعاليات والمعارض في العراق",
-  description: "منصة متكاملة لتنظيم الفعاليات، المعارض، وبرامج التدريب والتطوير في العراق",
-  keywords: ["فعاليات", "معارض", "تدريب", "العراق", "JAZ"],
+  metadataBase: new URL('https://jaz.iq'),
+  title: {
+    default: 'JAZ | Joint Annual Zone — معارض ومؤتمرات دولية في العراق',
+    template: '%s | JAZ Iraq',
+  },
+  description:
+    'JAZ (Joint Annual Zone) هي المنصة العراقية الرائدة لتنظيم المعارض والمؤتمرات الدولية، تربط الشركات والحكومة والأكاديميا بالفرص العالمية.',
+  keywords: [
+    'JAZ', 'Joint Annual Zone', 'معارض العراق', 'مؤتمرات العراق',
+    'فعاليات تجارية', 'Iraq exhibitions', 'Iraq conferences',
+    'شراكات دولية', 'تدريب مهني', 'JAZ Iraq', 'jaz.iq',
+  ],
+  authors: [{ name: 'JAZ — Joint Annual Zone', url: 'https://jaz.iq' }],
+  creator: 'JAZ Iraq',
+  publisher: 'JAZ Iraq',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ar_IQ',
+    alternateLocale: 'en_US',
+    url: 'https://jaz.iq',
+    siteName: 'JAZ — Joint Annual Zone',
+    title: 'JAZ | معارض ومؤتمرات دولية — العراق',
+    description:
+      'المنصة العراقية الرائدة للمعارض والمؤتمرات الدولية. نربط الشركات والحكومة والأكاديميا بالفرص العالمية.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'JAZ — Joint Annual Zone Iraq',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'JAZ | Joint Annual Zone — العراق',
+    description: 'المنصة العراقية الرائدة للمعارض والمؤتمرات الدولية.',
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://jaz.iq',
+  },
+  icons: {
+    icon: '/favicon.ico',
+  },
+  verification: {
+    google: 'google2ba5f2f9b386b28a',
+  },
 };
 
 export default async function RootLayout({
@@ -49,6 +99,34 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body className={`${ibmPlexSansArabic.variable} ${plusJakartaSans.variable} font-sans antialiased bg-white text-gray-900`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'JAZ — Joint Annual Zone',
+              alternateName: ['JAZ Iraq', 'الجاز', 'المنطقة السنوية المشتركة'],
+              url: 'https://jaz.iq',
+              logo: 'https://jaz.iq/Joint%20Annual%20Zone%20logo.png',
+              description:
+                'JAZ (Joint Annual Zone) is Iraq\'s leading platform for international exhibitions and conferences, connecting businesses, government, and academia with global opportunities.',
+              address: [
+                { '@type': 'PostalAddress', addressLocality: 'Basra', addressCountry: 'IQ' },
+                { '@type': 'PostalAddress', addressLocality: 'Baghdad', addressCountry: 'IQ' },
+                { '@type': 'PostalAddress', addressLocality: 'Erbil', addressCountry: 'IQ' },
+              ],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                telephone: '+964-771-900-0600',
+                contactType: 'customer service',
+                email: 'contact@jaz.iq',
+                availableLanguage: ['Arabic', 'English'],
+              },
+              sameAs: [],
+            }),
+          }}
+        />
         <Providers>
           <Tracker />
           <Header isAdmin={isAdmin} />

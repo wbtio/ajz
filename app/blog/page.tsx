@@ -2,12 +2,16 @@ import { createClient } from '@/lib/supabase/server'
 import { BlogPageView } from './blog-page-view'
 
 export const metadata = {
-  title: 'Blog | JAZ - Latest News and Articles',
-  description: 'Discover the latest news, articles, and updates from the world of events and exhibitions in Iraq',
+  title: 'المدونة والأخبار — JAZ Iraq | Joint Annual Zone',
+  description:
+    'اطّلع على أحدث المقالات والأخبار من عالم المعارض والمؤتمرات التجارية في العراق والمنطقة. رؤى وتحليلات من فريق JAZ.',
+  keywords: ['أخبار JAZ', 'مدونة معارض العراق', 'JAZ blog', 'أخبار مؤتمرات العراق'],
   openGraph: {
-    title: 'Blog | JAZ',
-    description: 'Latest news and articles from JAZ',
+    title: 'المدونة والأخبار | JAZ Iraq',
+    description: 'أحدث المقالات والأخبار من عالم المعارض والمؤتمرات في العراق.',
+    url: 'https://jaz.iq/blog',
   },
+  alternates: { canonical: 'https://jaz.iq/blog' },
 }
 
 const ESTABLISHED_YEAR = 2022
