@@ -21,7 +21,6 @@ import {
     FileSignature,
     BarChart3,
     ChevronRight,
-    Download,
 } from 'lucide-react'
 import { submitStaticPartnerForm } from '@/app/dashboard/partners/actions'
 import { DynamicForm } from '@/components/shared/dynamic-form'
@@ -640,10 +639,6 @@ export default function PartnershipOpportunitiesPage() {
                                         </div>
                                     </DialogContent>
                                 </Dialog>
-                                <Button className="border border-white/20 bg-white/5 hover:bg-white/10 text-white font-medium">
-                                    <Download className={`h-5 w-5 ${isArabic ? 'ml-3' : 'mr-3'}`} />
-                                    {isArabic ? 'تحميل دليل الشراكة' : 'Download Partnership Guide'}
-                                </Button>
                             </div>
                         </div>
                     </Container>

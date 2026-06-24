@@ -2,9 +2,23 @@
 
 import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Bot, X, Send, Mic, Square, Loader2 } from 'lucide-react'
+import {
+  Bot,
+  X,
+  ChevronLeft,
+  Sparkles,
+  Building2,
+  CalendarDays,
+  LayoutGrid,
+  Handshake,
+  GraduationCap,
+  Briefcase,
+  Phone,
+  type LucideIcon,
+} from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { FAQ, type FaqItem } from '@/lib/chatbot/faq'
 
 type Role = 'user' | 'assistant'
 interface Message {
@@ -12,46 +26,42 @@ interface Message {
   content: string
 }
 
+const ICONS: Record<string, LucideIcon> = {
+  Building2,
+  CalendarDays,
+  LayoutGrid,
+  Handshake,
+  GraduationCap,
+  Briefcase,
+  Phone,
+}
+
 const STRINGS = {
   ar: {
     title: 'مساعد JAZ',
-    subtitle: 'اسألني عن الفعاليات والخدمات',
-    placeholder: 'اكتب سؤالك هنا…',
-    greeting: 'أهلاً! 👋 أنا مساعد JAZ. اسألني عن الفعاليات، الدورات التدريبية، القطاعات أو أي شيء عن المنصة.',
-    suggestions: [
-      'شنو الفعاليات القادمة؟',
-      'عندكم دورات تدريبية؟',
-      'شنو القطاعات الموجودة؟',
-      'آخر أخبار المدونة',
-    ],
-    send: 'إرسال',
-    listening: 'جارٍ التسجيل… اضغط للإيقاف',
-    micStart: 'تسجيل صوتي',
-    error: 'صار خطأ، حاول مرة ثانية.',
-    micError: 'تعذّر الوصول للمايكروفون.',
+    subtitle: 'متواجد الآن · اختر سؤالك',
+    greeting:
+      'أهلاً وسهلاً! 👋\nأنا مساعد JAZ. اختر أحد المواضيع تحت ثم اضغط على السؤال اللي يهمك وراح يطلعلك الجواب فوراً.',
+    pickTopic: 'اختر موضوعاً:',
+    pickQuestion: 'اختر سؤالاً:',
+    back: 'رجوع للمواضيع',
     open: 'افتح المساعد',
     whatsapp: 'تواصل معنا عبر واتساب',
     waIntro: 'مرحباً، هذه محادثتي مع مساعد JAZ:',
+    more: 'عندك سؤال ثاني؟ اختر من المواضيع.',
   },
   en: {
     title: 'JAZ Assistant',
-    subtitle: 'Ask me about events & services',
-    placeholder: 'Type your question…',
-    greeting: "Hi! 👋 I'm the JAZ assistant. Ask me about events, trainings, sectors, or anything about the platform.",
-    suggestions: [
-      'What events are coming up?',
-      'Do you offer trainings?',
-      'What sectors are available?',
-      'Latest blog news',
-    ],
-    send: 'Send',
-    listening: 'Recording… tap to stop',
-    micStart: 'Voice input',
-    error: 'Something went wrong, please try again.',
-    micError: 'Could not access the microphone.',
+    subtitle: 'Online · Pick a question',
+    greeting:
+      "Hello! 👋\nI'm the JAZ assistant. Pick a topic below, then tap the question you care about and you'll get the answer instantly.",
+    pickTopic: 'Choose a topic:',
+    pickQuestion: 'Choose a question:',
+    back: 'Back to topics',
     open: 'Open assistant',
     whatsapp: 'Contact us on WhatsApp',
     waIntro: 'Hello, here is my chat with the JAZ assistant:',
+    more: 'Another question? Pick a topic.',
   },
 }
 
@@ -68,106 +78,27 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function ChatWidget() {
   const { locale, dir } = useI18n()
   const t = STRINGS[locale] ?? STRINGS.ar
+  const categories = FAQ[locale] ?? FAQ.ar
 
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [recording, setRecording] = useState(false)
-  const [transcribing, setTranscribing] = useState(false)
+  const [activeCat, setActiveCat] = useState<string | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
 
-  // Auto-scroll to bottom on new messages / loading.
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
-  }, [messages, loading, open])
+  }, [messages, open, activeCat])
 
-  async function sendMessage(text: string) {
-    const question = text.trim()
-    if (!question || loading) return
-
-    const next: Message[] = [...messages, { role: 'user', content: question }]
-    setMessages(next)
-    setInput('')
-    setLoading(true)
-
-    try {
-      const res = await fetch('/api/chatbot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next }),
-      })
-      const data = await res.json()
-      const answer = res.ok && data.answer ? data.answer : data.error || t.error
-      setMessages((prev) => [...prev, { role: 'assistant', content: answer }])
-    } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: t.error }])
-    } finally {
-      setLoading(false)
-    }
+  function askQuestion(item: FaqItem) {
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: item.q },
+      { role: 'assistant', content: item.a },
+    ])
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    sendMessage(input)
-  }
-
-  // ---- Voice recording -----------------------------------------------------
-  async function startRecording() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const mime = MediaRecorder.isTypeSupported('audio/webm')
-        ? 'audio/webm'
-        : MediaRecorder.isTypeSupported('audio/mp4')
-        ? 'audio/mp4'
-        : ''
-      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined)
-      chunksRef.current = []
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data)
-      }
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop())
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' })
-        await transcribe(blob)
-      }
-      mediaRecorderRef.current = recorder
-      recorder.start()
-      setRecording(true)
-    } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: t.micError }])
-    }
-  }
-
-  function stopRecording() {
-    mediaRecorderRef.current?.stop()
-    setRecording(false)
-  }
-
-  async function transcribe(blob: Blob) {
-    setTranscribing(true)
-    try {
-      const ext = blob.type.includes('mp4') ? 'mp4' : 'webm'
-      const form = new FormData()
-      form.append('file', blob, `recording.${ext}`)
-      const res = await fetch('/api/chatbot/transcribe', { method: 'POST', body: form })
-      const data = await res.json()
-      if (res.ok && data.text) {
-        await sendMessage(data.text)
-      } else {
-        setMessages((prev) => [...prev, { role: 'assistant', content: data.error || t.error }])
-      }
-    } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: t.error }])
-    } finally {
-      setTranscribing(false)
-    }
-  }
-
-  const showWelcome = messages.length === 0
+  const activeCategory = categories.find((c) => c.id === activeCat) ?? null
 
   function whatsappUrl() {
     const transcript = messages
@@ -178,28 +109,34 @@ export function ChatWidget() {
   }
 
   return (
-    <div dir={dir} className="fixed bottom-5 right-5 z-[60] flex flex-col items-end gap-3 print:hidden">
+    <div dir={dir} className="fixed bottom-5 end-5 z-[60] flex flex-col items-end gap-3 print:hidden">
       {/* Chat panel */}
       {open && (
         <div
-          className="flex h-[min(70vh,600px)] w-[min(calc(100vw-2.5rem),384px)] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="flex h-[min(75vh,620px)] w-[min(calc(100vw-2rem),400px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/20 ring-1 ring-black/8 animate-in fade-in slide-in-from-bottom-4 duration-200"
           role="dialog"
           aria-label={t.title}
         >
           {/* Header */}
-          <div className="flex items-center justify-between bg-blue-600 px-4 py-3 text-white">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
+          <div className="relative flex items-center justify-between bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-3 text-white">
+            <div className="pointer-events-none absolute inset-0 opacity-10"
+              style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+            <div className="relative flex items-center gap-3">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20 ring-2 ring-white/30">
                 <Bot className="h-5 w-5" />
+                <span className="absolute -end-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-blue-500 bg-emerald-400" />
               </div>
               <div className="leading-tight">
-                <p className="text-sm font-semibold">{t.title}</p>
-                <p className="text-[11px] text-blue-100">{t.subtitle}</p>
+                <p className="text-sm font-bold tracking-wide">{t.title}</p>
+                <p className="flex items-center gap-1 text-[11px] text-blue-100">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  {t.subtitle}
+                </p>
               </div>
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="rounded-full p-1.5 transition-colors hover:bg-white/20"
+              className="relative rounded-full p-1.5 transition-colors hover:bg-white/20"
               aria-label="close"
             >
               <X className="h-5 w-5" />
@@ -207,107 +144,89 @@ export function ChatWidget() {
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4">
-            {showWelcome && (
-              <>
-                <Bubble role="assistant">{t.greeting}</Bubble>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {t.suggestions.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => sendMessage(s)}
-                      className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs text-blue-700 transition-colors hover:bg-blue-50"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto bg-slate-50 p-4">
+            <div className="space-y-3">
+              <Bubble role="assistant">{t.greeting}</Bubble>
 
-            {messages.map((m, i) => (
-              <Bubble key={i} role={m.role}>
-                {m.content}
-              </Bubble>
-            ))}
+              {messages.map((m, i) => (
+                <Bubble key={i} role={m.role}>
+                  {m.content}
+                </Bubble>
+              ))}
+            </div>
 
-            {(loading || transcribing) && (
-              <div className="flex items-center gap-2 text-gray-400">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-xs">…</span>
-              </div>
-            )}
-
-            {/* WhatsApp hand-off — appears once the conversation has started */}
-            {!showWelcome && !loading && !transcribing && WHATSAPP_NUMBER && (
-              <div className="pt-1">
+            {messages.length > 0 && WHATSAPP_NUMBER && (
+              <div className="mt-4">
                 <a
                   href={whatsappUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1ebe5b]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#20bd5a] hover:shadow-md active:scale-[0.98]"
                 >
-                  <WhatsAppIcon className="h-5 w-5" />
+                  <WhatsAppIcon className="h-4 w-4" />
                   {t.whatsapp}
                 </a>
               </div>
             )}
           </div>
 
-          {/* Input */}
-          <form onSubmit={handleSubmit} className="border-t border-gray-200 bg-white p-3">
-            <div className="flex items-end gap-2">
-              <button
-                type="button"
-                onClick={recording ? stopRecording : startRecording}
-                disabled={transcribing || loading}
-                className={cn(
-                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors disabled:opacity-50',
-                  recording
-                    ? 'bg-red-500 text-white animate-pulse'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                )}
-                aria-label={recording ? t.listening : t.micStart}
-                title={recording ? t.listening : t.micStart}
-              >
-                {recording ? <Square className="h-4 w-4" /> : <Mic className="h-5 w-5" />}
-              </button>
-
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    sendMessage(input)
-                  }
-                }}
-                rows={1}
-                placeholder={recording ? t.listening : t.placeholder}
-                disabled={recording}
-                className="max-h-28 flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-400 focus:bg-white"
-              />
-
-              <button
-                type="submit"
-                disabled={!input.trim() || loading}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white transition-colors hover:bg-blue-700 disabled:opacity-40"
-                aria-label={t.send}
-              >
-                <Send className="h-4 w-4 rtl:-scale-x-100" />
-              </button>
-            </div>
-          </form>
+          {/* Navigator: topics ➜ questions */}
+          <div className="border-t border-slate-100 bg-white px-3 py-3">
+            {!activeCategory ? (
+              <>
+                <p className="mb-2 px-1 text-[11px] font-semibold text-slate-400">
+                  {messages.length > 0 ? t.more : t.pickTopic}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => {
+                    const CatIcon = ICONS[cat.icon] ?? Sparkles
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setActiveCat(cat.id)}
+                        className="flex items-center gap-1.5 rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 shadow-sm transition-all hover:border-blue-400 hover:bg-blue-50 hover:shadow-md active:scale-95"
+                      >
+                        <CatIcon className="h-3.5 w-3.5 shrink-0 text-blue-400" />
+                        {cat.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setActiveCat(null)}
+                  className="mb-2 flex items-center gap-1 px-1 text-[11px] font-semibold text-blue-600 transition-colors hover:text-blue-800"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                  {t.back}
+                </button>
+                <div className="flex max-h-44 flex-col gap-1.5 overflow-y-auto pe-1">
+                  {activeCategory.items.map((item) => (
+                    <button
+                      key={item.q}
+                      onClick={() => askQuestion(item)}
+                      className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-start text-xs font-medium text-slate-700 transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800 active:scale-[0.99]"
+                    >
+                      <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-blue-400" />
+                      {item.q}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
       {/* Floating toggle button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all hover:scale-105 hover:bg-blue-700 active:scale-95"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-600/40 transition-all hover:scale-105 hover:shadow-xl hover:shadow-blue-600/50 active:scale-95"
         aria-label={t.open}
       >
-        {open ? <X className="h-6 w-6" /> : <Bot className="h-7 w-7" />}
+        {open ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
       </button>
     </div>
   )
@@ -317,18 +236,23 @@ function Bubble({ role, children }: { role: Role; children: React.ReactNode }) {
   const isUser = role === 'user'
   return (
     <div className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
+      {!isUser && (
+        <div className="me-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+          <Bot className="h-3.5 w-3.5" />
+        </div>
+      )}
       <div
         className={cn(
-          'max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed text-start',
+          'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm',
           isUser
-            ? 'rounded-ee-sm bg-blue-600 text-white'
-            : 'rounded-es-sm border border-gray-200 bg-white text-gray-800'
+            ? 'rounded-ee-sm bg-blue-600 text-white shadow-blue-200'
+            : 'rounded-es-sm border border-slate-100 bg-white text-slate-800'
         )}
       >
         {isUser ? (
           <span className="whitespace-pre-wrap">{children}</span>
         ) : (
-          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-a:text-blue-600">
+          <div className="prose prose-sm max-w-none text-slate-800 prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-a:text-blue-600 prose-strong:text-slate-900">
             <ReactMarkdown>{String(children)}</ReactMarkdown>
           </div>
         )}

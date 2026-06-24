@@ -237,7 +237,7 @@ export default function ContactPage() {
       <section
         ref={sectionRef}
         style={heroStyle}
-        className="text-white pt-28 md:pt-36 pb-36 px-6 md:px-12 lg:px-24 relative overflow-hidden"
+        className="text-white pt-24 md:pt-28 pb-20 px-6 md:px-12 lg:px-24 relative overflow-hidden"
       >
         {/* Animated Aurora overlay */}
         <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none z-0">
@@ -263,11 +263,11 @@ export default function ContactPage() {
             initial="hidden"
             animate="visible"
           >
-            <motion.h1 variants={heroItemVariants} className="text-5xl font-bold mb-6">
+            <motion.h1 variants={heroItemVariants} className="text-5xl font-bold mb-4">
               {t.contact.title}
             </motion.h1>
             
-            <motion.div variants={heroItemVariants} className="mb-10">
+            <motion.div variants={heroItemVariants} className="mb-6">
               <BlurText
                 text={t.contact.heroDescription}
                 delay={20}

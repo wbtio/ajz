@@ -250,10 +250,15 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
   const [selectedMonth, setSelectedMonth] = useState('')
   const [participationTypes, setParticipationTypes] = useState<string[]>([])
 
+  // Pagination: incrementally reveal more events when the list is long
+  const PAGE_SIZE = 6
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+
   // Changing the main sector resets any selected sub-sector
   const handleSectorChange = (val: string) => {
     setSelectedSector(val)
     setSelectedSubSector('')
+    setVisibleCount(PAGE_SIZE)
   }
 
   // Combine database events with mock events
@@ -325,6 +330,14 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
     })
   }, [allEvents, search, selectedSector, selectedSubSector, selectedCountry, selectedMonth, participationTypes, isRTL])
 
+  // Wrappers that reset pagination whenever a filter changes
+  const resetPage = () => setVisibleCount(PAGE_SIZE)
+  const setSelectedSubSectorPaginated = (v: string) => { setSelectedSubSector(v); resetPage() }
+  const setSelectedCountryPaginated = (v: string) => { setSelectedCountry(v); resetPage() }
+  const setSelectedMonthPaginated = (v: string) => { setSelectedMonth(v); resetPage() }
+  const setParticipationTypesPaginated = (v: string[]) => { setParticipationTypes(v); resetPage() }
+  const setSearchPaginated = (v: string) => { setSearch(v); resetPage() }
+
   const handlePopularSearch = (query: string, sectorSlug?: string) => {
     if (sectorSlug) {
       setSelectedSector(sectorSlug)
@@ -335,6 +348,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
       setSelectedSector('')
       setSelectedSubSector('')
     }
+    setVisibleCount(PAGE_SIZE)
   }
 
   const handleClearFilters = () => {
@@ -344,6 +358,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
     setSelectedCountry('')
     setSelectedMonth('')
     setParticipationTypes([])
+    setVisibleCount(PAGE_SIZE)
   }
 
   // Stats bar data
@@ -375,6 +390,8 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         gridTitle: 'الفعاليات والمعارض',
         gridSubtitle: 'تصفّح الفعاليات القادمة والمكتملة وسجّل حضورك عبر منصة جاز.',
         resultsCount: (n: number) => `${n} فعالية`,
+        loadMore: 'تحميل المزيد من الفعاليات',
+        showingRange: (shown: number, total: number) => `عرض ${shown} من أصل ${total} فعالية`,
       }
     : {
         noResultsTitle: 'No Matching Events Found',
@@ -388,6 +405,8 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         gridTitle: 'Events & Exhibitions',
         gridSubtitle: 'Browse upcoming and completed events and register your attendance through JAZ.',
         resultsCount: (n: number) => `${n} events`,
+        loadMore: 'Load more events',
+        showingRange: (shown: number, total: number) => `Showing ${shown} of ${total} events`,
       }
 
   return (
@@ -395,7 +414,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
       {/* Hero Section */}
       <EventsHero
         searchQuery={search}
-        onSearchChange={setSearch}
+        onSearchChange={setSearchPaginated}
         onPopularSearchClick={handlePopularSearch}
       />
 
@@ -413,13 +432,13 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
               selectedSector={selectedSector}
               setSelectedSector={handleSectorChange}
               selectedSubSector={selectedSubSector}
-              setSelectedSubSector={setSelectedSubSector}
+              setSelectedSubSector={setSelectedSubSectorPaginated}
               selectedCountry={selectedCountry}
-              setSelectedCountry={setSelectedCountry}
+              setSelectedCountry={setSelectedCountryPaginated}
               selectedMonth={selectedMonth}
-              setSelectedMonth={setSelectedMonth}
+              setSelectedMonth={setSelectedMonthPaginated}
               participationTypes={participationTypes}
-              setParticipationTypes={setParticipationTypes}
+              setParticipationTypes={setParticipationTypesPaginated}
               onClear={handleClearFilters}
             />
 
@@ -437,9 +456,10 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
                 </span>
               </div>
 
-              {filteredEvents.length > 0 ? (
+{filteredEvents.length > 0 ? (
+                <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5">
-                  {filteredEvents.map((event, index) => {
+                  {filteredEvents.slice(0, visibleCount).map((event, index) => {
                     const title = isRTL ? event.title_ar || event.title : event.title || event.title_ar || ''
                     const locationText = isRTL
                       ? [event.location_ar || event.location, event.country_ar || event.country].filter(Boolean).join('، ')
@@ -460,13 +480,13 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
                         <Link href={`/events/${event.id}`} className="absolute inset-0 z-20" aria-label={title} />
 
                         {/* Event Card Image */}
-                        <div className="relative aspect-[21/9] w-full overflow-hidden bg-slate-100 shrink-0">
+                        <div className="relative aspect-[3/1] w-full overflow-hidden bg-slate-100 shrink-0">
                           {event.image_url ? (
                             <Image
                               src={event.image_url}
                               alt={title}
                               fill
-                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                               className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                             />
                           ) : (
@@ -503,6 +523,26 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
                     )
                   })}
                 </div>
+
+                {/* Pagination: Load More */}
+                {filteredEvents.length > visibleCount && (
+                  <div className="mt-10 flex flex-col items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                      className="group inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-7 py-3 text-sm font-bold text-slate-800 transition-all duration-200 hover:border-[#8b0000] hover:text-[#8b0000] active:scale-95"
+                    >
+                      <span>{pageTexts.loadMore}</span>
+                      <svg className="w-4 h-4 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                      </svg>
+                    </button>
+                    <span className="text-xs font-semibold text-slate-500">
+                      {pageTexts.showingRange(Math.min(visibleCount, filteredEvents.length), filteredEvents.length)}
+                    </span>
+                  </div>
+                )}
+                </>
               ) : (
                 <div className="text-center py-16 px-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60">
                   <h3 className="text-lg font-bold text-slate-900 mb-2">{pageTexts.noResultsTitle}</h3>

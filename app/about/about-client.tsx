@@ -58,9 +58,9 @@ export function AboutClient() {
   ]
 
   const offices = [
-    { title: t.about.erbilTitle, desc: t.about.erbilDesc, dot: '#16a34a' },
-    { title: t.about.baghdadTitle, desc: t.about.baghdadDesc, dot: '#8b0000' },
     { title: t.about.basraTitle, desc: t.about.basraDesc, dot: '#001a33' },
+    { title: t.about.baghdadTitle, desc: t.about.baghdadDesc, dot: '#8b0000' },
+    { title: t.about.erbilTitle, desc: t.about.erbilDesc, dot: '#16a34a' },
   ]
 
   return (
@@ -128,7 +128,7 @@ export function AboutClient() {
         </section>
 
         {/* ============ VALUES — navy band ============ */}
-        <section className="bg-[#0b1426] text-white py-8 lg:py-12">
+        <section className="bg-[#0b1426] text-white py-6 lg:py-8">
           <Container>
             <SectionHeader
               dark
@@ -136,7 +136,7 @@ export function AboutClient() {
               subtitle={t.about.ourValuesSubtitle}
             />
 
-            <ul className="grid grid-cols-1 md:grid-cols-2 mt-10 lg:mt-14">
+            <ul className="grid grid-cols-1 md:grid-cols-2 mt-5 lg:mt-6">
               {values.map((val: { title: string; desc: string }, index: number) => {
                 const isOdd = index % 2 === 0
                 const isLast = index === values.length - 1
@@ -150,7 +150,7 @@ export function AboutClient() {
                     viewport={{ once: true, margin: '-40px' }}
                     transition={{ duration: 0.4, delay: (index % 2) * 0.05 }}
                     className={[
-                      'group flex items-center gap-4 px-2 py-5 lg:px-4 lg:py-6',
+                      'group flex items-center gap-3 px-2 py-3 lg:px-4 lg:py-4',
                       'border-b border-white/10',
                       isOdd ? 'md:border-e md:border-white/10' : '',
                       isLast && !isOdd ? 'md:border-b-0' : '',
@@ -158,10 +158,10 @@ export function AboutClient() {
                     ].join(' ')}
                   >
                     <span
-                      className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border border-white/10 bg-white/[0.04] transition-colors duration-300"
+                      className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border border-white/10 bg-white/[0.04] transition-colors duration-300"
                       style={{ color: ic.color }}
                     >
-                      <Icon icon={ic.icon} className="w-5 h-5" />
+                      <Icon icon={ic.icon} className="w-4 h-4" />
                     </span>
                     <div>
                       <span className="block font-extrabold text-sm text-white mb-0.5">{val.title}</span>
@@ -174,105 +174,16 @@ export function AboutClient() {
           </Container>
         </section>
 
-        {/* ============ CEO MESSAGE — white band ============ */}
-        <section className="bg-white py-12 lg:py-20">
-          <Container>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-
-              {/* Left — photo + stats */}
-              <motion.div
-                initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -28 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-4 flex flex-col items-center lg:items-start gap-6"
-              >
-                {/* Photo frame */}
-                <div className="relative w-52 h-52 lg:w-64 lg:h-64 shrink-0">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#8b0000]/20 via-[#b08d4b]/10 to-[#001a33]/20 blur-xl" />
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-[#b08d4b]/30 shadow-2xl bg-[#0b1426]">
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <div className="w-20 h-20 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
-                        <Icon icon="solar:user-bold-duotone" className="w-10 h-10 text-[#b08d4b]" />
-                      </div>
-                      <span className="text-xs text-white/40 font-medium">{t.about.ceoName}</span>
-                    </div>
-                  </div>
-                  {/* Gold corner accent */}
-                  <span className="absolute -bottom-3 -end-3 w-10 h-10 rounded-xl bg-[#b08d4b] flex items-center justify-center shadow-lg">
-                    <Icon icon="solar:crown-bold-duotone" className="w-5 h-5 text-white" />
-                  </span>
-                </div>
-
-                {/* Name & title */}
-                <div className="text-center lg:text-start">
-                  <p className="font-black text-lg text-slate-900 leading-tight">{t.about.ceoName}</p>
-                  <p className="text-sm text-[#8b0000] font-semibold mt-0.5">{t.about.ceoTitle}</p>
-                  <p className="text-xs text-[#b08d4b] font-medium mt-1">{t.about.ceoTagline}</p>
-                </div>
-
-                {/* Mini stats row */}
-                <div className="grid grid-cols-3 gap-3 w-full">
-                  {[
-                    { val: t.about.ceoStat1Val, label: t.about.ceoStat1Label },
-                    { val: t.about.ceoStat2Val, label: t.about.ceoStat2Label },
-                    { val: t.about.ceoStat3Val, label: t.about.ceoStat3Label },
-                  ].map((s, i) => (
-                    <div key={i} className="flex flex-col items-center gap-0.5 rounded-xl border border-slate-200/70 bg-[#f5f7fa] py-3 px-2 text-center">
-                      <span className="font-black text-base text-[#8b0000] leading-none">{s.val}</span>
-                      <span className="text-[10px] text-slate-500 font-semibold leading-tight">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Right — quote */}
-              <motion.div
-                initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-8 flex flex-col justify-center"
-              >
-                {/* Label */}
-                <div className="flex items-center gap-2 mb-6">
-                  <span className="h-px w-8 bg-[#b08d4b]" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#b08d4b]">
-                    {t.about.ceoSectionLabel}
-                  </span>
-                </div>
-
-                {/* Big quote icon */}
-                <Icon
-                  icon="solar:quote-bold-duotone"
-                  className="w-10 h-10 text-[#8b0000]/20 mb-4"
-                />
-
-                {/* Quote text */}
-                <blockquote className="text-lg lg:text-xl font-semibold text-slate-800 leading-relaxed mb-8 border-s-4 border-[#8b0000] ps-5">
-                  {t.about.ceoQuote}
-                </blockquote>
-
-                {/* Decorative divider */}
-                <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-gradient-to-r from-[#8b0000]/30 to-transparent" />
-                  <Icon icon="solar:star-bold-duotone" className="w-4 h-4 text-[#b08d4b]" />
-                  <div className="h-px flex-1 bg-gradient-to-l from-[#8b0000]/30 to-transparent" />
-                </div>
-              </motion.div>
-            </div>
-          </Container>
-        </section>
 
         {/* ============ WHERE WE OPERATE — platinum band ============ */}
-        <section className="bg-[#f5f7fa] py-8 lg:py-12">
+        <section className="bg-[#f5f7fa] py-6 lg:py-8">
           <Container>
             <SectionHeader
               title={t.about.whereWeOperate}
               subtitle={t.about.whereWeOperateSubtitle}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 mt-10 lg:mt-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5 mt-5 lg:mt-6">
               {offices.map((office, index) => (
                 <motion.div
                   key={index}
@@ -281,14 +192,14 @@ export function AboutClient() {
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                  className="group relative flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 lg:p-7 min-h-[180px] transition-colors duration-300 hover:border-slate-300"
+                  className="group relative flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 lg:p-6 min-h-[140px] transition-colors duration-300 hover:border-slate-300"
                 >
-                  <div className="flex items-center gap-2.5 mb-4">
+                  <div className="flex items-center gap-2.5 mb-3">
                     <span
                       className="w-3 h-3 rounded-full shrink-0"
                       style={{ backgroundColor: office.dot }}
                     />
-                    <h3 className="font-extrabold text-slate-900 text-lg leading-snug">
+                    <h3 className="font-extrabold text-slate-900 text-base leading-snug">
                       {office.title}
                     </h3>
                   </div>
@@ -312,35 +223,24 @@ export function AboutClient() {
                   subtitle={t.about.whyJazSubtitle}
                 />
 
-                <ul className="grid grid-cols-1 md:grid-cols-2 mt-10">
-                  {(t.about.whyJazItems || []).map((item: string, index: number) => {
-                    const isOdd = index % 2 === 0
-                    const isLast = index === (t.about.whyJazItems || []).length - 1
-                    const isLastRow = index >= (t.about.whyJazItems || []).length - 2
-                    return (
-                      <motion.li
-                        key={index}
-                        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: '-40px' }}
-                        transition={{ duration: 0.4, delay: (index % 2) * 0.05 }}
-                        className={[
-                          'group flex items-start gap-3 px-2 py-4 lg:px-3',
-                          'border-b border-slate-200/70',
-                          isOdd ? 'md:border-e md:border-slate-200/70' : '',
-                          isLast && !isOdd ? 'md:border-b-0' : '',
-                          isLastRow ? 'md:border-b-0' : '',
-                        ].join(' ')}
-                      >
-                        <span className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center bg-[#8b0000]/[0.06] text-[#8b0000] mt-0.5">
-                          <Icon icon="solar:check-circle-bold-duotone" className="w-4 h-4" />
-                        </span>
-                        <span className="text-sm font-semibold text-slate-700 leading-snug pt-0.5">
-                          {item}
-                        </span>
-                      </motion.li>
-                    )
-                  })}
+                <ul className="mt-6 lg:mt-8 divide-y divide-slate-200/70">
+                  {(t.about.whyJazItems || []).map((item: string, index: number) => (
+                    <motion.li
+                      key={index}
+                      initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '-40px' }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      className="group flex items-center gap-4 lg:gap-5 py-3 lg:py-4 first:pt-0"
+                    >
+                      <span className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-[#8b0000]/[0.06] text-[#8b0000] transition-colors duration-300 group-hover:bg-[#8b0000]/[0.1]">
+                        <Icon icon="solar:check-circle-bold-duotone" className="w-5 h-5" />
+                      </span>
+                      <span className="text-sm lg:text-base font-semibold text-slate-800 leading-snug">
+                        {item}
+                      </span>
+                    </motion.li>
+                  ))}
                 </ul>
               </div>
 
@@ -350,7 +250,7 @@ export function AboutClient() {
                   title={t.about.nationwideReach}
                 />
 
-                <div className="mt-8 space-y-5">
+                <div className="mt-6 lg:mt-8 space-y-5 lg:space-y-6">
                   {reachItems.map((item: { count: string; label: string }, idx: number) => {
                     const ic = reachIcons[idx] || { icon: 'solar:star-bold-duotone', color: '#001a33' }
                     return (
@@ -360,18 +260,19 @@ export function AboutClient() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: '-40px' }}
                         transition={{ duration: 0.4, delay: idx * 0.06 }}
-                        className="flex items-start gap-3 pb-5 border-b border-slate-200/70 last:border-b-0 last:pb-0"
+                        className="flex items-start gap-4"
                       >
-                        <Icon
-                          icon={ic.icon}
-                          className="h-5 w-5 shrink-0 mt-0.5"
+                        <span
+                          className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-200/70"
                           style={{ color: ic.color }}
-                        />
-                        <div className="leading-tight">
-                          <div className="font-black text-sm sm:text-base leading-none mb-1" style={{ color: ic.color }}>
+                        >
+                          <Icon icon={ic.icon} className="w-5 h-5" />
+                        </span>
+                        <div className="leading-tight pt-0.5">
+                          <div className="text-lg lg:text-xl font-black leading-tight mb-0.5" style={{ color: ic.color }}>
                             {item.count}
                           </div>
-                          <p className="text-xs text-slate-500 font-semibold">{item.label}</p>
+                          <p className="text-xs lg:text-sm text-slate-500 font-semibold">{item.label}</p>
                         </div>
                       </motion.div>
                     )

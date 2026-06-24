@@ -4,16 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Globe, X, Instagram, Linkedin, Facebook } from 'lucide-react'
+import { X, Instagram, Linkedin, Facebook } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { Container } from '@/components/ui/container'
 
 const socialLinks = [
-  {
-    name: 'Website',
-    href: '/',
-    icon: Globe,
-  },
   {
     name: 'Twitter',
     href: 'https://x.com',
@@ -36,8 +31,26 @@ const socialLinks = [
   },
 ]
 
+const navLinks = [
+  { href: '/about', en: 'About JAZ', ar: 'عن JAZ' },
+  { href: '/departments', en: 'Departments', ar: 'الأقسام' },
+  { href: '/services', en: 'Our Services', ar: 'خدماتنا' },
+  { href: '/events', en: 'Events Calendar', ar: 'تقويم الفعاليات' },
+  { href: '/invitation-support', en: 'Invitation Support', ar: 'دعم الدعوة' },
+  { href: '/partnership', en: 'Partnerships', ar: 'الشراكات' },
+  { href: '/blog', en: 'News & Insights', ar: 'الأخبار والأفكار' },
+  { href: '/contact', en: 'Contact Us', ar: 'اتصل بنا' },
+]
+
+const navLinkClass =
+  'text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium'
+
 export function Footer() {
   const { locale, dir } = useI18n()
+  const isAr = locale === 'ar'
+  const headingClass = isAr
+    ? 'text-xs font-bold text-white tracking-normal'
+    : 'text-xs font-bold text-white uppercase tracking-wider'
   const pathname = usePathname()
   
   const [emailInput, setEmailInput] = useState('')
@@ -70,9 +83,9 @@ export function Footer() {
       className={`bg-[#001a33] text-[#6f85a3] py-8 sm:py-10${isDepartmentsPage ? '' : ' border-t border-[#c4c6ce]/10'}`}
     >
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 text-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8 text-start">
           {/* Brand & Description */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="group block shrink-0">
               <Image
                 src="/Joint Annual Zone logo.png"
@@ -84,15 +97,15 @@ export function Footer() {
               />
             </Link>
             <div className="space-y-2.5">
-              <p className="text-xs leading-relaxed text-[#6f85a3]/80">
+              <p className="text-xs leading-relaxed text-[#9fb0c7]">
                 {locale === 'ar'
                   ? 'بوابة العراق للمعارض الدولية والشراكات المؤسسية.'
                   : "Iraq's Gateway to International Exhibitions & Institutional Partnerships."}
               </p>
-              <p className="text-xs leading-relaxed text-[#6f85a3]/60">
+              <p className="text-xs leading-relaxed text-[#9fb0c7]">
                 {locale === 'ar'
-                  ? 'نحن نربط ونمثل ونمكن المؤسسات والمهنيين في العراق على الساحة العالمية.'
-                  : "We connect, represent, and empower Iraq's institutions and professionals on the stage."}
+                  ? 'نربط ونمثّل مؤسسات العراق ومهنييه على الساحة العالمية.'
+                  : "We connect and represent Iraq's institutions and professionals on the global stage."}
               </p>
             </div>
             {/* Social Icons */}
@@ -102,7 +115,8 @@ export function Footer() {
                 return (
                   <Link
                     key={social.name}
-                    className="w-7 h-7 rounded-full border border-[#6f85a3]/30 flex items-center justify-center text-[#6f85a3] hover:text-[#f7e382] hover:border-[#f7e382] transition-all duration-300 transform active:scale-95"
+                    aria-label={social.name}
+                    className="w-10 h-10 rounded-full border border-[#6f85a3]/30 flex items-center justify-center text-[#6f85a3] hover:text-[#f7e382] hover:border-[#f7e382] transition-all duration-300 transform active:scale-95"
                     href={social.href}
                     target={social.href.startsWith('http') ? '_blank' : undefined}
                     rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
@@ -114,113 +128,27 @@ export function Footer() {
             </div>
           </div>
 
-
-          {/* Quick Links */}
-          <div className="lg:col-span-2 space-y-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              {locale === 'ar' ? 'روابط سريعة' : 'Quick Links'}
+          {/* Explore */}
+          <nav className="lg:col-span-2 space-y-4" aria-label={locale === 'ar' ? 'روابط الموقع' : 'Footer'}>
+            <h3 className={headingClass}>
+              {isAr ? 'استكشف' : 'Explore'}
             </h3>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/about">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'عن JAZ' : 'About JAZ'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/departments">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'الأقسام' : 'Departments'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/services">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'خدماتنا' : 'Our Services'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/events">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'تقويم الفعاليات' : 'Events Calendar'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/invitation-support">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'دعم الدعوة' : 'Invitation Support'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partnership">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'الشراكات' : 'Partnerships'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/blog">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'الأخبار والأفكار' : 'News & Insights'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/contact">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'اتصل بنا' : 'Contact Us'}
-                </Link>
-              </li>
+            <ul className="space-y-2.5 text-xs">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <Link className={navLinkClass} href={link.href}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]" aria-hidden="true"></span>
+                    {locale === 'ar' ? link.ar : link.en}
+                  </Link>
+                </li>
+              ))}
             </ul>
-          </div>
-
-          {/* Departments */}
-          <div className="lg:col-span-2 space-y-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              {locale === 'ar' ? 'الأقسام' : 'Departments'}
-            </h3>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/departments">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'التعاون الدولي' : 'International Cooperation'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/events">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'المعارض والفعاليات' : 'Exhibitions & Events'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/partnership">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'الشراكات المؤسسية' : 'Institutional Partnerships'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/services">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'تطوير الأعمال' : 'Business Development'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/invitation-support">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'مكتب دعم الدعوة' : 'Invitation Support Office'}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-[#6f85a3] hover:text-[#f7e382] transition-colors flex items-center gap-2 font-medium" href="/blog">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f7e382]"></span>{' '}
-                  {locale === 'ar' ? 'البحوث والأفكار' : 'Research & Insights'}
-                </Link>
-              </li>
-            </ul>
-          </div>
+          </nav>
 
           {/* Contact Us */}
-          <div className="lg:col-span-2 space-y-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              {locale === 'ar' ? 'اتصل بنا' : 'Contact Us'}
+          <div className="lg:col-span-3 space-y-4">
+            <h3 className={headingClass}>
+              {isAr ? 'اتصل بنا' : 'Contact Us'}
             </h3>
             <div className="space-y-3.5 text-xs text-[#6f85a3]">
               <div>
@@ -246,25 +174,33 @@ export function Footer() {
           {/* Newsletter & Office Hours */}
           <div className="lg:col-span-3 space-y-6">
             <div className="space-y-3">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                {locale === 'ar' ? 'النشرة البريدية' : 'Newsletter'}
+              <h3 className={headingClass}>
+                {isAr ? 'النشرة البريدية' : 'Newsletter'}
               </h3>
-              <p className="text-xs text-[#6f85a3]/85 leading-relaxed">
+              <p className="text-xs text-[#9fb0c7] leading-relaxed">
                 {locale === 'ar'
                   ? 'اشترك لتصلك مستجدات الفعاليات وأخبار الشراكات.'
                   : 'Subscribe to receive updates on events and partnership news.'}
               </p>
-              
+
               {subscribeSuccess ? (
-                <div className="bg-emerald-950/30 border border-emerald-500/30 p-2.5 rounded text-center">
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="bg-emerald-950/30 border border-emerald-500/30 p-2.5 rounded text-center"
+                >
                   <p className="text-[11px] font-bold text-emerald-400">
                     {locale === 'ar' ? 'تم الاشتراك بنجاح!' : 'Subscribed successfully!'}
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubscribe} className="flex w-full group overflow-hidden rounded border border-[#6f85a3]/20 animate-in fade-in duration-300">
+                  <label className="sr-only" htmlFor="footer-newsletter-email">
+                    {locale === 'ar' ? 'البريد الإلكتروني' : 'Email address'}
+                  </label>
                   <input
-                    className="flex-grow px-3 py-2 bg-white text-[#000000] outline-none text-xs border-none focus:ring-0 transition-all min-w-0"
+                    id="footer-newsletter-email"
+                    className="flex-grow px-3 py-2.5 bg-white text-[#000000] outline-none text-xs border-none focus:ring-0 transition-all min-w-0"
                     placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Your email'}
                     type="email"
                     required
@@ -273,25 +209,30 @@ export function Footer() {
                     disabled={isSubscribing}
                   />
                   <button
-                    className="bg-[#f7e382] text-[#000000] font-bold px-4 py-2 text-xs hover:bg-[#f7e382]/90 transition-all active:scale-95 disabled:opacity-50 shrink-0"
+                    className="bg-[#f7e382] text-[#000000] font-bold px-4 py-2.5 text-xs hover:bg-[#f7e382]/90 transition-all active:scale-95 disabled:opacity-50 shrink-0"
                     type="submit"
                     disabled={isSubscribing}
+                    aria-busy={isSubscribing}
                   >
-                    {isSubscribing ? '...' : (locale === 'ar' ? 'اشترك' : 'Subscribe')}
+                    {isSubscribing
+                      ? locale === 'ar' ? 'جارٍ…' : 'Saving…'
+                      : locale === 'ar' ? 'اشترك' : 'Subscribe'}
                   </button>
                 </form>
               )}
             </div>
             
             <div className="space-y-2 pt-3.5 border-t border-[#6f85a3]/10">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                {locale === 'ar' ? 'أوقات العمل' : 'Office Hours'}
+              <h3 className={headingClass}>
+                {isAr ? 'أوقات العمل' : 'Office Hours'}
               </h3>
               <div className="text-xs text-[#6f85a3]">
-                <p>{locale === 'ar' ? 'السبت – الخميس' : 'Saturday – Thursday'}</p>
-                <p className="font-semibold text-white/90">8:30 AM – 4:30 PM</p>
-                <p className="text-[10px] opacity-60">
-                  {locale === 'ar' ? '(بتوقيت العراق المحلي)' : '(Iraq Local Time)'}
+                <p>{isAr ? 'السبت – الخميس' : 'Saturday – Thursday'}</p>
+                <p className="font-semibold text-white/90" dir={isAr ? 'ltr' : undefined}>
+                  {isAr ? '8:30 ص – 4:30 م' : '8:30 AM – 4:30 PM'}
+                </p>
+                <p className="text-[11px] text-[#9fb0c7]">
+                  {isAr ? '(بتوقيت العراق المحلي)' : '(Iraq Local Time)'}
                 </p>
               </div>
             </div>

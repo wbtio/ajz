@@ -3,10 +3,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { format } from 'date-fns'
-import { ar as arLocale, enUS } from 'date-fns/locale'
 import { useI18n } from '@/lib/i18n'
-import { Icon } from '@iconify/react'
+import { MapPin } from 'lucide-react'
 import { Container } from '@/components/ui/container'
 import { SectionHeader } from './section-header'
 import type { Tables } from '@/lib/database.types'
@@ -76,15 +74,14 @@ export function FeaturedEvents({ events = [] }: FeaturedEventsProps) {
   const displayEvents =
     realEvents.length > 0 ? realEvents.slice(0, 3) : defaultFlyers
 
-  function formatDate(dateStr: string | null) {
-    if (!dateStr) return null
-    try {
-      return format(new Date(dateStr), 'd MMMM yyyy', {
-        locale: isRTL ? arLocale : enUS,
-      })
-    } catch {
-      return null
-    }
+  function parseDateForBadge(dateStr: string | null, locale: string) {
+    if (!dateStr) return { day: '', month: '', year: '' }
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return { day: '', month: '', year: '' }
+    const day = String(d.getDate()).padStart(2, '0')
+    const month = d.toLocaleDateString(locale === 'ar' ? 'ar' : 'en-US', { month: 'short' })
+    const year = String(d.getFullYear())
+    return { day, month, year }
   }
 
   return (
@@ -97,18 +94,18 @@ export function FeaturedEvents({ events = [] }: FeaturedEventsProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-5 mt-4 lg:mt-5">
           {displayEvents.map((event, index) => {
-            const formattedDate = formatDate(event.date)
+            const { day, month, year } = parseDateForBadge(event.date, locale)
             const hasImage = !!event.src
 
             return (
-              <motion.div
+              <motion.article
                 key={event.id || index}
                 initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.5, delay: index * 0.08, ease: EASE_QUINT }}
-                whileHover={shouldReduceMotion ? {} : { y: -6 }}
-                className="relative aspect-[4/3] rounded-2xl overflow-hidden ring-1 ring-slate-200/60 group cursor-pointer"
+                whileHover={shouldReduceMotion ? {} : { y: -5 }}
+                className="group relative flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/70 transition-colors duration-300 hover:border-slate-300"
               >
                 <Link
                   href="/events"
@@ -116,85 +113,53 @@ export function FeaturedEvents({ events = [] }: FeaturedEventsProps) {
                   aria-label={event.title}
                 />
 
-                {hasImage ? (
-                  <>
-                    <Image
-                      src={event.src as string}
-                      alt={event.title}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-transparent" />
-                  </>
-                ) : (
-                  <>
-                    {/* Solid navy card for events without images */}
-                    <div className="absolute inset-0 bg-[#0b1426]" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0b1426] to-[#1a2a4a]" />
-                  </>
-                )}
-
-                {/* Content overlay */}
-                <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 lg:p-5">
-                  {/* Tag at top for no-image cards, bottom for image cards */}
+                {/* Card Image */}
+                <div className="relative aspect-[3/1] w-full overflow-hidden bg-slate-100 shrink-0">
                   {hasImage ? (
-                    <div className="mt-auto flex flex-col gap-2">
-                      <span className="inline-flex w-fit items-center rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm rtl:tracking-normal rtl:normal-case">
-                        {event.tag}
-                      </span>
-                      <span className="text-base lg:text-lg font-extrabold text-white leading-snug text-balance">
-                        {event.title}
-                      </span>
-                      {(formattedDate || event.location) && (
-                        <div className="flex flex-col gap-1 mt-1">
-                          {formattedDate && (
-                            <span className="flex items-center gap-1.5 text-xs text-white/70 font-medium">
-                              <Icon icon="solar:calendar-bold-duotone" className="w-3.5 h-3.5 shrink-0" />
-                              {formattedDate}
-                            </span>
-                          )}
-                          {event.location && (
-                            <span className="flex items-center gap-1.5 text-xs text-white/70 font-medium">
-                              <Icon icon="solar:map-point-bold-duotone" className="w-3.5 h-3.5 shrink-0" />
-                              <span className="line-clamp-1">{event.location}</span>
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
                     <>
-                      <div>
-                        <span className="inline-flex w-fit items-center rounded-full bg-white/10 border border-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/80 rtl:tracking-normal rtl:normal-case">
-                          {event.tag}
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <h3 className="text-base lg:text-lg font-black text-white leading-snug text-balance">
-                          {event.title}
-                        </h3>
-                        {(formattedDate || event.location) && (
-                          <div className="flex flex-col gap-1 mt-1">
-                            {formattedDate && (
-                              <span className="flex items-center gap-1.5 text-xs text-white/60 font-medium">
-                                <Icon icon="solar:calendar-bold-duotone" className="w-3.5 h-3.5 shrink-0 text-[#b08d4b]" />
-                                {formattedDate}
-                              </span>
-                            )}
-                            {event.location && (
-                              <span className="flex items-center gap-1.5 text-xs text-white/60 font-medium">
-                                <Icon icon="solar:map-point-bold-duotone" className="w-3.5 h-3.5 shrink-0 text-[#b08d4b]" />
-                                <span className="line-clamp-2">{event.location}</span>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      <Image
+                        src={event.src as string}
+                        alt={event.title}
+                        fill
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
                     </>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-b from-sky-100 via-white to-lime-500" />
+                  )}
+
+                  {/* Date Badge */}
+                  {(event.date && day) && (
+                    <div className="absolute top-0 start-3 bg-white text-slate-900 px-3 py-2 text-center z-10 leading-tight rounded-b-lg shadow-sm">
+                      <span className="block text-lg sm:text-xl font-black">{day}</span>
+                      <span className="block text-[10px] uppercase font-bold text-slate-500">{month}</span>
+                      <span className="block text-[10px] font-semibold text-slate-400">{year}</span>
+                    </div>
                   )}
                 </div>
-              </motion.div>
+
+                {/* Card Content */}
+                <div className="p-4 flex-grow flex flex-col">
+                  <h3 className="text-sm lg:text-base font-extrabold mb-2 text-slate-900 transition-colors duration-300 group-hover:text-[#8b0000] leading-snug line-clamp-2 text-balance">
+                    {event.title}
+                  </h3>
+
+                  {/* Location */}
+                  {event.location && (
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-3">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <p className="font-semibold text-slate-700 line-clamp-1">{event.location}</p>
+                    </div>
+                  )}
+
+                  {/* Tag Pill */}
+                  <span className="mt-auto inline-flex w-fit items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">
+                    {event.tag}
+                  </span>
+                </div>
+              </motion.article>
             )
           })}
         </div>

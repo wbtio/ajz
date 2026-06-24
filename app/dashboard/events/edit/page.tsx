@@ -19,6 +19,7 @@ import { Separator } from '@/components/ui/separator'
 import { ArrowRight, Save, Loader2, Upload, X, Globe, MapPin as MapPinIcon, ImageIcon, Presentation, Home, Palette, Award, Store, Handshake, ClipboardList, ChevronDown, ChevronUp, CalendarDays, Plus, Trash2, ImagePlus, Clock, Wrench, User } from 'lucide-react'
 import type { Event, Sector } from '@/lib/database.types'
 import type { FormField } from '@/lib/types'
+import { AiHtmlGenerator } from './components/ai-html-generator'
 
 const RegistrationFormBuilder = dynamic(
     () => import('@/components/shared/registration-form-builder').then(mod => ({ default: mod.RegistrationFormBuilder })),
@@ -490,7 +491,15 @@ function EditEventContent() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="space-y-2">
+                                    <div className="space-y-4">
+                                        <AiHtmlGenerator
+                                            eventTitle={formData.title_ar || formData.title}
+                                            onGenerated={(html) => setFormData(prev => ({
+                                                ...prev,
+                                                html_content: html,
+                                                html_content_url: prev.html_content_url || 'ai-generated.html',
+                                            }))}
+                                        />
                                         {formData.html_content_url && (
                                             <p className="text-xs text-green-600 flex items-center gap-1">
                                                 <Upload className="w-3 h-3" />

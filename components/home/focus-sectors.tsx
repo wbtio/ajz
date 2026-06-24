@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion, useMotionValue, useMotionTemplate, useSpring, useReducedMotion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
@@ -16,18 +16,22 @@ interface FocusSectorsProps {
 const sectorMeta = {
   medical: {
     icon: 'solar:heart-bold-duotone',
+    watermark: 'solar:medical-kit-bold-duotone',
     accent: '#b42318',
   },
   technology: {
     icon: 'solar:cpu-bold-duotone',
+    watermark: 'solar:code-bold-duotone',
     accent: '#0f766e',
   },
   industrie: {
     icon: 'solar:city-bold-duotone',
+    watermark: 'solar:buildings-bold-duotone',
     accent: '#b08d4b',
   },
   academia: {
     icon: 'solar:square-academic-cap-bold-duotone',
+    watermark: 'solar:book-bookmark-bold-duotone',
     accent: '#0c4a6e',
   },
 }
@@ -40,14 +44,104 @@ interface SectorCardProps {
     description: string | null
     meta: {
       icon: string
+      watermark: string
       accent: string
     }
   }
   index: number
 }
 
+function SectorDecoration({ slug, accent }: { slug: string; accent: string }) {
+  switch (slug) {
+    case 'medical':
+      return (
+        <svg
+          className="absolute bottom-0 left-0 w-full h-20 pointer-events-none"
+          viewBox="0 0 280 80"
+          preserveAspectRatio="none"
+          fill="none"
+        >
+          <path
+            d="M0,40 L50,40 L55,40 L60,20 L66,60 L72,10 L78,55 L84,40 L130,40 L135,40 L140,25 L146,55 L152,40 L200,40 L205,40 L210,28 L216,52 L222,40 L280,40"
+            stroke={accent}
+            strokeWidth="1.5"
+            opacity="0.14"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      )
+    case 'technology':
+      return (
+        <svg
+          className="absolute bottom-0 left-0 w-full h-20 pointer-events-none"
+          viewBox="0 0 280 80"
+          preserveAspectRatio="none"
+          fill="none"
+        >
+          <path d="M20,70 L20,45 L65,45 L65,20 L90,20" stroke={accent} strokeWidth="1" opacity="0.14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <path d="M110,70 L110,30 L165,30" stroke={accent} strokeWidth="1" opacity="0.14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <path d="M210,60 L210,25 L255,25" stroke={accent} strokeWidth="1" opacity="0.14" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <circle cx="20" cy="70" r="2.5" fill={accent} opacity="0.18" />
+          <circle cx="65" cy="20" r="2.5" fill={accent} opacity="0.18" />
+          <circle cx="110" cy="70" r="2.5" fill={accent} opacity="0.18" />
+          <circle cx="165" cy="30" r="2.5" fill={accent} opacity="0.18" />
+          <circle cx="210" cy="60" r="2.5" fill={accent} opacity="0.18" />
+          <circle cx="255" cy="25" r="2.5" fill={accent} opacity="0.18" />
+        </svg>
+      )
+    case 'industrie':
+      return (
+        <svg
+          className="absolute bottom-0 left-0 w-full h-16 pointer-events-none"
+          viewBox="0 0 280 64"
+          preserveAspectRatio="none"
+          fill="none"
+        >
+          <path
+            d="M0,64 L0,48 L24,48 L24,36 L44,36 L44,48 L68,48 L68,26 L96,26 L96,40 L114,40 L114,22 L142,22 L142,44 L164,44 L164,32 L186,32 L186,44 L214,44 L214,38 L244,38 L244,44 L280,44 L280,64 Z"
+            fill={accent}
+            opacity="0.09"
+          />
+          <rect x="72" y="32" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="80" y="32" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="72" y="40" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="80" y="40" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="118" y="28" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="126" y="28" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="118" y="36" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="126" y="36" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="28" y="40" width="3" height="3" fill={accent} opacity="0.14" />
+          <rect x="36" y="40" width="3" height="3" fill={accent} opacity="0.14" />
+        </svg>
+      )
+    case 'academia':
+      return (
+        <svg
+          className="absolute bottom-1 right-1 w-28 h-16 pointer-events-none"
+          viewBox="0 0 120 70"
+          fill="none"
+        >
+          <path
+            d="M60,22 Q42,12 20,16 L20,52 Q42,47 60,57 Q78,47 100,52 L100,16 Q78,12 60,22 Z"
+            fill={accent}
+            opacity="0.08"
+          />
+          <path d="M60,22 L60,57" stroke={accent} strokeWidth="1" opacity="0.14" />
+          <path d="M28,24 L52,20 M28,30 L52,26 M28,36 L52,32" stroke={accent} strokeWidth="0.8" opacity="0.12" strokeLinecap="round" />
+          <path d="M68,20 L92,24 M68,26 L92,30 M68,32 L92,36" stroke={accent} strokeWidth="0.8" opacity="0.12" strokeLinecap="round" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
 function SectorCard({ sector, index }: SectorCardProps) {
-  const shouldReduceMotion = useReducedMotion() ?? false
+  const prefersReducedMotion = useReducedMotion()
+  const [mounted, setMounted] = useState(false)
+  const shouldReduceMotion = mounted ? (prefersReducedMotion ?? false) : false
   const [isHovered, setIsHovered] = useState(false)
 
   const mouseX = useMotionValue(0)
@@ -60,6 +154,10 @@ function SectorCard({ sector, index }: SectorCardProps) {
   const iconY = useSpring(rawIconY, { stiffness: 120, damping: 12 })
 
   const glow = useMotionTemplate`radial-gradient(120px circle at ${mouseX}px ${mouseY}px, ${sector.meta.accent}10, transparent 75%)`
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
     if (shouldReduceMotion) return
@@ -109,6 +207,22 @@ function SectorCard({ sector, index }: SectorCardProps) {
         className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B0000]"
         aria-label={sector.title}
       />
+
+      {/* Static accent wash */}
+      <div
+        className="absolute inset-0 pointer-events-none rounded-2xl z-0"
+        style={{ background: `linear-gradient(135deg, ${sector.meta.accent}0a 0%, transparent 55%)` }}
+      />
+
+      {/* Watermark icon */}
+      <Icon
+        icon={sector.meta.watermark}
+        className="absolute -bottom-3 -right-3 w-24 h-24 pointer-events-none z-0"
+        style={{ color: sector.meta.accent, opacity: 0.05 }}
+      />
+
+      {/* Sector-specific decoration */}
+      <SectorDecoration slug={sector.slug} accent={sector.meta.accent} />
 
       {/* Cursor glow */}
       {!shouldReduceMotion && (

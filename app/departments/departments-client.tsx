@@ -154,6 +154,47 @@ const bgImageMap: Record<string, string> = {
   academia: "/images/bg-academia.png",
 };
 
+const sectorIcons: Record<string, string[]> = {
+  medical: [
+    "solar:heart-bold-duotone",
+    "solar:medical-kit-bold-duotone",
+    "solar:user-heart-bold-duotone",
+    "solar:hand-stars-bold-duotone",
+    "solar:shield-check-bold-duotone",
+  ],
+  technology: [
+    "solar:cpu-bold-duotone",
+    "solar:code-bold-duotone",
+    "solar:lightbulb-bolt-bold-duotone",
+    "solar:global-bold-duotone",
+    "solar:link-bold-duotone",
+  ],
+  industrie: [
+    "solar:city-bold-duotone",
+    "solar:buildings-bold-duotone",
+    "solar:globus-bold-duotone",
+    "solar:hand-shake-bold-duotone",
+    "solar:graph-bold-duotone",
+  ],
+  academia: [
+    "solar:square-academic-cap-bold-duotone",
+    "solar:book-bookmark-bold-duotone",
+    "solar:medal-ribbons-star-bold-duotone",
+    "solar:users-group-rounded-bold-duotone",
+    "solar:target-bold-duotone",
+  ],
+};
+
+// Deterministic scattered positions for 5 icons (top,left in %, rotation in deg, size in rem)
+// Avoids layout shift / SSR hydration mismatches vs Math.random()
+const scatteredPositions = [
+  { top: 8, left: 12, rotate: -18, size: 1.9 },
+  { top: 22, left: 68, rotate: 14, size: 2.3 },
+  { top: 54, left: 8, rotate: 10, size: 2.1 },
+  { top: 64, left: 72, rotate: -22, size: 1.7 },
+  { top: 78, left: 40, rotate: 6, size: 2.0 },
+];
+
 export function DepartmentsClient({
   sectors,
   stats,
@@ -283,6 +324,7 @@ function DepartmentsGrid({
           {cards.map((card, index) => {
             const slug = getSlugForDept(card.key, sectors);
             const imgSrc = bgImageMap[card.key] || card.image;
+            const hoverIcons = sectorIcons[card.key] ?? [];
             return (
               <motion.article
                 key={card.key}
@@ -314,15 +356,37 @@ function DepartmentsGrid({
                 </div>
 
                 {/* Body */}
-                <div className="relative flex flex-col p-5 lg:p-6 flex-1">
-                  <h3 className="font-extrabold text-slate-900 text-base lg:text-lg leading-snug mb-2.5 text-balance transition-colors duration-300 group-hover:text-[#8b0000]">
+                <div className="relative flex flex-col p-5 lg:p-6 flex-1 overflow-hidden">
+                  {/* Scattered sector icons behind the body content (40% opacity on hover) */}
+                  {hoverIcons.length > 0 && (
+                    <div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-40">
+                      {hoverIcons.map((ic, i) => {
+                        const pos = scatteredPositions[i % scatteredPositions.length];
+                        return (
+                          <Iconify
+                            key={`${card.key}-hov-${i}`}
+                            icon={ic}
+                            className="absolute text-[#8b0000] will-change-transform"
+                            style={{
+                              top: `${pos.top}%`,
+                              left: `${pos.left}%`,
+                              fontSize: `${pos.size}rem`,
+                              transform: `rotate(${pos.rotate}deg)`,
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <h3 className="relative z-10 font-extrabold text-slate-900 text-base lg:text-lg leading-snug mb-2.5 text-balance transition-colors duration-300 group-hover:text-[#8b0000]">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                  <p className="relative z-10 text-sm text-slate-600 leading-relaxed line-clamp-3">
                     {card.description}
                   </p>
 
-                  <div className="mt-5 pt-4 border-t border-slate-200/60 flex items-center gap-2 text-xs font-bold text-slate-500 transition-colors duration-300 group-hover:text-[#8b0000]">
+                  <div className="relative z-10 mt-5 pt-4 border-t border-slate-200/60 flex items-center gap-2 text-xs font-bold text-slate-500 transition-colors duration-300 group-hover:text-[#8b0000]">
                     <span>{exploreBtn}</span>
                     <svg
                       className="w-3.5 h-3.5 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
