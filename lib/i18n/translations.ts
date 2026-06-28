@@ -163,10 +163,9 @@ export const translations = {
         subtitle: "مسارات خدمية متكاملة تغطي التسجيل وإدارة الوفود وتطوير الشراكات.",
         viewAll: "استعرض كل الخدمات",
         items: [
-          "المشاركة في المعارض الدولية",
-          "إدارة الوفود",
-          "دعم خطابات الدعوة",
+          "إقامة المعارض الدولية",
           "تنسيق اللقاءات الثنائية والمؤسسية",
+          "التدريب والتطوير",
           "تنظيم الفعاليات والتمثيل التجاري",
           "تطوير الشراكات",
           "دعم دخول السوق",
@@ -587,11 +586,11 @@ export const translations = {
         subtitle: "أربعة مسارات خدمية تغطي الوصول للفعاليات، التحالفات المؤسسية، التمثيل الميداني، واللوجستيات القنصلية.",
         items: [
           {
-            title: "الوصول للفعاليات والوفود العالمية",
-            desc: "تسهيل الوصول المتكامل إلى المعارض التجارية العالمية الرائدة وإدارة الوفود الثنائية الرسمية، بما يضمن سلاسة التسجيل والتنسيق القنصلي."
+            title: "إقامة المعارض الدولية",
+            desc: "تنظيم وإقامة المعارض التجارية الدولية والمشاركة المتكاملة فيها، بما يشمل إدارة الوفود الرسمية بالكامل — من التسجيل وتأشيرات السفر إلى التنسيق القنصلي."
           },
           {
-            title: "التحالفات المؤسسية الثنائية",
+            title: "تنسيق اللقاءات الثنائية والمؤسسية",
             desc: "بناء شراكات رسمية، ومشاريع مشتركة، واتفاقيات نقل المعرفة والتكنولوجيا بين الشركات العالمية والوزارات والجهات المطورة محلياً."
           },
           {
@@ -920,9 +919,8 @@ export const translations = {
         viewAll: "Browse all services",
         items: [
           "International Exhibition Participation",
-          "Delegation Management",
-          "Invitation Letter Support",
           "B2B & Institutional Matchmaking",
+          "Training & Development",
           "Event Organization & Representation",
           "Partnership Development",
           "Market Entry Support",
@@ -1346,11 +1344,11 @@ export const translations = {
         subtitle: "Four service tracks covering event access, institutional alliances, in-country representation, and consular logistics.",
         items: [
           {
-            title: "Global Event & Delegation Access",
-            desc: "We facilitate end-to-end access to leading global trade exhibitions and manage official bilateral delegations, handling registrations, visa credentials, and consular coordination."
+            title: "International Exhibition Participation",
+            desc: "We facilitate end-to-end participation in leading global trade exhibitions, including full delegation management — registrations, visa credentials, and consular coordination."
           },
           {
-            title: "Bilateral Institutional Alliances",
+            title: "B2B & Institutional Matchmaking",
             desc: "We establish formal partnerships, joint ventures, and technology transfer agreements between global enterprises, ministries, and regional developers."
           },
           {

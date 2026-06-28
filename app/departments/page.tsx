@@ -6,7 +6,7 @@ export const metadata = {
   description: "Explore the departments we cover at JAZ",
 };
 
-const ESTABLISHED_YEAR = 2022;
+const ESTABLISHED_YEAR = 2012;
 
 export default async function DepartmentsPage() {
   const supabase = await createClient();

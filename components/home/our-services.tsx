@@ -9,9 +9,8 @@ import { SectionHeader } from './section-header'
 
 const SERVICE_ICONS = [
   'solar:globus-bold-duotone',
-  'solar:users-group-two-rounded-bold-duotone',
-  'solar:letter-bold-duotone',
   'solar:handshake-bold-duotone',
+  'solar:square-academic-cap-bold-duotone',
   'solar:calendar-mark-bold-duotone',
   'solar:link-bold-duotone',
   'solar:compass-bold-duotone',
@@ -22,7 +21,7 @@ export function OurServices() {
   const { t } = useI18n()
   const shouldReduceMotion = useReducedMotion() ?? false
 
-  const services = (t.homepage.services.items ?? []).slice(0, 4)
+  const services = (t.homepage.services.items ?? []).slice(0, 3)
   const half = Math.ceil(services.length / 2)
 
   return (

@@ -692,7 +692,7 @@ export default function ContactPage() {
             </a>
 
             {/* Email Us */}
-            <a href="mailto:info@jaz-iq.com" className="group bg-white p-5 rounded-2xl border border-slate-200/70 flex items-center gap-4 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+            <a href="mailto:info@jaz.iq" className="group bg-white p-5 rounded-2xl border border-slate-200/70 flex items-center gap-4 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
               <div className="bg-[#8B0000]/5 group-hover:bg-[#8B0000]/10 p-2.5 rounded-xl text-[#8B0000] shrink-0 transition-colors">
                 <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
@@ -700,7 +700,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h4 className="font-bold text-slate-900 text-sm">{t.contact.emailUs}</h4>
-                <p className="text-slate-900 font-extrabold text-sm mt-0.5">info@jaz-iq.com</p>
+                <p className="text-slate-900 font-extrabold text-sm mt-0.5">info@jaz.iq</p>
                 <p className="text-[10px] text-slate-400 mt-1">{t.contact.emailUsDesc}</p>
               </div>
             </a>

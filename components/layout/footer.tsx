@@ -151,21 +151,29 @@ export function Footer() {
               {isAr ? 'اتصل بنا' : 'Contact Us'}
             </h3>
             <div className="space-y-3.5 text-xs text-[#6f85a3]">
-              <div>
-                <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب البصرة' : 'Basra Office'}</p>
+              {/* Local offices */}
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#6f85a3]/60">
+                  {isAr ? 'محلي' : 'Local'}
+                </p>
+                <p className="font-semibold text-white/90">{isAr ? 'مكتب البصرة' : 'Basra Office'}</p>
+                <p className="font-semibold text-white/90">{isAr ? 'مكتب بغداد' : 'Baghdad Office'}</p>
+                <p className="font-semibold text-white/90">{isAr ? 'مكتب أربيل' : 'Erbil Office'}</p>
               </div>
-              <div>
-                <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب بغداد' : 'Baghdad Office'}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-white/90">{locale === 'ar' ? 'مكتب أربيل' : 'Erbil Office'}</p>
+              {/* International offices */}
+              <div className="space-y-1.5 pt-1.5 border-t border-[#6f85a3]/10">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#6f85a3]/60">
+                  {isAr ? 'دولي' : 'International'}
+                </p>
+                <p className="font-semibold text-white/90">{isAr ? 'مكتب فرنسا' : 'France Office'}</p>
+                <p className="font-semibold text-white/90">{isAr ? 'مكتب ألمانيا' : 'Germany Office'}</p>
               </div>
               <div className="pt-1.5 space-y-0.5 border-t border-[#6f85a3]/10">
                 <a href="tel:+9647719000600" className="block text-white/90 hover:text-[#f7e382] transition-colors font-medium" dir="ltr">
                   +964 771 900 0600
                 </a>
-                <a href="mailto:info@jaz-iq.com" className="block hover:text-[#f7e382] transition-colors font-medium">
-                  info@jaz-iq.com
+                <a href="mailto:info@jaz.iq" className="block hover:text-[#f7e382] transition-colors font-medium">
+                  info@jaz.iq
                 </a>
               </div>
             </div>
@@ -230,9 +238,6 @@ export function Footer() {
                 <p>{isAr ? 'السبت – الخميس' : 'Saturday – Thursday'}</p>
                 <p className="font-semibold text-white/90" dir={isAr ? 'ltr' : undefined}>
                   {isAr ? '8:30 ص – 4:30 م' : '8:30 AM – 4:30 PM'}
-                </p>
-                <p className="text-[11px] text-[#9fb0c7]">
-                  {isAr ? '(بتوقيت العراق المحلي)' : '(Iraq Local Time)'}
                 </p>
               </div>
             </div>
