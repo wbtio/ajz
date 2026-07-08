@@ -249,6 +249,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
   const [selectedCountry, setSelectedCountry] = useState('')
   const [selectedMonth, setSelectedMonth] = useState('')
   const [participationTypes, setParticipationTypes] = useState<string[]>([])
+  const [priceFilter, setPriceFilter] = useState('')
 
   // Pagination: incrementally reveal more events when the list is long
   const PAGE_SIZE = 6
@@ -261,12 +262,9 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
     setVisibleCount(PAGE_SIZE)
   }
 
-  // Combine database events with mock events
+  // Use only database events (mock events removed - they caused 404s)
   const allEvents = useMemo(() => {
-    // Prevent duplicate entries if database already contains some of the mock IDs
-    const dbIds = new Set(events.map((e) => e.id))
-    const filteredMocks = MOCK_EVENTS.filter((m) => !dbIds.has(m.id))
-    return [...filteredMocks, ...events]
+    return [...events]
   }, [events])
 
   // Extract unique countries
@@ -326,9 +324,16 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         if (!hasMatch) return false
       }
 
+      // 6. Price Filter (filter-only — price is never displayed on the event itself)
+      if (priceFilter) {
+        const isFree = !event.price || Number(event.price) <= 0
+        if (priceFilter === 'free' && !isFree) return false
+        if (priceFilter === 'paid' && isFree) return false
+      }
+
       return true
     })
-  }, [allEvents, search, selectedSector, selectedSubSector, selectedCountry, selectedMonth, participationTypes, isRTL])
+  }, [allEvents, search, selectedSector, selectedSubSector, selectedCountry, selectedMonth, participationTypes, priceFilter, isRTL])
 
   // Wrappers that reset pagination whenever a filter changes
   const resetPage = () => setVisibleCount(PAGE_SIZE)
@@ -337,6 +342,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
   const setSelectedMonthPaginated = (v: string) => { setSelectedMonth(v); resetPage() }
   const setParticipationTypesPaginated = (v: string[]) => { setParticipationTypes(v); resetPage() }
   const setSearchPaginated = (v: string) => { setSearch(v); resetPage() }
+  const setPriceFilterPaginated = (v: string) => { setPriceFilter(v); resetPage() }
 
   const handlePopularSearch = (query: string, sectorSlug?: string) => {
     if (sectorSlug) {
@@ -358,6 +364,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
     setSelectedCountry('')
     setSelectedMonth('')
     setParticipationTypes([])
+    setPriceFilter('')
     setVisibleCount(PAGE_SIZE)
   }
 
@@ -439,6 +446,8 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
               setSelectedMonth={setSelectedMonthPaginated}
               participationTypes={participationTypes}
               setParticipationTypes={setParticipationTypesPaginated}
+              priceFilter={priceFilter}
+              setPriceFilter={setPriceFilterPaginated}
               onClear={handleClearFilters}
             />
 

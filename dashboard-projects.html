@@ -1,0 +1,2882 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة إدارة المشاريع المتكاملة | JAZ</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg: #f8f6f4;
+      --sidebar-bg: rgba(255, 255, 255, 0.96);
+      --card: #ffffff;
+      --border: #e7e5e4;
+      --border-focus: #c2410c;
+      --fg: #1c1917;
+      --muted: #78716c;
+      --muted-light: #a8a29e;
+      --primary: #8b0000;
+      --primary-light: #c2410c;
+      --primary-rgb: 139, 0, 0;
+      --emerald: #059669;
+      --emerald-bg: #ecfdf5;
+      --emerald-border: #a7f3d0;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --red-border: #fecaca;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --blue-border: #bfdbfe;
+      --radius: 1.25rem;
+      --radius-sm: 0.75rem;
+      --shadow: 0 4px 20px -2px rgba(120, 113, 108, 0.08), 0 2px 6px -1px rgba(120, 113, 108, 0.04);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Layout Structure */
+    .app-layout {
+      display: flex;
+      min-h: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar - Right aligned for RTL */
+    .sidebar {
+      width: 290px;
+      background: var(--sidebar-bg);
+      border-left: 1px solid var(--border);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 1.75rem 1.25rem;
+      z-index: 100;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.02);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.85rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      box-shadow: 0 8px 18px -6px rgba(var(--primary-rgb), 0.4);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--fg);
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: -0.1rem;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      margin-top: 1rem;
+      padding-right: 0.5rem;
+    }
+
+    /* Projects Dropdown / Selector */
+    .project-selector-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-selector {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--fg);
+      cursor: pointer;
+      appearance: none;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .project-selector:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.1);
+    }
+
+    .project-selector-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+    }
+
+    /* Sidebar Navigation Tabs */
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      flex-grow: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background: rgba(139, 0, 0, 0.03);
+      color: var(--primary);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(139, 0, 0, 0.06), rgba(194, 65, 12, 0.04));
+      color: var(--primary);
+      border-color: rgba(139, 0, 0, 0.1);
+      box-shadow: 0 4px 12px -2px rgba(139, 0, 0, 0.03);
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    .nav-item.active svg {
+      color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar-main {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fed7aa, #ffedd5);
+      color: #ea580c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1px solid #ffedd5;
+    }
+
+    .user-info-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name-main {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .user-role-main {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex-grow: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Top Project Summary Panel */
+    .project-header-panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-header-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--amber));
+    }
+
+    .proj-meta-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .proj-title-block h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--fg);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .proj-title-block p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .meta-stat-card {
+      background: #fdfcfb;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .meta-stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .meta-stat-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--fg);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .badge-planning { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+    .badge-execution { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+    .badge-completed { background: var(--emerald-bg); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .badge-suspended { background: #f5f5f4; color: var(--muted); border: 1px solid var(--border); }
+    .badge-cancelled { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+    /* Expandable project details toggle */
+    .more-details-btn {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 1rem;
+      transition: var(--transition);
+    }
+
+    .more-details-btn:hover {
+      color: var(--primary-light);
+    }
+
+    .expanded-project-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out, margin-top 0.3s;
+      border-top: 0px solid transparent;
+    }
+
+    .expanded-project-details.show {
+      max-height: 500px;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    .details-subgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .details-box {
+      background: #faf9f8;
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .details-box h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--fg);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.35rem;
+    }
+
+    .details-box ul {
+      list-style: none;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .details-box li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Tabs Content Container */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ======================================================== */
+    /* Tab 1: Analytics Dashboard Layout */
+    /* ======================================================== */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .progress-doughnut-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 1rem 0;
+    }
+
+    .budget-comparison-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .comparison-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .bar-row-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .bar-container {
+      height: 24px;
+      background: #f5f5f4;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 1s ease-out;
+    }
+
+    .bar-fill-budget {
+      background: linear-gradient(90deg, #1e293b, #475569);
+    }
+
+    .bar-fill-spent {
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    }
+
+    .bar-label-inner {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Small stat row under charts */
+    .mini-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .mini-stat-card {
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mini-stat-icon-wrap {
+      width: 46px;
+      height: 46px;
+      border-radius: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ======================================================== */
+    /* Tab 2: Kanban Board */
+    /* ======================================================== */
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .kanban-column {
+      background: #f4f3f0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 0.5rem;
+    }
+
+    .column-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .task-count-badge {
+      background: #e7e5e4;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .kanban-cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      min-height: 500px;
+    }
+
+    .kanban-card {
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      cursor: grab;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .kanban-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-focus);
+    }
+
+    .kanban-card:active {
+      cursor: grabbing;
+    }
+
+    .card-priority-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      width: fit-content;
+      margin-bottom: 0.5rem;
+    }
+
+    .prio-high { background: var(--red-bg); color: var(--red); }
+    .prio-medium { background: var(--amber-bg); color: var(--amber); }
+    .prio-low { background: #fafaf9; color: var(--muted); border: 1px solid var(--border); }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--fg);
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.85rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--border);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .card-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Modal for Task Details */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 25, 23, 0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      width: 90%;
+      max-width: 580px;
+      padding: 2rem;
+      transform: translateY(15px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .modal-overlay.show .modal-box {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      left: 1.25rem;
+      background: #f5f5f4;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--fg);
+      margin-bottom: 1rem;
+      padding-left: 2rem;
+    }
+
+    .modal-detail-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f5f5f4;
+      font-size: 0.88rem;
+    }
+
+    .modal-detail-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .modal-detail-row-title {
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .modal-detail-row-val {
+      color: var(--fg);
+    }
+
+    /* ======================================================== */
+    /* Tab 3: Gantt Chart */
+    /* ======================================================== */
+    .gantt-container {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+
+    .gantt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .gantt-modes-tabs {
+      display: flex;
+      background: #f5f5f4;
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      gap: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .gantt-mode-btn {
+      background: transparent;
+      border: none;
+      padding: 0.4rem 1.25rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: calc(var(--radius-sm) - 0.25rem);
+      transition: var(--transition);
+    }
+
+    .gantt-mode-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .gantt-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .gantt-tasks-col {
+      background: #faf9f8;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gantt-cell-header {
+      height: 45px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--fg);
+    }
+
+    .gantt-task-title-cell {
+      height: 55px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .gantt-task-title-cell:last-child {
+      border-bottom: none;
+    }
+
+    .gantt-timeline-col {
+      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .gantt-timeline-header {
+      height: 45px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      position: relative;
+    }
+
+    .timeline-header-unit {
+      flex-grow: 1;
+      min-width: 80px;
+      border-left: 1px solid rgba(0,0,0,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .gantt-timeline-rows {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gantt-timeline-row {
+      height: 55px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0 0.5rem;
+    }
+
+    .gantt-timeline-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Gantt Progress Bar */
+    .gantt-bar {
+      position: absolute;
+      height: 28px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(139,0,0,0.15);
+      transition: left 0.3s, width 0.3s;
+    }
+
+    .gantt-bar-progress {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 0 999px 999px 0;
+    }
+
+    .gantt-bar-label {
+      position: relative;
+      z-index: 10;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    /* ======================================================== */
+    /* Tab 4: Budget Tracker */
+    /* ======================================================== */
+    .budget-tracker-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1.5rem;
+    }
+
+    .expense-list-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 0.85rem;
+    }
+
+    .expense-list-table th {
+      padding: 0.85rem 1rem;
+      background: #fcfbf9;
+      border-bottom: 2px solid var(--border);
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .expense-list-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
+    }
+
+    .expense-list-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .expense-status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .exp-pending { background: var(--amber-bg); color: var(--amber); }
+    .exp-approved { background: var(--blue-bg); color: var(--blue); }
+    .exp-paid { background: var(--emerald-bg); color: var(--emerald); }
+
+    /* Form Design */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .form-input {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      width: 100%;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.1);
+    }
+
+    .btn-submit {
+      background: var(--fg);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      transition: var(--transition);
+    }
+
+    .btn-submit:hover {
+      background: #292524;
+    }
+
+    /* ======================================================== */
+    /* Tab 5: Contract Management */
+    /* ======================================================== */
+    .contract-warning-banner {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .contracts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .contract-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .contract-top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .contract-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--fg);
+      margin-bottom: 0.5rem;
+    }
+
+    .contract-dates {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      background: #fdfcfb;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+
+    .contract-actions {
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ======================================================== */
+    /* Tab 6: Resource Allocation */
+    /* ======================================================== */
+    .resource-warning-banner {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      display: none; /* Shows on overload */
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      animation: flash 1.5s infinite;
+    }
+
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
+    }
+
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .resource-row-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+
+    .resource-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .resource-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ddd6fe, #c7d2fe);
+      color: #4f46e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .resource-desc {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .resource-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .resource-role {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .slider-container {
+      margin-top: 1rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .allocation-slider {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* ======================================================== */
+    /* Tab 7: Risk Management */
+    /* ======================================================== */
+    .risk-matrix-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .risk-item-row {
+      background: #fafaf9;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+      transition: var(--transition);
+    }
+
+    .risk-item-row:hover {
+      border-color: var(--border-focus);
+      background: #fff;
+    }
+
+    .risk-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .risk-category-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .risk-title-lbl {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .risk-selectors-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+
+    .risk-rating-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+    }
+
+    .rating-high { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+    .rating-med { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+    .rating-low { background: var(--emerald-bg); color: var(--emerald); border: 1px solid var(--emerald-border); }
+
+    .mitigation-plan-text {
+      background: #fff;
+      border-right: 3px solid var(--primary-light);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-top: 0.5rem;
+    }
+
+    /* ======================================================== */
+    /* Tab 8: Automated Reminders */
+    /* ======================================================== */
+    .reminders-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .toggle-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f5f5f4;
+    }
+
+    .toggle-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .toggle-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .toggle-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #d6d3d1;
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .switch-slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .switch-slider:before {
+      transform: translateX(20px);
+    }
+
+    .mock-reminder-trigger-box {
+      background: #fafaf9;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  
+  <!-- ======================================================== -->
+  <!-- SIDEBAR -->
+  <!-- ======================================================== -->
+  <aside class="sidebar">
+    <div class="brand-section">
+      <div class="logo-badge">J</div>
+      <div>
+        <h1 class="brand-title">إدارة المشاريع</h1>
+        <div class="brand-subtitle">JAZ Zone Admin</div>
+      </div>
+    </div>
+
+    <div class="section-label">اختر المشروع النشط</div>
+    <div class="project-selector-wrapper">
+      <select class="project-selector" id="projectSelect" onchange="switchProject(this.value)">
+        <option value="p1">بوابة الفعاليات الرقمية (JAZ Portal)</option>
+        <option value="p2">مؤتمر الاستثمار السنوي 2026</option>
+        <option value="p3">برنامج تأهيل طاقات الشباب العراقي</option>
+      </select>
+      <i data-lucide="chevron-down" class="project-selector-icon" style="width: 16px; height: 16px;"></i>
+    </div>
+
+    <div class="section-label">الميزات الفرعية للمشروع</div>
+    <ul class="nav-list">
+      <li>
+        <a href="#" class="nav-item active" data-tab="analytics" onclick="showTab('analytics')">
+          <i data-lucide="bar-chart-3"></i>
+          <span>لوحة التحليلات</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="kanban" onclick="showTab('kanban')">
+          <i data-lucide="trello"></i>
+          <span>لوحة المهام (Kanban)</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="gantt" onclick="showTab('gantt')">
+          <i data-lucide="calendar-range"></i>
+          <span>الجدول الزمني (Gantt)</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="budget" onclick="showTab('budget')">
+          <i data-lucide="wallet"></i>
+          <span>متتبع الميزانية</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="contracts" onclick="showTab('contracts')">
+          <i data-lucide="file-signature"></i>
+          <span>إدارة العقود</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="resources" onclick="showTab('resources')">
+          <i data-lucide="users-round"></i>
+          <span>إدارة الموارد</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="risks" onclick="showTab('risks')">
+          <i data-lucide="shield-alert"></i>
+          <span>إدارة المخاطر</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item" data-tab="reminders" onclick="showTab('reminders')">
+          <i data-lucide="bell-ring"></i>
+          <span>التذكيرات الآلية</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="user-avatar-main">م</div>
+      <div class="user-info-text">
+        <span class="user-name-main">المدير العام</span>
+        <span class="user-role-main">مسؤول النظام</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================================================== -->
+  <!-- MAIN CONTENT -->
+  <!-- ======================================================== -->
+  <main class="main-content">
+    
+    <!-- Top Project Summary Panel -->
+    <section class="project-header-panel">
+      <div class="proj-meta-grid">
+        <div class="proj-title-block">
+          <h2 id="projName">بوابة الفعاليات الرقمية (JAZ Portal)</h2>
+          <p id="projDesc">مشروع تطوير وتحديث البنية التحتية البرمجية لمنصة JAZ لتنظيم وإدارة التسجيل المؤتمت للوفود والمؤتمرات الدولية لعام 2026.</p>
+        </div>
+        
+        <div class="meta-stat-card">
+          <span class="meta-stat-label"><i data-lucide="clock" style="width: 14px; height: 14px;"></i>الموعد النهائي</span>
+          <span class="meta-stat-value" id="projDeadline">15 أكتوبر 2026</span>
+        </div>
+
+        <div class="meta-stat-card">
+          <span class="meta-stat-label"><i data-lucide="banknote" style="width: 14px; height: 14px;"></i>الميزانية الكلية</span>
+          <span class="meta-stat-value" id="projBudget">$120,000</span>
+        </div>
+
+        <div class="meta-stat-card">
+          <span class="meta-stat-label"><i data-lucide="activity" style="width: 14px; height: 14px;"></i>حالة المشروع</span>
+          <span id="projStatusBadge" class="badge badge-execution">قيد التنفيذ</span>
+        </div>
+      </div>
+
+      <button class="more-details-btn" onclick="toggleDetails()">
+        <span>تفاصيل إضافية (فريق العمل، المخاطر الأساسية، خطة التواصل)</span>
+        <i data-lucide="chevron-down" id="detailsArrow" style="width: 14px; height: 14px;"></i>
+      </button>
+
+      <!-- Expandable details -->
+      <div class="expanded-project-details" id="expandedDetails">
+        <div class="details-subgrid">
+          <div class="details-box">
+            <h4>فريق العمل وأصحاب المصلحة</h4>
+            <ul id="projTeamList">
+              <li><i data-lucide="user-check" style="width: 14px; height: 14px; color: var(--primary);"></i>سارة أحمد (مديرة المشروع)</li>
+              <li><i data-lucide="user-check" style="width: 14px; height: 14px; color: var(--primary);"></i>أحمد صالح (مطور رئيسي)</li>
+              <li><i data-lucide="user-check" style="width: 14px; height: 14px; color: var(--primary);"></i>ليلى مراد (مصممة تجربة المستخدم UI/UX)</li>
+            </ul>
+          </div>
+
+          <div class="details-box">
+            <h4>أبرز المخاطر وخطط التخفيف</h4>
+            <ul id="projRiskList">
+              <li>⚠️ تأخر استلام متطلبات بوابات الدفع (تخفيف: توفير بيئة دفع تجريبية بديلة)</li>
+              <li>⚠️ تعارض جداول حجز السيرفرات (تخفيف: حجز السحابة الاحتياطية مبكراً)</li>
+            </ul>
+          </div>
+
+          <div class="details-box">
+            <h4>خطة التواصل الرسمية</h4>
+            <ul id="projCommPlan">
+              <li>📅 اجتماع أسبوعي للمطوّرين (كل إثنين 10:00 صباحاً)</li>
+              <li>📅 تقرير شهري للإدارة العامة (نهاية كل شهر ميلادي)</li>
+              <li>💬 تواصل يومي عبر قناة التنسيق الداخلية بتطبيق JAZ</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: ANALYTICS -->
+    <!-- ======================================================== -->
+    <div class="tab-content active" id="tab-analytics">
+      <div class="analytics-grid">
+        
+        <!-- Doughnut / Circle SVG Charts -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">مؤشرات التقدم المالي والتنفيذي</h3>
+          </div>
+          <div class="progress-doughnut-container">
+            <!-- Progress Circle 1 -->
+            <div style="text-align: center;">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#f5f5f4" stroke-width="10"/>
+                <circle id="taskProgressCircle" cx="60" cy="60" r="50" fill="none" stroke="var(--emerald)" stroke-width="10" 
+                        stroke-dasharray="314" stroke-dashoffset="94" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                <text x="60" y="65" text-anchor="middle" font-weight="800" font-size="1.2rem" fill="var(--fg)" id="taskProgressText">70%</text>
+              </svg>
+              <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem; color: var(--muted);">نسبة إنجاز المهام</p>
+            </div>
+            
+            <!-- Progress Circle 2 -->
+            <div style="text-align: center;">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#f5f5f4" stroke-width="10"/>
+                <circle id="budgetProgressCircle" cx="60" cy="60" r="50" fill="none" stroke="var(--primary)" stroke-width="10" 
+                        stroke-dasharray="314" stroke-dashoffset="141" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                <text x="60" y="65" text-anchor="middle" font-weight="800" font-size="1.2rem" fill="var(--fg)" id="budgetProgressText">55%</text>
+              </svg>
+              <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem; color: var(--muted);">نسبة استهلاك الميزانية</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget vs Expenses -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">الميزانية المرصودة مقابل المصروف الفعلي</h3>
+          </div>
+          <div class="budget-comparison-bars">
+            <div class="comparison-bar-row">
+              <div class="bar-row-header">
+                <span>إجمالي الميزانية المعتمدة</span>
+                <span id="barTotalBudgetVal">$120,000</span>
+              </div>
+              <div class="bar-container">
+                <div class="bar-fill bar-fill-budget" style="width: 100%;"></div>
+                <span class="bar-label-inner">المخطط الكلي</span>
+              </div>
+            </div>
+
+            <div class="comparison-bar-row">
+              <div class="bar-row-header">
+                <span>المصروف الفعلي حتى الآن</span>
+                <span id="barSpentBudgetVal" style="color: var(--primary);">$66,000</span>
+              </div>
+              <div class="bar-container">
+                <div class="bar-fill bar-fill-spent" id="barSpentWidth" style="width: 55%;"></div>
+                <span class="bar-label-inner" id="barSpentPercentLabel">55%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom charts / distribution cards -->
+      <div class="analytics-grid" style="grid-template-columns: 1fr 1fr;">
+        <!-- Risk Distribution Doughnut (SVG) -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">توزيع مستوى المخاطر بالمشروع</h3>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1rem;">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <!-- High Risk segment (red) -->
+              <circle cx="70" cy="70" r="50" fill="none" stroke="var(--red)" stroke-width="16" stroke-dasharray="314" stroke-dashoffset="240" transform="rotate(-90 70 70)"/>
+              <!-- Medium Risk segment (amber) -->
+              <circle cx="70" cy="70" r="50" fill="none" stroke="var(--amber)" stroke-width="16" stroke-dasharray="314" stroke-dashoffset="180" transform="rotate(5deg 70 70)"/>
+              <!-- Low Risk segment (emerald) -->
+              <circle cx="70" cy="70" r="50" fill="none" stroke="var(--emerald)" stroke-width="16" stroke-dasharray="314" stroke-dashoffset="208" transform="rotate(160 70 70)"/>
+            </svg>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="width: 12px; height: 12px; border-radius: 3px; background: var(--red);"></span>
+                <span id="riskDistHigh">مرتفعة (24%)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="width: 12px; height: 12px; border-radius: 3px; background: var(--amber);"></span>
+                <span id="riskDistMedium">متوسطة (42%)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="width: 12px; height: 12px; border-radius: 3px; background: var(--emerald);"></span>
+                <span id="riskDistLow">منخفضة (34%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini Stats Summary -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="mini-stat-card">
+            <div class="mini-stat-icon-wrap" style="background: var(--blue-bg); color: var(--blue);">
+              <i data-lucide="file-check-2"></i>
+            </div>
+            <div>
+              <p style="font-size: 0.75rem; color: var(--muted); font-weight: 600;">العقود النشطة</p>
+              <h4 style="font-size: 1.25rem; font-weight: 800;" id="statActiveContracts">3 عقود معتمدة</h4>
+            </div>
+          </div>
+
+          <div class="mini-stat-card">
+            <div class="mini-stat-icon-wrap" style="background: var(--emerald-bg); color: var(--emerald);">
+              <i data-lucide="users-2"></i>
+            </div>
+            <div>
+              <p style="font-size: 0.75rem; color: var(--muted); font-weight: 600;">الموارد المخصصة</p>
+              <h4 style="font-size: 1.25rem; font-weight: 800;" id="statAllocatedResources">4 أفراد فريق</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: KANBAN BOARD -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-kanban">
+      <div class="kanban-board">
+        
+        <!-- Column 1: Todo -->
+        <div class="kanban-column" id="col-todo" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'todo')">
+          <div class="column-header">
+            <div class="column-title-wrap">
+              <span style="color: var(--red);">●</span>
+              <span>قيد الانتظار</span>
+            </div>
+            <span class="task-count-badge" id="count-todo">2</span>
+          </div>
+          <div class="kanban-cards-container" id="cards-todo">
+            <!-- Card 1 -->
+            <div class="kanban-card" draggable="true" ondragstart="dragStart(event, 't1')" id="t1" onclick="openTaskModal('t1')">
+              <span class="card-priority-tag prio-high">عالية الأهمية</span>
+              <h4 class="card-title">ربط وتجربة بوابة الدفع الإلكتروني (زين كاش / مصرف الرافدين)</h4>
+              <div class="card-meta-row">
+                <span class="card-meta-item"><i data-lucide="user" style="width: 12px; height: 12px;"></i>أحمد صالح</span>
+                <span class="card-meta-item"><i data-lucide="clock" style="width: 12px; height: 12px;"></i>24 ساعة</span>
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="kanban-card" draggable="true" ondragstart="dragStart(event, 't2')" id="t2" onclick="openTaskModal('t2')">
+              <span class="card-priority-tag prio-medium">متوسطة</span>
+              <h4 class="card-title">صياغة وتوقيع اتفاقية NDA مع المورد الخارجي للسيرفرات</h4>
+              <div class="card-meta-row">
+                <span class="card-meta-item"><i data-lucide="user" style="width: 12px; height: 12px;"></i>ليلى مراد</span>
+                <span class="card-meta-item"><i data-lucide="clock" style="width: 12px; height: 12px;"></i>12 ساعة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: In Progress -->
+        <div class="kanban-column" id="col-inprogress" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'inprogress')">
+          <div class="column-header">
+            <div class="column-title-wrap">
+              <span style="color: var(--amber);">●</span>
+              <span>قيد التنفيذ</span>
+            </div>
+            <span class="task-count-badge" id="count-inprogress">1</span>
+          </div>
+          <div class="kanban-cards-container" id="cards-inprogress">
+            <!-- Card 3 -->
+            <div class="kanban-card" draggable="true" ondragstart="dragStart(event, 't3')" id="t3" onclick="openTaskModal('t3')">
+              <span class="card-priority-tag prio-high">عالية الأهمية</span>
+              <h4 class="card-title">تصميم واجهة لوحة تحكم الحجوزات وربطها مع Supabase</h4>
+              <div class="card-meta-row">
+                <span class="card-meta-item"><i data-lucide="user" style="width: 12px; height: 12px;"></i>أحمد صالح</span>
+                <span class="card-meta-item"><i data-lucide="clock" style="width: 12px; height: 12px;"></i>40 ساعة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Completed -->
+        <div class="kanban-column" id="col-completed" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'completed')">
+          <div class="column-header">
+            <div class="column-title-wrap">
+              <span style="color: var(--emerald);">●</span>
+              <span>مكتمل</span>
+            </div>
+            <span class="task-count-badge" id="count-completed">1</span>
+          </div>
+          <div class="kanban-cards-container" id="cards-completed">
+            <!-- Card 4 -->
+            <div class="kanban-card" draggable="true" ondragstart="dragStart(event, 't4')" id="t4" onclick="openTaskModal('t4')">
+              <span class="card-priority-tag prio-low">منخفضة</span>
+              <h4 class="card-title">إعداد وتجهيز خطة التواصل التفصيلية للفريق والشركاء</h4>
+              <div class="card-meta-row">
+                <span class="card-meta-item"><i data-lucide="user" style="width: 12px; height: 12px;"></i>سارة أحمد</span>
+                <span class="card-meta-item"><i data-lucide="clock" style="width: 12px; height: 12px;"></i>8 ساعات</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: GANTT CHART -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-gantt">
+      <div class="gantt-container">
+        <div class="gantt-header">
+          <h3 class="chart-title">الجدول الزمني التفصيلي للمهام والتبعيات</h3>
+          <div class="gantt-modes-tabs">
+            <button class="gantt-mode-btn" id="ganttModeDay" onclick="switchGanttMode('day')">يوم</button>
+            <button class="gantt-mode-btn active" id="ganttModeWeek" onclick="switchGanttMode('week')">أسبوع</button>
+            <button class="gantt-mode-btn" id="ganttModeMonth" onclick="switchGanttMode('month')">شهر</button>
+          </div>
+        </div>
+
+        <div class="gantt-grid">
+          
+          <!-- Gantt Task List Labels -->
+          <div class="gantt-tasks-col">
+            <div class="gantt-cell-header">اسم المهمة</div>
+            <div class="gantt-task-title-cell">تحديد خطة التواصل</div>
+            <div class="gantt-task-title-cell">تصميم واجهة التسجيل</div>
+            <div class="gantt-task-title-cell">ربط بوابات الدفع الإلكتروني</div>
+            <div class="gantt-task-title-cell">صياغة وتوقيع اتفاقيات NDA</div>
+          </div>
+
+          <!-- Gantt Bars Viewport -->
+          <div class="gantt-timeline-col">
+            <div class="gantt-timeline-header" id="ganttTimelineHeader">
+              <!-- Dynamically rendered week headers -->
+              <div class="timeline-header-unit">أسبوع 1</div>
+              <div class="timeline-header-unit">أسبوع 2</div>
+              <div class="timeline-header-unit">أسبوع 3</div>
+              <div class="timeline-header-unit">أسبوع 4</div>
+              <div class="timeline-header-unit">أسبوع 5</div>
+            </div>
+
+            <div class="gantt-timeline-rows">
+              <!-- Task 1 Bar -->
+              <div class="gantt-timeline-row">
+                <div class="gantt-bar" id="gantt-bar-t4" style="right: 5%; width: 25%; background: var(--emerald);" title="اسحب أو انقر لتغيير التواريخ">
+                  <div class="gantt-bar-progress" style="width: 100%;"></div>
+                  <span class="gantt-bar-label">تم الإنجاز - 100%</span>
+                </div>
+              </div>
+
+              <!-- Task 2 Bar -->
+              <div class="gantt-timeline-row">
+                <div class="gantt-bar" id="gantt-bar-t3" style="right: 25%; width: 45%;" title="اسحب أو انقر لتغيير التواريخ">
+                  <div class="gantt-bar-progress" style="width: 60%;"></div>
+                  <span class="gantt-bar-label">تصميم الواجهة - 60%</span>
+                </div>
+              </div>
+
+              <!-- Task 3 Bar -->
+              <div class="gantt-timeline-row">
+                <div class="gantt-bar" id="gantt-bar-t1" style="right: 65%; width: 30%; background: var(--amber);" title="تعتمد على تصميم الواجهة">
+                  <div class="gantt-bar-progress" style="width: 0%;"></div>
+                  <span class="gantt-bar-label">ربط بوابات الدفع (تبعية)</span>
+                </div>
+              </div>
+
+              <!-- Task 4 Bar -->
+              <div class="gantt-timeline-row">
+                <div class="gantt-bar" id="gantt-bar-t2" style="right: 35%; width: 20%; background: var(--muted);" title="مستندات وتواقيع العقود">
+                  <div class="gantt-bar-progress" style="width: 10%;"></div>
+                  <span class="gantt-bar-label">اتفاقيات NDA - 10%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <p style="font-size: 0.75rem; color: var(--muted); margin-top: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+          <i data-lucide="info" style="width: 14px; height: 14px;"></i> يمكنك النقر المباشر وسحب أطراف المدد الزمنية لتغيير تواريخ البدء والانتهاء داخل المخطط الزمني التفاعلي.
+        </p>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: BUDGET TRACKER -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-budget">
+      <div class="budget-tracker-grid">
+        
+        <!-- Add Expense Form -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">تسجيل مصروف جديد</h3>
+          </div>
+          <form id="expenseForm" onsubmit="addExpense(event)">
+            <div class="form-group">
+              <label for="expTitle">وصف المصروف / البند</label>
+              <input type="text" id="expTitle" class="form-input" placeholder="مثال: شراء سيرفرات سحابية" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="expCategory">فئة المصروف</label>
+              <select id="expCategory" class="form-input" required>
+                <option value="تطوير">تطوير برمجي (Development)</option>
+                <option value="تصميم">تصميم وواجهات (Design)</option>
+                <option value="تسويق">تسويق ونشر (Marketing)</option>
+                <option value="تشغيل">خدمات تشغيلية وسيرفرات</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="expAmount">القيمة المالية (USD)</label>
+              <input type="number" id="expAmount" class="form-input" placeholder="مثال: 3500" required>
+            </div>
+
+            <div class="form-group">
+              <label for="expStatus">حالة الدفعة</label>
+              <select id="expStatus" class="form-input" required>
+                <option value="معلق">معلّق (Pending Approval)</option>
+                <option value="معتمد">معتمد (Approved)</option>
+                <option value="مسدد">مسدد بالكامل (Paid)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>المستندات / المرفقات</label>
+              <div style="border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 1rem; text-align: center; cursor: pointer; background: #faf9f8;" onclick="alert('تم تفعيل محاكي رفع الملفات بنجاح!')">
+                <i data-lucide="upload-cloud" style="width: 24px; height: 24px; color: var(--muted); margin-bottom: 0.5rem;"></i>
+                <p style="font-size: 0.75rem; color: var(--muted);">اضغط هنا لإرفاق الفاتورة أو وصل الصرف</p>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i>
+              <span>تسجيل وإضافة بند المصروف</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Expenses List -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">قائمة المصروفات التفصيلية للقطاعات</h3>
+            <div style="display: flex; gap: 0.5rem;">
+              <span class="badge badge-planning" style="font-size: 0.7rem;" id="budgetSummaryMuted">المتبقي: $54,000</span>
+            </div>
+          </div>
+
+          <table class="expense-list-table">
+            <thead>
+              <tr>
+                <th>بند المصروف</th>
+                <th>الفئة</th>
+                <th>القيمة</th>
+                <th>الحالة</th>
+                <th>المستندات</th>
+              </tr>
+            </thead>
+            <tbody id="expenseTableBody">
+              <tr>
+                <td>حجز استضافة خوادم تجريبية مؤقتة (AWS)</td>
+                <td>تشغيل</td>
+                <td style="font-weight: 700;">$1,200</td>
+                <td><span class="expense-status-badge exp-paid">مسدد</span></td>
+                <td><a href="#" style="color: var(--primary); font-weight: 700; text-decoration: none;"><i data-lucide="paperclip" style="width: 14px; height: 14px; vertical-align: middle;"></i> فاتورة.pdf</a></td>
+              </tr>
+              <tr>
+                <td>تصميم الهوية البصرية وصفحات الهبوط للفعاليات</td>
+                <td>تصميم</td>
+                <td style="font-weight: 700;">$4,800</td>
+                <td><span class="expense-status-badge exp-approved">معتمد</span></td>
+                <td><a href="#" style="color: var(--primary); font-weight: 700; text-decoration: none;"><i data-lucide="paperclip" style="width: 14px; height: 14px; vertical-align: middle;"></i> تفاصيل_العقد.pdf</a></td>
+              </tr>
+              <tr>
+                <td>دفعة مقدمة لتطوير أنظمة حجز التذاكر والتسجيل</td>
+                <td>تطوير</td>
+                <td style="font-weight: 700;">$60,000</td>
+                <td><span class="expense-status-badge exp-paid">مسدد</span></td>
+                <td><a href="#" style="color: var(--primary); font-weight: 700; text-decoration: none;"><i data-lucide="paperclip" style="width: 14px; height: 14px; vertical-align: middle;"></i> إيصال_صرف.pdf</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: CONTRACT MANAGEMENT -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-contracts">
+      <!-- Renewal Alert Banner -->
+      <div class="contract-warning-banner">
+        <i data-lucide="alert-triangle" style="width: 20px; height: 20px;"></i>
+        <span>تنبيه تجديد: ينتهي عقد الاستضافة والسحابة الاحتياطية لـ JAZ Portal خلال 14 يوماً. يرجى مراجعة المورد لتجنب التوقف.</span>
+      </div>
+
+      <div class="contracts-grid" id="contractsGridContainer">
+        <!-- Contract 1 -->
+        <div class="contract-card">
+          <div>
+            <div class="contract-top-meta">
+              <span class="badge badge-completed">موقع ومكتمل</span>
+              <span style="font-size: 0.72rem; color: var(--muted); font-weight: 700;">نوع: NDA</span>
+            </div>
+            <h4 class="contract-title">اتفاقية عدم الإفصاح وسرية البيانات (NDA)</h4>
+            <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;">اتفاقية حماية البيانات الشخصية لرواد الفعاليات ومسؤولي الهيئات الدبلوماسية المشاركة.</p>
+            
+            <div class="contract-dates">
+              <span><b>تاريخ السريان:</b> 01 يناير 2026</span>
+              <span><b>تاريخ الانتهاء:</b> 31 ديسمبر 2026</span>
+            </div>
+          </div>
+          
+          <div class="contract-actions">
+            <a href="#" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-decoration: none;"><i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle;"></i> تحميل العقد</a>
+            <i data-lucide="file-check-2" style="color: var(--emerald);"></i>
+          </div>
+        </div>
+
+        <!-- Contract 2 -->
+        <div class="contract-card">
+          <div>
+            <div class="contract-top-meta">
+              <span class="badge badge-execution">قيد المراجعة</span>
+              <span style="font-size: 0.72rem; color: var(--muted); font-weight: 700;">نوع: اتفاقية خدمة</span>
+            </div>
+            <h4 class="contract-title">عقد تزويد خدمات خوادم الاستضافة وقارئ الجوازات</h4>
+            <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;">شروط تقديم مستوى الخدمة (SLA) لخوادم الموقع وأدوات التحليل الإلكتروني لقارئ الجوازات.</p>
+            
+            <div class="contract-dates">
+              <span><b>تاريخ السريان:</b> 15 مارس 2026</span>
+              <span><b>تاريخ الانتهاء:</b> 15 يوليو 2026</span>
+            </div>
+          </div>
+          
+          <div class="contract-actions">
+            <a href="#" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-decoration: none;"><i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle;"></i> تحميل المسودة</a>
+            <span style="font-size: 0.72rem; color: var(--amber); font-weight: 700;">بانتظار توقيع الإدارة</span>
+          </div>
+        </div>
+
+        <!-- Contract 3 -->
+        <div class="contract-card">
+          <div>
+            <div class="contract-top-meta">
+              <span class="badge badge-completed">موقع ومكتمل</span>
+              <span style="font-size: 0.72rem; color: var(--muted); font-weight: 700;">نوع: شراكة</span>
+            </div>
+            <h4 class="contract-title">اتفاقية الشراكة الاستراتيجية مع مصرف الرافدين</h4>
+            <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;">توفير بوابات دفع متطورة وسريعة للمشاركين والوفود القادمة لحضور معارض JAZ.</p>
+            
+            <div class="contract-dates">
+              <span><b>تاريخ السريان:</b> 10 فبراير 2026</span>
+              <span><b>تاريخ الانتهاء:</b> 10 فبراير 2027</span>
+            </div>
+          </div>
+          
+          <div class="contract-actions">
+            <a href="#" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-decoration: none;"><i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle;"></i> تحميل العقد</a>
+            <i data-lucide="file-check-2" style="color: var(--emerald);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: RESOURCE ALLOCATION -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-resources">
+      <!-- Overallocation Alarm -->
+      <div class="resource-warning-banner" id="resourceAlarm">
+        <i data-lucide="shield-alert" style="width: 20px; height: 20px;"></i>
+        <span id="resourceAlarmText">تنبيه: تعارض تخصيص زائد لأحمد صالح! تم تخصيص (48 ساعة أسبوعياً) وهو ما يتجاوز الحد المسموح.</span>
+      </div>
+
+      <div class="resources-grid" id="resourcesGridContainer">
+        <!-- Resource 1 -->
+        <div class="resource-row-card">
+          <div class="resource-top">
+            <div class="resource-avatar" style="background: #fee2e2; color: #dc2626;">أ ص</div>
+            <div class="resource-desc">
+              <span class="resource-name">أحمد صالح</span>
+              <span class="resource-role">مطور نظم رئيسي (Full Stack Dev)</span>
+            </div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-header">
+              <span>نسبة وساعات التخصيص للمشروع الحالي</span>
+              <span id="hours-display-ahmed" style="font-weight: 700; color: var(--primary);">40 ساعة/أسبوع (100%)</span>
+            </div>
+            <input type="range" min="0" max="60" value="40" class="allocation-slider" id="sliderAhmed" oninput="updateResourceHours('ahmed', this.value)">
+          </div>
+        </div>
+
+        <!-- Resource 2 -->
+        <div class="resource-row-card">
+          <div class="resource-top">
+            <div class="resource-avatar">ل م</div>
+            <div class="resource-desc">
+              <span class="resource-name">ليلى مراد</span>
+              <span class="resource-role">مصممة واجهات وتجربة المستخدم (UI/UX)</span>
+            </div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-header">
+              <span>نسبة وساعات التخصيص للمشروع الحالي</span>
+              <span id="hours-display-layla" style="font-weight: 700; color: var(--emerald);">24 ساعة/أسبوع (60%)</span>
+            </div>
+            <input type="range" min="0" max="60" value="24" class="allocation-slider" id="sliderLayla" oninput="updateResourceHours('layla', this.value)">
+          </div>
+        </div>
+
+        <!-- Resource 3 -->
+        <div class="resource-row-card">
+          <div class="resource-top">
+            <div class="resource-avatar" style="background: #e0f2fe; color: #0369a1;">س أ</div>
+            <div class="resource-desc">
+              <span class="resource-name">سارة أحمد</span>
+              <span class="resource-role">مديرة المشاريع والاتصال المؤسسي</span>
+            </div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-header">
+              <span>نسبة وساعات التخصيص للمشروع الحالي</span>
+              <span id="hours-display-sara" style="font-weight: 700; color: var(--emerald);">32 ساعة/أسبوع (80%)</span>
+            </div>
+            <input type="range" min="0" max="60" value="32" class="allocation-slider" id="sliderSara" oninput="updateResourceHours('sara', this.value)">
+          </div>
+        </div>
+
+        <!-- Resource 4 -->
+        <div class="resource-row-card">
+          <div class="resource-top">
+            <div class="resource-avatar" style="background: #fef3c7; color: #d97706;">م ع</div>
+            <div class="resource-desc">
+              <span class="resource-name">محمد علي</span>
+              <span class="resource-role">مهندس سيرفرات وبنية تحتية (DevOps)</span>
+            </div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-header">
+              <span>نسبة وساعات التخصيص للمشروع الحالي</span>
+              <span id="hours-display-mohammed" style="font-weight: 700; color: var(--emerald);">16 ساعة/أسبوع (40%)</span>
+            </div>
+            <input type="range" min="0" max="60" value="16" class="allocation-slider" id="sliderMohammed" oninput="updateResourceHours('mohammed', this.value)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 7: RISK MANAGEMENT -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-risks">
+      <div class="risk-matrix-panel">
+        
+        <!-- Risk Assessment Form -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">تسجيل وتقييم المخاطر الجديدة</h3>
+          </div>
+          <form onsubmit="addRisk(event)">
+            <div class="form-group">
+              <label for="riskTitle">عنوان وتوصيف المخاطرة</label>
+              <input type="text" id="riskTitle" class="form-input" placeholder="مثال: بطء المصادقة على طلبات الدفع الخارجية" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="riskCat">تصنيف المخاطرة</label>
+              <select id="riskCat" class="form-input" required>
+                <option value="تقني">مخاطرة تقنية (Technical)</option>
+                <option value="جدولة">مخاطرة بالجدولة الزمنية (Schedule)</option>
+                <option value="ميزانية">مخاطرة مالية وميزانية (Budget)</option>
+                <option value="موارد">مخاطرة بالموارد البشرية (Resources)</option>
+                <option value="خارجي">مخاطرة خارجية وتراخيص (External)</option>
+              </select>
+            </div>
+
+            <div class="risk-selectors-wrap">
+              <div class="form-group">
+                <label for="riskProb">الاحتمالية</label>
+                <select id="riskProb" class="form-input" onchange="calculateNewRiskRating()" required>
+                  <option value="1">منخفضة (1)</option>
+                  <option value="2" selected>متوسطة (2)</option>
+                  <option value="3">مرتفعة (3)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="riskImp">التأثير</label>
+                <select id="riskImp" class="form-input" onchange="calculateNewRiskRating()" required>
+                  <option value="1">منخفض (1)</option>
+                  <option value="2">متوسط (2)</option>
+                  <option value="3" selected>شديد (3)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>مستوى الخطر</label>
+                <div class="form-input risk-rating-indicator rating-high" id="newRiskRatingBadge" style="height: 38px;">مرتفع جداً</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="riskMitigation">خطة التخفيف والمتابعة</label>
+              <textarea id="riskMitigation" class="form-input" rows="3" placeholder="اكتب كيفية تقليل الأثر أو منع المخاطرة..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+              <span>إدراج المخاطرة في السجل</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Risks Log List -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">سجل المخاطر النشطة وخطط التخفيف</h3>
+          </div>
+          <div id="risksLogListContainer">
+            <!-- Risk 1 -->
+            <div class="risk-item-row">
+              <div class="risk-header-flex">
+                <div>
+                  <span class="risk-category-badge">تقني</span>
+                  <h4 class="risk-title-lbl" style="margin-top: 0.35rem;">تأخر ربط بوابات زين كاش مع خوادم JAZ</h4>
+                </div>
+                <span class="badge rating-high">خطر مرتفع (احتمالية: 2 | تأثير: 3)</span>
+              </div>
+              <div class="mitigation-plan-text">
+                <b>خطة التخفيف:</b> البدء ببناء واجهة دفع محلية بديلة وتصميم نقاط ربط API موازية لتفادي توقف مبيعات الحجوزات.
+              </div>
+            </div>
+
+            <!-- Risk 2 -->
+            <div class="risk-item-row">
+              <div class="risk-header-flex">
+                <div>
+                  <span class="risk-category-badge">جدولة</span>
+                  <h4 class="risk-title-lbl" style="margin-top: 0.35rem;">عدم اكتمال واجهة قارئ الجوازات بالوقت المحدد</h4>
+                </div>
+                <span class="badge rating-med">خطر متوسط (احتمالية: 2 | تأثير: 2)</span>
+              </div>
+              <div class="mitigation-plan-text">
+                <b>خطة التخفيف:</b> إسناد جزء من مهام الواجهات إلى مصممة الـ UX لتقليل العبء عن المطوّر الرئيسي.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 8: AUTOMATED REMINDERS -->
+    <!-- ======================================================== -->
+    <div class="tab-content" id="tab-reminders">
+      <div class="reminders-grid">
+        
+        <!-- Toggle reminder channels -->
+        <div class="toggle-card">
+          <div class="chart-header">
+            <h3 class="chart-title">قنوات التذكير والإشعارات النشطة</h3>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-title">إشعارات البريد الإلكتروني الفورية (Email)</span>
+              <span class="toggle-desc">إرسال تنبيهات تلقائية لأعضاء الفريق والمديرين عند تعديل أو استحقاق المهام.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked id="toggleEmail">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-title">إشعارات الهاتف وتطبيق JAZ (Push Notifications)</span>
+              <span class="toggle-desc">تنبيهات فورية على الشاشة الرئيسية عند اقتراب مواعيد تسليم العقود أو تعارض الموارد.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked id="togglePush">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-title">تنبيهات تجديد العقود التلقائية</span>
+              <span class="toggle-desc">إرسال بريد تحذيري للإدارة قبل 30 يوماً من انتهاء أي عقد مسجل بالمشروع.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked id="toggleContracts">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Notification Trigger simulator -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="toggle-card">
+            <div class="chart-header">
+              <h3 class="chart-title">إعدادات توقيت التذكير بانتهاء المهام</h3>
+            </div>
+            <div class="form-group">
+              <label for="reminderTiming">متى يجب إرسال التنبيه قبل موعد التسليم؟</label>
+              <select id="reminderTiming" class="form-input">
+                <option value="24">قبل 24 ساعة من الموعد النهائي</option>
+                <option value="48" selected>قبل يومين (48 ساعة)</option>
+                <option value="72">قبل 3 أيام</option>
+                <option value="168">قبل أسبوع</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reviewMeetings">جدولة تذكيرات اجتماعات المراجعة الدورية</label>
+              <select id="reviewMeetings" class="form-input">
+                <option value="daily">كل صباح (09:00 صباحاً)</option>
+                <option value="weekly" selected>كل يوم أحد (قبل بداية أسبوع العمل)</option>
+                <option value="monthly">نهاية كل شهر ميلادي</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mock-reminder-trigger-box">
+            <i data-lucide="shield-check" style="width: 32px; height: 32px; color: var(--emerald); margin-bottom: 0.5rem;"></i>
+            <h4 style="font-size: 1rem; font-weight: 800; color: var(--fg);">محاكاة إشعار فوري</h4>
+            <p style="font-size: 0.8rem; color: var(--muted); max-width: 300px; margin-bottom: 1rem;">
+              اضغط على الزر أدناه لتوليد ومحاكاة تنبيه آلي داخل المتصفح لاختبار تكامل الإشعارات.
+            </p>
+            <button class="btn btn-primary" onclick="simulateReminder()" style="width: 100%; justify-content: center;">توليد إشعار تجريبي</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: TASK DETAIL POPUP -->
+<!-- ======================================================== -->
+<div class="modal-overlay" id="taskModalOverlay" onclick="closeTaskModalOutside(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeTaskModal()"><i data-lucide="x" style="width: 16px; height: 16px;"></i></button>
+    <h3 class="modal-title" id="mTaskTitle">ربط وتجربة بوابة الدفع الإلكتروني</h3>
+    
+    <div class="modal-detail-row">
+      <div class="modal-detail-label">الأولوية والأهمية</div>
+      <div class="modal-detail-val"><span class="card-priority-tag prio-high" id="mTaskPrio">عالية الأهمية</span></div>
+    </div>
+
+    <div class="modal-detail-row">
+      <div class="modal-detail-label">الساعات المقدرة</div>
+      <div class="modal-detail-val" id="mTaskEstHours">24 ساعة عمل</div>
+    </div>
+
+    <div class="modal-detail-row">
+      <div class="modal-detail-label">الساعات الفعلية المستهلكة</div>
+      <div class="modal-detail-val" id="mTaskActHours">18 ساعة عمل (حتى الآن)</div>
+    </div>
+
+    <div class="modal-detail-row">
+      <div class="modal-detail-label">المرفقات والمستندات</div>
+      <div class="modal-detail-val">
+        <a href="#" style="color: var(--primary); font-weight: 700; text-decoration: none;" id="mTaskAttachment">
+          <i data-lucide="paperclip" style="width: 14px; height: 14px; vertical-align: middle;"></i> دليل_مطور_زين_كاش.pdf
+        </a>
+      </div>
+    </div>
+
+    <div class="modal-detail-row">
+      <div class="modal-detail-label">التبعيات والمتطلبات</div>
+      <div class="modal-detail-val" id="mTaskDependencies">تعتمد على إنجاز "تصميم واجهة لوحة تحكم الحجوزات"</div>
+    </div>
+
+    <div class="modal-detail-row">
+      <div class="modal-detail-label">عضو الفريق المسؤول</div>
+      <div class="modal-detail-val" id="mTaskAssignee">أحمد صالح (مطور نظم رئيسي)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts for interactivity -->
+<script>
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // Data Store for Projects
+  const projectsData = {
+    p1: {
+      name: "بوابة الفعاليات الرقمية (JAZ Portal)",
+      desc: "مشروع تطوير وتحديث البنية التحتية البرمجية لمنصة JAZ لتنظيم وإدارة التسجيل المؤتمت للوفود والمؤتمرات الدولية لعام 2026.",
+      deadline: "15 أكتوبر 2026",
+      budget: "$120,000",
+      statusClass: "badge-execution",
+      statusText: "قيد التنفيذ",
+      team: [
+        "سارة أحمد (مديرة المشروع)",
+        "أحمد صالح (مطور رئيسي)",
+        "ليلى مراد (مصممة تجربة المستخدم UI/UX)"
+      ],
+      risks: [
+        "⚠️ تأخر استلام متطلبات بوابات الدفع (تخفيف: توفير بيئة دفع تجريبية بديلة)",
+        "⚠️ تعارض جداول حجز السيرفرات (تخفيف: حجز السحابة الاحتياطية مبكراً)"
+      ],
+      commPlan: [
+        "📅 اجتماع أسبوعي للمطوّرين (كل إثنين 10:00 صباحاً)",
+        "📅 تقرير شهري للإدارة العامة (نهاية كل شهر ميلادي)",
+        "💬 تواصل يومي عبر قناة التنسيق الداخلية بتطبيق JAZ"
+      ],
+      taskProgress: "70%",
+      taskOffset: 94, // 314 * (1 - 0.7)
+      budgetSpent: "$66,000",
+      budgetSpentPercent: "55%",
+      budgetSpentOffset: 141, // 314 * (1 - 0.55)
+      activeContracts: "3 عقود معتمدة",
+      allocatedResources: "4 أفراد فريق",
+      riskDist: {
+        high: "مرتفعة (24%)",
+        medium: "متوسطة (42%)",
+        low: "منخفضة (34%)"
+      }
+    },
+    p2: {
+      name: "مؤتمر الاستثمار السنوي 2026",
+      desc: "تنظيم وإعداد المعرض التجاري السنوي لجلب الاستثمارات الأجنبية في قطاع الخدمات والطاقة والتعليم العالي في العراق.",
+      deadline: "22 نوفمبر 2026",
+      budget: "$250,000",
+      statusClass: "badge-planning",
+      statusText: "قيد التخطيط",
+      team: [
+        "سارة أحمد (مديرة المشروع)",
+        "محمد علي (مسؤول العلاقات العامة)",
+        "سعيد حسن (أخصائي لوجستي)"
+      ],
+      risks: [
+        "⚠️ تأخر تأشيرات وفود الدول الخارجية (تخفيف: التنسيق المبكر مع وزارة الخارجية)",
+        "⚠️ تجاوز تكاليف القاعة الرئيسية (تخفيف: الاتفاق على سعر ثابت مسبقاً)"
+      ],
+      commPlan: [
+        "📅 اجتماع تنسيقي كل يوم أربعاء 12:00 ظهراً",
+        "📅 تقارير ثنائية أسبوعية مع المنسقين التجاريين"
+      ],
+      taskProgress: "30%",
+      taskOffset: 220,
+      budgetSpent: "$25,000",
+      budgetSpentPercent: "10%",
+      budgetSpentOffset: 282,
+      activeContracts: "1 عقد موقع",
+      allocatedResources: "3 أفراد فريق",
+      riskDist: {
+        high: "مرتفعة (10%)",
+        medium: "متوسطة (50%)",
+        low: "منخفضة (40%)"
+      }
+    },
+    p3: {
+      name: "برنامج تأهيل طاقات الشباب العراقي",
+      desc: "مبادرة JAZ Youth لتدريب 500 خريج عراقي متميز وتأهيلهم لسوق العمل في مجالات تقنية المعلومات والقيادة التمكينية.",
+      deadline: "30 ديسمبر 2026",
+      budget: "$80,000",
+      statusClass: "badge-completed",
+      statusText: "مكتمل",
+      team: [
+        "سارة أحمد (مديرة البرنامج)",
+        "ليلى مراد (مشرفة الجودة)",
+        "أحمد صالح (مدرب تقني)"
+      ],
+      risks: [
+        "⚠️ تسرب بعض الطلاب من الكورسات المتقدمة (تخفيف: ربط التخرج بشهادة دولية ومكافآت عينية)"
+      ],
+      commPlan: [
+        "📅 اجتماع دوري كل خميس لمراجعة تقييم الطلاب",
+        "💬 إعلانات يومية عبر لوحة إعلانات الطلاب"
+      ],
+      taskProgress: "100%",
+      taskOffset: 0,
+      budgetSpent: "$80,000",
+      budgetSpentPercent: "100%",
+      budgetSpentOffset: 0,
+      activeContracts: "2 عقدين للشراكة التدريبية",
+      allocatedResources: "3 أفراد فريق",
+      riskDist: {
+        high: "مرتفعة (0%)",
+        medium: "متوسطة (10%)",
+        low: "منخفضة (90%)"
+      }
+    }
+  };
+
+  // Data Store for Tasks Details
+  const tasksDetailsStore = {
+    t1: {
+      title: "ربط وتجربة بوابة الدفع الإلكتروني (زين كاش / مصرف الرافدين)",
+      prio: "عالية الأهمية",
+      prioClass: "prio-high",
+      estHours: "24 ساعة عمل مقدرة",
+      actHours: "18 ساعة عمل فعلية مستهلكة",
+      attachment: "دليل_مطور_زين_كاش.pdf",
+      dependencies: "تعتمد على إنجاز 'تصميم واجهة لوحة تحكم الحجوزات'",
+      assignee: "أحمد صالح (مطور نظم رئيسي)"
+    },
+    t2: {
+      title: "صياغة وتوقيع اتفاقية NDA مع المورد الخارجي للسيرفرات",
+      prio: "متوسطة الأهمية",
+      prioClass: "prio-medium",
+      estHours: "12 ساعة عمل مقدرة",
+      actHours: "2 ساعة عمل فعلية مستهلكة",
+      attachment: "مسودة_NDA_خوادم.docx",
+      dependencies: "لا توجد تبعيات نشطة",
+      assignee: "ليلى مراد (مصممة تجربة المستخدم UI/UX)"
+    },
+    t3: {
+      title: "تصميم واجهة لوحة تحكم الحجوزات وربطها مع Supabase",
+      prio: "عالية الأهمية",
+      prioClass: "prio-high",
+      estHours: "40 ساعة عمل مقدرة",
+      actHours: "35 ساعة عمل فعلية مستهلكة",
+      attachment: "تصميم_الواجهات_Figma.link",
+      dependencies: "تعتمد على موافقة سارة أحمد على مخطط تدفق التسجيل",
+      assignee: "أحمد صالح (مطور نظم رئيسي)"
+    },
+    t4: {
+      title: "إعداد وتجهيز خطة التواصل التفصيلية للفريق والشركاء",
+      prio: "منخفضة الأهمية",
+      prioClass: "prio-low",
+      estHours: "8 ساعات عمل مقدرة",
+      actHours: "8 ساعات عمل مستهلكة",
+      attachment: "خطة_الاتصال_النهائية.pdf",
+      dependencies: "لا توجد تبعيات",
+      assignee: "سارة أحمد (مديرة المشروع)"
+    }
+  };
+
+  // Switch Project Logic
+  function switchProject(projId) {
+    const data = projectsData[projId];
+    if (!data) return;
+
+    // Update Header
+    document.getElementById("projName").innerText = data.name;
+    document.getElementById("projDesc").innerText = data.desc;
+    document.getElementById("projDeadline").innerText = data.deadline;
+    document.getElementById("projBudget").innerText = data.budget;
+    
+    // Status Badge
+    const badge = document.getElementById("projStatusBadge");
+    badge.className = "badge " + data.statusClass;
+    badge.innerText = data.statusText;
+
+    // Detailed Lists
+    updateList("projTeamList", data.team, "user-check");
+    updateList("projRiskList", data.risks, null);
+    updateList("projCommPlan", data.commPlan, null);
+
+    // Analytics circles & bars
+    document.getElementById("taskProgressText").innerText = data.taskProgress;
+    document.getElementById("taskProgressCircle").setAttribute("stroke-dashoffset", data.taskOffset);
+    
+    document.getElementById("budgetProgressText").innerText = data.budgetSpentPercent;
+    document.getElementById("budgetProgressCircle").setAttribute("stroke-dashoffset", data.budgetSpentOffset);
+
+    document.getElementById("barTotalBudgetVal").innerText = data.budget;
+    document.getElementById("barSpentBudgetVal").innerText = data.budgetSpent;
+    document.getElementById("barSpentWidth").style.width = data.budgetSpentPercent;
+    document.getElementById("barSpentPercentLabel").innerText = data.budgetSpentPercent;
+
+    document.getElementById("budgetSummaryMuted").innerText = "المصروف: " + data.budgetSpent + " / الكلي: " + data.budget;
+
+    // Risk distribution
+    document.getElementById("riskDistHigh").innerText = "مرتفعة (" + data.riskDist.high + ")";
+    document.getElementById("riskDistMedium").innerText = "متوسطة (" + data.riskDist.medium + ")";
+    document.getElementById("riskDistLow").innerText = "منخفضة (" + data.riskDist.low + ")";
+
+    // Mini Stats
+    document.getElementById("statActiveContracts").innerText = data.activeContracts;
+    document.getElementById("statAllocatedResources").innerText = data.allocatedResources;
+  }
+
+  function updateList(elementId, itemsArray, iconName) {
+    const container = document.getElementById(elementId);
+    container.innerHTML = "";
+    itemsArray.forEach(item => {
+      const li = document.createElement("li");
+      if (iconName) {
+        li.innerHTML = `<i data-lucide="${iconName}" style="width: 14px; height: 14px; color: var(--primary);"></i>${item}`;
+      } else {
+        li.innerText = item;
+      }
+      container.appendChild(li);
+    });
+    lucide.createIcons();
+  }
+
+  // Toggle Project Details
+  function toggleDetails() {
+    const details = document.getElementById("expandedDetails");
+    const arrow = document.getElementById("detailsArrow");
+    details.classList.toggle("show");
+    if (details.classList.contains("show")) {
+      arrow.style.transform = "rotate(180deg)";
+    } else {
+      arrow.style.transform = "rotate(0deg)";
+    }
+  }
+
+  // Navigation tab switcher
+  function showTab(tabName) {
+    // Nav links style
+    const navItems = document.querySelectorAll(".nav-item");
+    navItems.forEach(item => {
+      if (item.getAttribute("data-tab") === tabName) {
+        item.classList.add("active");
+      } else {
+        item.classList.remove("active");
+      }
+    });
+
+    // Content show/hide
+    const tabContents = document.querySelectorAll(".tab-content");
+    tabContents.forEach(content => {
+      if (content.id === "tab-" + tabName) {
+        content.classList.add("active");
+      } else {
+        content.classList.remove("active");
+      }
+    });
+  }
+
+  // ========================================================
+  // KANBAN DRAG & DROP
+  // ========================================================
+  let draggedTaskId = null;
+
+  function dragStart(ev, taskId) {
+    draggedTaskId = taskId;
+    ev.dataTransfer.setData("text", taskId);
+    ev.target.style.opacity = "0.4";
+  }
+
+  function allowDrop(ev) {
+    ev.preventDefault();
+  }
+
+  function dragEnter(ev) {
+    if (ev.currentTarget.classList.contains("kanban-column")) {
+      ev.currentTarget.style.background = "#e4e2dd";
+    }
+  }
+
+  function dragLeave(ev) {
+    if (ev.currentTarget.classList.contains("kanban-column")) {
+      ev.currentTarget.style.background = "#f4f3f0";
+    }
+  }
+
+  function drop(ev, columnId) {
+    ev.preventDefault();
+    const col = document.getElementById("col-" + columnId);
+    col.style.background = "#f4f3f0";
+    
+    const cardId = ev.dataTransfer.getData("text");
+    const card = document.getElementById(cardId);
+    const container = document.getElementById("cards-" + columnId);
+    
+    if (card && container) {
+      card.style.opacity = "1";
+      container.appendChild(card);
+      updateTaskCounts();
+    }
+  }
+
+  document.addEventListener("dragend", function(event) {
+    if (event.target.classList.contains("kanban-card")) {
+      event.target.style.opacity = "1";
+    }
+  });
+
+  function updateTaskCounts() {
+    const todoCount = document.getElementById("cards-todo").children.length;
+    const progressCount = document.getElementById("cards-inprogress").children.length;
+    const completedCount = document.getElementById("cards-completed").children.length;
+
+    document.getElementById("count-todo").innerText = todoCount;
+    document.getElementById("count-inprogress").innerText = progressCount;
+    document.getElementById("count-completed").innerText = completedCount;
+  }
+
+  // Task Details Modal Logic
+  function openTaskModal(taskId) {
+    const taskDetails = tasksDetailsStore[taskId];
+    if (!taskDetails) return;
+
+    document.getElementById("mTaskTitle").innerText = taskDetails.title;
+    document.getElementById("mTaskPrio").innerText = taskDetails.prio;
+    document.getElementById("mTaskPrio").className = "card-priority-tag " + taskDetails.prioClass;
+    document.getElementById("mTaskEstHours").innerText = taskDetails.estHours;
+    document.getElementById("mTaskActHours").innerText = taskDetails.actHours;
+    document.getElementById("mTaskDependencies").innerText = taskDetails.dependencies;
+    document.getElementById("mTaskAssignee").innerText = taskDetails.assignee;
+    
+    // Set attachment link text
+    const attLink = document.getElementById("mTaskAttachment");
+    attLink.innerHTML = `<i data-lucide="paperclip" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${taskDetails.attachment}`;
+
+    const modal = document.getElementById("taskModalOverlay");
+    modal.classList.add("show");
+    lucide.createIcons();
+  }
+
+  function closeTaskModal() {
+    document.getElementById("taskModalOverlay").classList.remove("show");
+  }
+
+  function closeTaskModalOutside(ev) {
+    if (ev.target.id === "taskModalOverlay") {
+      closeTaskModal();
+    }
+  }
+
+  // ========================================================
+  // GANTT MODE SWITCHER
+  // ========================================================
+  function switchGanttMode(mode) {
+    const btnDay = document.getElementById("ganttModeDay");
+    const btnWeek = document.getElementById("ganttModeWeek");
+    const btnMonth = document.getElementById("ganttModeMonth");
+    
+    btnDay.classList.remove("active");
+    btnWeek.classList.remove("active");
+    btnMonth.classList.remove("active");
+
+    const header = document.getElementById("ganttTimelineHeader");
+
+    if (mode === "day") {
+      btnDay.classList.add("active");
+      header.innerHTML = `
+        <div class="timeline-header-unit">الأحد</div>
+        <div class="timeline-header-unit">الإثنين</div>
+        <div class="timeline-header-unit">الثلاثاء</div>
+        <div class="timeline-header-unit">الأربعاء</div>
+        <div class="timeline-header-unit">الخميس</div>
+      `;
+      // Adjust positions for day simulation
+      document.getElementById("gantt-bar-t4").style.width = "40%";
+      document.getElementById("gantt-bar-t4").style.right = "5%";
+      document.getElementById("gantt-bar-t3").style.width = "70%";
+      document.getElementById("gantt-bar-t3").style.right = "20%";
+    } else if (mode === "week") {
+      btnWeek.classList.add("active");
+      header.innerHTML = `
+        <div class="timeline-header-unit">أسبوع 1</div>
+        <div class="timeline-header-unit">أسبوع 2</div>
+        <div class="timeline-header-unit">أسبوع 3</div>
+        <div class="timeline-header-unit">أسبوع 4</div>
+        <div class="timeline-header-unit">أسبوع 5</div>
+      `;
+      document.getElementById("gantt-bar-t4").style.width = "25%";
+      document.getElementById("gantt-bar-t4").style.right = "5%";
+      document.getElementById("gantt-bar-t3").style.width = "45%";
+      document.getElementById("gantt-bar-t3").style.right = "25%";
+    } else if (mode === "month") {
+      btnMonth.classList.add("active");
+      header.innerHTML = `
+        <div class="timeline-header-unit">يوليو</div>
+        <div class="timeline-header-unit">أغسطس</div>
+        <div class="timeline-header-unit">سبتمبر</div>
+        <div class="timeline-header-unit">أكتوبر</div>
+        <div class="timeline-header-unit">نوفمبر</div>
+      `;
+      document.getElementById("gantt-bar-t4").style.width = "15%";
+      document.getElementById("gantt-bar-t4").style.right = "5%";
+      document.getElementById("gantt-bar-t3").style.width = "30%";
+      document.getElementById("gantt-bar-t3").style.right = "15%";
+    }
+  }
+
+  // ========================================================
+  // BUDGET MANAGEMENT
+  // ========================================================
+  function addExpense(ev) {
+    ev.preventDefault();
+    const title = document.getElementById("expTitle").value;
+    const cat = document.getElementById("expCategory").value;
+    const amountVal = parseFloat(document.getElementById("expAmount").value);
+    const status = document.getElementById("expStatus").value;
+
+    const tbody = document.getElementById("expenseTableBody");
+    const tr = document.createElement("tr");
+
+    let badgeClass = "exp-pending";
+    if (status === "معتمد") badgeClass = "exp-approved";
+    if (status === "مسدد") badgeClass = "exp-paid";
+
+    tr.innerHTML = `
+      <td>${title}</td>
+      <td>${cat}</td>
+      <td style="font-weight: 700;">$${amountVal.toLocaleString()}</td>
+      <td><span class="expense-status-badge ${badgeClass}">${status}</span></td>
+      <td><a href="#" style="color: var(--primary); font-weight: 700; text-decoration: none;"><i data-lucide="paperclip" style="width: 14px; height: 14px; vertical-align: middle;"></i> إرفاق_جديد.pdf</a></td>
+    `;
+
+    tbody.insertBefore(tr, tbody.firstChild);
+    lucide.createIcons();
+
+    // Clear form
+    document.getElementById("expenseForm").reset();
+
+    // Simulate budget update
+    const currentProjId = document.getElementById("projectSelect").value;
+    const currentProj = projectsData[currentProjId];
+    
+    // Parse current spent
+    let currentSpent = parseFloat(currentProj.budgetSpent.replace(/[$,]/g, ''));
+    let totalBudget = parseFloat(currentProj.budget.replace(/[$,]/g, ''));
+    
+    let newSpent = currentSpent + amountVal;
+    let newPercent = Math.min(Math.round((newSpent / totalBudget) * 100), 100);
+
+    currentProj.budgetSpent = "$" + newSpent.toLocaleString();
+    currentProj.budgetSpentPercent = newPercent + "%";
+    currentProj.budgetSpentOffset = 314 * (1 - (newPercent / 100));
+
+    // Refresh UI with project update
+    switchProject(currentProjId);
+    alert("تم إدراج بند المصروف بنجاح وتحديث التحليلات المالية!");
+  }
+
+  // ========================================================
+  // RESOURCE HOURS AND OVERLOAD WARNING
+  // ========================================================
+  function updateResourceHours(resourceId, val) {
+    const hoursText = document.getElementById("hours-display-" + resourceId);
+    const percent = Math.round((val / 40) * 100);
+    
+    hoursText.innerText = val + " ساعة/أسبوع (" + percent + "%)";
+
+    // Set colors according to capacity
+    if (val > 40) {
+      hoursText.style.color = "var(--red)";
+    } else {
+      hoursText.style.color = "var(--emerald)";
+    }
+
+    // Toggle Warning Panel
+    const alarmPanel = document.getElementById("resourceAlarm");
+    if (val > 40) {
+      alarmPanel.style.display = "flex";
+      document.getElementById("resourceAlarmText").innerText = `تنبيه تعارض: تم تخصيص ساعات إضافية للموظف (${resourceId === 'ahmed' ? 'أحمد صالح' : resourceId === 'layla' ? 'ليلى مراد' : resourceId === 'sara' ? 'سارة أحمد' : 'محمد علي'}) بمقدار ${val} ساعة مما قد يسبب تأخر المهام الأخرى.`;
+    } else {
+      // Check other sliders too
+      const sliderAhmed = parseInt(document.getElementById("sliderAhmed").value);
+      const sliderLayla = parseInt(document.getElementById("sliderLayla").value);
+      const sliderSara = parseInt(document.getElementById("sliderSara").value);
+      const sliderMohammed = parseInt(document.getElementById("sliderMohammed").value);
+
+      if (sliderAhmed <= 40 && sliderLayla <= 40 && sliderSara <= 40 && sliderMohammed <= 40) {
+        alarmPanel.style.display = "none";
+      }
+    }
+  }
+
+  // ========================================================
+  // RISK MATRIX CALCULATION
+  // ========================================================
+  function calculateNewRiskRating() {
+    const prob = parseInt(document.getElementById("riskProb").value);
+    const imp = parseInt(document.getElementById("riskImp").value);
+    const ratingVal = prob * imp;
+
+    const badge = document.getElementById("newRiskRatingBadge");
+
+    if (ratingVal >= 6) {
+      badge.className = "form-input risk-rating-indicator rating-high";
+      badge.innerText = `خطر مرتفع جداً (${ratingVal})`;
+    } else if (ratingVal >= 3) {
+      badge.className = "form-input risk-rating-indicator rating-med";
+      badge.innerText = `خطر متوسط (${ratingVal})`;
+    } else {
+      badge.className = "form-input risk-rating-indicator rating-low";
+      badge.innerText = `خطر منخفض (${ratingVal})`;
+    }
+  }
+
+  function addRisk(ev) {
+    ev.preventDefault();
+    const title = document.getElementById("riskTitle").value;
+    const cat = document.getElementById("riskCat").value;
+    const prob = parseInt(document.getElementById("riskProb").value);
+    const imp = parseInt(document.getElementById("riskImp").value);
+    const mitigation = document.getElementById("riskMitigation").value;
+
+    const container = document.getElementById("risksLogListContainer");
+    const div = document.createElement("div");
+    div.className = "risk-item-row";
+
+    const score = prob * imp;
+    let badgeClass = "rating-low";
+    let scoreText = "منخفض";
+    if (score >= 6) { badgeClass = "rating-high"; scoreText = "مرتفع"; }
+    else if (score >= 3) { badgeClass = "rating-med"; scoreText = "متوسط"; }
+
+    div.innerHTML = `
+      <div class="risk-header-flex">
+        <div>
+          <span class="risk-category-badge">${cat}</span>
+          <h4 class="risk-title-lbl" style="margin-top: 0.35rem;">${title}</h4>
+        </div>
+        <span class="badge ${badgeClass}">خطر ${scoreText} (احتمالية: ${prob} | تأثير: ${imp})</span>
+      </div>
+      <div class="mitigation-plan-text">
+        <b>خطة التخفيف:</b> ${mitigation}
+      </div>
+    `;
+
+    container.insertBefore(div, container.firstChild);
+    
+    // Reset Form
+    document.getElementById("riskTitle").value = "";
+    document.getElementById("riskMitigation").value = "";
+    calculateNewRiskRating();
+
+    alert("تم تسجيل المخاطرة الجديدة وإدراج خطة التخفيف في السجل المعتمد!");
+  }
+
+  // ========================================================
+  // AUTOMATED REMINDERS SIMULATION
+  // ========================================================
+  function simulateReminder() {
+    const timing = document.getElementById("reminderTiming").value;
+    const emailActive = document.getElementById("toggleEmail").checked;
+    const pushActive = document.getElementById("togglePush").checked;
+
+    if (!emailActive && !pushActive) {
+      alert("يرجى تفعيل البريد الإلكتروني أو الإشعارات أولاً لمحاكاة التذكير!");
+      return;
+    }
+
+    let alertMessage = "📢 [تنبيه آلي من لوحة تحكم JAZ]\n";
+    alertMessage += `الموضوع: اقتراب تسليم مهمة (ربط بوابة دفع زين كاش)\n`;
+    alertMessage += `الوقت: متبقي ${timing} ساعة على تاريخ الاستحقاق المحدد.\n`;
+    alertMessage += `القنوات المستخدمة للمحاكاة:\n`;
+    if (emailActive) alertMessage += `- 📧 تم إرسال رسالة بريد إلكتروني تحذيرية لأعضاء المشروع.\n`;
+    if (pushActive) alertMessage += `- 📱 تم توليد إشعار منبثق على شاشة فريق العمل في لوحة التحكم.\n`;
+
+    alert(alertMessage);
+  }
+</script>
+
+</body>
+</html>

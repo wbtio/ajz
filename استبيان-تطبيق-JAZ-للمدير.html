@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JAZ — استبيان تحديد هيكل التطبيق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --maroon:#8b0000; --maroon-deep:#5e0000;
+    --ink:#1c1614; --ink-2:#736862; --ink-3:#a89c96;
+    --green:#1f7a4d; --green-bg:#eef6f1;
+    --bg:#fbf9f8; --card:#fff; --line:#efe8e4;
+    --shadow:0 1px 2px rgba(28,22,20,.03),0 12px 34px rgba(139,0,0,.05);
+    --shadow-lg:0 26px 60px rgba(139,0,0,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;background:
+    radial-gradient(800px 360px at 50% -10%,rgba(139,0,0,.06),transparent 60%),var(--bg);
+    color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;font-weight:400;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+
+  /* HEADER */
+  header.top{padding:34px 0 10px;text-align:center}
+  .logo{font-size:14px;font-weight:700;color:var(--maroon);letter-spacing:3px}
+  .logo small{display:block;font-size:10px;color:var(--ink-3);letter-spacing:1.5px;font-weight:500;margin-top:3px}
+  header.top h1{font-size:26px;font-weight:700;letter-spacing:-.5px;margin:16px 0 6px}
+  header.top p{color:var(--ink-2);font-size:15px;max-width:540px;margin:0 auto}
+
+  /* PROGRESS */
+  .pbar-wrap{margin:22px auto 4px;display:flex;align-items:center;gap:12px}
+  .pbar{flex:1;height:7px;background:var(--line);border-radius:100px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--maroon),var(--maroon-deep));border-radius:100px;transition:width .35s ease}
+  .pcount{font-size:13px;font-weight:700;color:var(--maroon);white-space:nowrap}
+
+  /* CARD */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:30px 28px;box-shadow:var(--shadow-lg);margin:18px 0 14px;min-height:340px;display:flex;flex-direction:column}
+  .eyebrow{font-size:12px;font-weight:700;color:var(--maroon);letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--maroon)}
+  .qtitle{font-size:21px;font-weight:700;letter-spacing:-.3px;line-height:1.45;margin-bottom:8px}
+  .qhelp{font-size:14px;color:var(--ink-2);margin-bottom:20px}
+  .qkind{font-size:11.5px;font-weight:600;color:var(--ink-3);margin-bottom:14px}
+
+  /* OPTIONS */
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:13px 15px;cursor:pointer;transition:all .15s;font-size:15px;font-weight:500;text-align:right}
+  .opt:hover{border-color:#e3c9c5;background:#fdf7f6;transform:translateX(-2px)}
+  .opt .box{width:22px;height:22px;border:2px solid var(--ink-3);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .opt.radio .box{border-radius:50%}
+  .opt .box svg{width:13px;height:13px;opacity:0;transform:scale(.5);transition:all .15s}
+  .opt.sel{border-color:var(--maroon);background:linear-gradient(135deg,#fdeeee,#fff);box-shadow:0 8px 22px -14px rgba(139,0,0,.5)}
+  .opt.sel .box{background:var(--maroon);border-color:var(--maroon)}
+  .opt.sel .box svg{opacity:1;transform:scale(1);stroke:#fff}
+  .opt.sel{font-weight:600}
+
+  /* NOTE + VOICE */
+  .note{margin-top:18px}
+  .note label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+  .note-row{position:relative}
+  textarea{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 48px 12px 14px;font-family:inherit;font-size:14.5px;color:var(--ink);resize:vertical;min-height:64px;background:#fff;transition:border-color .15s}
+  textarea:focus{outline:none;border-color:var(--maroon)}
+  .mic{position:absolute;top:9px;left:9px;width:36px;height:36px;border-radius:11px;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-2);transition:all .15s}
+  .mic:hover{border-color:var(--maroon);color:var(--maroon)}
+  .mic.rec{background:var(--maroon);border-color:var(--maroon);color:#fff;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(139,0,0,.45)}70%{box-shadow:0 0 0 10px rgba(139,0,0,0)}100%{box-shadow:0 0 0 0 rgba(139,0,0,0)}}
+  .mic svg{width:18px;height:18px}
+  .voicehint{font-size:11px;color:var(--ink-3);margin-top:6px;display:flex;align-items:center;gap:6px}
+  .voicehint.err{color:#c0392b}
+
+  /* NAV */
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 50px}
+  .btn{border:none;border-radius:14px;padding:13px 26px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+  .btn.prev{background:#fff;border:1.5px solid var(--line);color:var(--ink-2)}
+  .btn.prev:hover{border-color:var(--ink-3);color:var(--ink)}
+  .btn.next{background:var(--maroon);color:#fff;box-shadow:0 14px 30px -16px rgba(139,0,0,.7)}
+  .btn.next:hover{background:var(--maroon-deep);transform:translateY(-1px)}
+  .btn.wa{background:#1f7a4d;color:#fff;box-shadow:0 14px 30px -16px rgba(31,122,77,.7)}
+  .btn.wa:hover{background:#176039;transform:translateY(-1px)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:260px}
+  .dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:all .2s;cursor:pointer}
+  .dots i.done{background:var(--green)}
+  .dots i.cur{background:var(--maroon);transform:scale(1.35)}
+
+  /* DONE */
+  .done{display:none;text-align:center;padding:14px 4px 40px}
+  .done .ic{width:74px;height:74px;margin:0 auto 18px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center}
+  .done .ic svg{width:36px;height:36px;stroke:var(--green)}
+  .done h2{font-size:24px;font-weight:700;margin-bottom:8px}
+  .done p{color:var(--ink-2);font-size:15px;max-width:480px;margin:0 auto 22px}
+  .done .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .summ{margin:24px auto 0;max-width:560px;text-align:right;background:#fff;border:1px solid var(--line);border-radius:18px;padding:8px 6px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
+  .summ .row{padding:11px 14px;border-bottom:1px solid var(--line);font-size:13px}
+  .summ .row:last-child{border-bottom:none}
+  .summ .row b{display:block;color:var(--ink);font-weight:600;font-size:12.5px;margin-bottom:3px}
+  .summ .row span{color:var(--ink-2)}
+  .summ .row .na{color:var(--ink-3);font-style:italic}
+
+  footer{text-align:center;font-size:11.5px;color:var(--ink-3);padding:10px 0 28px}
+  @media(max-width:560px){
+    .card{padding:24px 18px;border-radius:20px}
+    .qtitle{font-size:19px}
+    header.top h1{font-size:22px}
+    .btn{padding:12px 18px;font-size:14px}
+    .dots{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">JAZ<small>JOINT ANNUAL ZONE</small></div>
+    <h1>استبيان تحديد هيكل التطبيق</h1>
+    <p>عشرون سؤالاً تحدّد عدد صفحات التطبيق ومكوّناته. اختر الإجابة، وتقدر تكتب توضيحاً أو تُمليه صوتياً 🎙️. بالنهاية صدّر ملف JSON بإجاباتك.</p>
+    <div class="pbar-wrap">
+      <div class="pbar"><i id="pfill"></i></div>
+      <div class="pcount" id="pcount">١ / ٢٠</div>
+    </div>
+  </header>
+
+  <!-- QUESTION CARD -->
+  <div class="card" id="card">
+    <div class="eyebrow"><span class="dot"></span><span id="eyebrow">السؤال ١ من ٢٠</span></div>
+    <div class="qtitle" id="qtitle"></div>
+    <div class="qhelp" id="qhelp"></div>
+    <div class="qkind" id="qkind"></div>
+    <div class="opts" id="opts"></div>
+    <div class="note">
+      <label id="notelabel">ملاحظة / إجابة حرة (اختياري)</label>
+      <div class="note-row">
+        <textarea id="note" placeholder="اكتب هنا أو اضغط المايك للإملاء الصوتي…"></textarea>
+        <button class="mic" id="mic" title="إملاء صوتي" type="button" aria-label="إملاء صوتي">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+      </div>
+      <div class="voicehint" id="voicehint"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav" id="nav">
+    <button class="btn prev" id="prev">‹ السابق</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn next" id="next">التالي ›</button>
+  </div>
+
+  <!-- DONE SCREEN -->
+  <div class="done" id="done">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h2>تمّت الإجابة على كل الأسئلة</h2>
+    <p>صدّر إجاباتك كملف JSON وأرسله للفريق، أو انسخها. تقدر ترجع وتعدّل أي سؤال.</p>
+    <div class="actions">
+      <button class="btn wa" id="wa">📲 إرسال الإجابات عبر واتساب</button>
+      <button class="btn next" id="dl">⬇ تنزيل ملف JSON</button>
+      <button class="btn prev" id="cp">📋 نسخ JSON</button>
+      <button class="btn prev" id="review">‹ مراجعة الأسئلة</button>
+    </div>
+    <div class="summ" id="summ"></div>
+  </div>
+
+  <footer>JAZ · استبيان داخلي لتحديد هيكل تطبيق العميل · يُحفظ تلقائياً في المتصفّح</footer>
+</div>
+
+<script>
+/* ============ الأسئلة ============ */
+const QUESTIONS = [
+  { id:1, type:"single", q:"كم تبويباً رئيسياً نضع في الشريط السفلي للتطبيق؟",
+    help:"هذا يحدّد عدد صفحات التطبيق الأساسية التي تظهر دائماً بالأسفل.",
+    options:["٤ تبويبات (الرئيسية · الفعاليات · تذكيري · حسابي)","٥ تبويبات (+ المفضّلة أو المحادثة)","٦ تبويبات","نتركها للفريق التقني"] },
+  { id:2, type:"multi", q:"ما التبويبات التي تريد اعتمادها في الشريط السفلي؟",
+    help:"اختر كل ما ينطبق — هذه هي الصفحات الرئيسية.",
+    options:["الرئيسية","الفعاليات","تذكيري ورحلتي","حسابي","المفضّلة","المحادثة / الدعم"] },
+  { id:3, type:"single", q:"ما سياسة إنشاء الحساب في التطبيق؟",
+    help:"هل يُنشئ العميل حساباً من داخل التطبيق أم يدخل بحساب الموقع فقط؟",
+    options:["إنشاء حساب داخل التطبيق + الدخول بحساب الموقع","الدخول فقط لمن سجّل عبر الموقع","يُسمح بتصفّح كضيف ثم التسجيل عند الحاجة"] },
+  { id:4, type:"multi", q:"ما البيانات المطلوبة عند إنشاء الحساب؟",
+    help:"نريدها مبسّطة في البداية — بقية البيانات تُكمَّل في الملف الشخصي.",
+    options:["اسم الشركة","البريد الإلكتروني","رقم الهاتف","كلمة المرور","التخصص / القطاع","شعار أو صورة الشركة"] },
+  { id:5, type:"multi", q:"ما طرق الدخول الإضافية التي نفعّلها؟",
+    help:"إضافة لطريقة البريد + كلمة المرور.",
+    options:["دخول عبر Google","رمز دخول لمرة واحدة (OTP) عبر الجوال","دخول عبر Apple","نكتفي بالبريد وكلمة المرور"] },
+  { id:6, type:"single", q:"هل تعبئة الملف الشخصي (التخصص) إجبارية؟",
+    help:"الملف يغذّي التوصيات والفعاليات المناسبة لكل عميل.",
+    options:["إجباري مباشرة بعد التسجيل","اختياري ويمكن تخطّيه","مطلوب فقط عند أول تسجيل في فعالية"] },
+  { id:7, type:"single", q:"هل نكتفي بالقطاعات الأربعة (طبّي · تقنية · صناعة · أكاديميا)؟",
+    help:"لو في قطاعات إضافية اذكرها في خانة الإجابة الحرة.",
+    options:["نعم، الأربعة تكفي","نضيف قطاعات جديدة (اذكرها في الملاحظة)","الأربعة + السماح للعميل بكتابة تخصص حر"] },
+  { id:8, type:"multi", q:"ما العناصر التي تظهر في الشاشة الرئيسية؟",
+    help:"اختر مكوّنات الصفحة الأولى التي يراها العميل.",
+    options:["عدّاد تنازلي لأقرب فعالية","توصيات حسب القطاع","أزرار اختصار سريعة","شريط آخر التحديثات","طقس مدينة المعرض","متابعة حالة طلب التسجيل"] },
+  { id:9, type:"single", q:"ما لغة التطبيق في الإصدار الأول؟",
+    help:"الموقع ثنائي اللغة؛ نقرّر ماذا نطلق به أولاً.",
+    options:["عربي فقط","عربي + إنجليزي","عربي + إنجليزي + لغة ثالثة"] },
+  { id:10, type:"multi", q:"ما الفلاتر التي نوفّرها في صفحة الفعاليات؟",
+    help:"تساعد العميل يوصل بسرعة للفعالية المناسبة.",
+    options:["القطاع","الشهر / التاريخ","دولية / محلية","السعر (للفلترة فقط)","الدولة / المدينة","الحالة (قادمة / منتهية)"] },
+  { id:11, type:"single", q:"ما سياسة عرض سعر الفعالية؟",
+    help:"القاعدة الحالية: السعر للفلترة فقط ولا يُعرض على الفعالية.",
+    options:["لا يظهر السعر إطلاقاً (للفلترة فقط)","يظهر السعر في بعض الفعاليات","يظهر السعر دائماً"] },
+  { id:12, type:"single", q:"بكم فعالية نبدأ بكتابة محتوى غني (صفحة HTML كاملة)؟",
+    help:"باقي الآلاف تبقى ببيانات أساسية. يوجد مولّد HTML بالذكاء الاصطناعي جاهز في لوحة التحكم.",
+    options:["١٠ فعاليات رائدة","٢٠ فعالية","كل الفعاليات المميّزة","نولّدها بالذكاء الاصطناعي لكل الفعاليات"] },
+  { id:13, type:"single", q:"كم خطوة يكون نموذج التسجيل في الفعالية؟",
+    help:"مثال: البيانات ← الخدمات ← الوثائق ← الدفع.",
+    options:["٣ خطوات","٤ خطوات","٥ خطوات","يختلف حسب الفعالية"] },
+  { id:14, type:"multi", q:"ما الخدمات المدفوعة المتاحة أثناء التسجيل؟",
+    help:"الخدمات المساندة الاختيارية — JAZ يُصدر دعوة، لا تأشيرة.",
+    options:["تذكرة الدخول","تأمين صحي","مساعدة Application للسفارة","حجز موعد TLS / السفارة","لا خدمات مدفوعة الآن"] },
+  { id:15, type:"single", q:"كيف نحسب سعر التأمين الصحي؟",
+    help:"المنطق المقترح: متوسّط أسعار الشركات + هامش ربح.",
+    options:["جدول أسعار يدوي لكل دولة (الأبسط)","ربط API لحظي بشركات التأمين","سعر ثابت موحّد لكل الدول"] },
+  { id:16, type:"multi", q:"ما بوّابة الدفع التي نعتمدها؟",
+    help:"قرار تجاري مهم — اذكر المزوّد المفضّل في الملاحظة إن وُجد.",
+    options:["مزوّد محلي عراقي (قي / زين كاش …)","بطاقات دولية (Visa / Master)","تحويل بنكي","الدفع لاحقاً خارج التطبيق"] },
+  { id:17, type:"single", q:"كيف يرفع العميل الوثائق (صور الجواز…)؟",
+    help:"",
+    options:["الكاميرا + اختيار من معرض الصور","الكاميرا فقط","الكاميرا + رفع ملفات PDF أيضاً"] },
+  { id:18, type:"multi", q:"ما الأحداث التي تُطلق إشعاراً للعميل؟",
+    help:"إشعارات داخل التطبيق + بريد إلكتروني.",
+    options:["قبول التسجيل","فعالية جديدة في تخصصك","تذكير موعد / سفر","جاهزية الوثائق (ملف PDF)","رسائل من الإدارة","تغيّر حالة الطلب"] },
+  { id:19, type:"multi", q:"ماذا تتضمّن صفحة «تذكيري ورحلتي» في الإصدار الأول؟",
+    help:"كل ما يحتاجه العميل قبل وأثناء السفر.",
+    options:["خريطة المعرض","ملف PDF موحّد للوثائق","جدول الرحلة (طيران / فندق / مواعيد)","بطاقة دخول برمز QR","جهة اتصال منسّق الوفد"] },
+  { id:20, type:"single", q:"متى نضيف المساعد الذكي وزر واتساب؟",
+    help:"أسئلة وأجوبة جاهزة موجودة في الموقع (FAQ).",
+    options:["في الإصدار الأول","في المرحلة الثانية","لا حاجة لهما حالياً"] }
+];
+
+/* ============ الحالة ============ */
+const STORE_KEY = "jaz_app_survey_v1";
+let answers = {};
+try { answers = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e){ answers = {}; }
+let idx = 0;
+const N = QUESTIONS.length;
+
+const AR = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+const arNum = n => String(n).split("").map(d => AR[+d] ?? d).join("");
+
+const $ = id => document.getElementById(id);
+
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(answers)); }
+function ans(qid){ if(!answers[qid]) answers[qid] = { selected:[], note:"" }; return answers[qid]; }
+function isAnswered(qid){ const a = answers[qid]; return a && (a.selected.length>0 || (a.note||"").trim().length>0); }
+
+const checkSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+
+function render(){
+  const Q = QUESTIONS[idx];
+  const a = ans(Q.id);
+  $("eyebrow").textContent = "السؤال " + arNum(idx+1) + " من " + arNum(N);
+  $("qtitle").textContent = Q.q;
+  $("qhelp").textContent = Q.help || "";
+  $("qhelp").style.display = Q.help ? "block" : "none";
+  $("qkind").textContent = Q.type === "multi" ? "✓ يمكن اختيار أكثر من إجابة" : "● اختر إجابة واحدة";
+
+  const opts = $("opts"); opts.innerHTML = "";
+  Q.options.forEach((label, i) => {
+    const sel = a.selected.includes(i);
+    const el = document.createElement("div");
+    el.className = "opt " + (Q.type==="single"?"radio ":"") + (sel?"sel":"");
+    el.innerHTML = '<div class="box">'+checkSVG+'</div><div>'+label+'</div>';
+    el.onclick = () => {
+      if(Q.type==="single"){ a.selected = sel ? [] : [i]; }
+      else { sel ? a.selected = a.selected.filter(x=>x!==i) : a.selected.push(i); }
+      save(); render();
+    };
+    opts.appendChild(el);
+  });
+
+  $("note").value = a.note || "";
+  stopRec();
+
+  // progress
+  const answered = QUESTIONS.filter(q=>isAnswered(q.id)).length;
+  $("pfill").style.width = ((idx+1)/N*100) + "%";
+  $("pcount").textContent = arNum(idx+1) + " / " + arNum(N);
+
+  // dots
+  const dots = $("dots"); dots.innerHTML = "";
+  QUESTIONS.forEach((q,i)=>{
+    const d = document.createElement("i");
+    d.className = (i===idx?"cur ":"") + (isAnswered(q.id)?"done":"");
+    d.onclick = ()=>{ idx=i; render(); };
+    dots.appendChild(d);
+  });
+
+  $("prev").disabled = idx===0;
+  $("next").textContent = idx===N-1 ? "إنهاء ›" : "التالي ›";
+  $("done").style.display = "none";
+  $("card").style.display = "flex";
+  $("nav").style.display = "flex";
+}
+
+$("note").addEventListener("input", e=>{ ans(QUESTIONS[idx].id).note = e.target.value; save(); });
+
+$("prev").onclick = ()=>{ if(idx>0){ idx--; render(); window.scrollTo({top:0,behavior:"smooth"}); } };
+$("next").onclick = ()=>{
+  if(idx < N-1){ idx++; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+  else { finish(); }
+};
+
+/* ============ شاشة الإنهاء ============ */
+function finish(){
+  stopRec();
+  $("card").style.display = "none";
+  $("nav").style.display = "none";
+  $("done").style.display = "block";
+  const summ = $("summ"); summ.innerHTML = "";
+  QUESTIONS.forEach(q=>{
+    const a = answers[q.id] || {selected:[],note:""};
+    const labels = a.selected.map(i=>q.options[i]);
+    let val = labels.join("، ");
+    if(a.note && a.note.trim()) val += (val?" — ":"") + "✏️ " + a.note.trim();
+    const row = document.createElement("div"); row.className="row";
+    row.innerHTML = "<b>"+arNum(q.id)+". "+q.q+"</b>" + (val ? "<span>"+val+"</span>" : "<span class='na'>لم تتم الإجابة</span>");
+    summ.appendChild(row);
+  });
+  $("pfill").style.width = "100%";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$("review").onclick = ()=>{ idx=0; render(); };
+
+/* نص مقروء للإرسال عبر واتساب */
+function buildText(){
+  const answered = QUESTIONS.filter(q=>isAnswered(q.id)).length;
+  const lines = ["📋 *استبيان هيكل تطبيق JAZ — إجابات المدير*",
+    "تمّت الإجابة: " + arNum(answered) + " من " + arNum(N), ""];
+  QUESTIONS.forEach(q=>{
+    const a = answers[q.id] || {selected:[],note:""};
+    const labels = a.selected.map(i=>q.options[i]);
+    let val = labels.join("، ");
+    if(a.note && a.note.trim()) val += (val?" — ":"") + "✏️ " + a.note.trim();
+    if(!val) val = "—";
+    lines.push(arNum(q.id) + ". " + q.q);
+    lines.push("↩ " + val);
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+$("wa").onclick = ()=>{
+  const txt = encodeURIComponent(buildText());
+  window.open("https://wa.me/?text=" + txt, "_blank");
+};
+
+/* ============ بناء JSON ============ */
+function buildJSON(){
+  const answered = QUESTIONS.filter(q=>isAnswered(q.id)).length;
+  return {
+    meta: {
+      title: "استبيان تحديد هيكل تطبيق JAZ",
+      company: "JAZ — Joint Annual Zone",
+      generatedAt: new Date().toISOString(),
+      totalQuestions: N,
+      answeredCount: answered
+    },
+    answers: QUESTIONS.map(q=>{
+      const a = answers[q.id] || {selected:[],note:""};
+      return {
+        id: q.id, type: q.type, question: q.q, options: q.options,
+        selectedIndexes: a.selected.slice().sort((x,y)=>x-y),
+        selectedLabels: a.selected.slice().sort((x,y)=>x-y).map(i=>q.options[i]),
+        note: (a.note||"").trim()
+      };
+    })
+  };
+}
+$("dl").onclick = ()=>{
+  const data = JSON.stringify(buildJSON(), null, 2);
+  const blob = new Blob([data], {type:"application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const d = new Date();
+  a.href = url; a.download = "JAZ-survey-"+d.getFullYear()+(""+(d.getMonth()+1)).padStart(2,"0")+(""+d.getDate()).padStart(2,"0")+".json";
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+};
+$("cp").onclick = async ()=>{
+  const data = JSON.stringify(buildJSON(), null, 2);
+  try { await navigator.clipboard.writeText(data); $("cp").textContent="✓ تم النسخ"; setTimeout(()=>$("cp").textContent="📋 نسخ JSON",1600); }
+  catch(e){ alert("تعذّر النسخ التلقائي — حمّل الملف بدلاً من ذلك."); }
+};
+
+/* ============ الإدخال الصوتي (Web Speech API) ============ */
+let recog = null, recActive = false;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function setHint(msg, err){
+  const h = $("voicehint");
+  h.className = "voicehint" + (err?" err":"");
+  h.innerHTML = msg ? ('<span>'+ (err?'⚠️':'🎙️') +'</span>'+msg) : "";
+}
+if(!SR){
+  setHint("الإدخال الصوتي غير مدعوم في هذا المتصفّح — استخدم Chrome أو Edge أو Safari.", true);
+  $("mic").style.opacity = ".45";
+}
+
+function stopRec(){
+  if(recog && recActive){ try{ recog.stop(); }catch(e){} }
+  recActive = false;
+  $("mic").classList.remove("rec");
+}
+
+$("mic").onclick = ()=>{
+  if(!SR){ return; }
+  if(recActive){ stopRec(); setHint("تم الإيقاف."); return; }
+  recog = new SR();
+  recog.lang = "ar-IQ";          // العربية (العراق) — يتحوّل تلقائياً لأقرب لهجة عربية
+  recog.interimResults = true;
+  recog.continuous = true;
+  let baseText = $("note").value;
+  recog.onstart = ()=>{ recActive=true; $("mic").classList.add("rec"); setHint("جارٍ الاستماع… تكلّم الآن، واضغط المايك للإيقاف."); };
+  recog.onerror = (e)=>{ setHint("خطأ في المايك: " + (e.error==="not-allowed"?"الإذن مرفوض — فعّل صلاحية الميكروفون.":e.error), true); stopRec(); };
+  recog.onend = ()=>{ if(recActive){ $("mic").classList.remove("rec"); recActive=false; } };
+  recog.onresult = (ev)=>{
+    let finalT = "", interimT = "";
+    for(let i=ev.resultIndex; i<ev.results.length; i++){
+      const tr = ev.results[i][0].transcript;
+      if(ev.results[i].isFinal) finalT += tr; else interimT += tr;
+    }
+    if(finalT){ baseText = (baseText ? baseText + " " : "") + finalT.trim(); }
+    const combined = (baseText + (interimT ? " " + interimT : "")).trim();
+    $("note").value = combined;
+    ans(QUESTIONS[idx].id).note = baseText.trim();
+    save();
+  };
+  try { recog.start(); } catch(e){ setHint("تعذّر بدء التسجيل.", true); }
+};
+
+/* ============ تشغيل ============ */
+render();
+</script>
+</body>
+</html>

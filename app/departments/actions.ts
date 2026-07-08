@@ -1,8 +1,10 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Json } from '@/lib/database.types'
 import { sendEmail, generateSectorRegistrationEmail } from '@/lib/email'
+import { notifyAdmins } from '@/lib/notifications'
 
 export async function submitSectorRegistration(sectorId: string, data: Record<string, string>) {
   try {
@@ -43,6 +45,14 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
       console.error('Supabase error:', error)
       throw new Error('Failed to submit form')
     }
+
+    // notifyAdmins يحتاج قراءة كل المستخدمين بدور admin — الزائر ممنوع من هذا بالـ RLS
+    await notifyAdmins(createAdminClient(), {
+      type: 'sector_registration',
+      title: `تسجيل جديد — ${sectorName}`,
+      body: fullName || email || 'مستخدم جديد',
+      linkUrl: '/dashboard/sector-registrations',
+    })
 
     // Send email notifications
     if (email) {

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { isDashboardRole, defaultRouteForRole } from '@/lib/permissions'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Shield, Lock, Mail, AlertCircle } from 'lucide-react'
@@ -38,20 +39,27 @@ export default function AdminLoginPage() {
         console.log('Auth success, fetching profile for user:', authData.user.id)
         const { data: profile, error: profileError } = await supabase
             .from('users')
-            .select('role')
+            .select('role, permissions, is_active')
             .eq('id', authData.user.id)
             .single()
 
-        if (profileError || profile?.role !== 'admin') {
-            console.error('Profile error or not admin:', profileError, profile)
+        if (profileError || !isDashboardRole(profile?.role)) {
+            console.error('Profile error or no dashboard access:', profileError, profile)
             await supabase.auth.signOut()
             setError('ليس لديك صلاحية الوصول إلى لوحة التحكم')
             setIsLoading(false)
             return
         }
 
-        console.log('Admin verified, redirecting...')
-        router.push('/dashboard/home')
+        if (profile?.is_active === false) {
+            await supabase.auth.signOut()
+            setError('تم تعطيل حسابك مؤقتًا، يرجى مراجعة المدير')
+            setIsLoading(false)
+            return
+        }
+
+        console.log('Access verified, redirecting by role...')
+        router.push(defaultRouteForRole(profile?.role, profile?.permissions))
     }
 
     return (

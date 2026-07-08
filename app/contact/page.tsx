@@ -76,6 +76,8 @@ export default function ContactPage() {
   const [isFetchingItems, setIsFetchingItems] = useState(false)
 
   useEffect(() => {
+    let ignore = false
+
     const fetchRelatedItems = async () => {
       if (['event', 'sector', 'blog'].includes(formData.category)) {
         setIsFetchingItems(true)
@@ -86,10 +88,10 @@ export default function ContactPage() {
             .select('id, name_en, name_ar')
             .order('created_at', { ascending: false })
 
-          if (!error && data) {
+          if (!ignore && !error && data) {
             const formattedData = data.map((item) => ({
               id: item.id,
-              title: isRTL ? (item.name_ar || item.name_en) : item.name_en,
+              title: (isRTL ? (item.name_ar || item.name_en) : item.name_en) || '',
             }))
             setRelatedItems(formattedData)
           }
@@ -99,7 +101,7 @@ export default function ContactPage() {
             .select('id, title, title_ar')
             .order('created_at', { ascending: false })
 
-          if (!error && data) {
+          if (!ignore && !error && data) {
             const formattedData = data.map((item) => ({
               id: item.id,
               title: isRTL ? (item.title_ar || item.title) : item.title,
@@ -113,7 +115,7 @@ export default function ContactPage() {
             .eq('type', 'blog')
             .order('created_at', { ascending: false })
 
-          if (!error && data) {
+          if (!ignore && !error && data) {
             const formattedData = data.map((item) => ({
               id: item.id,
               title: isRTL ? (item.title_ar || item.title) : item.title,
@@ -121,7 +123,7 @@ export default function ContactPage() {
             setRelatedItems(formattedData)
           }
         }
-        setIsFetchingItems(false)
+        if (!ignore) setIsFetchingItems(false)
       } else {
         setRelatedItems([])
         setFormData(prev => ({ ...prev, related_id: '', related_title: '' }))
@@ -129,6 +131,9 @@ export default function ContactPage() {
     }
 
     fetchRelatedItems()
+    return () => {
+      ignore = true
+    }
   }, [formData.category, isRTL])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -213,16 +218,24 @@ export default function ContactPage() {
     }, 500)
   }
 
+  const OFFICE_MAP_QUERIES: Record<'baghdad' | 'basra' | 'erbil', string> = {
+    basra: '30.505715,47.830616',
+    baghdad: 'Al-Mansour District, Al-Nidhal Street, Baghdad, Iraq',
+    erbil: 'Erbil International Fair Complex, 60m St, Erbil, Iraq',
+  }
+
+  const OFFICE_EXTERNAL_URLS: Record<'baghdad' | 'basra' | 'erbil', string> = {
+    basra: 'https://maps.app.goo.gl/eiyS4zMAsUqrZdg7A?g_st=awb',
+    baghdad: 'https://maps.google.com/?q=Al-Mansour+District,+Al-Nidhal+Street,+Baghdad,+Iraq',
+    erbil: 'https://maps.google.com/?q=Erbil+International+Fair+Complex,+60m+St,+Erbil,+Iraq',
+  }
+
+  const [selectedOffice, setSelectedOffice] = useState<'baghdad' | 'basra' | 'erbil'>('basra')
+
   const handleOfficeSelect = (office: 'baghdad' | 'basra' | 'erbil') => {
-    let url = ''
-    if (office === 'basra') {
-      url = 'https://maps.app.goo.gl/eiyS4zMAsUqrZdg7A?g_st=awb'
-    } else if (office === 'baghdad') {
-      url = 'https://maps.google.com/?q=Al-Mansour+District,+Al-Nidhal+Street,+Baghdad,+Iraq'
-    } else {
-      url = 'https://maps.google.com/?q=Erbil+International+Fair+Complex,+60m+St,+Erbil,+Iraq'
-    }
-    window.open(url, '_blank', 'noopener,noreferrer')
+    setSelectedOffice(office)
+    mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    window.open(OFFICE_EXTERNAL_URLS[office], '_blank', 'noopener,noreferrer')
   }
 
   const heroStyle = {
@@ -568,15 +581,17 @@ export default function ContactPage() {
                     )}
 
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-4">
-                      <label className="flex items-center gap-3 text-sm text-slate-500 cursor-pointer">
+                      <div className="flex items-center gap-3 text-sm text-slate-500">
                         <input
+                          id="contact-agree"
                           type="checkbox"
                           name="agree"
                           checked={formData.agree}
                           onChange={handleChange}
                           required
-                          className="rounded border-slate-300 text-[#8B0000] focus:ring-[#8B0000]"
+                          className="rounded border-slate-300 text-[#8B0000] focus:ring-[#8B0000] cursor-pointer"
                         />
+                        {/* plain span, not <label>, so the nested <Link>s don't double-fire the checkbox toggle */}
                         <span>
                           {isRTL ? (
                             <>
@@ -588,7 +603,7 @@ export default function ContactPage() {
                             </>
                           )}
                         </span>
-                      </label>
+                      </div>
                       <button
                         disabled={isLoading}
                         className="bg-[#001a33] text-white px-8 py-3 rounded-md border border-[#001a33] hover:bg-[#8B0000] hover:border-[#8B0000] transition-colors flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-70 disabled:cursor-not-allowed"
@@ -731,14 +746,15 @@ export default function ContactPage() {
             {/* Map IFrame */}
             <div className="w-full h-[450px] bg-slate-200 rounded-xl overflow-hidden relative">
               <iframe
-                src="https://maps.google.com/maps?q=30.505715,47.830616&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                key={selectedOffice}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(OFFICE_MAP_QUERIES[selectedOffice])}&t=&z=16&ie=UTF8&iwloc=&output=embed`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Basra Office Location Map"
+                title={`${selectedOffice} Office Location Map`}
                 className="w-full h-full"
               />
             </div>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نقاش: ربط Google Drive بلوحة تحكم JAZ</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --jaz-crimson: #8B0000;
+    --jaz-orange: #c2410c;
+    --stone-50: #fafaf9;
+    --stone-100: #f5f5f4;
+    --stone-200: #e7e5e4;
+    --stone-300: #d6d3d1;
+    --stone-400: #a8a29e;
+    --stone-500: #78716c;
+    --stone-600: #57534e;
+    --stone-700: #44403c;
+    --stone-800: #292524;
+    --stone-900: #1c1917;
+    --emerald: #059669;
+    --emerald-bg: #ecfdf5;
+    --emerald-border: #a7f3d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+    background: var(--stone-100);
+    color: var(--stone-900);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .lang-en, code, .mono { font-family: 'Plus Jakarta Sans', 'Courier New', monospace; direction: ltr; }
+
+  /* ===== الهيدر ===== */
+  .header {
+    background: linear-gradient(135deg, var(--jaz-crimson), var(--jaz-orange));
+    color: #fff; padding: 3rem 2rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .header::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .header-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+  .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .header p { font-size: 0.92rem; opacity: 0.85; }
+  .header-badges { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .header-badge {
+    padding: 0.3rem 0.8rem; border-radius: 999px;
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    font-size: 0.72rem; font-weight: 500;
+  }
+
+  /* ===== الحاوية ===== */
+  .wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+  /* ===== فقرات النقاش ===== */
+  .msg { margin-bottom: 1.5rem; }
+  .msg-bubble {
+    border-radius: 1.25rem; padding: 1.2rem 1.5rem;
+    font-size: 0.9rem; line-height: 1.85;
+  }
+  .msg-user .msg-bubble {
+    background: #fff; border: 1px solid var(--stone-200);
+    border-right: 4px solid var(--jaz-crimson);
+  }
+  .msg-ai .msg-bubble {
+    background: var(--stone-50); border: 1px solid var(--stone-200);
+    border-right: 4px solid var(--blue);
+  }
+  .msg-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 0.4rem; color: var(--stone-400);
+  }
+  .msg-user .msg-label { color: var(--jaz-crimson); }
+  .msg-ai .msg-label { color: var(--blue); }
+
+  /* ===== بطاقات داخل النقاش ===== */
+  .inline-card {
+    background: #fff; border: 1px solid var(--stone-200);
+    border-radius: 0.875rem; padding: 1rem 1.2rem; margin: 0.8rem 0;
+  }
+  .inline-card-title {
+    font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem;
+    color: var(--stone-800);
+  }
+
+  /* ===== صناديق الملاحظات ===== */
+  .note {
+    padding: 1rem 1.2rem; border-radius: 0.75rem;
+    font-size: 0.85rem; margin: 0.8rem 0; line-height: 1.8;
+  }
+  .note-problem { background: var(--red-bg); border: 1px solid var(--red-border); border-right: 4px solid var(--red); }
+  .note-solution { background: var(--emerald-bg); border: 1px solid var(--emerald-border); border-right: 4px solid var(--emerald); }
+  .note-info { background: var(--blue-bg); border: 1px solid var(--blue-border); border-right: 4px solid var(--blue); }
+  .note-tag {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px;
+    font-size: 0.68rem; font-weight: 600; margin-bottom: 0.4rem; color: #fff;
+  }
+  .note-problem .note-tag { background: var(--red); }
+  .note-solution .note-tag { background: var(--emerald); }
+  .note-info .note-tag { background: var(--blue); }
+  .note strong { font-weight: 700; }
+
+  /* ===== خطوات مرقّمة ===== */
+  .steps { counter-reset: step; margin: 1rem 0; }
+  .step {
+    position: relative; padding-right: 3rem; margin-bottom: 1.2rem;
+    counter-increment: step;
+  }
+  .step::before {
+    content: counter(step); position: absolute; right: 0; top: 0;
+    width: 2rem; height: 2rem; border-radius: 0.625rem;
+    background: var(--jaz-crimson); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700;
+  }
+  .step-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .step-desc { font-size: 0.82rem; color: var(--stone-500); }
+
+  /* ===== كود ===== */
+  .code-block {
+    background: var(--stone-900); color: #e7e5e4;
+    border-radius: 0.75rem; padding: 1rem 1.2rem;
+    font-family: 'Plus Jakarta Sans', 'Courier New', monospace;
+    font-size: 0.78rem; line-height: 1.7; direction: ltr; text-align: left;
+    overflow-x: auto; margin: 0.8rem 0;
+  }
+  .code-block .kw { color: #c084fc; }
+  .code-block .str { color: #86efac; }
+  .code-block .com { color: #78716c; }
+  .code-block .fn { color: #93c5fd; }
+
+  /* ===== جدول مقارنة ===== */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.8rem 0; }
+  .compare-table th {
+    text-align: right; padding: 0.6rem 0.8rem;
+    font-size: 0.72rem; font-weight: 600; color: var(--stone-500);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--stone-200);
+  }
+  .compare-table td {
+    padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--stone-100);
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  /* ===== شارة خيار ===== */
+  .option-badge {
+    display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px;
+    font-size: 0.68rem; font-weight: 600;
+  }
+  .opt-rec { background: var(--emerald-bg); color: var(--emerald); border: 1px solid var(--emerald-border); }
+  .opt-alt { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+  /* ===== فاصل ===== */
+  .divider { height: 1px; background: var(--stone-200); margin: 2rem 0; }
+
+  /* ===== مخطط البنية ===== */
+  .arch-diagram {
+    background: #fff; border: 1px solid var(--stone-200);
+    border-radius: 1rem; padding: 1.5rem; margin: 1rem 0;
+    text-align: center;
+  }
+  .arch-row { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+  .arch-box {
+    padding: 0.6rem 1rem; border-radius: 0.625rem;
+    font-size: 0.78rem; font-weight: 600; border: 1px solid;
+  }
+  .arch-frontend { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
+  .arch-backend { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald); }
+  .arch-google { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+  .arch-storage { background: var(--stone-100); border-color: var(--stone-200); color: var(--stone-600); }
+  .arch-arrow { font-size: 1.2rem; color: var(--stone-400); }
+
+  /* ===== سؤال وجواب ===== */
+  .qa-box {
+    background: #fff; border: 1px solid var(--stone-200);
+    border-radius: 0.875rem; padding: 1rem 1.2rem; margin: 0.8rem 0;
+  }
+  .qa-q { font-size: 0.82rem; font-weight: 700; color: var(--jaz-crimson); margin-bottom: 0.3rem; }
+  .qa-a { font-size: 0.82rem; color: var(--stone-600); }
+
+  /* ===== زر نسخ ===== */
+  .copy-btn {
+    float: left; padding: 0.25rem 0.6rem; border-radius: 0.375rem;
+    background: var(--stone-800); color: #fff; font-size: 0.65rem;
+    border: none; cursor: pointer; opacity: 0.6; transition: opacity 0.2s;
+  }
+  .copy-btn:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ===== الهيدر ===== -->
+<div class="header">
+  <div class="header-content">
+    <h1>نقاش: ربط Google Drive بلوحة تحكم JAZ</h1>
+    <p>نقاش تقني كامل حول كيفية جعل لوحة تحكم موقع JAZ المكان المركزي لشغل الشركة — مستندات، ملفات، تخزين — بدل التبعثر بين Drive و Hostinger وأماكن ثانية.</p>
+    <div class="header-badges">
+      <span class="header-badge">Google Drive API</span>
+      <span class="header-badge">Service Account</span>
+      <span class="header-badge">Next.js</span>
+      <span class="header-badge">Supabase Auth</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ========================================
+       المحور 1: فهم الفكرة
+       ======================================== -->
+  <div class="msg msg-user">
+    <div class="msg-label">— السؤال الأول</div>
+    <div class="msg-bubble">
+      زين انت تعرف Google Drive كيف اربط مع جميع الاجهزة؟ تقصد شلون تربط Google Drive على كل الأجهزة بالمكتب (نفس الحساب أو حسابات موحدة تتشارك بيها الملفات)، أو تقصد شي ثاني — زي ربط Google Drive مع تطبيق/موقع JAZ عن طريق API؟
+    </div>
+  </div>
+
+  <div class="msg msg-ai">
+    <div class="msg-label">— الإجابة</div>
+    <div class="msg-bubble">
+      نكدر اربط مع لوحة التحكم مالت موقع جاز ويكون بشكل متناسق. تقصد تربط Google Drive بلوحة تحكم موقع JAZ (يعني Next.js / Vercel / Supabase) بحيث الملفات تنرفع أو تنعرض أو تنتزامن من درايف داخل لوحة التحكم؟
+
+      <div class="qa-box">
+        <div class="qa-q">Q: شنو بالضبط تريد يصير بلوحة التحكم؟</div>
+        <div class="qa-a">A: رفع/تخزين ملفات (صور، مستندات) من الموقع مباشرة لـ Google Drive</div>
+      </div>
+
+      <div class="note note-info">
+        <span class="note-tag">الفكرة</span>
+        من لوحة تحكم موقع JAZ، أي ملف ينرفع (صورة منتج، مستند، وثيقة) يروح تلقائياً يترزن على Google Drive بدل ما يترزن على Supabase Storage أو سيرفر ثاني.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 2: الطريقة التقنية
+       ======================================== -->
+  <div class="msg msg-user">
+    <div class="msg-label">— السؤال الثاني</div>
+    <div class="msg-bubble">
+      زين اريد شغل مالت الشركة البسيط كلها يكون في لوحة التحكم الموقع.
+    </div>
+  </div>
+
+  <div class="msg msg-ai">
+    <div class="msg-label">— الإجابة</div>
+    <div class="msg-bubble">
+      فهمت — يعني مو بس رفع ملفات، تريد لوحة التحكم مال الموقع تصير المكان المركزي لعموم شغل الشركة البسيط (documents، ملفات، ربما مهام بسيطة)، بدل ما يكون مبعثر بين Drive و Hostinger وأماكن ثانية.
+
+      <div class="note note-problem">
+        <span class="note-tag">المشكلة الحالية</span>
+        الملفات مبعثرة: صور بالـ Hostinger، مستندات بـ Drive شخصي، ملفات بـ Supabase. الموظف ما يدري وين يلاقي شي، ولوحة التحكم تعرض بس الفعاليات والتسجيلات — مو شغل الشركة اليومي.
+      </div>
+
+      <div class="qa-box">
+        <div class="qa-q">Q: لوحة التحكم تريدها تصير شنو بالضبط؟</div>
+        <div class="qa-a">A: واجهة تعرض ملفات Drive (التخزين يظل بـ Drive)</div>
+      </div>
+
+      <div class="note note-solution">
+        <span class="note-tag">القرار الأذكى</span>
+        ما تكرر التخزين — بس تسوي واجهة (viewer) داخل لوحة تحكم JAZ تعرض محتويات Google Drive بشكل منظم. التخزين يظل بـ Drive (مجاني 15GB)، والواجهة تعرض وتنظّم.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 3: البنية العامة
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— البنية العامة</div>
+    <div class="msg-bubble">
+
+      <!-- مخطط البنية -->
+      <div class="arch-diagram">
+        <div class="arch-row">
+          <div class="arch-box arch-frontend">لوحة تحكم JAZ<br><span style="font-size:0.65rem;opacity:0.7;">Next.js — React</span></div>
+          <span class="arch-arrow">&harr;</span>
+          <div class="arch-box arch-backend">API Routes<br><span style="font-size:0.65rem;opacity:0.7;">/api/drive/files</span></div>
+          <span class="arch-arrow">&harr;</span>
+          <div class="arch-box arch-google">Google Drive API<br><span style="font-size:0.65rem;opacity:0.7;">googleapis</span></div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-box arch-storage">Supabase Auth<br><span style="font-size:0.65rem;opacity:0.7;">صلاحيات الموظفين</span></div>
+          <span class="arch-arrow">&rarr;</span>
+          <div class="arch-box arch-storage">Google Service Account<br><span style="font-size:0.65rem;opacity:0.7;">وصول بدون OAuth</span></div>
+          <span class="arch-arrow">&rarr;</span>
+          <div class="arch-box arch-google">Drive Folder<br><span style="font-size:0.65rem;opacity:0.7;">"JAZ Uploads"</span></div>
+        </div>
+      </div>
+
+      <!-- المصادقة -->
+      <div class="inline-card">
+        <div class="inline-card-title">1. المصادقة (Authentication)</div>
+
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>الخيار</th>
+              <th>الوصف</th>
+              <th>الأناسب لـ JAZ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="option-badge opt-rec">Service Account — موصى به</span></td>
+              <td>حساب خدمة مو حساب شخصي. يوصل لمجلد Drive محدد بدون تسجيل دخول يدوي.</td>
+              <td>للشركة الصغيرة — أبسط وأنسب</td>
+            </tr>
+            <tr>
+              <td><span class="option-badge opt-alt">OAuth لكل مستخدم — بديل</span></td>
+              <td>كل موظف يسجل دخول بحسابه Google الشخصي. أعقد، تحتاجه بس لو تريد كل موظف يشوف ملفاته الشخصية.</td>
+              <td>مبالغ فيه لشركة صغيرة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- API Route -->
+      <div class="inline-card">
+        <div class="inline-card-title">2. الـ API Route (Next.js backend)</div>
+        تسوي endpoint مثل <code>/api/drive/files</code> يستخدم مكتبة <code>googleapis</code> (الرسمية من Google) يسوي:
+        <ul style="margin: 0.5rem 1.5rem; font-size: 0.82rem;">
+          <li><code>drive.files.list()</code> — يرجع قائمة الملفات</li>
+          <li>كل ملف يرجع: اسم، نوع، تاريخ تعديل، رابط، thumbnail لو صورة</li>
+          <li>كلها من المجلد المحدد</li>
+        </ul>
+      </div>
+
+      <!-- الواجهة -->
+      <div class="inline-card">
+        <div class="inline-card-title">3. الواجهة (Frontend)</div>
+        صفحة بلوحة التحكم تعرض:
+        <ul style="margin: 0.5rem 1.5rem; font-size: 0.82rem;">
+          <li>شبكة/قائمة بالملفات (زي متصفح ملفات بسيط)</li>
+          <li>فلترة حسب النوع (صور / مستندات) أو المجلد</li>
+          <li>زر "فتح بـ Drive" لكل ملف (يفتح تاب جديد بجوجل درايف نفسه للتعديل)</li>
+          <li>ممكن تضيف بحث بالاسم</li>
+        </ul>
+      </div>
+
+      <!-- الصلاحيات -->
+      <div class="inline-card">
+        <div class="inline-card-title">4. الصلاحيات</div>
+        تربطها مع نظام تسجيل الدخول الحالي بلوحة التحكم (Supabase Auth) — يعني بس الموظفين المسجلين يشوفون الملفات، مو أي زائر.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 4: خطوات التنفيذ
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— خطوات التنفيذ العملية</div>
+    <div class="msg-bubble">
+      <div class="steps">
+        <div class="step">
+          <div class="step-title">تفعيل Google Drive API + إنشاء Service Account</div>
+          <div class="step-desc">
+            ادخل <span class="lang-en">Google Cloud Console</span> ← إنشاء مشروع جديد ←
+            فعّل <span class="lang-en">Google Drive API</span> ←
+            <span class="lang-en">IAM & Admin</span> ← <span class="lang-en">Service Accounts</span> ←
+            إنشاء حساب ← نزّل ملف JSON فيه المفاتيح.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-title">مشاركة المجلد مع Service Account</div>
+          <div class="step-desc">
+            أنشئ مجلد بـ Google Drive (مثلاً "JAZ Uploads") ← شاركه مع إيميل الـ
+            <span class="lang-en">Service Account</span> (ينتهي بـ
+            <span class="lang-en">.iam.gserviceaccount.com</span>) ← أعطه صلاحية
+            <span class="lang-en">Editor</span>.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-title">تثبيت googleapis بالمشروع</div>
+          <div class="step-desc">
+            <div class="code-block"><span class="com"># تثبيت المكتبة الرسمية</span>
+npm install googleapis</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-title">بناء الـ API Route</div>
+          <div class="step-desc">
+            ملف <span class="lang-en">app/api/drive/files/route.ts</span> — يستعمل
+            <span class="lang-en">Service Account</span> للوصول للدرايف ويرجع قائمة الملفات.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-title">بناء صفحة العرض بالـ Frontend</div>
+          <div class="step-desc">
+            صفحة <span class="lang-en">app/dashboard/files/page.tsx</span> — تعرض الملفات
+            بشبكة أو قائمة، مع فلترة وزر "فتح بـ Drive".
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 5: كود الـ API Route
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— كود الـ API Route المقترح</div>
+    <div class="msg-bubble">
+      هذا الكود الأساسي لـ <span class="lang-en">app/api/drive/files/route.ts</span>:
+
+      <div class="code-block"><span class="kw">import</span> { NextResponse } <span class="kw">from</span> <span class="str">"next/server"</span>;
+<span class="kw">import</span> { google } <span class="kw">from</span> <span class="str">"googleapis"</span>;
+
+<span class="kw">export const</span> runtime = <span class="str">"nodejs"</span>;
+
+<span class="kw">const</span> auth = <span class="kw">new</span> google.auth.GoogleAuth({
+  keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_PATH,
+  scopes: [<span class="str">"https://www.googleapis.com/auth/drive.readonly"</span>],
+});
+
+<span class="kw">export async function</span> <span class="fn">GET</span>() {
+  <span class="kw">const</span> drive = google.drive({ version: <span class="str">"v3"</span>, auth });
+  <span class="kw">const</span> res = <span class="kw">await</span> drive.files.list({
+    q: <span class="str">"'FOLDER_ID' in parents and trashed = false"</span>,
+    fields: <span class="str">"files(id, name, mimeType, modifiedTime, thumbnailLink, webViewLink)"</span>,
+    orderBy: <span class="str">"modifiedTime desc"</span>,
+    pageSize: <span class="str">50</span>,
+  });
+
+  <span class="kw">return</span> NextResponse.json({ files: res.data.files });
+}</div>
+
+      <div class="note note-info">
+        <span class="note-tag">متغيرات البيئة المطلوبة</span>
+        <strong><code>GOOGLE_SERVICE_ACCOUNT_PATH</code></strong> — مسار ملف JSON اللي نزلته من Google Cloud.<br>
+        <strong><code>GOOGLE_DRIVE_FOLDER_ID</code></strong> — ID المجلد (تلاقيه بالـ URL بعد تفتح المجلد بـ Drive).
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 6: كود الواجهة
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— كود صفحة العرض (مختصر)</div>
+    <div class="msg-bubble">
+      <div class="code-block"><span class="com">// app/dashboard/files/page.tsx</span>
+<span class="kw">"use client"</span>;
+<span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">"react"</span>;
+
+<span class="kw">interface</span> File {
+  id: string;
+  name: string;
+  mimeType: string;
+  modifiedTime: string;
+  thumbnailLink?: string;
+  webViewLink?: string;
+}
+
+<span class="kw">export default function</span> <span class="fn">FilesPage</span>() {
+  <span class="kw">const</span> [files, setFiles] = useState&lt;File[]&gt;([]);
+
+  useEffect(() =&gt; {
+    fetch(<span class="str">"/api/drive/files"</span>)
+      .then(r =&gt; r.json())
+      .then(data =&gt; setFiles(data.files));
+  }, []);
+
+  <span class="kw">return</span> (
+    &lt;div className=<span class="str">"grid grid-cols-4 gap-4"</span>&gt;
+      {files.map(f =&gt; (
+        &lt;div key={f.id} className=<span class="str">"rounded-xl border p-4"</span>&gt;
+          {f.thumbnailLink &amp;&amp; &lt;img src={f.thumbnailLink} /&gt;}
+          &lt;p&gt;{f.name}&lt;/p&gt;
+          &lt;a href={f.webViewLink}&gt;فتح بـ Drive&lt;/a&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 7: نقاط مهمة للنقاش
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— نقاط تحتاج قرار قبل التنفيذ</div>
+    <div class="msg-bubble">
+
+      <div class="note note-problem">
+        <span class="note-tag">نقطة 1 — رفع أم عرض؟</span>
+        هل تريد بس <strong>عرض</strong> الملفات الموجودة بالـ Drive؟ أو تريد أيضًا
+        <strong>رفع</strong> ملفات جديدة من لوحة التحكم مباشرة؟ الرفع يحتاج صلاحية
+        <span class="lang-en">drive.file</span> بدل <span class="lang-en">drive.readonly</span>.
+      </div>
+
+      <div class="note note-problem">
+        <span class="note-tag">نقطة 2 — مجلد واحد أم متعدد؟</span>
+        هل كل الملفات بمجلد واحد "JAZ Uploads"؟ أو تريد مجلدات فرعية منظّمة
+        (صور الفعاليات / مستندات الشراكات / عقود / فواتير)؟ لو متعددة، نضيف
+        قائمة مجلدات باليسار زي متصفح ملفات.
+      </div>
+
+      <div class="note note-problem">
+        <span class="note-tag">نقطة 3 — صلاحيات الأدوار</span>
+        هل كل الموظفين يشوفون كل الملفات؟ أو المدير يشوف كل شي، والموظف العادي
+        يشوف مجلداته فقط؟ هذا يربط بنظام الأدوار الموجود
+        (<span class="lang-en">admin / editor / viewer</span>).
+      </div>
+
+      <div class="note note-problem">
+        <span class="note-tag">نقطة 4 — البحث</span>
+        هل تريد بحث بالاسم فقط (سهل)? أو بحث داخل المحتوى (يحتاج
+        <span class="lang-en">Google Drive Search</span> API — أعمق لكن أبطأ)؟
+      </div>
+
+      <div class="note note-solution">
+        <span class="note-tag">نقطة 5 — التكلفة</span>
+        Google Drive API مجاني حتى <span class="lang-en">1,000,000</span> طلب باليوم.
+        لشركة صغيرة، هذا أكثر من كافي. لا توجد كلفة إضافية.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 8: مقارنة البدائل
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— مقارنة: Google Drive مقابل Supabase Storage</div>
+    <div class="msg-bubble">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>المعيار</th>
+            <th>Google Drive</th>
+            <th>Supabase Storage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>المساحة المجانية</td>
+            <td>15 GB</td>
+            <td>1 GB</td>
+          </tr>
+          <tr>
+            <td>تكلفة التوسع</td>
+            <td>100GB بـ $2/شهر (Google One)</td>
+            <td>100GB بـ $5/شهر</td>
+          </tr>
+          <tr>
+            <td>تعديل الملفات</td>
+            <td>مباشرة بـ Docs/Sheets/Slides</td>
+            <td>لا — تخزين فقط</td>
+          </tr>
+          <tr>
+            <td>مشاركة خارجية</td>
+            <td>مدمجة (روابط مشاركة)</td>
+            <td>تطلب بناء واجهة خاصة</td>
+          </tr>
+          <tr>
+            <td>تكامل مع لوحة التحكم</td>
+            <td>يحتاج API route + Service Account</td>
+            <td>مدمج بالفعل (SDK جاهز)</td>
+          </tr>
+          <tr>
+            <td>سرعة الوصول</td>
+            <td>متوسطة (API request لكل عملية)</td>
+            <td>سريعة (CDN مدمج)</td>
+          </tr>
+          <tr>
+            <td>الأنسب لـ JAZ</td>
+            <td><span class="option-badge opt-rec">مستندات الشركة</span></td>
+            <td><span class="option-badge opt-rec">صور الفعاليات</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note note-solution">
+        <span class="note-tag">التوصية</span>
+        <strong>استعمل الاثنين معًا:</strong> Google Drive للمستندات (عقود، فواتير، تقارير —
+        لأنها قابلة للتعديل والمشاركة)، و Supabase Storage للصور (صور الفعاليات، شعارات
+        الشركاء — لأنها سريعة و مدمجة). لوحة التحكم تعرض كلاهما في صفحة واحدة منظّمة.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========================================
+       المحور 9: السؤال الأخير
+       ======================================== -->
+  <div class="msg msg-ai">
+    <div class="msg-label">— السؤال الأخير قبل التنفيذ</div>
+    <div class="msg-bubble">
+      تريد أبدأ أبني لك الكود (الـ API route + صفحة العرض) هسه، لو تفضل نمشي
+      خطوة بخطوة وتسوي أنت الإعداد بـ Google Cloud أول (Service Account) وبعدين
+      نرجع للكود؟
+
+      <div class="note note-info" style="margin-top:1rem;">
+        <span class="note-tag">الخطوة الأولى عمليًا</span>
+        إذا جاهز، ادخل <span class="lang-en">console.cloud.google.com</span> وأنشئ
+        المشروع + Service Account. نزّل ملف JSON وحطه بمجلد المشروع (خارج
+        <span class="lang-en">public</span>!). بعدين أبنيلك الكود كامل.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>هيكلية وخيارات تطبيق JAZ للزبائن — الإدارة العامة</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #8b0000;
+      --primary-hover: #6b0000;
+      --accent-green: #16a34a;
+      --neutral-bg: #ffffff;
+      --neutral-fg: #0f172a;
+      --neutral-navy-dark: #0b1426;
+      --neutral-navy-light: #f8fafc;
+      --border: rgba(15, 23, 42, 0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #ffffff;
+      color: var(--neutral-fg);
+      line-height: 1.6;
+      padding: 40px 24px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Print Controls */
+    .print-controls {
+      max-width: 1000px;
+      margin: 0 auto 30px;
+      padding: 16px 24px;
+      background-color: var(--neutral-navy-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .print-btn {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .print-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    /* Document Header */
+    .doc-header {
+      max-width: 1000px;
+      margin: 0 auto 30px;
+      border-bottom: 2px solid var(--neutral-navy-dark);
+      padding-bottom: 20px;
+    }
+
+    .logo-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .logo-text {
+      font-weight: 800;
+      color: var(--neutral-navy-dark);
+      font-size: 24px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span {
+      color: var(--primary);
+    }
+
+    .doc-tag {
+      background-color: var(--neutral-navy-dark);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+
+    .doc-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--neutral-navy-dark);
+      margin-bottom: 10px;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .doc-meta span b {
+      color: var(--neutral-navy-dark);
+    }
+
+    /* Intro Callout */
+    .info-callout {
+      max-width: 1000px;
+      margin: 0 auto 30px;
+      background-color: var(--neutral-navy-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .info-callout p {
+      margin-bottom: 8px;
+    }
+
+    .info-callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Section Grid */
+    .screen-section {
+      max-width: 1000px;
+      margin: 0 auto 50px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      page-break-inside: avoid;
+    }
+
+    .screen-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .screen-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--neutral-navy-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .screen-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .screen-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    /* Mobile Wireframe Mockup */
+    .phone-frame {
+      width: 290px;
+      height: 540px;
+      background-color: #ffffff;
+      border: 12px solid #000000;
+      border-radius: 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      flex-shrink: 0;
+      margin: 0 auto;
+    }
+
+    /* Notch */
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 18px;
+      background-color: #000000;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      z-index: 100;
+    }
+
+    /* Screen UI Layout */
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background-color: #f8fafc;
+      font-size: 11px;
+    }
+
+    .phone-status-bar {
+      height: 22px;
+      padding: 4px 16px 0;
+      display: flex;
+      justify-content: space-between;
+      color: #000000;
+      font-weight: 600;
+      font-size: 9px;
+      z-index: 10;
+    }
+
+    .phone-header {
+      padding: 10px 14px;
+      background-color: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      color: var(--neutral-navy-dark);
+      font-size: 11.5px;
+    }
+
+    .phone-body {
+      flex-grow: 1;
+      padding: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .phone-footer {
+      height: 44px;
+      background-color: #ffffff;
+      border-top: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      color: #94a3b8;
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .phone-footer-tab.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Dummy UI Components */
+    .ui-card {
+      background-color: #ffffff;
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .ui-title {
+      font-weight: 700;
+      color: var(--neutral-navy-dark);
+      margin-bottom: 4px;
+      font-size: 10.5px;
+    }
+
+    .ui-text {
+      color: #64748b;
+      font-size: 9.5px;
+      line-height: 1.4;
+    }
+
+    .ui-button {
+      background-color: var(--primary);
+      color: #ffffff;
+      text-align: center;
+      padding: 7px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 10.5px;
+    }
+
+    .ui-input {
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 9.5px;
+      color: #94a3b8;
+      text-align: right;
+    }
+
+    .ui-tag {
+      display: inline-block;
+      background-color: var(--primary);
+      color: #ffffff;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 2px;
+    }
+
+    .ui-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    /* Feature Checklist Table */
+    .checklist-container {
+      width: 100%;
+    }
+
+    .feature-group {
+      margin-bottom: 16px;
+    }
+
+    .group-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--neutral-navy-dark);
+      margin-bottom: 10px;
+      border-bottom: 1.5px solid var(--neutral-navy-dark);
+      padding-bottom: 4px;
+    }
+
+    .feature-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .feature-table th {
+      background-color: var(--neutral-navy-light);
+      color: var(--neutral-navy-dark);
+      font-weight: 700;
+      padding: 8px 10px;
+      text-align: right;
+      border: 1px solid var(--border);
+    }
+
+    .feature-table td {
+      padding: 10px;
+      border: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .col-check {
+      width: 50px;
+      text-align: center !important;
+    }
+
+    .col-status {
+      width: 90px;
+    }
+
+    /* Harmonized visual checkbox styling */
+    .box-selector {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--neutral-navy-dark);
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+
+    .box-selector.checked {
+      background-color: var(--neutral-navy-dark);
+      border-color: var(--neutral-navy-dark);
+    }
+
+    .box-selector.checked::after {
+      content: '✓';
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .badge-default {
+      display: inline-block;
+      background-color: #f1f5f9;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .badge-optional {
+      display: inline-block;
+      background-color: rgba(139, 0, 0, 0.05);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(139, 0, 0, 0.15);
+    }
+
+    /* Print Optimization Styles */
+    @media print {
+      body {
+        padding: 0;
+        background-color: #ffffff;
+        color: #000000;
+        font-size: 11.5px;
+      }
+
+      .print-controls {
+        display: none !important;
+      }
+
+      .screen-section {
+        page-break-after: always;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .screen-section:last-of-type {
+        page-break-after: avoid;
+      }
+
+      .phone-frame {
+        box-shadow: none !important;
+        border-color: #000000 !important;
+      }
+
+      .feature-table th {
+        background-color: #f1f5f9 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Print Action Area -->
+  <div class="print-controls">
+    <div>
+      <h3 style="font-size: 14px; color: var(--neutral-navy-dark); margin-bottom: 4px;">نسخة مخصصة للإدارة والمدير العام (PDF)</h3>
+      <p style="font-size: 12px; color: #64748b;">مستند خيارات وتطوير شاشات التطبيق لخدمة الزبائن.</p>
+    </div>
+    <button class="print-btn" onclick="window.print()">
+      <span>🖨️</span>
+      <span>اطبع المستند / احفظ كـ PDF</span>
+    </button>
+  </div>
+
+  <!-- Document Header -->
+  <div class="doc-header">
+    <div class="logo-area">
+      <div class="logo-text">JAZ <span>Mobile App</span></div>
+      <div class="doc-tag">مسودة مراجعة واجهات الزبائن</div>
+    </div>
+    <h1>هيكلية ومكونات تطبيق JAZ للزبائن</h1>
+    <div class="doc-meta">
+      <span>جهة المراجعة: <b>إدارة JAZ الموقرة / المدير العام</b></span>
+      <span>نوع التطبيق: <b>تطبيق زبائن ووفود (iOS + Android)</b></span>
+      <span>تاريخ الإصدار: <b>28 يونيو 2026</b></span>
+    </div>
+  </div>
+
+  <!-- Intro Callout -->
+  <div class="info-callout">
+    <p>تعرض هذه الوثيقة الهيكل التنظيمي والشاشات المخصصة لزبائن منصة (Joint Annual Zone) من المشاركين والوفود الدولية والمحلية. يرجى الاطلاع على مكونات الواجهات وتحديد الميزات الإضافية المقترحة للموافقة عليها وتضمينها في خطة التطوير من خلال وضع علامة الموافقة <b>(✓)</b> في عمود الاختيار.</p>
+  </div>
+
+  <!-- SCREEN 1: LOGIN & AUTHENTICATION -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 1 — تسجيل الدخول والتحقق الرقمي</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>تسجيل الدخول</span>
+            <span>JAZ</span>
+          </div>
+          <div class="phone-body" style="justify-content: center; gap: 12px;">
+            <div style="text-align: center; margin-bottom: 8px;">
+              <div style="font-size: 15px; font-weight: 700; color: var(--primary);">JAZ App</div>
+              <div style="font-size: 8px; color: #64748b;">المنصة الرسمية للمشاركين والوفود</div>
+            </div>
+            <div class="ui-input">البريد الإلكتروني للزبون</div>
+            <div class="ui-input">كلمة المرور</div>
+            <div class="ui-button">دخول آمن</div>
+            <div style="text-align: center; font-size: 8.5px; color: #64748b; margin: 2px 0;">أو تسجيل سريع عبر</div>
+            <div class="ui-button" style="background-color: #ffffff; color: #000000; border: 1px solid #cbd5e1;">Google Account</div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab active">الرئيسية</span>
+            <span class="phone-footer-tab">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تسجيل دخول موحد ببيانات Supabase</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>الربط المباشر بنفس البريد وكلمة المرور للمسجلين بالموقع الإلكتروني.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تسجيل الدخول السريع عبر Google (OAuth)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تسهيل الولوج بنقرة واحدة لأصحاب حسابات جي ميل.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>نموذج إنشاء حساب داخلي كامل</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>للزبائن الجدد لإدخال الهاتف، الاسم، البريد، وتحديد القطاع.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>استرجاع كلمة المرور ذاتياً</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>رابط إلكتروني لإرسال كود تصفير كلمة المرور للبريد الشخصي.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>موافقة شروط وسياسة الخصوصية</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>خانة إلزامية للموافقة على شروط الاستخدام والأمان الرقمي.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>التحقق الثنائي برمز الهاتف المباشر (OTP SMS)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>إرسال كود تحقق مؤقت لهاتف الزبون لرفع مستوى الأمان الرقمي.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>المصادقة البيومترية (بصمة الوجه واليد FaceID)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>تمكين تسجيل الدخول المباشر للمرات القادمة بحماية الهاتف الذكي.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>خيار الدخول السريع كـ "زائر"</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>تصفح الفعاليات العامة والندوات دون اشتراط إنشاء حساب فوري.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 2: HOME SCREEN -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 2 — الشاشة الرئيسية التفاعلية للزبون</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>الرئيسية</span>
+            <span>👤 أهلاً بك</span>
+          </div>
+          <div class="phone-body">
+            <!-- Countdown component -->
+            <div class="ui-card" style="border-right: 4px solid var(--primary); padding: 8px;">
+              <div class="ui-title" style="font-size: 10px;">الفعالية القادمة تبدأ خلال:</div>
+              <div style="font-weight: 800; font-size: 13px; text-align: center; color: var(--primary);">٢٤ يوماً : ١٢ ساعة</div>
+            </div>
+            <!-- Quick actions -->
+            <div class="ui-grid">
+              <div class="ui-card" style="text-align: center; padding: 6px;">
+                <div style="font-size: 12px;">📇</div>
+                <div style="font-weight: 700; font-size: 9px;">تذكرتي</div>
+              </div>
+              <div class="ui-card" style="text-align: center; padding: 6px;">
+                <div style="font-size: 12px;">✈️</div>
+                <div style="font-weight: 700; font-size: 9px;">طلب الفيزا</div>
+              </div>
+            </div>
+            <!-- Recommendations -->
+            <div class="ui-card">
+              <div class="ui-title">توصيات مقترحة تهمك <span class="ui-tag">تعليم</span></div>
+              <div class="ui-text">مؤتمر التكنولوجيا والذكاء الاصطناعي السنوي - بغداد.</div>
+            </div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab active">الرئيسية</span>
+            <span class="phone-footer-tab">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>عداد تنازلي لأقرب مؤتمر مسجل به</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>يعرض الوقت المتبقي لأول فعالية مقبلة للزبون لتهيئة الاستعداد.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>أزرار الاختصارات السريعة للخدمات</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>أزرار مباشرة للوصول لرمز الدخول QR وتتبع وثائق السفر والدعوة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>قسم التوصيات المخصصة لقطاع الزبون</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>عرض أخبار ومؤتمرات مرتبطة بقطاع الزبون المسجل (طب، تقنية، إلخ).</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>شريط التبويبات السفلي للتنقل المباشر</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>شريط سفلي ثابت يتيح الانتقال بين الشاشات الرئيسية الأربع.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>إشعارات مركزية في أعلى الهيدر</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>أيقونة جرس لعرض الرسائل الهامة الواردة من إدارة المنصة.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>شريط الأخبار التفاعلي العاجل</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>شريط متحرك يعرض الإعلانات الهامة بخصوص مواعيد افتتاح المعارض.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>توقعات الطقس المباشرة لمدينة الفعالية</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>مساعدة الوفود والزبائن من خارج العراق على معرفة أحوال الطقس.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>ويدجت "آخر التحديثات" ومتابعة طلبات التسجيل</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>حالة مختصرة تظهر للزبون آخر تغيير جرى على أحد طلباته.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 3: EVENTS CALENDAR -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 3 — تصفح وبحث الفعاليات والندوات</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>تقويم الفعاليات</span>
+            <span>🔍</span>
+          </div>
+          <div class="phone-body">
+            <!-- Filter chips -->
+            <div style="display: flex; gap: 4px; overflow: hidden;">
+              <span class="ui-tag">الكل</span>
+              <span class="ui-tag" style="background-color: #cbd5e1; color: #000000;">تقنية</span>
+              <span class="ui-tag" style="background-color: #cbd5e1; color: #000000;">صناعة</span>
+            </div>
+            <!-- Event items -->
+            <div class="ui-card">
+              <div class="ui-title">معرض العراق الدولي للتكنولوجيا</div>
+              <div class="ui-text">بغداد · 20 أكتوبر 2026</div>
+              <div style="margin-top: 4px; text-align: left;"><span class="ui-tag">متاح</span></div>
+            </div>
+            <div class="ui-card">
+              <div class="ui-title">الملتقى الأكاديمي السنوي</div>
+              <div class="ui-text">أربيل · 05 نوفمبر 2026</div>
+            </div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab active">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>قائمة الفعاليات المتصلة بـ Supabase</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>جلب وعرض تلقائي لجميع الفعاليات مع تفاصيلها ومكان انعقادها.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>البحث بالكلمات الدلالية واسم الفعالية</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تمكين الزبون من إدخال اسم المؤتمر لتسهيل البحث المباشر.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>شريط تصنيف الفعاليات حسب القطاع</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>أزرار فلترة سريعة لاختيار قطاع معين وعرض فعالياته حصراً.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>شارات حالة التسجيل بالفعالية</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>توضح للزبون فورياً إن كان المؤتمر متاحاً للتسجيل أم منتهياً.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>المفضلة وحفظ الفعاليات لزيارتها لاحقاً</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>حفظ الفعاليات الهامة في قسم خاص بالملف الشخصي للزبون.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>فلترة جغرافية متقدمة (حسب المحافظة/المدينة)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>تصنيف الفعاليات الجارية في (بغداد، البصرة، أربيل، الموصل) بشكل منفصل.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>مشاركة بطاقة الفعالية عبر تطبيقات التواصل الاجتماعي</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>توليد كود مشاركة خاص لتسهيل النشر والتسجيل للزملاء والمهتمين.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>عرض الفعاليات على هيئة تقويم تفاعلي شهري</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>واجهة بديلة توضح الفعاليات حسب الأيام على أجندة شهرية.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 4: EVENT DETAILS -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 4 — تفاصيل الفعالية وبرنامج الجلسات</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>تفاصيل المؤتمر</span>
+            <span>↩️</span>
+          </div>
+          <div class="phone-body">
+            <!-- Event Cover Image Dummy -->
+            <div style="background-color: #cbd5e1; height: 100px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px;">صورة الفعالية الرئيسية</div>
+            <div class="ui-title">معرض تكنولوجيا العراق السنوي</div>
+            <div class="ui-text" style="max-height: 80px; overflow: hidden;">يهدف هذا الحدث لعرض أحدث التقنيات والحلول الرقمية بمشاركة دولية واسعة وجلسات نقاشية متميزة.</div>
+            <div class="ui-card" style="padding: 6px; font-size: 9px; color: var(--primary);">📍 قاعة معرض بغداد الدولي - جناح A</div>
+            <div class="ui-button" style="margin-top: auto;">سجل الآن في الفعالية</div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab active">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>صورة ووصف الفعالية وتصنيف القطاع</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>عرض البنر الرئيسي للفعالية مع نص تعريفي مفصل.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>معلومات الزمان والمكان والتفاصيل الجغرافية</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تحديد تاريخ الافتتاح وتاريخ الانتهاء والمكان الجغرافي الدقيق.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>خريطة تفاعلية لتحديد الاتجاهات</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تكامل مع خرائط جوجل (Google Maps) لتسهيل وصول الزبون للقاعة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>زر التسجيل المباشر الثابت أسفل الشاشة</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>زر يسهل للزبون بدء عملية تعبئة طلب المشاركة والبيانات.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>برنامج الفعالية التفصيلي (جلسة بجلسة)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>عرض جدول زمني مفصل للمحاضرات وورش العمل وتوقيتاتها الدقيقة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>دليل المتحدثين الرئيسيين بالفعالية</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>عرض قائمة بصور المتحدثين وسيرهم الذاتية وتخصصاتهم الأكاديمية.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>إمكانية إضافة الفعالية لتقويم الهاتف الشخصي</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>ربط الحدث مباشرة مع تقاويم الهاتف (Google/Apple) للتذكير التلقائي.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>دليل الشركاء والرعاة الرسميين للمؤتمر</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>استعراض الشركات الراعية مع روابط مواقعهم لدعم التواصل المؤسسي.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 5: REGISTRATION & INTAKE FORM (COMPREHENSIVE) -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 5 — نموذج التسجيل التفصيلي وشراكة الأعمال</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>التسجيل وشراكة الأعمال</span>
+            <span>↩️</span>
+          </div>
+          <div class="phone-body" style="gap: 8px;">
+            <div style="font-weight: 700; font-size: 10px; color: var(--primary);">خطوات التسجيل (الخطوة ١ من ٣)</div>
+            <div class="ui-input">اسم الشركة / المؤسسة بالكامل</div>
+            <div class="ui-input">تخصص ومجال عمل الشركة</div>
+            <div class="ui-input">رقم السجل التجاري / النقابة</div>
+            <div class="ui-grid">
+              <div class="ui-input">الرمز البريدي</div>
+              <div class="ui-input">المدينة / الدولة</div>
+            </div>
+            <div class="ui-input">المنصب الوظيفي الحالي للزبون</div>
+            <div class="ui-button" style="margin-top: auto;">حفظ واستمرار</div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab active">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>نموذج التسجيل متعدد الخطوات (Step-by-Step)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تسهيل إدخال البيانات للزبون عبر واجهات مقسمة مع مؤشر تقدم.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>بيانات الشركة (الاسم، التخصص، السجل التجاري)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>حقول لجمع بيانات المؤسسة الشريكة لمطابقتها مع غرف التجارة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>الموقع والعنوان (الرمز البريدي، المدينة، الدولة)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تحديد المقر الجغرافي للشركة الشريكة لضمان التوثيق.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>البيانات المهنية (المنصب، جهة الترشيح)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>حقول لتسجيل المسمى الوظيفي للمشارك والجهة التي يمثلها.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تعبئة مسبقة للمعلومات الشخصية (Auto-fill)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>سحب الاسم، البريد، والهاتف تلقائياً من حساب العميل لتسريع الإدخال.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>الحفظ التلقائي كمسودة (registrations.form_data)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>حفظ التقدم خطوة بخطوة لمنع فقدان البيانات عند انقطاع الإنترنت أو الاتصال.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>خيار حجز وحساب السكن الفندقي المرافق</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>تمكين الزبون من اختيار فندق الإقامة وفترة المكوث المخصصة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تحديد خيارات وجبات الطعام والاحتياجات الخاصة</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>حقول لاختيار الحمية الغذائية المفضلة أو أي احتياجات لوجستية خاصة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تأكيد الاشتراك في لقاءات B2B الثنائية</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>خيار لحجز مواعيد حصرية للقاء الشركات والوفود المشاركة بالمعرض.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>إدخال رمز الخصم الترويجي (Promo Code)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>حقل خاص لتطبيق الخصومات للمؤسسات المتعاقدة والطلاب.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 6: VISA & INVITATION SUPPORT -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 6 — طلب وتتبع التأشيرات وخطابات الدعوة</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>طلب خطاب دعوة رسمي</span>
+            <span>↩️</span>
+          </div>
+          <div class="phone-body">
+            <div class="ui-card" style="border-right: 4px solid var(--accent-green);">
+              <div class="ui-title">تتبع حالة المعالجة:</div>
+              <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 8px;">
+                <span>تقديم ✓</span>
+                <span>تدقيق ✓</span>
+                <span style="font-weight: 700; color: var(--primary);">إصدار ⏳</span>
+                <span style="color: #94a3b8;">جاهز للسفر</span>
+              </div>
+            </div>
+            <div class="ui-input">الاسم الكامل بالإنجليزية (مطابق للجواز)</div>
+            <div class="ui-input">رقم جواز السفر</div>
+            <div class="ui-card" style="text-align: center; border: 1px dashed var(--primary); padding: 12px;">
+              <span style="font-size: 12px;">📸</span>
+              <div style="font-size: 9px; font-weight: 600;">افتح الكاميرا لتصوير الجواز</div>
+            </div>
+            <div class="ui-button">إرسال الطلب للمراجعة</div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab">الفعاليات</span>
+            <span class="phone-footer-tab active">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>حقول إدخال بيانات الجواز بالإنجليزية</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>حقول إدخال الاسم الكامل، رقم الجواز، وتاريخ إصدار الجواز وانتهائه.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تكامل الكاميرا لتصوير ورفع الجواز</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>رفع صورة جواز السفر بطريقة آمنة لـ Supabase Storage وتخزينها للمطابقة.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>مكون تتبع حالة الطلب التفاعلي</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>أداة بصرية تظهر للزبون المرحلة الحالية للطلب بشكل تفصيلي.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>إشعارات هاتفية فورية عند تغيير الحالة</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>إشعار فوري يظهر للهاتف بمجرد الموافقة أو طلب تعديل الوثائق.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>خيار تحديد نوع خطاب الدعوة المطلوبة</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>قائمة لاختيار نوع الدعوة (دعوة تجارية / دعوة لحضور وفد حكومي / دعوة شخصية).</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>طلب خدمة التوصيل والنقل من المطار</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>حقل لحجز سيارة توصيل من المطار للفندق المخصص للزبون.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>خيار إرسال التحديثات عبر رسائل WhatsApp تلقائياً</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>إرسال كود تتبع ورابط خطاب الدعوة عند جهوزيته مباشرة لهاتف العميل.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تعديل وإعادة رفع الوثائق المرفوضة</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>مكون يفتح فقط في حال رفض صورة الجواز لتعديلها دون حاجة لتقديم طلب جديد.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 7: DIGITAL TICKET & ITINERARY -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 7 — بطاقة المشارك الرقمية (QR) وجدول الرحلة</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>بطاقة المشاركة الرقمية</span>
+            <span>🖨️</span>
+          </div>
+          <div class="phone-body" style="gap: 8px; justify-content: center;">
+            <div class="ui-card" style="text-align: center; border: 1.5px solid #000000; padding: 10px;">
+              <div style="font-weight: 700; font-size: 11px;">م. مصطفى العلي</div>
+              <div style="font-size: 8px; color: #64748b; margin-bottom: 6px;">مشارك وفد هندسي زائر</div>
+              <div style="background-color: #f1f5f9; width: 100px; height: 100px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; border: 1px solid #cbd5e1;">QR CODE</div>
+              <div style="font-size: 7px; color: #64748b; margin-top: 4px;">امسح هذا الرمز لبوابة الدخول</div>
+            </div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab">الفعاليات</span>
+            <span class="phone-footer-tab active">تذكرتي</span>
+            <span class="phone-footer-tab">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>بطاقة الدخول الرسمية برمز QR رقمي</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>توليد رمز QR مشفر يحتوي على رقم تسجيل العميل لمسحه وتأكيد الحضور.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تفاصيل مواعيد وتجمعات الرحلة والوفد</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>جدول رحلة مفصل يوضح للزبون مواعيد الطيران، السكن، وتوقيت النقل الرسمي.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>الوضع الموفّر للإنترنت (Offline Mode)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>القدرة على استعراض بطاقة QR وجدول السفر من الذاكرة المحلية عند انقطاع الإنترنت.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>معلومات منسق الوفد المالي واللوجستي</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>إظهار رقم واسم المنسق المسؤول لتسهيل تواصل الضيوف معه.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تصدير وتحميل البطاقة بصيغة PDF محلية</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>حفظ التذكرة كملف في مجلد التنزيلات بالهاتف لمشاركتها أو طباعتها.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>التكامل مع محفظة Apple/Google Wallet</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>إضافة بطاقة الدخول السريع لمحفظة الهاتف الذكي الرسمية لتسهيل الولوج.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>مشاركة تفاصيل الرحلة الفندقية مع الأهل</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>خيار يسهل إرسال تفاصيل ومكان السكن والإقامة المخصصة عبر البريد أو الواتساب.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>مفكرة الملاحظات الشخصية للمشارك</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>مفكرة بسيطة داخل التطبيق لتدوين الملاحظات واللقاءات الهامة أثناء المؤتمر.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 8: SUPPORT & SMART ASSISTANT -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 8 — مركز الدعم والمساعد الذكي (FAQ)</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>المساعد الذكي والدعم</span>
+            <span>↩️</span>
+          </div>
+          <div class="phone-body" style="gap: 8px;">
+            <div class="ui-card">
+              <div class="ui-title">الأسئلة الشائعة FAQ</div>
+              <div class="ui-text" style="font-weight: 600;">كيف أحصل على خطاب الدعوة؟</div>
+              <div class="ui-text">يمكنك تقديم طلب خطاب الدعوة من تبويب التذاكر وسيقوم فريقنا بمراجعته خلال ٣ أيام عمل.</div>
+            </div>
+            <div class="ui-button" style="background-color: var(--accent-green);">💬 تواصل معنا عبر WhatsApp</div>
+            <div class="ui-button" style="margin-top: auto;">فتح تذكرة دعم فني</div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab active">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>بنك الأسئلة الشائعة المدمج (FAQ)</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>توفير إجابات جاهزة وفورية لأكثر الأسئلة تكراراً للزبائن والوفود.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>زر التواصل الفوري عبر WhatsApp للدعم الفني</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>يفتح محادثة واتساب ويرفق بيانات الزبون والفعالية تلقائياً لتسهيل حل المشكلات.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>نظام تذاكر الدعم والشكاوى الداخلي</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تمكين المشاركين من كتابة الشكاوى أو الاستفسارات ومتابعة الردود من الإدارة.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>مساعد دردشة تفاعلي بالذكاء الاصطناعي (AI Chatbot)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>يجيب على استفسارات الزبائن المتعلقة بالمعارض والرحلة كتابة وصوتاً.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>زر الاتصال السريع المباشر بالطوارئ أو الدعم اللوجستي</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>إتاحة اتصال هاتفي سريع بمسؤولي البعثة أو الاستقبال للتنسيق العاجل.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تقييم مستوى الدعم وجودة الخدمة</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>تمكين الزبون من تقييم جودة الدعم المقدم لتطوير الخدمات.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تحميل دليل إرشادات السفر ودليل العراق السياحي</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>دليل مبسط بصيغة PDF يتضمن إرشادات الصرف والاتصالات داخل العراق.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCREEN 9: PROFILE & DOCUMENTS -->
+  <section class="screen-section">
+    <h2 class="screen-title">الشاشة 9 — إدارة الملف الشخصي والوثائق المحفوظة</h2>
+    <div class="screen-grid">
+      
+      <!-- Mockup Frame -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status-bar">
+            <span>12:00</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <span>الملف الشخصي</span>
+            <span>⚙️</span>
+          </div>
+          <div class="phone-body" style="gap: 8px;">
+            <div style="text-align: center; margin-bottom: 6px;">
+              <div style="width: 50px; height: 50px; background-color: #cbd5e1; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 18px;">👤</div>
+              <div style="font-weight: 700; font-size: 11px; margin-top: 4px;">مصطفى العلي</div>
+            </div>
+            <div class="ui-card">
+              <div class="ui-title">الوثائق المحفوظة:</div>
+              <div class="ui-text">📄 جواز السفر - تم الرفع ومطابق</div>
+              <div class="ui-text">📄 الهوية الوطنية - قيد المراجعة</div>
+            </div>
+            <div class="ui-button">تعديل بيانات الحساب</div>
+          </div>
+          <div class="phone-footer">
+            <span class="phone-footer-tab">الرئيسية</span>
+            <span class="phone-footer-tab">الفعاليات</span>
+            <span class="phone-footer-tab">تذكرتي</span>
+            <span class="phone-footer-tab active">حسابي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Checklist -->
+      <div class="checklist-container">
+        <div class="feature-group">
+          <div class="group-title">خصائص ومكونات الشاشة</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="col-check">تحديد</th>
+                <th>المكون / الميزة</th>
+                <th class="col-status">النوع</th>
+                <th>التوضيح البرمجي والأهمية للزبون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>بيانات الحساب الأساسية وتعديل الهاتف والاسم</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تحديث الملف الشخصي لتأكيد صحة المراسلات والتسجيلات.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>قسم إدارة وتحميل الوثائق الرسمية المحفوظة</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>عرض وإدارة جوازات السفر والهويات المرفوعة لـ Supabase للزبون للرجوع لها.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تبديل لغة التطبيق الموحدة</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>تغيير كامل لغة التطبيق بين العربية والانجليزية مع دعم كامل للـ RTL/LTR.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector checked"></div></td>
+                <td><b>تسجيل الخروج الآمن وحذف الحساب</b></td>
+                <td><span class="badge-default">ديفولت (أساسي)</span></td>
+                <td>إنهاء الجلسة بأمان متوافق مع لوائح الخصوصية وحماية البيانات.</td>
+              </tr>
+              <!-- Options -->
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>التحقق وتوثيق الحساب بـ "شارة التحقق" للوفود</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>شارة زرقاء تظهر في الملف الشخصي لتأكيد تطابق البيانات مع جواز السفر.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>وضع توفير الطاقة والوضع الداكن (Dark Mode)</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>تغيير مظهر واجهة التطبيق للوضع الداكن لتقليل استهلاك البطارية أثناء التنقل.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>سجل الفعاليات والمشاركات السابقة</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>عرض أرشيف كامل لجميع المؤتمرات والمعارض التي حضرها الزبون سابقاً مع JAZ.</td>
+              </tr>
+              <tr>
+                <td class="col-check"><div class="box-selector"></div></td>
+                <td>تحميل شهادات الحضور والمشاركة الرقمية للفعاليات</td>
+                <td><span class="badge-optional">خياري إضافي</span></td>
+                <td>توليد وتصدير شهادات الحضور الموقعة رسمياً بصيغة PDF فور انتهاء المؤتمر.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</body>
+</html>

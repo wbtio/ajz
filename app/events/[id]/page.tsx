@@ -76,7 +76,7 @@ export default async function EventPage({ params }: EventPageProps) {
         />
 
         <Link
-          href={`/events/${event.id}/registration`}
+          href={`/events/${event.id}/register`}
           className="fixed bottom-6 left-1/2 z-50 inline-flex w-[280px] -translate-x-1/2 items-center justify-center rounded-lg bg-red-600 px-8 py-4 text-lg font-bold text-white shadow-md transition hover:bg-red-700 animate-bounce"
         >
           Register Now
@@ -127,7 +127,7 @@ export default async function EventPage({ params }: EventPageProps) {
       />
 
       <Link
-        href={`/events/${event.id}/registration`}
+        href={`/events/${event.id}/register`}
         className="fixed bottom-6 left-1/2 z-50 inline-flex w-[280px] -translate-x-1/2 items-center justify-center rounded-lg bg-red-600 px-8 py-4 text-lg font-bold text-white shadow-md transition hover:bg-red-700 animate-bounce"
       >
         Register Now

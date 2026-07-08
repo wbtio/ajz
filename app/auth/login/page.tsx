@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { defaultRouteForRole, isDashboardRole } from '@/lib/permissions'
 import { Container } from '@/components/ui/container'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -27,7 +28,7 @@ export default function LoginPage() {
 
     const supabase = createClient()
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -35,6 +36,25 @@ export default function LoginPage() {
     if (error) {
       setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
       setIsLoading(false)
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role, permissions, preferred_sector_id')
+      .eq('id', data.user.id)
+      .single()
+
+    // الموظفون (مدير/فريق) يذهبون مباشرة إلى لوحة التحكم — لا نمرّ بهم على ملف الزبائن
+    if (isDashboardRole(profile?.role)) {
+      router.push(defaultRouteForRole(profile?.role, profile?.permissions))
+      router.refresh()
+      return
+    }
+
+    // الزبائن: نطلب إكمال الملف مرة واحدة لتفعيل التوصيات المخصّصة
+    if (!profile?.preferred_sector_id) {
+      router.push(`/auth/complete-profile?redirect=${encodeURIComponent(redirect)}`)
       return
     }
 

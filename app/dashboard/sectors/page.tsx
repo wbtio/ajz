@@ -29,10 +29,22 @@ const ICONS = [
     { value: 'GraduationCap', label: 'تعليم', icon: GraduationCap },
 ]
 
+interface SectorRegistration {
+    id: string
+    full_name: string | null
+    email: string | null
+    phone: string | null
+    status: string
+    data: Record<string, unknown> | null
+    created_at: string
+    sectors: { name?: string; name_ar?: string; registration_config?: FormField[] } | null
+    users: { full_name?: string; email?: string } | null
+}
+
 export default function SectorsPage() {
     const [sectors, setSectors] = useState<Sector[]>([])
-    const [registrations, setRegistrations] = useState<any[]>([])
-    const [selectedRegistration, setSelectedRegistration] = useState<any>(null)
+    const [registrations, setRegistrations] = useState<SectorRegistration[]>([])
+    const [selectedRegistration, setSelectedRegistration] = useState<SectorRegistration | null>(null)
     const [activeTab, setActiveTab] = useState<'sectors' | 'registrations'>('sectors')
     const [loading, setLoading] = useState(true)
     const [isFormOpen, setIsFormOpen] = useState(false)
@@ -268,20 +280,20 @@ export default function SectorsPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {registrations.map((reg: any) => (
+                                        {registrations.map((reg) => (
                                             <tr key={reg.id} className="hover:bg-gray-50/50 transition-colors">
                                                 <td className="py-4 px-6">
                                                     <div className="font-bold text-gray-900">
-                                                        {(reg.sectors as any)?.name_ar || (reg.sectors as any)?.name || 'قطاع محذوف'}
+                                                        {reg.sectors?.name_ar || reg.sectors?.name || 'قطاع محذوف'}
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-gray-900">
-                                                            {reg.full_name || (reg.users as any)?.full_name || 'زائر'}
+                                                            {reg.full_name || reg.users?.full_name || 'زائر'}
                                                         </span>
                                                         <span className="text-sm text-gray-500">
-                                                            {reg.email || (reg.users as any)?.email || '-'}
+                                                            {reg.email || reg.users?.email || '-'}
                                                         </span>
                                                         {reg.phone && (
                                                             <span className="text-xs text-gray-400 mt-0.5" dir="ltr">
@@ -301,7 +313,7 @@ export default function SectorsPage() {
                                                         return (
                                                             <div className="space-y-2 max-w-sm">
                                                                 {Object.entries(data).slice(0, 3).map(([key, value]) => {
-                                                                    const fieldConfig = Array.isArray(config) ? config.find((f: any) => f.id === key) : null;
+                                                                    const fieldConfig = Array.isArray(config) ? config.find((f: FormField) => f.id === key) : null;
                                                                     const label = fieldConfig?.label_ar || fieldConfig?.label_en || key;
                                                                     
                                                                     return (
@@ -635,7 +647,7 @@ export default function SectorsPage() {
                     <DialogHeader>
                         <DialogTitle>تفاصيل طلب الشراكة</DialogTitle>
                         <DialogDescription>
-                            مقدم الطلب: {selectedRegistration?.full_name || (selectedRegistration?.users as any)?.full_name || 'زائر'}
+                            مقدم الطلب: {selectedRegistration?.full_name || selectedRegistration?.users?.full_name || 'زائر'}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -645,7 +657,7 @@ export default function SectorsPage() {
                             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
                                 <div>
                                     <Label className="text-xs text-gray-500">البريد الإلكتروني</Label>
-                                    <p className="text-sm font-medium">{selectedRegistration.email || (selectedRegistration.users as any)?.email || '-'}</p>
+                                    <p className="text-sm font-medium">{selectedRegistration.email || selectedRegistration.users?.email || '-'}</p>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-gray-500">رقم الهاتف</Label>
@@ -653,7 +665,7 @@ export default function SectorsPage() {
                                 </div>
                                 <div>
                                     <Label className="text-xs text-gray-500">القطاع</Label>
-                                    <p className="text-sm font-medium">{(selectedRegistration.sectors as any)?.name_ar}</p>
+                                    <p className="text-sm font-medium">{selectedRegistration.sectors?.name_ar}</p>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-gray-500">تاريخ الطلب</Label>
@@ -674,7 +686,7 @@ export default function SectorsPage() {
                                         }
 
                                         return Object.entries(data).map(([key, value]) => {
-                                            const fieldConfig = Array.isArray(config) ? config.find((f: any) => f.id === key) : null;
+                                            const fieldConfig = Array.isArray(config) ? config.find((f: FormField) => f.id === key) : null;
                                             const label = fieldConfig?.label_ar || fieldConfig?.label_en || key;
                                             
                                             return (

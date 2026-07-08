@@ -3,9 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-const BOT_TOKEN = "8674388050:AAGa1wagkeeW0gb9FE88RukpC3pAd7WWNu0";
-const CHAT_ID = "8696377323";
-
 async function sendTelegramMessage(task: {
   id: string;
   page: string;
@@ -15,6 +12,13 @@ async function sendTelegramMessage(task: {
   created_at: string | null;
   base64_image?: string | null;
 }) {
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  if (!BOT_TOKEN || !CHAT_ID) {
+    console.error("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID غير مضبوطة");
+    return;
+  }
+
   const text = `
 📋 <b>طلب جديد - تعديلات الموقع</b>
 ━━━━━━━━━━━━━━━

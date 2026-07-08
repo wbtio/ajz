@@ -1,7 +1,9 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
+import { notifyAdmins } from '@/lib/notifications'
 
 export async function submitContactForm(formData: FormData) {
   try {
@@ -23,6 +25,14 @@ export async function submitContactForm(formData: FormData) {
       .insert([rawData])
 
     if (error) throw error
+
+    // notifyAdmins يحتاج قراءة كل المستخدمين بدور admin — الزائر غير المسجّل كمدير ممنوع من هذا بالـ RLS
+    await notifyAdmins(createAdminClient(), {
+      type: 'contact_message',
+      title: 'رسالة تواصل جديدة',
+      body: `${rawData.full_name} — ${rawData.subject}`,
+      linkUrl: '/dashboard/messages',
+    })
 
     revalidatePath('/dashboard/messages')
     return { success: true }

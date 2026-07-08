@@ -683,8 +683,8 @@ export const translations = {
     },
     // Dashboard
     dashboard: {
-      users: "المستخدمين",
-      registrations: "التسجيلات",
+      users: "العملاء",
+      registrations: "تسجيلات الفعاليات",
       settings: "الإعدادات",
       sectorRegistrations: "تسجيلات القطاعات",
       messages: "الرسائل",
@@ -1443,8 +1443,8 @@ export const translations = {
     },
     // Dashboard
     dashboard: {
-      users: "Users",
-      registrations: "Registrations",
+      users: "Customers",
+      registrations: "Event Registrations",
       settings: "Settings",
       sectorRegistrations: "Sector Registrations",
       messages: "Messages",

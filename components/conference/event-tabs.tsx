@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 import {
-    Calendar, MapPin, Users, Ticket,
+    Calendar, MapPin, Users,
     Globe, MapPin as MapPinIcon, ChevronLeft, ChevronRight,
     ClipboardList, Home, Palette, Award, Store, Handshake, CalendarDays, Clock, User, Wrench, FileText, type LucideIcon
 } from 'lucide-react'
@@ -50,7 +50,6 @@ interface EventHeroProps {
 export function EventHero({ event, sectorName_ar, sectorName_en }: EventHeroProps) {
     const { t, locale } = useI18n()
     const isAr = locale === 'ar'
-    const showPrice = event.show_price !== false
 
     const title = isAr ? (event.title_ar || event.title) : (event.title || event.title_ar)
     const description = isAr ? (event.description_ar || event.description) : (event.description || event.description_ar)
@@ -150,12 +149,6 @@ export function EventHero({ event, sectorName_ar, sectorName_en }: EventHeroProp
                             <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm">
                                 <Users className="w-4 h-4 text-white/70" />
                                 <span>{event.capacity} {t.events.person}</span>
-                            </div>
-                        )}
-                        {showPrice && (
-                            <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm">
-                                <Ticket className="w-4 h-4 text-white/70" />
-                                <span>{event.price && event.price > 0 ? `${event.price.toLocaleString()} ${t.events.currency}` : t.events.free}</span>
                             </div>
                         )}
                     </div>

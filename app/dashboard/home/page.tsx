@@ -1,20 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  AlertCircle,
   ArrowLeft,
   Calendar,
   CheckCircle2,
   Clock,
   FileText,
   LayoutGrid,
-  MoreHorizontal,
   Plus,
-  Settings,
-  TrendingUp,
   Users,
   XCircle,
   type LucideIcon,
@@ -61,6 +56,7 @@ type UpcomingEvent = {
   location: string | null
   status: string | null
   image_url: string | null
+  conference_config: any
 }
 
 type StatItem = {
@@ -69,6 +65,35 @@ type StatItem = {
   note: string
   href: string
   icon: LucideIcon
+}
+
+function getEventProgress(event: UpcomingEvent) {
+  const config = event.conference_config || {}
+  const workflow = config.workflow || {}
+  
+  // Step 1: Registration (Always completed once event exists)
+  const step1 = true
+  // Step 2: WhatsApp Leads (mapped from workflow step4)
+  const step2 = workflow.step4?.status === 'completed'
+  // Step 3: Design (mapped from workflow step2)
+  const step3 = workflow.step2?.status === 'completed'
+  // Step 4: Publishing & Promotion (mapped from workflow step3)
+  const step4 = workflow.step3?.status === 'completed'
+  // Step 5: Logistics & Bookings (mapped from workflow step5)
+  const step5 = workflow.step5?.status === 'completed'
+
+  const completedCount = [step1, step2, step3, step4, step5].filter(Boolean).length
+  return {
+    percentage: (completedCount / 5) * 100,
+    completedCount,
+    steps: [
+      { name: 'التسجيل', completed: step1 },
+      { name: 'العملاء', completed: step2 },
+      { name: 'التصميم', completed: step3 },
+      { name: 'الترويج', completed: step4 },
+      { name: 'اللوجستيات', completed: step5 },
+    ]
+  }
 }
 
 export default async function DashboardHomePage() {
@@ -90,9 +115,8 @@ export default async function DashboardHomePage() {
     supabase.from('sectors').select('*', { count: 'exact', head: true }),
     supabase
       .from('events')
-      .select('id, title, title_ar, date, location, status, image_url')
-      .gte('date', now)
-      .order('date', { ascending: true })
+      .select('id, title, title_ar, date, location, status, image_url, conference_config')
+      .order('created_at', { ascending: false })
       .limit(5),
     supabase
       .from('registrations')
@@ -109,7 +133,7 @@ export default async function DashboardHomePage() {
     supabase.from('events').select('status'),
   ])
 
-  const recentRegistrations = (recentRegistrationsResult.data || []) as RecentRegistration[]
+  const recentRegistrations = (recentRegistrationsResult.data || []) as unknown as RecentRegistration[]
   const upcomingEvents = (upcomingEventsResult.data || []) as UpcomingEvent[]
 
   const totalEvents = eventsStatusResult.data?.length || 0
@@ -150,140 +174,80 @@ export default async function DashboardHomePage() {
   ]
 
   return (
-    <div className="space-y-8 text-start" dir="rtl" lang="ar">
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm lg:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-primary/80" />
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
-          <div className="space-y-5">
-            <Badge variant="outline" className="border-border bg-muted/60 text-muted-foreground">
-              مركز الإدارة
-            </Badge>
-            <div className="space-y-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">لوحة التحكم</h1>
-              <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-                نظرة مركزة على الفعاليات والتسجيلات وأهم المؤشرات اليومية، بواجهة أوضح ومهيأة للعربية.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button asChild>
-                <Link href="/dashboard/events/new">
-                  <Plus className="me-2 size-4" />
-                  فعالية جديدة
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/dashboard/events">
-                  عرض كل الفعاليات
-                  <ArrowLeft className="ms-2 size-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-            <HeroMetric
-              label="فعاليات نشطة"
-              value={activeEvents}
-              note="تعمل الآن أو منشورة"
-              icon={TrendingUp}
-            />
-            <HeroMetric
-              label="فعاليات قادمة"
-              value={upcomingEvents.length}
-              note="خلال الفترة القادمة"
-              icon={Calendar}
-            />
-            <HeroMetric
-              label="تسجيلات حديثة"
-              value={recentRegistrations.length}
-              note="أحدث ما وصل للمنصة"
-              icon={FileText}
-            />
-          </div>
+    <div className="space-y-4 text-start" dir="rtl" lang="ar">
+      {/* Header — عنوان مضغوط بدون بانر ضخم */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">لوحة التحكم</h1>
+          <p className="text-sm text-muted-foreground">نظرة سريعة على الفعاليات والتسجيلات.</p>
         </div>
-      </section>
+        <div className="flex gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/events">
+              كل الفعاليات
+              <ArrowLeft className="ms-1.5 size-3.5" />
+            </Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link href="/dashboard/events/new">
+              <Plus className="me-1.5 size-3.5" />
+              فعالية جديدة
+            </Link>
+          </Button>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {/* KPI — بطاقات مسطّحة موحّدة الحجم */}
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {stats.map((stat) => (
           <Link
             key={stat.label}
             href={stat.href}
-            className="group block rounded-2xl border border-border bg-card p-5 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:border-primary/25"
+            className="flex items-center gap-2.5 rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary/30"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                <p className="text-3xl font-semibold tracking-tight text-foreground">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.note}</p>
-              </div>
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <stat.icon className="size-5" />
-              </div>
+            <stat.icon className="size-4 shrink-0 text-muted-foreground" />
+            <div className="min-w-0">
+              <p className="text-lg font-bold leading-none text-foreground tabular-nums">{stat.value}</p>
+              <p className="mt-1 truncate text-[11px] text-muted-foreground">{stat.label}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.85fr)]">
-        <div className="space-y-8">
-          <Card className="overflow-hidden border-border bg-card shadow-sm">
-            <CardHeader className="flex flex-col gap-4 border-b border-border bg-muted/20 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <CardTitle className="text-xl font-semibold">أحدث التسجيلات</CardTitle>
-                <CardDescription>عرض مختصر لآخر التسجيلات في الفعاليات.</CardDescription>
-              </div>
-              <Button asChild variant="outline" size="sm">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.8fr)]">
+        <div className="space-y-4">
+          <Card className="overflow-hidden border-border bg-card">
+            <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-border p-4">
+              <CardTitle className="text-sm font-bold">أحدث التسجيلات</CardTitle>
+              <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
                 <Link href="/dashboard/registrations">
                   عرض الكل
-                  <ArrowLeft className="ms-2 size-4" />
+                  <ArrowLeft className="ms-1 size-3.5" />
                 </Link>
               </Button>
             </CardHeader>
-            <CardContent className="p-5">
+            <CardContent className="p-3">
               {recentRegistrations.length > 0 ? (
-                <div className="flex flex-col gap-4">
-                  {recentRegistrations.map((registration, index) => (
-                    <div key={registration.id}>
-                      <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start gap-3">
-                              <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-semibold text-primary">
-                                {getRegistrationInitial(registration)}
-                              </div>
-                              <div className="min-w-0 flex-1 space-y-3">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <p className="text-sm font-semibold text-foreground">
-                                    {registration.users?.full_name || 'مستخدم غير معروف'}
-                                  </p>
-                                  <StatusBadge status={registration.status} />
-                                </div>
-                                <p className="truncate text-xs text-muted-foreground" dir="ltr">
-                                  {registration.users?.email || 'بدون بريد إلكتروني'}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  <Badge variant="outline" className="bg-background text-foreground">
-                                    {(registration.events?.title_ar || registration.events?.title || 'فعالية غير محددة').trim()}
-                                  </Badge>
-                                  {getRegistrationPreviewEntries(registration).map((entry) => (
-                                    <Badge key={`${registration.id}-${entry.label}`} variant="secondary" className="max-w-full">
-                                      <span className="truncate">
-                                        {entry.label}: {entry.value}
-                                      </span>
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Clock className="size-3.5" />
-                            {formatArabicDate(registration.created_at)}
-                          </div>
-                        </div>
+                <div className="flex flex-col gap-2">
+                  {recentRegistrations.map((registration) => (
+                    <div key={registration.id} className="flex items-start gap-2.5 rounded-lg bg-muted/30 p-2.5">
+                      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                        {getRegistrationInitial(registration)}
                       </div>
-                      {index < recentRegistrations.length - 1 ? <Separator className="mt-4" /> : null}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <p className="text-xs font-semibold text-foreground">
+                            {registration.users?.full_name || 'مستخدم غير معروف'}
+                          </p>
+                          <StatusBadge status={registration.status} />
+                        </div>
+                        <p className="truncate text-[11px] text-muted-foreground">
+                          {(registration.events?.title_ar || registration.events?.title || 'فعالية غير محددة').trim()}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[11px] text-muted-foreground">
+                        {formatArabicDate(registration.created_at)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -297,70 +261,60 @@ export default async function DashboardHomePage() {
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden border-border bg-card shadow-sm">
-            <CardHeader className="flex flex-col gap-4 border-b border-border bg-muted/20 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <CardTitle className="text-xl font-semibold">الفعاليات القادمة</CardTitle>
-                <CardDescription>جدول مبسط للفعاليات المجدولة للفترة القادمة.</CardDescription>
-              </div>
-              <Button asChild variant="outline" size="sm">
+          <Card className="overflow-hidden border-border bg-card">
+            <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-border p-4">
+              <CardTitle className="text-sm font-bold">مراحل تقدّم خطوات الفعاليات (Event Progress Pipeline)</CardTitle>
+              <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
                 <Link href="/dashboard/events">
-                  الجدول الزمني
-                  <ArrowLeft className="ms-2 size-4" />
+                  كل الفعاليات
+                  <ArrowLeft className="ms-1 size-3.5" />
                 </Link>
               </Button>
             </CardHeader>
-            <CardContent className="p-5">
+            <CardContent className="p-4">
               {upcomingEvents.length > 0 ? (
-                <div className="flex flex-col gap-4">
-                  {upcomingEvents.map((event, index) => (
-                    <Link
-                      key={event.id}
-                      href={`/dashboard/events/${event.id}`}
-                      className="group block rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:border-primary/25 hover:bg-muted/35"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex min-h-16 min-w-16 items-center justify-center overflow-hidden rounded-2xl bg-muted text-muted-foreground">
-                          {event.image_url ? (
-                            <Image
-                              src={event.image_url}
-                              alt={event.title_ar || event.title || 'صورة الفعالية'}
-                              width={64}
-                              height={64}
-                              className="size-16 object-cover"
-                            />
-                          ) : (
-                            <Calendar className="size-5" />
-                          )}
+                <div className="flex flex-col gap-5">
+                  {upcomingEvents.map((event) => {
+                    const progress = getEventProgress(event)
+                    return (
+                      <div key={event.id} className="border-b border-border/50 pb-4 last:border-b-0 last:pb-0">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <Link href={`/dashboard/events/${event.id}`} className="hover:text-primary transition-colors">
+                            <h4 className="text-xs font-bold text-foreground truncate max-w-[280px] md:max-w-[400px]">
+                              {event.title_ar || event.title}
+                            </h4>
+                          </Link>
+                          <span className="text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                            {progress.completedCount} / 5 خطوات
+                          </span>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="truncate text-sm font-semibold text-foreground">
-                            {event.title_ar || event.title}
-                          </h4>
-                          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center gap-1">
-                              <Calendar className="size-3.5" />
-                              {formatArabicDate(event.date)}
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <Clock className="size-3.5" />
-                              {formatArabicTime(event.date)}
-                            </span>
-                          </div>
+                        
+                        {/* Progress Bar */}
+                        <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden mb-3">
+                          <div 
+                            className="h-full bg-indigo-650 rounded-full transition-all duration-500" 
+                            style={{ width: `${progress.percentage}%` }}
+                          />
                         </div>
-                        <div className="flex size-9 items-center justify-center rounded-xl bg-background text-muted-foreground transition-colors group-hover:text-foreground">
-                          <MoreHorizontal className="size-4" />
+
+                        {/* Steps Dots Row */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500">
+                          {progress.steps.map((st, idx) => (
+                            <div key={idx} className="flex items-center gap-1.5">
+                              <span className={`size-2 rounded-full shrink-0 ${st.completed ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                              <span className={st.completed ? 'font-bold text-slate-700' : 'text-slate-400'}>{st.name}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                      {index < upcomingEvents.length - 1 ? <Separator className="mt-4" /> : null}
-                    </Link>
-                  ))}
+                    )
+                  })}
                 </div>
               ) : (
                 <EmptyPanel
                   icon={Calendar}
-                  title="لا توجد فعاليات قادمة"
-                  description="ابدأ بإضافة فعالية جديدة لتظهر هنا في الجدول القادم."
+                  title="لا توجد فعاليات نشطة"
+                  description="ابدأ بإضافة فعالية جديدة لتظهر هنا في أنبوب خطوات التقدم."
                   ctaHref="/dashboard/events/new"
                   ctaLabel="إضافة فعالية"
                 />
@@ -369,65 +323,17 @@ export default async function DashboardHomePage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <Card className="overflow-hidden border-border bg-gradient-to-br from-stone-950 via-stone-900 to-stone-800 text-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">إجراءات سريعة</CardTitle>
-              <CardDescription className="text-white/70">وصول مباشر إلى أهم المهام اليومية.</CardDescription>
+        <div className="space-y-4">
+          <Card className="overflow-hidden border-border bg-card">
+            <CardHeader className="border-b border-border p-4">
+              <CardTitle className="text-sm font-bold">حالة الفعاليات</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-3">
-              <QuickActionLink href="/dashboard/events/new" icon={Plus} label="فعالية جديدة" />
-              <QuickActionLink href="/dashboard/sectors" icon={LayoutGrid} label="القطاعات" />
-              <QuickActionLink href="/dashboard/users" icon={Users} label="المستخدمون" />
-              <QuickActionLink href="/dashboard/settings" icon={Settings} label="الإعدادات" />
-            </CardContent>
-          </Card>
-
-          <Card className="overflow-hidden border-border bg-card shadow-sm">
-            <CardHeader className="border-b border-border bg-muted/20">
-              <CardTitle className="text-lg font-semibold">حالة الفعاليات</CardTitle>
-              <CardDescription>توزيع سريع لحالة الفعاليات داخل النظام.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-6 p-5">
+            <CardContent className="flex flex-col gap-3 p-4">
               <StatusRow label="نشطة / منشورة" count={activeEvents} total={totalEvents} tone="bg-emerald-500" />
               <StatusRow label="مسودة" count={draftEvents} total={totalEvents} tone="bg-amber-500" />
               <StatusRow label="مكتملة" count={completedEvents} total={totalEvents} tone="bg-sky-500" />
             </CardContent>
           </Card>
-
-          <Card className="border-border bg-muted/30 shadow-sm">
-            <CardContent className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
-              <AlertCircle className="size-4" />
-              <span>آخر تحديث للبيانات: منذ دقيقة</span>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function HeroMetric({
-  label,
-  value,
-  note,
-  icon: Icon,
-}: {
-  label: string
-  value: number
-  note: string
-  icon: LucideIcon
-}) {
-  return (
-    <div className="rounded-2xl border border-border bg-muted/30 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">{label}</p>
-          <p className="text-2xl font-semibold tracking-tight text-foreground">{value}</p>
-          <p className="text-xs text-muted-foreground">{note}</p>
-        </div>
-        <div className="flex size-10 items-center justify-center rounded-2xl bg-background text-muted-foreground">
-          <Icon className="size-4" />
         </div>
       </div>
     </div>
@@ -461,25 +367,7 @@ function StatusBadge({ status }: { status: string | null }) {
   )
 }
 
-function QuickActionLink({
-  href,
-  icon: Icon,
-  label,
-}: {
-  href: string
-  icon: LucideIcon
-  label: string
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/8 px-3 py-4 text-center transition-colors hover:bg-white/14"
-    >
-      <Icon className="size-5" />
-      <span className="text-sm font-medium">{label}</span>
-    </Link>
-  )
-}
+
 
 function StatusRow({
   label,
@@ -539,29 +427,6 @@ function EmptyPanel({
 function getRegistrationInitial(registration: RecentRegistration) {
   const name = registration.users?.full_name || registration.users?.email || 'م'
   return name.trim().charAt(0).toUpperCase()
-}
-
-function getRegistrationPreviewEntries(registration: RecentRegistration) {
-  const additionalData = registration.additional_data
-
-  if (!additionalData || typeof additionalData !== 'object') {
-    return []
-  }
-
-  const config = Array.isArray(registration.events?.registration_config)
-    ? registration.events?.registration_config
-    : []
-
-  return Object.entries(additionalData)
-    .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
-    .slice(0, 2)
-    .map(([key, value]) => {
-      const field = config.find((item) => item.id === key)
-      return {
-        label: field?.label_ar || field?.label_en || key,
-        value: String(value),
-      }
-    })
 }
 
 function formatArabicDate(value: string | null) {

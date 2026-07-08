@@ -1,28 +1,34 @@
 import { createClient } from '@/lib/supabase/server'
-import { SubmissionsView } from './components/registrations-view'
+import { UnifiedRegistrationsView } from './components/unified-registrations-view'
 
 export const metadata = {
-    title: 'إدارة التسجيلات | JAZ Admin',
+    title: 'تسجيلات الفعاليات | JAZ Admin',
 }
 
 export default async function RegistrationsPage() {
     const supabase = await createClient()
 
-    const { data: submissions } = await supabase
-        .from('conference_submissions')
+    const { data: registrations } = await supabase
+        .from('registrations')
         .select(`
-            *,
-            events:event_id (title, title_ar, conference_config)
+            id, full_name, email, status, notes, form_data,
+            additional_data, payment_status, total_amount,
+            documents, created_at, updated_at, event_id, user_id,
+            events ( title_ar, title )
         `)
         .order('created_at', { ascending: false })
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" dir="rtl">
             <div>
-                <h1 className="text-2xl font-bold text-slate-900">إدارة التسجيلات</h1>
-                <p className="text-sm text-muted-foreground mt-1">عرض وإدارة جميع طلبات التسجيل والرعاية والشراكات</p>
+                <h1 className="text-2xl font-bold text-slate-900">تسجيلات الفعاليات</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                    جميع التسجيلات الواردة من تطبيق الجوال والموقع الإلكتروني
+                </p>
             </div>
-            <SubmissionsView submissions={submissions || []} />
+            <UnifiedRegistrationsView
+                registrations={registrations || []}
+            />
         </div>
     )
 }

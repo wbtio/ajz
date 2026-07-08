@@ -3,11 +3,66 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Icon as Iconify } from '@iconify/react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n'
+import { createClient } from '@/lib/supabase/client'
+import { UserNotificationsBell } from '@/components/layout/user-notifications-bell'
 import { motion, AnimatePresence } from 'framer-motion'
+
+type CurrentUser = {
+  fullName: string | null
+  email: string
+  avatarUrl: string | null
+  isAdmin: boolean
+  dashboardPath: string | null
+}
+
+// Derive up to two initials from a name (falling back to the email local-part)
+function getInitials(fullName: string | null, email: string) {
+  const source = (fullName && fullName.trim()) || email.split('@')[0] || ''
+  const parts = source.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return (parts[0][0] + parts[1][0]).toUpperCase()
+}
+
+// Circular avatar: user image when available, otherwise initials
+function AvatarCircle({
+  avatarUrl,
+  fullName,
+  email,
+  className,
+}: {
+  avatarUrl: string | null
+  fullName: string | null
+  email: string
+  className?: string
+}) {
+  return (
+    <span
+      className={cn(
+        'flex items-center justify-center overflow-hidden rounded-full bg-slate-100',
+        className
+      )}
+    >
+      {avatarUrl ? (
+        <Image
+          src={avatarUrl}
+          alt={fullName || email || 'User avatar'}
+          width={40}
+          height={40}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <span className="text-sm font-bold text-slate-700">
+          {getInitials(fullName, email)}
+        </span>
+      )}
+    </span>
+  )
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Theme helpers
@@ -22,16 +77,20 @@ function resolveBaseTheme(pathname: string): HeaderTheme {
   return 'light'
 }
 
-export function Header({ isAdmin }: { isAdmin: boolean }) {
+export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser: CurrentUser | null }) {
   const { locale, setLocale, t } = useI18n()
   const pathname = usePathname()
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   // Tracks whether user has scrolled past the dark hero into the light area
   const [pastHero, setPastHero] = useState(false)
   // Mobile menu open state
   const [mobileOpen, setMobileOpen] = useState(false)
+  // User account dropdown (desktop) open state
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const openButtonRef = useRef<HTMLButtonElement>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
   
   // isAdmin is used in route guarding logic below
 
@@ -57,7 +116,29 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
    // ── close drawer on route change ──
    useEffect(() => {
      setMobileOpen(false)
+     setUserMenuOpen(false)
    }, [pathname])
+
+  // ── close user dropdown on outside click ──
+  useEffect(() => {
+    if (!userMenuOpen) return
+    const handleClick = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [userMenuOpen])
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setUserMenuOpen(false)
+    setMobileOpen(false)
+    router.push('/')
+    router.refresh()
+  }
 
   // ── prevent body scroll when drawer is open ──
   useEffect(() => {
@@ -245,6 +326,117 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
 
             {/* ── Right controls ── */}
             <div className="flex items-center gap-2 shrink-0">
+              {/* Auth actions */}
+              {currentUser ? (
+                <>
+                {/* Logged in → notifications + avatar dropdown */}
+                <UserNotificationsBell isRtl={isRtl} />
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen((v) => !v)}
+                    aria-label={isRtl ? 'حساب المستخدم' : 'User account'}
+                    aria-expanded={userMenuOpen}
+                    aria-haspopup="menu"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:scale-[1.03] hover:shadow-md"
+                  >
+                    <AvatarCircle
+                      avatarUrl={currentUser.avatarUrl}
+                      fullName={currentUser.fullName}
+                      email={currentUser.email}
+                      className="h-full w-full"
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        role="menu"
+                        initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute end-0 mt-2 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10"
+                      >
+                        <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
+                          <AvatarCircle
+                            avatarUrl={currentUser.avatarUrl}
+                            fullName={currentUser.fullName}
+                            email={currentUser.email}
+                            className="h-10 w-10 shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-bold text-slate-900">
+                              {currentUser.fullName || (isRtl ? 'مستخدم' : 'User')}
+                            </p>
+                            <p className="truncate text-xs text-slate-500">{currentUser.email}</p>
+                          </div>
+                        </div>
+
+                        <Link
+                          href="/account"
+                          role="menuitem"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                        >
+                          <Iconify icon="solar:ticket-bold-duotone" className="w-5 h-5 text-slate-400" />
+                          {isRtl ? 'طلباتي وتذاكري' : 'My registrations'}
+                        </Link>
+
+                        <Link
+                          href="/account/edit"
+                          role="menuitem"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                        >
+                          <Iconify icon="solar:user-circle-bold-duotone" className="w-5 h-5 text-slate-400" />
+                          {isRtl ? 'ملفي الشخصي' : 'My profile'}
+                        </Link>
+
+                        {currentUser.dashboardPath && (
+                          <Link
+                            href={currentUser.dashboardPath}
+                            role="menuitem"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                          >
+                            <Iconify icon="solar:widget-5-bold-duotone" className="w-5 h-5 text-slate-400" />
+                            {isRtl ? 'لوحة التحكم' : 'Dashboard'}
+                          </Link>
+                        )}
+
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={handleLogout}
+                          className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+                        >
+                          <Iconify icon="solar:logout-3-bold-duotone" className="w-5 h-5" />
+                          {isRtl ? 'تسجيل الخروج' : 'Sign out'}
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                </>
+              ) : (
+                /* Logged out → login / sign-up (desktop / tablet) */
+                <div className="hidden sm:flex items-center gap-2">
+                  <Link
+                    href="/auth/login"
+                    className="flex h-10 items-center rounded-2xl px-3 text-sm font-bold text-slate-700 transition-all duration-200 hover:bg-slate-100/70 hover:text-slate-900"
+                  >
+                    {locale === 'ar' ? 'دخول' : 'Login'}
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="flex h-10 items-center rounded-2xl bg-[#8b0000] px-4 text-sm font-bold text-white shadow-sm shadow-[#8b0000]/20 transition-all duration-200 hover:scale-[1.02] hover:bg-[#a8201a]"
+                  >
+                    {locale === 'ar' ? 'تسجيل' : 'Sign up'}
+                  </Link>
+                </div>
+              )}
+
               {/* Language Toggle */}
               <button
                 id="header-locale-toggle"
@@ -407,11 +599,80 @@ export function Header({ isAdmin }: { isAdmin: boolean }) {
                  </ul>
                </nav>
 
-                {/* Drawer footer — language toggle */}
+                {/* Drawer footer — auth actions + language toggle */}
                 <div className={cn(
-                  'px-5 py-5',
+                  'px-5 py-5 flex flex-col gap-3',
                   drawerBorder
                 )}>
+                  {currentUser ? (
+                    <>
+                      <div className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                        <AvatarCircle
+                          avatarUrl={currentUser.avatarUrl}
+                          fullName={currentUser.fullName}
+                          email={currentUser.email}
+                          className="h-10 w-10 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold text-slate-900">
+                            {currentUser.fullName || (isRtl ? 'مستخدم' : 'User')}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">{currentUser.email}</p>
+                        </div>
+                      </div>
+                      <Link
+                        href="/account"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 py-3 text-center text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+                      >
+                        <Iconify icon="solar:ticket-bold-duotone" className="w-5 h-5 text-slate-400" />
+                        {isRtl ? 'طلباتي وتذاكري' : 'My registrations'}
+                      </Link>
+                      <Link
+                        href="/account/edit"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 py-3 text-center text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+                      >
+                        <Iconify icon="solar:user-circle-bold-duotone" className="w-5 h-5 text-slate-400" />
+                        {isRtl ? 'ملفي الشخصي' : 'My profile'}
+                      </Link>
+                      {currentUser.dashboardPath && (
+                        <Link
+                          href={currentUser.dashboardPath}
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 py-3 text-center text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+                        >
+                          <Iconify icon="solar:widget-5-bold-duotone" className="w-5 h-5 text-slate-400" />
+                          {isRtl ? 'لوحة التحكم' : 'Dashboard'}
+                        </Link>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-red-50 py-3 text-center text-[15px] font-semibold text-red-600 transition-colors hover:bg-red-100"
+                      >
+                        <Iconify icon="solar:logout-3-bold-duotone" className="w-5 h-5" />
+                        {isRtl ? 'تسجيل الخروج' : 'Sign out'}
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Link
+                        href="/auth/login"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 rounded-2xl border border-slate-200 py-3 text-center text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+                      >
+                        {isRtl ? 'دخول' : 'Login'}
+                      </Link>
+                      <Link
+                        href="/auth/register"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 rounded-2xl bg-[#8b0000] py-3 text-center text-[15px] font-semibold text-white transition-colors hover:bg-[#a8201a]"
+                      >
+                        {isRtl ? 'تسجيل' : 'Sign up'}
+                      </Link>
+                    </div>
+                  )}
                   <button
                     type="button"
                     onClick={() => { toggleLocale(); setMobileOpen(false) }}

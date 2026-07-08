@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { DashboardSidebar } from '@/components/dashboard/sidebar'
+import { Toaster } from 'sonner'
+import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { isDashboardRole } from '@/lib/permissions'
 
 export default async function DashboardLayout({
     children,
@@ -22,18 +24,21 @@ export default async function DashboardLayout({
         .eq('id', user.id)
         .single()
 
-    if (profile?.role !== 'admin') {
+    if (!profile || !isDashboardRole(profile.role)) {
         redirect('/')
     }
 
+    if (profile.is_active === false) {
+        await supabase.auth.signOut()
+        redirect('/admin-login')
+    }
+
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            <DashboardSidebar user={profile} />
-            <main className="flex-1 p-8">
-                <TooltipProvider>
-                    {children}
-                </TooltipProvider>
-            </main>
-        </div>
+        <TooltipProvider>
+            <DashboardShell user={profile}>
+                {children}
+            </DashboardShell>
+            <Toaster richColors position="top-center" dir="rtl" />
+        </TooltipProvider>
     )
 }

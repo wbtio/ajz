@@ -1,7 +1,9 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
+import { notifyAdmins } from '@/lib/notifications'
 
 // Categories
 export async function getPartnerCategories() {
@@ -168,6 +170,18 @@ export async function submitPartnerForm(data: any) {
         const supabase = await createClient()
         const { error } = await supabase.from('partner_submissions').insert(data)
         if (error) throw error
+
+        const fields = (data?.data ?? {}) as Record<string, string>
+        const nameKey = Object.keys(fields).find((k) => /اسم|name/i.test(k))
+        const submitterName = (nameKey && fields[nameKey]) || 'جهة جديدة'
+        // notifyAdmins يحتاج قراءة كل المستخدمين بدور admin — الزائر ممنوع من هذا بالـ RLS
+        await notifyAdmins(createAdminClient(), {
+            type: 'partner_submission',
+            title: 'طلب شراكة جديد',
+            body: submitterName,
+            linkUrl: '/dashboard/partners',
+        })
+
         revalidatePath('/dashboard/partners')
         return { success: true }
     } catch (err: any) {
@@ -179,9 +193,10 @@ export async function submitPartnerForm(data: any) {
 export async function submitStaticPartnerForm(data: any, type: string) {
     try {
         const supabase = await createClient()
+        const fullName = data['الاسم الكامل / Full Name'] || data['اسم الممثل الرسمي والمنصب / Contact Person & Title'] || 'Anonymous'
         // Save to contact_messages to avoid requiring UUID foreign keys
         const { error } = await supabase.from('contact_messages').insert({
-            full_name: data['الاسم الكامل / Full Name'] || data['اسم الممثل الرسمي والمنصب / Contact Person & Title'] || 'Anonymous',
+            full_name: fullName,
             email: data['البريد الإلكتروني الرسمي / Official Email'] || 'no-email@example.com',
             phone: data['رقم التواصل / Contact Number'] || data['رقم الواتساب / WhatsApp Number'] || '',
             subject: `طلب انضمام/شراكة: ${type}`,
@@ -190,6 +205,14 @@ export async function submitStaticPartnerForm(data: any, type: string) {
             status: 'new'
         })
         if (error) throw error
+
+        await notifyAdmins(createAdminClient(), {
+            type: 'partner_submission',
+            title: `طلب انضمام/شراكة: ${type}`,
+            body: fullName,
+            linkUrl: '/dashboard/messages',
+        })
+
         return { success: true }
     } catch (err: any) {
         console.error('submitStaticPartnerForm failed:', err)

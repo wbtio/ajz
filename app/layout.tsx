@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isDashboardRole, defaultRouteForRole } from "@/lib/permissions";
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
@@ -87,13 +88,30 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
   
   let isAdmin = false;
+  let currentUser: {
+    fullName: string | null;
+    email: string;
+    avatarUrl: string | null;
+    isAdmin: boolean;
+    dashboardPath: string | null;
+  } | null = null;
   if (user) {
     const { data: profile } = await supabase
       .from('users')
-      .select('role')
+      .select('role, permissions, full_name, avatar_url')
       .eq('id', user.id)
       .maybeSingle();
     isAdmin = profile?.role === 'admin';
+    currentUser = {
+      fullName: profile?.full_name ?? null,
+      email: user.email ?? '',
+      avatarUrl: profile?.avatar_url ?? null,
+      isAdmin,
+      // مسار لوحة التحكم يظهر للمدير وعضو الفريق فقط
+      dashboardPath: isDashboardRole(profile?.role)
+        ? defaultRouteForRole(profile?.role, profile?.permissions)
+        : null,
+    };
   }
 
   return (
@@ -175,7 +193,7 @@ export default async function RootLayout({
         />
         <Providers>
           <Tracker />
-          <Header isAdmin={isAdmin} />
+          <Header isAdmin={isAdmin} currentUser={currentUser} />
           <main className="min-h-screen">{children}</main>
           <Footer />
           <ChatWidget />

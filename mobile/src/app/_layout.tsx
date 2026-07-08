@@ -13,6 +13,7 @@ import {
 } from '@expo-google-fonts/ibm-plex-sans-arabic';
 
 import { AuthProvider } from '@/lib/auth';
+import { NotificationsProvider } from '@/lib/notifications';
 import { colors } from '@/lib/theme';
 
 // تفعيل اتجاه الكتابة من اليمين لليسار
@@ -38,15 +39,21 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <SafeAreaProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)/login" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="event/[id]" options={{ presentation: 'card' }} />
-          </Stack>
-        </SafeAreaProvider>
+        <NotificationsProvider>
+          <SafeAreaProvider>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)/login" />
+              <Stack.Screen name="(auth)/signup" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="event/[id]/index" options={{ presentation: 'card' }} />
+              <Stack.Screen name="event/[id]/register" options={{ presentation: 'card' }} />
+              <Stack.Screen name="notifications" options={{ presentation: 'card' }} />
+              <Stack.Screen name="profile-setup" options={{ presentation: 'modal' }} />
+            </Stack>
+          </SafeAreaProvider>
+        </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

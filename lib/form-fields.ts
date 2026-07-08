@@ -59,14 +59,33 @@ export function parseFormFields(value: Json | null | undefined): FormField[] {
 
 export function getRegistrationFieldsFromConferenceConfig(value: Json | null | undefined): FormField[] {
   if (!isJsonObject(value)) {
-    return []
+    return DEFAULT_FORM_FIELDS
   }
 
+  // جرّب قسم registration أولاً
   const registration = value.registration
-
-  if (!isJsonObject(registration)) {
-    return []
+  if (isJsonObject(registration)) {
+    const fields = parseFormFields(registration.form_fields)
+    if (fields.length > 0) return fields
   }
 
-  return parseFormFields(registration.form_fields)
+  // لو ما في قسم registration، جرّب أي قسم فيه form_fields
+  for (const sectionVal of Object.values(value)) {
+    if (isJsonObject(sectionVal)) {
+      const fields = parseFormFields(sectionVal.form_fields)
+      if (fields.length > 0) return fields
+    }
+  }
+
+  // حقول افتراضية — حتى لا يرى الزائر رسالة "لا توجد حقول"
+  return DEFAULT_FORM_FIELDS
 }
+
+const DEFAULT_FORM_FIELDS: FormField[] = [
+  { id: 'full_name', type: 'text', label_en: 'Full Name', label_ar: 'الاسم الكامل', required: true, options: undefined, options_ar: undefined, defaultValue: undefined, description_en: undefined, description_ar: undefined, placeholder_en: undefined, placeholder_ar: 'أدخل اسمك الكامل' },
+  { id: 'email', type: 'email', label_en: 'Email', label_ar: 'البريد الإلكتروني', required: true, options: undefined, options_ar: undefined, defaultValue: undefined, description_en: undefined, description_ar: undefined, placeholder_en: undefined, placeholder_ar: 'example@email.com' },
+  { id: 'phone', type: 'text', label_en: 'Phone', label_ar: 'رقم الهاتف', required: true, options: undefined, options_ar: undefined, defaultValue: undefined, description_en: undefined, description_ar: undefined, placeholder_en: undefined, placeholder_ar: '07XX XXX XXXX' },
+  { id: 'company', type: 'text', label_en: 'Company', label_ar: 'الشركة', required: false, options: undefined, options_ar: undefined, defaultValue: undefined, description_en: undefined, description_ar: undefined, placeholder_en: undefined, placeholder_ar: 'اسم الشركة' },
+  { id: 'position', type: 'text', label_en: 'Position', label_ar: 'المسمى الوظيفي', required: false, options: undefined, options_ar: undefined, defaultValue: undefined, description_en: undefined, description_ar: undefined, placeholder_en: undefined, placeholder_ar: 'المسمى الوظيفي' },
+  { id: 'country', type: 'text', label_en: 'Country', label_ar: 'الدولة', required: false, options: undefined, options_ar: undefined, defaultValue: undefined, description_en: undefined, description_ar: undefined, placeholder_en: undefined, placeholder_ar: 'الدولة' },
+]

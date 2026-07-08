@@ -17,6 +17,8 @@ interface EventsFilterProps {
   setSelectedMonth: (val: string) => void
   participationTypes: string[]
   setParticipationTypes: (types: string[]) => void
+  priceFilter: string
+  setPriceFilter: (val: string) => void
   onClear: () => void
 }
 
@@ -33,6 +35,8 @@ export function EventsFilter({
   setSelectedMonth,
   participationTypes,
   setParticipationTypes,
+  priceFilter,
+  setPriceFilter,
   onClear,
 }: EventsFilterProps) {
   const { locale, dir } = useI18n()
@@ -51,11 +55,15 @@ export function EventsFilter({
         countryLabel: 'البلد / المنطقة',
         monthLabel: 'الشهر',
         participationLabel: 'نوع المشاركة',
+        priceLabel: 'السعر',
         clearBtn: 'مسح الفلاتر',
         allSectors: 'كل القطاعات',
         allSubSectors: 'كل القطاعات الفرعية',
         allCountries: 'كل البلدان',
         allMonths: 'كل الأشهر',
+        allPrices: 'الكل',
+        free: 'مجانية',
+        paid: 'مدفوعة',
         participationTypes: [
           { value: 'participation', label: 'مشاركة' },
           { value: 'speaker', label: 'متحدث' },
@@ -84,11 +92,15 @@ export function EventsFilter({
         countryLabel: 'Country / Region',
         monthLabel: 'Month',
         participationLabel: 'Participation Type',
+        priceLabel: 'Price',
         clearBtn: 'Clear Filters',
         allSectors: 'All Sectors',
         allSubSectors: 'All Sub-sectors',
         allCountries: 'All Countries',
         allMonths: 'All Months',
+        allPrices: 'All',
+        free: 'Free',
+        paid: 'Paid',
         participationTypes: [
           { value: 'participation', label: 'Participation' },
           { value: 'speaker', label: 'Speaker' },
@@ -200,6 +212,22 @@ export function EventsFilter({
               {m.label}
             </option>
           ))}
+        </select>
+      </div>
+
+      {/* Price Select */}
+      <div className="mb-6">
+        <label className="block font-semibold text-xs text-gray-700 mb-2 uppercase tracking-wider">
+          {labels.priceLabel}
+        </label>
+        <select
+          value={priceFilter}
+          onChange={(e) => setPriceFilter(e.target.value)}
+          className="w-full border border-gray-300 rounded-[4px] py-2 px-3 text-sm text-gray-800 bg-white focus:border-[#001a33] focus:ring-0 focus:outline-none"
+        >
+          <option value="">{labels.allPrices}</option>
+          <option value="free">{labels.free}</option>
+          <option value="paid">{labels.paid}</option>
         </select>
       </div>
 

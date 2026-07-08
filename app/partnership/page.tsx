@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -22,8 +22,10 @@ import {
     BarChart3,
     ChevronRight,
 } from 'lucide-react'
-import { submitStaticPartnerForm } from '@/app/dashboard/partners/actions'
+import { submitPartnerForm } from '@/app/dashboard/partners/actions'
 import { DynamicForm } from '@/components/shared/dynamic-form'
+import { createClient } from '@/lib/supabase/client'
+import { parseFormFields } from '@/lib/form-fields'
 import type { FormField } from '@/lib/types'
 import { useI18n } from '@/lib/i18n'
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from 'framer-motion'
@@ -114,6 +116,7 @@ const processSteps = [
 
 const formSectionData = [
     {
+        slug: 'startup',
         categoryAr: 'للأفراد',
         categoryEn: 'For Individuals',
         titleAr: 'مبادرة جاز لتطوير الشباب',
@@ -133,6 +136,7 @@ const formSectionData = [
         btnClass: 'bg-[#b08d4b] hover:bg-[#b08d4b]/85 text-white',
     },
     {
+        slug: 'committees',
         categoryAr: 'للمؤسسات',
         categoryEn: 'For Organizations',
         titleAr: 'اللجان التنظيمية للمعارض والمؤتمرات',
@@ -152,6 +156,7 @@ const formSectionData = [
         btnClass: 'bg-[#8b0000] hover:bg-[#8b0000]/85 text-white',
     },
     {
+        slug: 'corporate',
         categoryAr: 'للشركات',
         categoryEn: 'For Companies',
         titleAr: 'الشركات والنمو المؤسسي',
@@ -177,6 +182,34 @@ export default function PartnershipOpportunitiesPage() {
     const isArabic = locale === 'ar'
     const ArrowIcon = isArabic ? ArrowLeft : ArrowRight
     const shouldReduceMotion = useReducedMotion() ?? false
+
+    // نماذج التقديم تُدار من لوحة التحكم (partner_categories.registration_config)
+    // بدل ثبوتها بالكود — نحتفظ بالحقول الثابتة كـ fallback لو تعذّر التحميل
+    const [categoryFields, setCategoryFields] = useState<Record<string, FormField[]>>({})
+    const [categoryIds, setCategoryIds] = useState<Record<string, string>>({})
+    const [userId, setUserId] = useState<string | null>(null)
+
+    useEffect(() => {
+        const supabase = createClient()
+        supabase
+            .from('partner_categories')
+            .select('id, slug, registration_config')
+            .in('slug', ['startup', 'committees', 'corporate'])
+            .then(({ data }) => {
+                if (!data) return
+                const fields: Record<string, FormField[]> = {}
+                const ids: Record<string, string> = {}
+                for (const row of data) {
+                    if (!row.slug) continue
+                    ids[row.slug] = row.id
+                    const parsed = parseFormFields(row.registration_config)
+                    if (parsed.length > 0) fields[row.slug] = parsed
+                }
+                setCategoryFields(fields)
+                setCategoryIds(ids)
+            })
+        supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
+    }, [])
 
     const heroRef = useRef<HTMLDivElement | null>(null)
     const { scrollYProgress } = useScroll({
@@ -562,9 +595,13 @@ export default function PartnershipOpportunitiesPage() {
                                                         </div>
                                                         <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
                                                             <DynamicForm
-                                                                fields={section.formFields}
+                                                                fields={categoryFields[section.slug] || section.formFields}
                                                                 onSubmit={async (data) => {
-                                                                    await submitStaticPartnerForm(data, section.titleAr)
+                                                                    await submitPartnerForm({
+                                                                        category_id: categoryIds[section.slug] ?? null,
+                                                                        user_id: userId,
+                                                                        data,
+                                                                    })
                                                                 }}
                                                                 submitLabel={section.submitTitle}
                                                                 successMessage={section.successMessage}
@@ -627,9 +664,13 @@ export default function PartnershipOpportunitiesPage() {
                                         </div>
                                         <div className="max-h-[min(72vh,calc(92vh-9rem))] overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
                                             <DynamicForm
-                                                fields={corporateFormFields}
+                                                fields={categoryFields.corporate || corporateFormFields}
                                                 onSubmit={async (data) => {
-                                                    await submitStaticPartnerForm(data, 'corporate-cta')
+                                                    await submitPartnerForm({
+                                                        category_id: categoryIds.corporate ?? null,
+                                                        user_id: userId,
+                                                        data,
+                                                    })
                                                 }}
                                                 submitLabel={isArabic ? 'تقديم الطلب' : 'Request Brief'}
                                                 successMessage={isArabic

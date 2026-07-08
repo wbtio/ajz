@@ -40,6 +40,7 @@ const navLinks = [
   { href: '/partnership', en: 'Partnerships', ar: 'الشراكات' },
   { href: '/blog', en: 'News & Insights', ar: 'الأخبار والأفكار' },
   { href: '/contact', en: 'Contact Us', ar: 'اتصل بنا' },
+  { href: '/تشيك-ليست-تطبيق-JAZ.html', en: 'App Checklist (Doctor)', ar: 'تشيك ليست التطبيق (للطبيب)' },
 ]
 
 const navLinkClass =

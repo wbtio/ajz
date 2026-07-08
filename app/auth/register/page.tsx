@@ -45,7 +45,7 @@ export default function RegisterPage() {
 
     const supabase = createClient()
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
@@ -59,6 +59,12 @@ export default function RegisterPage() {
     if (error) {
       setError(error.message)
       setIsLoading(false)
+      return
+    }
+
+    // إذا لم يُفعَّل تأكيد البريد، تُنشأ الجلسة مباشرة وننتقل لإكمال الملف الشخصي
+    if (data.session) {
+      router.push('/auth/complete-profile')
       return
     }
 

@@ -1,74 +1,122 @@
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { memo } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
-import { Badge, Txt } from '@/components/ui';
+import { Txt } from '@/components/ui';
 import { eventLocation, eventTitle, type EventRow } from '@/lib/events';
-import { colors, font, radius, shadow, spacing } from '@/lib/theme';
+import { colors, font, radius, shadow, spacing, rtlRow } from '@/lib/theme';
 
-const GRADIENTS = ['#7a1410', '#13415e', '#5e4a13'];
+const COVER_TINTS = ['#8b0000', '#1e3a5f', '#5e4a13', '#1f7a4d'];
 
-export function EventCard({ event, index = 0 }: { event: EventRow; index?: number }) {
-  const cover = GRADIENTS[index % GRADIENTS.length];
+export const EventCard = memo(function EventCard({ event, index = 0 }: { event: EventRow; index?: number }) {
+  const tint = COVER_TINTS[index % COVER_TINTS.length];
   const isIntl = (event.event_type ?? '').toLowerCase().includes('intl') || !!event.country;
+  const dateStr = formatDate(event.date);
 
   return (
     <Pressable
       onPress={() => router.push(`/event/${event.id}`)}
       style={({ pressed }) => [styles.card, pressed && { opacity: 0.9 }]}
     >
-      <View style={[styles.cover, { backgroundColor: cover }]}>
+      <View style={[styles.thumb, { backgroundColor: tint }]}>
         {event.image_url ? (
-          <Image source={{ uri: event.image_url }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <Image source={{ uri: event.image_url }} style={StyleSheet.absoluteFill} contentFit="cover" />
+        ) : (
+          <Feather name="globe" size={22} color="rgba(255,255,255,0.5)" />
+        )}
+        {event.featured ? (
+          <View style={styles.star}>
+            <Feather name="star" size={9} color={colors.white} />
+          </View>
         ) : null}
-        <View style={styles.coverRow}>
-          {(event.country_ar || event.country) ? (
-            <View style={styles.flag}>
-              <Txt type="small" color={colors.white}>{event.country_ar || event.country}</Txt>
-            </View>
-          ) : <View />}
-          {event.featured ? (
-            <View style={styles.featured}>
-              <Txt type="small" color={colors.maroon}>★ مميز</Txt>
+      </View>
+
+      <View style={styles.body}>
+        <Txt style={styles.title} numberOfLines={2}>{eventTitle(event)}</Txt>
+
+        <View style={styles.metaRow}>
+          {dateStr ? (
+            <View style={styles.metaItem}>
+              <Feather name="calendar" size={12} color={colors.ink3} />
+              <Txt style={styles.metaText}>{dateStr}</Txt>
             </View>
           ) : null}
         </View>
-      </View>
-      <View style={styles.body}>
-        <Txt type="h3" numberOfLines={2}>{eventTitle(event)}</Txt>
-        <View style={styles.meta}>
-          {event.date ? <Txt type="small">📅 {formatDate(event.date)}</Txt> : null}
-          {eventLocation(event) ? <Txt type="small">📍 {eventLocation(event)}</Txt> : null}
-        </View>
-        <View style={styles.badges}>
-          {isIntl ? <Badge label="دولية" tone="maroon" /> : <Badge label="محلية" tone="green" />}
+
+        {eventLocation(event) ? (
+          <View style={styles.metaItem}>
+            <Feather name="map-pin" size={12} color={colors.ink3} />
+            <Txt style={styles.metaText} numberOfLines={1}>{eventLocation(event)}</Txt>
+          </View>
+        ) : null}
+
+        <View style={styles.tagRow}>
+          {isIntl ? (
+            <View style={styles.tagIntl}>
+              <Txt style={styles.tagIntlText}>دولية</Txt>
+            </View>
+          ) : (
+            <View style={styles.tagLocal}>
+              <Txt style={styles.tagLocalText}>محلية</Txt>
+            </View>
+          )}
+          {(event.country_ar || event.country) ? (
+            <Txt style={styles.country}>{event.country_ar || event.country}</Txt>
+          ) : null}
         </View>
       </View>
     </Pressable>
   );
-}
+});
 
-function formatDate(d: string) {
+function formatDate(d?: string | null): string {
+  if (!d) return '';
   try {
-    return new Date(d).toLocaleDateString('ar', { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(d).toLocaleDateString('ar-IQ', { day: 'numeric', month: 'short' });
   } catch {
-    return d;
+    return '';
   }
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.card,
+    flexDirection: rtlRow,
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.line,
     overflow: 'hidden',
     ...shadow.card,
   },
-  cover: { height: 110, justifyContent: 'flex-end', padding: spacing.sm },
-  coverRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  flag: { backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 },
-  featured: { backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 },
-  body: { padding: spacing.md, gap: spacing.sm },
-  meta: { flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap' },
-  badges: { flexDirection: 'row', gap: spacing.sm },
+  thumb: {
+    width: 92,
+    height: '100%',
+    minHeight: 110,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  star: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  body: { flex: 1, padding: spacing.md, gap: 5, justifyContent: 'space-between' },
+  title: { fontSize: 15, fontFamily: font.semibold, color: colors.ink, lineHeight: 21 },
+  metaRow: { gap: 0 },
+  metaItem: { flexDirection: rtlRow, alignItems: 'center', gap: 4 },
+  metaText: { fontSize: 11, fontFamily: font.regular, color: colors.ink3 },
+  tagRow: { flexDirection: rtlRow, alignItems: 'center', gap: spacing.sm, marginTop: 2 },
+  tagIntl: { backgroundColor: colors.redBg, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 2 },
+  tagLocal: { backgroundColor: colors.greenBg, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 2 },
+  tagIntlText: { fontSize: 10, fontFamily: font.bold, color: colors.maroon },
+  tagLocalText: { fontSize: 10, fontFamily: font.bold, color: colors.green },
+  country: { fontSize: 11, fontFamily: font.regular, color: colors.ink3 },
 });

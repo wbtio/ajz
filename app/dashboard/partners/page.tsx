@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -111,7 +112,7 @@ export default function PartnersDashboard() {
             fetchData()
         } catch (error) {
             console.error(error)
-            alert('حدث خطأ')
+            toast.error('حدث خطأ')
         }
     }
 
@@ -156,7 +157,7 @@ export default function PartnersDashboard() {
             fetchData()
         } catch (error) {
             console.error(error)
-            alert('حدث خطأ')
+            toast.error('حدث خطأ')
         }
     }
 
@@ -175,6 +176,16 @@ export default function PartnersDashboard() {
         }
     }
 
+    const opportunitiesByCategory = useMemo(() => {
+        const map = new Map<string, any[]>()
+        for (const op of opportunities) {
+            const list = map.get(op.category_id)
+            if (list) list.push(op)
+            else map.set(op.category_id, [op])
+        }
+        return map
+    }, [opportunities])
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -187,14 +198,22 @@ export default function PartnersDashboard() {
                 )}
             </div>
 
-            <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl w-fit">
+            <div role="tablist" className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl w-fit">
                 <button
+                    role="tab"
+                    id="tab-content"
+                    aria-selected={activeTab === 'content'}
+                    aria-controls="panel-content"
                     onClick={() => setActiveTab('content')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'content' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
                 >
                     المحتوى والبطاقات
                 </button>
                 <button
+                    role="tab"
+                    id="tab-submissions"
+                    aria-selected={activeTab === 'submissions'}
+                    aria-controls="panel-submissions"
                     onClick={() => setActiveTab('submissions')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'submissions' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
                 >
@@ -208,7 +227,7 @@ export default function PartnersDashboard() {
                     <p className="mt-2 text-gray-500">جاري تحميل البيانات...</p>
                 </div>
             ) : activeTab === 'content' ? (
-                <div className="space-y-8">
+                <div id="panel-content" role="tabpanel" aria-labelledby="tab-content" className="space-y-8">
                     {categories.map(category => (
                         <Card key={category.id} className="overflow-hidden border-gray-200 shadow-sm">
                             <CardHeader className="bg-gray-50/50 border-b flex flex-row items-center justify-between">
@@ -244,7 +263,7 @@ export default function PartnersDashboard() {
                                 </div>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {opportunities.filter(op => op.category_id === category.id).map(op => (
+                                    {(opportunitiesByCategory.get(category.id) || []).map(op => (
                                         <div key={op.id} className="border rounded-xl p-4 hover:shadow-md transition-shadow bg-white group relative">
                                             <div className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button onClick={() => handleEditOpportunity(op)} className="p-1.5 hover:bg-gray-100 rounded text-gray-500">
@@ -266,7 +285,7 @@ export default function PartnersDashboard() {
                                             <p className="text-xs text-gray-500 line-clamp-2">{op.description_ar}</p>
                                         </div>
                                     ))}
-                                    {opportunities.filter(op => op.category_id === category.id).length === 0 && (
+                                    {(opportunitiesByCategory.get(category.id) || []).length === 0 && (
                                         <div className="col-span-full py-8 text-center text-gray-400 text-sm border-2 border-dashed rounded-xl">
                                             لا توجد بطاقات في هذا القسم
                                         </div>
@@ -283,7 +302,7 @@ export default function PartnersDashboard() {
                 </div>
             ) : (
                 /* Submissions Tab */
-                <Card>
+                <Card id="panel-submissions" role="tabpanel" aria-labelledby="tab-submissions">
                     <CardHeader>
                         <CardTitle>طلبات الشراكة الواردة</CardTitle>
                     </CardHeader>

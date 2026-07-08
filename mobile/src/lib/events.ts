@@ -4,9 +4,15 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from './supabase';
+import { useAuth } from './auth';
 import type { Database } from './database.types';
 
 export type EventRow = Database['public']['Tables']['events']['Row'];
+export type RegistrationRow = Database['public']['Tables']['registrations']['Row'];
+
+export type RegistrationWithEvent = RegistrationRow & {
+  events: EventRow | null;
+};
 
 async function fetchEvents(): Promise<EventRow[]> {
   const { data, error } = await supabase
@@ -39,4 +45,33 @@ export function eventTitle(e: EventRow) {
 }
 export function eventLocation(e: EventRow) {
   return e.location_ar || e.location || e.country_ar || e.country || '';
+}
+
+async function fetchMyRegistrations(userId: string): Promise<RegistrationWithEvent[]> {
+  const { data, error } = await supabase
+    .from('registrations')
+    .select('*, events(*)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as RegistrationWithEvent[];
+}
+
+export function useMyRegistrations() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['my-registrations', user?.id],
+    queryFn: () => fetchMyRegistrations(user!.id),
+    enabled: !!user?.id,
+  });
+}
+
+export function formatDate(d?: string | null, opts?: Intl.DateTimeFormatOptions): string {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleDateString('ar-IQ', opts ?? { day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return '';
+  }
 }

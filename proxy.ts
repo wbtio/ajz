@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { canAccessPath, isDashboardRole, defaultRouteForRole } from '@/lib/permissions'
 
 export async function proxy(request: NextRequest) {
   // استثناء طلبات Server Actions
@@ -45,7 +46,7 @@ export async function proxy(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    // حماية صفحات لوحة التحكم (Dashboard)
+    // حماية صفحات لوحة التحكم (Dashboard) حسب دور المستخدم
     if (pathname.startsWith('/dashboard')) {
       if (!user) {
         console.log('Middleware: No user found, redirecting to /admin-login')
@@ -54,32 +55,48 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url)
       }
 
-      // التحقق من صلاحية الأدمن
       const { data: profile } = await supabase
         .from('users')
-        .select('role')
+        .select('role, permissions')
         .eq('id', user.id)
         .single()
 
-      if (profile?.role !== 'admin') {
-        console.log('Middleware: User is not admin, redirecting to home')
+      const role = profile?.role
+      const permissions = profile?.permissions
+
+      // دور غير معروف → خارج لوحة التحكم
+      if (!isDashboardRole(role)) {
+        console.log('Middleware: Not a dashboard role, redirecting to home')
         const url = request.nextUrl.clone()
         url.pathname = '/'
         return NextResponse.redirect(url)
       }
+
+      // صفحة "الفريق" الإدارية للمدير فقط، بغض النظر عن أي صلاحيات مُسندة
+      // (مطابقة دقيقة كي لا يتصادم المسار مع "/dashboard/team-tasks")
+      if ((pathname === '/dashboard/team' || pathname.startsWith('/dashboard/team/')) && role !== 'admin') {
+        return NextResponse.redirect(new URL(defaultRouteForRole(role, permissions), request.url))
+      }
+
+      // دور معروف لكن المسار غير مسموح له → صفحته الافتراضية
+      if (!canAccessPath(role, pathname, permissions)) {
+        console.log(`Middleware: Role "${role}" cannot access ${pathname}`)
+        return NextResponse.redirect(new URL(defaultRouteForRole(role, permissions), request.url))
+      }
     }
 
-    // منع المستخدم المسجل كأدمن من دخول صفحة تسجيل الدخول مرة أخرى
+    // منع المستخدم المسجّل من دخول صفحة تسجيل الدخول مرة أخرى
     if (pathname === '/admin-login' && user) {
       const { data: profile } = await supabase
         .from('users')
         .select('role')
         .eq('id', user.id)
         .single()
-      
-      if (profile?.role === 'admin') {
-        console.log('Middleware: Admin already logged in, redirecting to /dashboard/home')
-        return NextResponse.redirect(new URL('/dashboard/home', request.url))
+
+      if (isDashboardRole(profile?.role)) {
+        return NextResponse.redirect(
+          new URL(defaultRouteForRole(profile?.role), request.url)
+        )
       }
     }
 

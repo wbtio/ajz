@@ -69,23 +69,26 @@ export default function TasksDashboardPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<ColumnStatus | null>(null);
 
-  async function fetchTasks() {
+  async function fetchTasks(signal?: AbortSignal) {
     try {
       setLoading(true);
-      const res = await fetch("/api/tasks");
+      const res = await fetch("/api/tasks", { signal });
       if (!res.ok) throw new Error("Failed to fetch tasks");
       const data = await res.json();
       setTasks(data);
       setError(null);
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
       setError(err instanceof Error ? err.message : "Error loading tasks");
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchTasks();
+    const controller = new AbortController();
+    fetchTasks(controller.signal);
+    return () => controller.abort();
   }, []);
 
   const updateTaskStatus = async (taskId: string, status: ColumnStatus) => {
@@ -132,7 +135,9 @@ export default function TasksDashboardPage() {
     setDragOverColumn(null);
   };
 
-  const handleDragLeave = () => {
+  const handleDragLeave = (e: React.DragEvent) => {
+    const related = e.relatedTarget as Node | null;
+    if (related && e.currentTarget.contains(related)) return;
     setDragOverColumn(null);
   };
 
@@ -174,7 +179,7 @@ export default function TasksDashboardPage() {
         <AlertCircle className="h-10 w-10 text-rose-500" />
         <p className="text-lg font-medium text-stone-700">{error}</p>
         <button
-          onClick={fetchTasks}
+          onClick={() => fetchTasks()}
           className="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
         >
           إعادة المحاولة

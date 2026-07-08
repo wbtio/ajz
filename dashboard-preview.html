@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم قارئ الجوازات | JAZ</title>
+<style>
+  :root {
+    --bg: #f7f5f3;
+    --card: #ffffff;
+    --border: #e7e5e4;
+    --fg: #1c1917;
+    --muted: #78716c;
+    --muted-light: #d6d3d1;
+    --primary: #8b0000;
+    --primary-light: #c2410c;
+    --emerald: #059669;
+    --emerald-bg: #ecfdf5;
+    --emerald-border: #a7f3d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --radius: 1.5rem;
+    --radius-sm: 1rem;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ===== الشريط العلوي ===== */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+  .logo-badge {
+    width: 44px; height: 44px; border-radius: 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.4rem; font-weight: 900;
+    box-shadow: 0 8px 20px -10px rgba(139,0,0,0.5);
+  }
+  .topbar-title { font-size: 1.1rem; font-weight: 800; color: var(--fg); }
+  .topbar-sub { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .topbar-left { display: flex; align-items: center; gap: 1rem; }
+  .badge-online {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0.8rem; border-radius: 999px;
+    background: var(--emerald-bg); border: 1px solid var(--emerald-border);
+    font-size: 0.75rem; font-weight: 700; color: var(--emerald);
+  }
+  .badge-online::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--emerald); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .user-chip {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.5rem 1rem; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--border);
+  }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--blue); font-size: 0.85rem;
+  }
+  .user-name { font-size: 0.8rem; font-weight: 700; color: var(--fg); }
+
+  /* ===== الحاوية ===== */
+  .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+  /* ===== الهيرو ===== */
+  .hero {
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    padding: 2.5rem; position: relative; overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--amber));
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; align-items: center; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0.9rem; border-radius: 999px;
+    background: #f5f5f4; border: 1px solid var(--border);
+    font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 1rem;
+  }
+  .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .hero p { color: var(--muted); font-size: 0.9rem; max-width: 500px; margin-bottom: 1.5rem; }
+  .hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.4rem; border-radius: 999px;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--fg); color: #fff; }
+  .btn-primary:hover { background: #292524; transform: translateY(-1px); }
+  .btn-outline { background: var(--card); border-color: var(--border); color: var(--fg); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .hero-stat {
+    background: #f5f5f4; border-radius: var(--radius-sm);
+    padding: 1.2rem; border: 1px solid var(--border);
+  }
+  .hero-stat-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+  .hero-stat-value { font-size: 1.8rem; font-weight: 800; color: var(--fg); margin: 0.2rem 0; }
+  .hero-stat-note { font-size: 0.68rem; color: var(--muted-light); }
+
+  /* ===== البطاقات الإحصائية ===== */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--card); border-radius: var(--radius-sm);
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .stat-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .stat-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+  .stat-value { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin: 0.3rem 0; }
+  .stat-note { font-size: 0.7rem; color: var(--muted-light); }
+  .stat-icon {
+    width: 48px; height: 48px; border-radius: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; background: #f5f5f4; color: var(--muted);
+  }
+  .stat-icon.red { background: var(--red-bg); color: var(--red); }
+  .stat-icon.blue { background: var(--blue-bg); color: var(--blue); }
+  .stat-icon.green { background: var(--emerald-bg); color: var(--emerald); }
+  .stat-icon.amber { background: var(--amber-bg); color: var(--amber); }
+
+  /* ===== الشبكة الرئيسية ===== */
+  .main-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; }
+
+  /* ===== البطاقة ===== */
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    overflow: hidden; margin-bottom: 1.5rem;
+  }
+  .card-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafaf9;
+  }
+  .card-title { font-size: 1.05rem; font-weight: 700; }
+  .card-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+  .card-body { padding: 1.5rem; }
+
+  /* ===== منطقة رفع الصورة ===== */
+  .upload-zone {
+    border: 2px dashed var(--muted-light); border-radius: var(--radius-sm);
+    padding: 3rem 2rem; text-align: center; cursor: pointer;
+    transition: all 0.25s; background: #fafaf9;
+  }
+  .upload-zone:hover { border-color: var(--primary); background: rgba(139,0,0,0.03); }
+  .upload-zone.dragover { border-color: var(--primary); background: rgba(139,0,0,0.06); transform: scale(1.01); }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+  .upload-text { font-size: 0.9rem; font-weight: 600; color: var(--fg); }
+  .upload-hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+
+  .preview-wrapper { position: relative; border-radius: var(--radius-sm); overflow: hidden; }
+  .preview-img { width: 100%; max-height: 380px; object-fit: contain; background: #f5f5f4; }
+  .preview-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.7); backdrop-filter: blur(4px);
+    flex-direction: column; gap: 0.5rem;
+  }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border);
+    border-top-color: var(--primary); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner-text { font-size: 0.85rem; font-weight: 600; color: var(--fg); }
+  .btn-reset {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    padding: 0.4rem 0.9rem; border-radius: 999px;
+    background: rgba(255,255,255,0.9); border: 1px solid var(--border);
+    font-size: 0.72rem; font-weight: 600; cursor: pointer; color: var(--fg);
+  }
+
+  /* ===== شبكة الحقول ===== */
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .field-item { margin-bottom: 0.5rem; }
+  .field-label {
+    font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem;
+  }
+  .field-input {
+    width: 100%; padding: 0.6rem 0.8rem; border-radius: 0.75rem;
+    border: 1px solid var(--border); background: var(--card);
+    font-size: 0.85rem; color: var(--fg); outline: none;
+    transition: border 0.2s;
+  }
+  .field-input:focus { border-color: var(--primary); }
+  .field-input.empty { border-color: var(--amber-border); background: var(--amber-bg); }
+  .field-crop {
+    margin-top: 0.4rem; max-height: 56px; width: 100%; border-radius: 0.5rem;
+    border: 1px solid var(--border); background: #f5f5f4; object-fit: contain;
+  }
+
+  /* ===== شارة MRZ ===== */
+  .mrz-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.25rem 0.7rem; border-radius: 999px;
+    font-size: 0.65rem; font-weight: 700;
+    background: var(--emerald-bg); color: var(--emerald);
+    border: 1px solid var(--emerald-border);
+  }
+
+  /* ===== تنبيهات ===== */
+  .alert {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.8rem 1rem; border-radius: 0.75rem;
+    font-size: 0.78rem; margin-bottom: 0.75rem;
+  }
+  .alert-error { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
+  .alert-warn { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
+  .alert-info { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue); }
+
+  /* ===== القائمة الجانبية للإجراءات ===== */
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .quick-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    padding: 1rem; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .quick-btn:hover { background: rgba(255,255,255,0.15); }
+  .quick-btn-icon { font-size: 1.3rem; }
+  .card-dark {
+    background: linear-gradient(135deg, #1c1917, #292524, #44403c);
+    color: #fff; border: none;
+  }
+  .card-dark .card-header { background: transparent; border-color: rgba(255,255,255,0.1); }
+  .card-dark .card-title { color: #fff; }
+  .card-dark .card-desc { color: rgba(255,255,255,0.6); }
+
+  /* ===== أشرطة التقدم ===== */
+  .progress-row { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+  .progress-top { display: flex; justify-content: space-between; font-size: 0.8rem; }
+  .progress-top span:first-child { color: var(--muted); }
+  .progress-top span:last-child { font-weight: 600; }
+  .progress-bar { height: 8px; background: #f5f5f4; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 999px; transition: width 0.6s; }
+
+  /* ===== الجدول ===== */
+  .table { width: 100%; border-collapse: collapse; }
+  .table th {
+    text-align: right; padding: 0.7rem 1rem; font-size: 0.72rem;
+    font-weight: 600; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.05em; border-bottom: 1px solid var(--border);
+  }
+  .table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .table tr:last-child td { border-bottom: none; }
+  .table tr:hover td { background: #fafaf9; }
+
+  /* ===== شارة الحالة ===== */
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.2rem 0.6rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 600;
+  }
+  .status-confirmed { background: var(--emerald-bg); color: var(--emerald); border: 1px solid var(--emerald-border); }
+  .status-pending { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .status-cancelled { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+  /* ===== منطقة MRZ ===== */
+  .mrz-box {
+    background: #1c1917; color: #4ade80; border-radius: 0.75rem;
+    padding: 0.8rem; font-family: 'Courier New', monospace;
+    font-size: 0.78rem; direction: ltr; text-align: left;
+    white-space: pre; overflow-x: auto; margin-top: 0.5rem;
+  }
+
+  /* ===== زر نسخ ===== */
+  .btn-copy {
+    padding: 0.4rem 0.9rem; border-radius: 999px;
+    background: var(--fg); color: #fff; font-size: 0.72rem;
+    font-weight: 600; border: none; cursor: pointer;
+  }
+
+  /* ===== أزرار التبويب ===== */
+  .tabs { display: flex; gap: 0.25rem; background: #f5f5f4; border-radius: 999px; padding: 0.25rem; }
+  .tab {
+    padding: 0.5rem 1.1rem; border-radius: 999px; border: none;
+    font-size: 0.78rem; font-weight: 600; cursor: pointer;
+    background: transparent; color: var(--muted); transition: all 0.2s;
+  }
+  .tab.active { background: var(--card); color: var(--fg); box-shadow: var(--shadow); }
+
+  /* ===== مستجيب ===== */
+  @media (max-width: 1024px) {
+    .hero-grid, .main-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .fields-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 1rem; }
+    .stats-row { grid-template-columns: 1fr; }
+    .hero-stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== الشريط العلوي ===== -->
+<div class="topbar">
+  <div class="topbar-right">
+    <div class="logo-badge">J</div>
+    <div>
+      <div class="topbar-title">لوحة تحكم قارئ الجوازات</div>
+      <div class="topbar-sub">JAZ Passport Dashboard</div>
+    </div>
+  </div>
+  <div class="topbar-left">
+    <span class="badge-online">المستخرج متصل</span>
+    <div class="user-chip">
+      <div class="user-avatar">م</div>
+      <span class="user-name">المدير العام</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== الهيرو ===== -->
+  <div class="hero">
+    <div class="hero-grid">
+      <div>
+        <span class="hero-badge">— مركز إدارة الجوازات —</span>
+        <h1>قارئ الجوازات الذكي</h1>
+        <p>
+          ارفع صورة الجواز فتُستخرج حقول استمارة شنغن الموحدة جاهزة للتقديم،
+          مع فحص تلقائي لصلاحية الجواز وتحقق من أرقام MRZ.
+        </p>
+        <div class="hero-btns">
+          <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+            رفع صورة الجواز
+          </button>
+          <button class="btn btn-outline" onclick="scrollToSection('history')">
+            سجل القراءات
+          </button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-label">قراءات اليوم</div>
+          <div class="hero-stat-value">24</div>
+          <div class="hero-stat-note">من إجمالي 312</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-label">معدل الدقة</div>
+          <div class="hero-stat-value">97%</div>
+          <div class="hero-stat-note">MRZ متحقَّق</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-label">جوازات مرفوضة</div>
+          <div class="hero-stat-value">3</div>
+          <div class="hero-stat-note">منتهي أو قديم</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== البطاقات الإحصائية ===== -->
+  <div class="stats-row">
+    <div class="stat-card" onclick="scrollToSection('scanner')">
+      <div class="stat-top">
+        <div>
+          <div class="stat-label">إجمالي القراءات</div>
+          <div class="stat-value">312</div>
+          <div class="stat-note">منذ بداية الشهر</div>
+        </div>
+        <div class="stat-icon red">&#128206;</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div>
+          <div class="stat-label">MRZ متحقَّق</div>
+          <div class="stat-value">298</div>
+          <div class="stat-note">95.5% من القراءات</div>
+        </div>
+        <div class="stat-icon green">&#9989;</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div>
+          <div class="stat-label">تدخل يدوي</div>
+          <div class="stat-value">14</div>
+          <div class="stat-note">حقول صححت يدويًا</div>
+        </div>
+        <div class="stat-icon amber">&#9999;</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div>
+          <div class="stat-label">متوسط الوقت</div>
+          <div class="stat-value">4.2s</div>
+          <div class="stat-note">لكل قراءة كاملة</div>
+        </div>
+        <div class="stat-icon blue">&#9201;</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== الشبكة الرئيسية ===== -->
+  <div class="main-grid">
+
+    <!-- ===== العمود الأيمن: القارئ ===== -->
+    <div id="scanner">
+      <!-- منطقة الرفع / المعاينة -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">رفع صورة الجواز</div>
+            <div class="card-desc">JPG أو PNG — حتى 8 ميغابايت</div>
+          </div>
+          <div id="mrzBadge" style="display:none;" class="mrz-badge">&#9989; MRZ متحقَّق</div>
+        </div>
+        <div class="card-body" id="uploadArea">
+          <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(event)">
+          <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">&#128247;</div>
+            <div class="upload-text">اضغط لاختيار صورة الجواز</div>
+            <div class="upload-hint">أو اسحب الصورة وأفلتها هنا</div>
+          </div>
+          <div id="previewArea" style="display:none;">
+            <div class="preview-wrapper">
+              <img id="previewImg" class="preview-img" alt="معاينة الجواز">
+              <button class="btn-reset" onclick="resetAll()">صورة أخرى</button>
+              <div id="loadingOverlay" class="preview-overlay" style="display:none;">
+                <div class="spinner"></div>
+                <div class="spinner-text">جارٍ قراءة الجواز...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- الحقول المستخرجة -->
+      <div class="card" id="fieldsCard" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">البيانات المستخرجة</div>
+            <div class="card-desc">حقول استمارة شنغن الموحدة — قابلة للتعديل</div>
+          </div>
+          <button class="btn-copy" onclick="copyAll()">نسخ الكل</button>
+        </div>
+        <div class="card-body">
+          <!-- تنبيهات الصلاحية -->
+          <div id="alertsArea"></div>
+
+          <!-- الحقول -->
+          <div class="fields-grid" id="fieldsGrid"></div>
+
+          <!-- MRZ -->
+          <div style="margin-top: 1rem;">
+            <div class="field-label" style="margin-bottom:0.4rem;">MRZ — التحقق الآلي</div>
+            <div class="mrz-box" id="mrzText"></div>
+          </div>
+
+          <!-- النص الخام -->
+          <div style="margin-top:1rem; border-top:1px solid var(--border); padding-top:1rem;">
+            <button onclick="toggleRaw()" style="font-size:0.78rem;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;">
+              <span id="rawToggleText">عرض النص الكامل المستخرج</span>
+            </button>
+            <pre id="rawText" style="display:none; margin-top:0.5rem; max-height:200px; overflow:auto; white-space:pre-wrap; font-size:0.72rem; color:var(--muted); background:#fafaf9; border-radius:0.5rem; padding:0.8rem;"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== العمود الأيسر: الجانبي ===== -->
+    <div>
+      <!-- إجراءات سريعة -->
+      <div class="card card-dark">
+        <div class="card-header">
+          <div>
+            <div class="card-title">إجراءات سريعة</div>
+            <div class="card-desc">وصول مباشر للمهام اليومية</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="quick-grid">
+            <div class="quick-btn" onclick="document.getElementById('fileInput').click()">
+              <div class="quick-btn-icon">&#128247;</div>
+              <span>قراءة جواز</span>
+            </div>
+            <div class="quick-btn" onclick="exportData()">
+              <div class="quick-btn-icon">&#128190;</div>
+              <span>تصدير البيانات</span>
+            </div>
+            <div class="quick-btn" onclick="scrollToSection('history')">
+              <div class="quick-btn-icon">&#128218;</div>
+              <span>السجل</span>
+            </div>
+            <div class="quick-btn" onclick="alert('الإعدادات')">
+              <div class="quick-btn-icon">&#9881;</div>
+              <span>الإعدادات</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- حالة الجوازات -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">حالة الجوازات اليوم</div>
+            <div class="card-desc">توزيع نتائج الفحص</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="progress-row">
+            <div class="progress-top"><span>مقبول (MRZ متحقق)</span><span>18</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:75%;background:var(--emerald);"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-top"><span>تدخل يدوي</span><span>3</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:12.5%;background:var(--amber);"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-top"><span>منتهي الصلاحية</span><span>2</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:8.3%;background:var(--red);"></div></div>
+          </div>
+          <div class="progress-row" style="margin-bottom:0;">
+            <div class="progress-top"><span>صادر قبل 10 سنوات</span><span>1</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:4.2%;background:var(--red);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- تبويبات إضافية -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">إحصائيات أسبوعية</div>
+          </div>
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this,'week')">الأسبوع</button>
+            <button class="tab" onclick="switchTab(this,'month')">الشهر</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="weekChart">
+            <div style="display:flex;align-items:flex-end;gap:0.5rem;height:120px;">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:60%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;opacity:0.7;"></div>
+                <span style="font-size:0.65rem;color:var(--muted);">سبت</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:40%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;opacity:0.7;"></div>
+                <span style="font-size:0.65rem;color:var(--muted);">أحد</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:85%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;opacity:0.7;"></div>
+                <span style="font-size:0.65rem;color:var(--muted);">إثنين</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:70%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;opacity:0.7;"></div>
+                <span style="font-size:0.65rem;color:var(--muted);">ثلاثاء</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:95%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;"></div>
+                <span style="font-size:0.65rem;color:var(--fg);font-weight:700;">الأربعاء</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:55%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;opacity:0.7;"></div>
+                <span style="font-size:0.65rem;color:var(--muted);">خميس</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+                <div style="width:100%;height:30%;background:var(--primary);border-radius:0.4rem 0.4rem 0 0;opacity:0.7;"></div>
+                <span style="font-size:0.65rem;color:var(--muted);">جمعة</span>
+              </div>
+            </div>
+            <div style="margin-top:1rem;padding:0.6rem;background:#fafaf9;border-radius:0.5rem;font-size:0.72rem;color:var(--muted);text-align:center;">
+              أعلى يوم: الأربعاء — 24 قراءة
+            </div>
+          </div>
+          <div id="monthChart" style="display:none;">
+            <div style="text-align:center;padding:2rem 0;color:var(--muted);font-size:0.85rem;">
+              إجمالي الشهر: 312 قراءة<br>
+              <span style="font-size:0.72rem;">معدل يومي: 10.4 قراءة</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== سجل القراءات ===== -->
+  <div id="history" class="card" style="margin-top:1.5rem;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">سجل القراءات الأخيرة</div>
+        <div class="card-desc">آخر 10 جوازات تمت قراءتها</div>
+      </div>
+      <button class="btn-outline btn" style="padding:0.4rem 1rem;">تصدير CSV</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>رقم الجواز</th>
+            <th>الجنسية</th>
+            <th>الانتهاء</th>
+            <th>MRZ</th>
+            <th>الحالة</th>
+            <th>الوقت</th>
+          </tr>
+        </thead>
+        <tbody id="historyTable">
+          <tr>
+            <td>1</td><td>أحمد محمد علي</td><td>QC1234567</td><td>IRQ</td>
+            <td>2028-03-15</td><td>&#9989;</td>
+            <td><span class="status-pill status-confirmed">مقبول</span></td>
+            <td style="color:var(--muted);">منذ 5 د</td>
+          </tr>
+          <tr>
+            <td>2</td><td>Sarah Jones</td><td>GB9876543</td><td>GBR</td>
+            <td>2030-11-20</td><td>&#9989;</td>
+            <td><span class="status-pill status-confirmed">مقبول</span></td>
+            <td style="color:var(--muted);">منذ 12 د</td>
+          </tr>
+          <tr>
+            <td>3</td><td>فاطمة حسن</td><td>EG5551234</td><td>EGY</td>
+            <td>2024-01-10</td><td>&#9989;</td>
+            <td><span class="status-pill status-cancelled">منتهي</span></td>
+            <td style="color:var(--muted);">منذ 28 د</td>
+          </tr>
+          <tr>
+            <td>4</td><td>Mehmet Yilmaz</td><td>TR7778889</td><td>TUR</td>
+            <td>2029-06-30</td><td>&#9989;</td>
+            <td><span class="status-pill status-confirmed">مقبول</span></td>
+            <td style="color:var(--muted);">منذ 45 د</td>
+          </tr>
+          <tr>
+            <td>5</td><td>عمر إبراهيم</td><td>SD2223334</td><td>SDN</td>
+            <td>2027-09-05</td><td>&#9888;</td>
+            <td><span class="status-pill status-pending">تدخل يدوي</span></td>
+            <td style="color:var(--muted);">منذ ساعة</td>
+          </tr>
+          <tr>
+            <td>6</td><td>Ali Hassan</td><td>JO4445556</td><td>JOR</td>
+            <td>2031-02-18</td><td>&#9989;</td>
+            <td><span class="status-pill status-confirmed">مقبول</span></td>
+            <td style="color:var(--muted);">منذ 2 س</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== تعريف الحقول =====
+const FIELD_DEFS = [
+  { key: 'surname',          label: 'اللقب — Surname' },
+  { key: 'given_names',      label: 'الاسم — First name(s)' },
+  { key: 'date_of_birth',    label: 'تاريخ الميلاد' },
+  { key: 'place_of_birth',   label: 'مكان الميلاد' },
+  { key: 'country_of_birth', label: 'بلد الميلاد' },
+  { key: 'nationality',      label: 'الجنسية' },
+  { key: 'sex',              label: 'الجنس' },
+  { key: 'passport_number',  label: 'رقم الجواز' },
+  { key: 'date_of_issue',    label: 'تاريخ الإصدار' },
+  { key: 'date_of_expiry',   label: 'تاريخ الانتهاء' },
+  { key: 'issuing_country',  label: 'جهة الإصدار' },
+];
+
+let currentFields = {};
+let currentMrz = '';
+let currentRaw = '';
+
+// ===== رفع الصورة =====
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  showPreview(file);
+}
+
+// سحب وإفلات
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) showPreview(file);
+});
+
+function showPreview(file) {
+  const url = URL.createObjectURL(file);
+  document.getElementById('previewImg').src = url;
+  document.getElementById('dropZone').style.display = 'none';
+  document.getElementById('previewArea').style.display = 'block';
+  document.getElementById('fieldsCard').style.display = 'none';
+  document.getElementById('loadingOverlay').style.display = 'flex';
+
+  // محاكاة قراءة الجواز
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').style.display = 'none';
+    document.getElementById('mrzBadge').style.display = 'inline-flex';
+    showResults();
+  }, 2000);
+}
+
+// ===== عرض النتائج (بيانات تجريبية) =====
+function showResults() {
+  // بيانات تجريبية لعرض الحقول
+  currentFields = {
+    surname: 'ERIKSSON',
+    given_names: 'ANNA MARIA',
+    date_of_birth: '1974-08-12',
+    place_of_birth: 'ZENITH',
+    country_of_birth: 'UTOPIA',
+    nationality: 'UTO',
+    sex: 'F',
+    passport_number: 'L898902C3',
+    date_of_issue: '2007-04-16',
+    date_of_expiry: '2012-04-15',
+    issuing_country: 'UTO',
+  };
+  currentMrz = 'P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\nL898902C36UTO7408122F1204159ZE184226B<<<<<10';
+  currentRaw = 'PASSEPORT\nP<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\nL898902C36UTO7408122F1204159ZE184226B<<<<<10\n\nType: P\nCountry: UTO\nSurname: ERIKSSON\nGiven names: ANNA MARIA\nPassport No: L898902C3\nNationality: UTO\nDate of birth: 12 AUG 1974\nSex: F\nDate of expiry: 15 APR 2012';
+
+  // بناء الحقول
+  const grid = document.getElementById('fieldsGrid');
+  grid.innerHTML = '';
+  for (const f of FIELD_DEFS) {
+    const val = currentFields[f.key] || '';
+    const div = document.createElement('div');
+    div.className = 'field-item';
+    div.innerHTML = `
+      <div class="field-label">${f.label}</div>
+      <input class="field-input ${val ? '' : 'empty'}" value="${val}" 
+             placeholder="غير مقروء — أدخله يدويًا"
+             onchange="updateField('${f.key}', this.value)">
+    `;
+    grid.appendChild(div);
+  }
+
+  // MRZ
+  document.getElementById('mrzText').textContent = currentMrz;
+
+  // تنبيهات الصلاحية
+  const alerts = checkValidity(currentFields);
+  const alertsArea = document.getElementById('alertsArea');
+  alertsArea.innerHTML = '';
+  for (const a of alerts) {
+    const div = document.createElement('div');
+    div.className = `alert alert-${a.level === 'error' ? 'error' : 'warn'}`;
+    div.innerHTML = `&#9888; ${a.message}`;
+    alertsArea.appendChild(div);
+  }
+
+  document.getElementById('fieldsCard').style.display = 'block';
+}
+
+// ===== فحص صلاحية الجواز لشروط شنغن =====
+function checkValidity(fields) {
+  const notes = [];
+  const today = new Date();
+
+  const expiry = fields.date_of_expiry ? new Date(fields.date_of_expiry) : null;
+  if (expiry && !isNaN(expiry.getTime())) {
+    if (expiry < today) {
+      notes.push({ level: 'error', message: 'الجواز منتهي الصلاحية — لا يُقبل للتقديم' });
+    } else {
+      const sixMonths = new Date(today);
+      sixMonths.setMonth(sixMonths.getMonth() + 6);
+      if (expiry < sixMonths) {
+        notes.push({ level: 'warn', message: 'صلاحية الجواز أقل من 6 أشهر — شنغن تشترط 3 أشهر بعد تاريخ العودة' });
+      }
+    }
+  }
+
+  const issue = fields.date_of_issue ? new Date(fields.date_of_issue) : null;
+  if (issue && !isNaN(issue.getTime())) {
+    const tenYearsAgo = new Date(today);
+    tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
+    if (issue < tenYearsAgo) {
+      notes.push({ level: 'error', message: 'الجواز صادر قبل أكثر من 10 سنوات — سفارات شنغن لا تقبله' });
+    }
+  }
+
+  return notes;
+}
+
+// ===== تحديث حقل =====
+function updateField(key, value) {
+  currentFields[key] = value;
+  const alerts = checkValidity(currentFields);
+  const alertsArea = document.getElementById('alertsArea');
+  alertsArea.innerHTML = '';
+  for (const a of alerts) {
+    const div = document.createElement('div');
+    div.className = `alert alert-${a.level === 'error' ? 'error' : 'warn'}`;
+    div.innerHTML = `&#9888; ${a.message}`;
+    alertsArea.appendChild(div);
+  }
+}
+
+// ===== نسخ الكل =====
+function copyAll() {
+  const lines = FIELD_DEFS.filter(f => currentFields[f.key])
+    .map(f => `${f.label}: ${currentFields[f.key]}`);
+  if (currentMrz) lines.push(`MRZ: ${currentMrz.replace(/\n/g, ' / ')}`);
+  navigator.clipboard.writeText(lines.join('\n'));
+  alert('تم نسخ جميع البيانات');
+}
+
+// ===== النص الخام =====
+function toggleRaw() {
+  const raw = document.getElementById('rawText');
+  const txt = document.getElementById('rawToggleText');
+  if (raw.style.display === 'none') {
+    raw.textContent = currentRaw;
+    raw.style.display = 'block';
+    txt.textContent = 'إخفاء النص الكامل';
+  } else {
+    raw.style.display = 'none';
+    txt.textContent = 'عرض النص الكامل المستخرج';
+  }
+}
+
+// ===== تصدير =====
+function exportData() {
+  alert('سيتم تصدير البيانات بصيغة CSV');
+}
+
+// ===== تبويب =====
+function switchTab(btn, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('weekChart').style.display = tab === 'week' ? 'block' : 'none';
+  document.getElementById('monthChart').style.display = tab === 'month' ? 'block' : 'none';
+}
+
+// ===== إعادة تعيين =====
+function resetAll() {
+  document.getElementById('dropZone').style.display = 'block';
+  document.getElementById('previewArea').style.display = 'none';
+  document.getElementById('fieldsCard').style.display = 'none';
+  document.getElementById('mrzBadge').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+}
+
+// ===== تمرير سلس =====
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+
+</body>
+</html>

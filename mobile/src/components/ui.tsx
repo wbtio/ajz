@@ -78,6 +78,21 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
+/** مونوغرام JAZ — نفس تصميم أيقونة التطبيق (كحلي + J أبيض + خط ذهبي). */
+export function Monogram({ size = 72 }: { size?: number }) {
+  return (
+    <View
+      style={[
+        styles.monogram,
+        { width: size, height: size, borderRadius: size * 0.22 },
+      ]}
+    >
+      <Text style={[styles.monogramLetter, { fontSize: size * 0.6, lineHeight: size * 0.68 }]}>J</Text>
+      <View style={[styles.monogramBar, { width: size * 0.36, height: Math.max(3, size * 0.035) }]} />
+    </View>
+  );
+}
+
 export function Badge({
   label,
   tone = 'maroon',
@@ -98,7 +113,7 @@ export function Badge({
 }
 
 const styles = StyleSheet.create({
-  base: { color: colors.ink, textAlign: 'right', writingDirection: 'rtl' },
+  base: { color: colors.ink, writingDirection: 'rtl' },
   btn: {
     borderRadius: radius.md,
     paddingVertical: 14,
@@ -111,7 +126,7 @@ const styles = StyleSheet.create({
   btnText: { fontFamily: font.semibold, fontSize: 15 },
   card: {
     backgroundColor: colors.card,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.line,
     padding: spacing.md,
@@ -119,6 +134,9 @@ const styles = StyleSheet.create({
   },
   badge: { borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start' },
   badgeText: { fontFamily: font.bold, fontSize: 11 },
+  monogram: { backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center' },
+  monogramLetter: { fontFamily: font.bold, color: colors.white },
+  monogramBar: { backgroundColor: colors.gold, borderRadius: 4, marginTop: 2 },
 });
 
 const txtStyles = StyleSheet.create({

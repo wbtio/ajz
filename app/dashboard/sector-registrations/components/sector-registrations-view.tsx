@@ -16,7 +16,6 @@ import {
   Eye,
   ExternalLink,
   FileSpreadsheet,
-  Filter,
   Hash,
   Inbox,
   Mail,
@@ -485,14 +484,14 @@ function ContactPill({
   icon: typeof Mail
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3">
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-stone-100 text-stone-600">
-          <Icon className="h-4 w-4" />
+    <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-white px-3 py-2">
+      <div className="flex min-w-0 items-center gap-2">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+          <Icon className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold tracking-[0.08em] text-stone-400">{label}</p>
-          <p className="truncate text-sm font-medium text-stone-900" dir="ltr">{value}</p>
+          <p className="text-[10px] font-semibold tracking-[0.06em] text-slate-400">{label}</p>
+          <p className="truncate text-xs font-medium text-slate-800" dir="ltr">{value}</p>
         </div>
       </div>
       {action}
@@ -503,7 +502,6 @@ function ContactPill({
 function MiniStatCard({
   label,
   value,
-  hint,
   icon: Icon,
   tone,
   active,
@@ -511,7 +509,6 @@ function MiniStatCard({
 }: {
   label: string
   value: number
-  hint: string
   icon: typeof Inbox
   tone: string
   active?: boolean
@@ -522,26 +519,14 @@ function MiniStatCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'group relative overflow-hidden rounded-2xl border p-4 text-right transition-all duration-300',
-        active
-          ? 'border-stone-200 bg-white shadow-sm'
-          : 'border-stone-200 bg-white hover:-translate-y-0.5 hover:shadow-sm'
+        'flex items-center gap-2.5 rounded-lg border p-3 text-right transition-colors bg-white',
+        active ? 'border-slate-300 bg-slate-50' : 'border-slate-100 hover:border-slate-200'
       )}
     >
-      <div className={cn('absolute inset-x-0 top-0 h-1 bg-gradient-to-r', tone)} />
-      <div className="absolute -left-10 top-0 h-24 w-24 rounded-full bg-stone-100/60 blur-3xl transition-opacity group-hover:opacity-80" />
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-stone-900">{label}</p>
-          <p className="mt-1 text-xs text-stone-500">{hint}</p>
-        </div>
-        <div className={cn('flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-sm ring-1 ring-black/5', tone)}>
-          <Icon className="h-5 w-5" />
-        </div>
-      </div>
-      <div className="mt-6 flex items-end justify-between gap-4">
-        <strong className="text-3xl font-bold tracking-tight text-stone-950">{value}</strong>
-        <span className="text-xs font-medium text-stone-400">{active ? 'مفعّل' : 'للتصفية'}</span>
+      <Icon className={cn('w-4 h-4 shrink-0', tone)} />
+      <div className="min-w-0">
+        <p className="text-lg font-bold leading-none text-slate-900 tabular-nums">{value}</p>
+        <p className="mt-1 truncate text-[11px] text-slate-500">{label}</p>
       </div>
     </button>
   )
@@ -557,15 +542,15 @@ function EmptyState({
   onReset?: () => void
 }) {
   return (
-    <Card className="overflow-hidden rounded-2xl border-stone-200 bg-white shadow-sm">
-      <CardContent className="flex flex-col items-center px-6 py-16 text-center">
-        <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100 text-stone-500">
-          <Inbox className="h-8 w-8" />
+    <Card className="overflow-hidden border-slate-100">
+      <CardContent className="flex flex-col items-center px-6 py-12 text-center">
+        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+          <Inbox className="h-5 w-5" />
         </div>
-        <h3 className="text-xl font-semibold text-stone-950">{title}</h3>
-        <p className="mt-2 max-w-md text-sm leading-7 text-stone-500">{description}</p>
+        <h3 className="text-sm font-bold text-slate-900">{title}</h3>
+        <p className="mt-1.5 max-w-md text-xs leading-6 text-slate-500">{description}</p>
         {onReset && (
-          <Button variant="outline" className="mt-5 border-stone-200 text-stone-700 hover:bg-stone-50" onClick={onReset}>
+          <Button variant="outline" size="sm" className="mt-3" onClick={onReset}>
             إعادة ضبط الفلاتر
           </Button>
         )}
@@ -1097,88 +1082,59 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
   const activeFilters = [search.trim() !== '', statusFilter !== 'all', sectorFilter !== 'all'].filter(Boolean).length
 
   return (
-    <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-2xl border border-stone-200 bg-white p-6 md:p-8">
-        <div className="relative flex flex-col gap-6">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-stone-900 text-white shadow-sm">
-                <Building2 className="h-7 w-7" />
-              </div>
-              <div className="space-y-2">
-                <Badge variant="outline" className="border-stone-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-stone-600">
-                  SECTOR REGISTRATION DESK
-                </Badge>
-                <div>
-                  <h1 className="text-3xl font-semibold tracking-tight text-stone-950 md:text-[2.35rem]">طلبات الشراكة في القطاعات</h1>
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-stone-600">
-                    واجهة بسيطة لعرض الطلبات ومراجعتها وتحديث حالتها من مكان واحد.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                variant="outline"
-                className="h-11 rounded-2xl border-stone-200 bg-white px-5 text-stone-700 hover:bg-stone-50"
-                onClick={exportFilteredItems}
-              >
-                <Download className="ml-2 h-4 w-4" />
-                تصدير النتائج
-              </Button>
-              <div className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-600">
-                <Filter className="h-4 w-4 text-stone-500" />
-                {activeFilters > 0 ? `يوجد ${activeFilters} فلتر مفعّل الآن` : 'كل الطلبات معروضة حالياً'}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <MiniStatCard
-              label="إجمالي الطلبات"
-              value={stats.all}
-              hint="كل ما تم استلامه من النماذج"
-              icon={Inbox}
-              tone="from-stone-700 to-stone-900"
-              active={statusFilter === 'all'}
-              onClick={() => setStatusFilter('all')}
-            />
-            <MiniStatCard
-              label="قيد المراجعة"
-              value={stats.pending}
-              hint="الطلبات التي تنتظر قراراً"
-              icon={Clock3}
-              tone="from-amber-500 to-orange-600"
-              active={statusFilter === 'pending'}
-              onClick={() => setStatusFilter(statusFilter === 'pending' ? 'all' : 'pending')}
-            />
-            <MiniStatCard
-              label="طلبات مقبولة"
-              value={stats.approved}
-              hint="تمت الموافقة عليها"
-              icon={CheckCircle2}
-              tone="from-emerald-500 to-green-600"
-              active={statusFilter === 'approved'}
-              onClick={() => setStatusFilter(statusFilter === 'approved' ? 'all' : 'approved')}
-            />
-            <MiniStatCard
-              label="طلبات مرفوضة"
-              value={stats.rejected}
-              hint="تم إغلاقها أو رفضها"
-              icon={ShieldAlert}
-              tone="from-rose-500 to-red-600"
-              active={statusFilter === 'rejected'}
-              onClick={() => setStatusFilter(statusFilter === 'rejected' ? 'all' : 'rejected')}
-            />
-          </div>
+    <div className="space-y-3">
+      {/* Header — مضغوط بدون بانر ضخم */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900">طلبات الشراكة في القطاعات</h1>
+          <p className="text-sm text-slate-500">عرض الطلبات ومراجعتها وتحديث حالتها.</p>
         </div>
-      </section>
+        <Button variant="outline" size="sm" onClick={exportFilteredItems}>
+          <Download className="ml-1.5 h-3.5 w-3.5" />
+          تصدير النتائج
+        </Button>
+      </div>
+
+      {/* KPI — بطاقات مسطّحة موحّدة الحجم */}
+      <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
+        <MiniStatCard
+          label="إجمالي الطلبات"
+          value={stats.all}
+          icon={Inbox}
+          tone="text-slate-500"
+          active={statusFilter === 'all'}
+          onClick={() => setStatusFilter('all')}
+        />
+        <MiniStatCard
+          label="قيد المراجعة"
+          value={stats.pending}
+          icon={Clock3}
+          tone="text-amber-600"
+          active={statusFilter === 'pending'}
+          onClick={() => setStatusFilter(statusFilter === 'pending' ? 'all' : 'pending')}
+        />
+        <MiniStatCard
+          label="طلبات مقبولة"
+          value={stats.approved}
+          icon={CheckCircle2}
+          tone="text-emerald-600"
+          active={statusFilter === 'approved'}
+          onClick={() => setStatusFilter(statusFilter === 'approved' ? 'all' : 'approved')}
+        />
+        <MiniStatCard
+          label="طلبات مرفوضة"
+          value={stats.rejected}
+          icon={ShieldAlert}
+          tone="text-red-500"
+          active={statusFilter === 'rejected'}
+          onClick={() => setStatusFilter(statusFilter === 'rejected' ? 'all' : 'rejected')}
+        />
+      </div>
 
       {feedback && (
         <div
           className={cn(
-            'rounded-2xl border px-4 py-3 text-sm font-medium shadow-sm',
+            'rounded-lg border px-3 py-2 text-sm font-medium',
             feedback.kind === 'success'
               ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
               : 'border-rose-200 bg-rose-50 text-rose-800'
@@ -1188,35 +1144,35 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
         </div>
       )}
 
-      <Card className="overflow-hidden rounded-2xl border-stone-200 bg-white shadow-sm">
-        <CardHeader className="border-b border-stone-200 bg-white">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+      <Card className="overflow-hidden border-slate-100">
+        <CardHeader className="border-b border-slate-100 bg-white p-4">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <CardTitle className="text-xl font-semibold text-stone-950">مركز المراجعة والفرز</CardTitle>
-              <CardDescription className="mt-1 text-sm text-stone-500">
+              <CardTitle className="text-sm font-bold text-slate-900">مركز المراجعة والفرز</CardTitle>
+              <CardDescription className="mt-0.5 text-xs text-slate-500">
                 ابحث باسم المتقدم أو البريد أو القطاع.
               </CardDescription>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-500">
-              <ClipboardList className="h-4 w-4 text-stone-500" />
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500">
+              <ClipboardList className="h-4 w-4 text-slate-500" />
               {filteredItems.length} نتيجة من أصل {stats.all}
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-5 p-4 md:p-6">
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.75fr)]">
+        <CardContent className="space-y-3 p-4">
+          <div className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.75fr)]">
             <div className="relative">
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+              <Search className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="ابحث بالاسم، الشركة، البريد، الهاتف أو أي حقل داخل الطلب..."
-                className="h-12 rounded-2xl border-stone-200 bg-stone-50 pr-11 text-sm shadow-none transition-colors focus:border-stone-300 focus:bg-white"
+                className="h-9 text-sm bg-slate-50 border-slate-100 pr-8 focus:bg-white"
               />
             </div>
 
             <Select value={sectorFilter} onValueChange={setSectorFilter}>
-              <SelectTrigger className="h-12 rounded-2xl border-stone-200 bg-stone-50">
+              <SelectTrigger className="h-9 text-sm bg-slate-50 border-slate-100">
                 <SelectValue placeholder="كل القطاعات" />
               </SelectTrigger>
               <SelectContent>
@@ -1230,7 +1186,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             </Select>
 
             <Select value={statusFilter} onValueChange={(value: 'all' | SectorRegistrationStatus) => setStatusFilter(value)}>
-              <SelectTrigger className="h-12 rounded-2xl border-stone-200 bg-stone-50">
+              <SelectTrigger className="h-9 text-sm bg-slate-50 border-slate-100">
                 <SelectValue placeholder="كل الحالات" />
               </SelectTrigger>
               <SelectContent>
@@ -1242,7 +1198,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             </Select>
 
             <Select value={sortMode} onValueChange={(value: SortMode) => setSortMode(value)}>
-              <SelectTrigger className="h-12 rounded-2xl border-stone-200 bg-stone-50">
+              <SelectTrigger className="h-9 text-sm bg-slate-50 border-slate-100">
                 <SelectValue placeholder="الترتيب" />
               </SelectTrigger>
               <SelectContent>
@@ -1255,30 +1211,30 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             </Select>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="rounded-full border-stone-200 bg-white px-3 py-1 text-stone-700">
-                <ClipboardList className="ml-1 h-3.5 w-3.5" />
+          <div className="flex flex-col gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge variant="outline" className="rounded-full border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600">
+                <ClipboardList className="ml-1 h-3 w-3" />
                 {filteredItems.length} طلب ظاهر
               </Badge>
-              <Badge variant="outline" className="rounded-full border-stone-200 bg-white px-3 py-1 text-stone-700">
-                <Building2 className="ml-1 h-3.5 w-3.5" />
+              <Badge variant="outline" className="rounded-full border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600">
+                <Building2 className="ml-1 h-3 w-3" />
                 {stats.sectors} قطاع
               </Badge>
               {activeFilters > 0 && (
-                <Badge variant="outline" className="rounded-full border-[#8b0000]/15 bg-[#8b0000]/5 px-3 py-1 text-[#8b0000]">
+                <Badge variant="outline" className="rounded-full border-[#8b0000]/15 bg-[#8b0000]/5 px-2 py-0.5 text-xs text-[#8b0000]">
                   {activeFilters} فلتر نشط
                 </Badge>
               )}
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100" onClick={clearFilters}>
-                <X className="ml-2 h-4 w-4" />
+              <Button variant="outline" size="sm" className="text-xs" onClick={clearFilters}>
+                <X className="ml-1.5 h-3.5 w-3.5" />
                 مسح الفلاتر
               </Button>
-              <Button variant="outline" className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100" onClick={exportFilteredItems}>
-                <FileSpreadsheet className="ml-2 h-4 w-4" />
+              <Button variant="outline" size="sm" className="text-xs" onClick={exportFilteredItems}>
+                <FileSpreadsheet className="ml-1.5 h-3.5 w-3.5" />
                 Excel
               </Button>
             </div>
@@ -1299,17 +1255,17 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
       ) : (
         <>
           <div className="hidden lg:block">
-            <Card className="overflow-hidden rounded-2xl border-stone-200 bg-white shadow-sm">
+            <Card className="overflow-hidden border-slate-100">
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-stone-200 bg-stone-50 hover:bg-stone-50">
-                      <TableHead className="w-[24%] py-4 pr-6">مقدم الطلب</TableHead>
-                      <TableHead className="w-[15%]">القطاع</TableHead>
-                      <TableHead className="w-[26%]">ملخص البيانات</TableHead>
-                      <TableHead className="w-[13%]">الحالة</TableHead>
-                      <TableHead className="w-[12%]">التاريخ</TableHead>
-                      <TableHead className="w-[10%] text-left pl-6">الإجراءات</TableHead>
+                    <TableRow className="border-slate-100 bg-slate-50/60 hover:bg-slate-50/60">
+                      <TableHead className="w-[24%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">مقدم الطلب</TableHead>
+                      <TableHead className="w-[15%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">القطاع</TableHead>
+                      <TableHead className="w-[26%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">ملخص البيانات</TableHead>
+                      <TableHead className="w-[13%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">الحالة</TableHead>
+                      <TableHead className="w-[12%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">التاريخ</TableHead>
+                      <TableHead className="w-[10%] h-9 px-3 py-2 text-left text-xs font-semibold text-slate-500">الإجراءات</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1322,27 +1278,27 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                       return (
                         <TableRow
                           key={registration.id}
-                          className="border-stone-100 hover:bg-stone-50"
+                          className="border-slate-100 hover:bg-slate-50/60"
                         >
-                          <TableCell className="pr-6">
-                            <div className="flex items-start gap-3">
-                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-stone-900 text-sm font-bold text-white shadow-sm">
+                          <TableCell className="px-3 py-2.5">
+                            <div className="flex items-start gap-2.5">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
                                 {getApplicantInitials(registration)}
                               </div>
-                              <div className="min-w-0 space-y-1.5">
-                                <button type="button" className="text-right text-base font-semibold text-stone-950 transition-colors hover:text-stone-700" onClick={() => setSelectedId(registration.id)}>
+                              <div className="min-w-0 space-y-1">
+                                <button type="button" className="text-right text-sm font-semibold text-slate-900 transition-colors hover:text-slate-600" onClick={() => setSelectedId(registration.id)}>
                                   {getApplicantName(registration)}
                                 </button>
-                                <div className="space-y-1">
+                                <div className="space-y-0.5">
                                   {email && (
-                                    <div className="flex items-center gap-1.5 text-sm text-stone-500" dir="ltr">
-                                      <Mail className="h-3.5 w-3.5 text-stone-400" />
+                                    <div className="flex items-center gap-1 text-xs text-slate-500" dir="ltr">
+                                      <Mail className="h-3 w-3 text-slate-400" />
                                       <span className="truncate">{email}</span>
                                     </div>
                                   )}
                                   {phones[0] && (
-                                    <div className="flex items-center gap-1.5 text-sm text-stone-500" dir="ltr">
-                                      <Phone className="h-3.5 w-3.5 text-stone-400" />
+                                    <div className="flex items-center gap-1 text-xs text-slate-500" dir="ltr">
+                                      <Phone className="h-3 w-3 text-slate-400" />
                                       <span>{phones[0]}</span>
                                     </div>
                                   )}
@@ -1351,33 +1307,33 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                             </div>
                           </TableCell>
 
-                          <TableCell>
-                            <div className="space-y-2">
-                              <Badge variant="outline" className="rounded-full border-stone-200 bg-stone-50 px-3 py-1 text-stone-700">
-                                <Building2 className="ml-1 h-3.5 w-3.5 text-stone-500" />
+                          <TableCell className="px-3 py-2.5">
+                            <div className="space-y-1">
+                              <Badge variant="outline" className="rounded-full border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-600">
+                                <Building2 className="ml-1 h-3 w-3 text-slate-500" />
                                 {getSectorName(registration)}
                               </Badge>
                               {registration.sectors?.slug && (
-                                <p className="text-xs uppercase tracking-[0.14em] text-stone-400">{registration.sectors.slug}</p>
+                                <p className="text-[10px] uppercase tracking-[0.1em] text-slate-400">{registration.sectors.slug}</p>
                               )}
                             </div>
                           </TableCell>
 
-                          <TableCell>
-                            <div className="space-y-2">
+                          <TableCell className="px-3 py-2.5">
+                            <div className="space-y-1">
                               {previewEntries.length > 0 ? previewEntries.map((entry) => (
-                                <div key={entry.key} className="rounded-xl border border-stone-200 bg-white px-3 py-2">
-                                  <p className="text-[11px] font-semibold tracking-[0.08em] text-stone-400">{entry.label}</p>
-                                  <p className="mt-1 line-clamp-1 text-sm font-medium text-stone-800">{entry.value}</p>
+                                <div key={entry.key} className="rounded-lg border border-slate-100 bg-white px-2.5 py-1.5">
+                                  <p className="text-[10px] font-semibold tracking-[0.06em] text-slate-400">{entry.label}</p>
+                                  <p className="mt-0.5 line-clamp-1 text-xs font-medium text-slate-700">{entry.value}</p>
                                 </div>
                               )) : (
-                                <p className="text-sm text-stone-400">لا توجد بيانات إضافية.</p>
+                                <p className="text-xs text-slate-400">لا توجد بيانات إضافية.</p>
                               )}
                               {getDataEntries(registration).length > 3 && (
                                 <button
                                   type="button"
                                   onClick={() => setSelectedId(registration.id)}
-                                  className="text-sm font-semibold text-[#8b0000] hover:text-[#6f0000]"
+                                  className="text-xs font-semibold text-[#8b0000] hover:text-[#6f0000]"
                                 >
                                   عرض {getDataEntries(registration).length - 3} حقول إضافية
                                 </button>
@@ -1385,15 +1341,15 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                             </div>
                           </TableCell>
 
-                          <TableCell>
-                            <div className="space-y-3">
+                          <TableCell className="px-3 py-2.5">
+                            <div className="space-y-2">
                               <StatusBadge status={status} />
                               <Select
                                 value={status}
                                 onValueChange={(value: SectorRegistrationStatus) => handleStatusChange(registration.id, value)}
                                 disabled={pendingId === registration.id}
                               >
-                                <SelectTrigger className="h-10 rounded-xl border-stone-200 bg-white text-xs">
+                                <SelectTrigger className="h-8 text-xs bg-white border-slate-200">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -1405,27 +1361,27 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                             </div>
                           </TableCell>
 
-                          <TableCell>
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-1.5 text-sm font-semibold text-stone-800">
-                                <CalendarDays className="h-3.5 w-3.5 text-stone-400" />
+                          <TableCell className="px-3 py-2.5">
+                            <div className="space-y-0.5">
+                              <div className="flex items-center gap-1 text-xs font-semibold text-slate-700">
+                                <CalendarDays className="h-3 w-3 text-slate-400" />
                                 {registration.created_at ? formatDate(registration.created_at) : '-'}
                               </div>
-                              <p className="text-xs text-stone-400">{formatRelativeDate(registration.created_at)}</p>
+                              <p className="text-[11px] text-slate-400">{formatRelativeDate(registration.created_at)}</p>
                             </div>
                           </TableCell>
 
-                          <TableCell className="pl-6 text-left">
+                          <TableCell className="px-3 py-2.5 text-left">
                             <div className="flex items-center justify-end gap-2">
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
-                                    className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-50"
+                                    className="h-7 w-7 p-0"
                                     onClick={() => setSelectedId(registration.id)}
                                   >
-                                    <Eye className="h-4 w-4" />
+                                    <Eye className="h-4 w-4 text-slate-500" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>فتح التفاصيل</TooltipContent>
@@ -1436,7 +1392,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="rounded-xl text-stone-600 hover:bg-stone-100"
+                                    className="h-7 w-7 p-0 text-slate-500"
                                   >
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
@@ -1512,7 +1468,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:hidden">
+          <div className="grid grid-cols-1 gap-2 lg:hidden">
             {paginatedItems.map((registration) => {
               const status = normalizeStatus(registration.status)
               const email = getApplicantEmail(registration)
@@ -1522,28 +1478,25 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
               return (
                 <Card
                   key={registration.id}
-                  className={cn(
-                    'overflow-hidden rounded-2xl border-stone-200 bg-white shadow-sm',
-                    `bg-gradient-to-br ${STATUS_META[status].surface}`
-                  )}
+                  className="overflow-hidden border-slate-100"
                 >
-                  <CardContent className="space-y-4 p-4">
+                  <CardContent className="space-y-3 p-3">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-stone-900 text-sm font-bold text-white shadow-sm">
+                      <div className="flex items-start gap-2.5">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
                           {getApplicantInitials(registration)}
                         </div>
                         <div className="space-y-1">
                           <button
                             type="button"
-                            className="text-right text-base font-bold text-stone-950"
+                            className="text-right text-sm font-bold text-slate-900"
                             onClick={() => setSelectedId(registration.id)}
                           >
                             {getApplicantName(registration)}
                           </button>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-1.5">
                             <StatusBadge status={status} />
-                            <Badge variant="outline" className="border-stone-200 bg-white/70 text-stone-700">
+                            <Badge variant="outline" className="border-slate-200 bg-slate-50 text-xs text-slate-600">
                               {getSectorName(registration)}
                             </Badge>
                           </div>
@@ -1552,7 +1505,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="rounded-xl text-stone-600 hover:bg-white/80">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-500">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -1600,43 +1553,43 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                       </DropdownMenu>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-2 rounded-[1.35rem] border border-white/80 bg-white/80 p-3">
+                    <div className="grid grid-cols-1 gap-1.5 rounded-lg border border-slate-100 bg-slate-50 p-2.5">
                       {email && (
-                        <div className="flex items-center gap-2 text-sm text-stone-600" dir="ltr">
-                          <Mail className="h-3.5 w-3.5 text-stone-400" />
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600" dir="ltr">
+                          <Mail className="h-3 w-3 text-slate-400" />
                           <span className="truncate">{email}</span>
                         </div>
                       )}
                       {phones[0] && (
-                        <div className="flex items-center gap-2 text-sm text-stone-600" dir="ltr">
-                          <Phone className="h-3.5 w-3.5 text-stone-400" />
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600" dir="ltr">
+                          <Phone className="h-3 w-3 text-slate-400" />
                           <span>{phones[0]}</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-2 text-sm text-stone-600">
-                        <CalendarDays className="h-3.5 w-3.5 text-stone-400" />
+                      <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                        <CalendarDays className="h-3 w-3 text-slate-400" />
                         <span>{registration.created_at ? formatDateTime(registration.created_at) : '-'}</span>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {previewEntries.length > 0 ? previewEntries.map((entry) => (
-                        <div key={entry.key} className="rounded-2xl border border-white/80 bg-white/78 px-3 py-2.5">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">{entry.label}</p>
-                          <p className="mt-1 text-sm font-medium text-stone-800">{entry.value}</p>
+                        <div key={entry.key} className="rounded-lg border border-slate-100 bg-white px-2.5 py-1.5">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">{entry.label}</p>
+                          <p className="mt-0.5 text-xs font-medium text-slate-700">{entry.value}</p>
                         </div>
                       )) : (
-                        <p className="text-sm text-stone-400">لا توجد حقول إضافية في هذا الطلب.</p>
+                        <p className="text-xs text-slate-400">لا توجد حقول إضافية في هذا الطلب.</p>
                       )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <Button
                         variant="outline"
-                        className="h-11 rounded-2xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100"
+                        size="sm"
                         onClick={() => setSelectedId(registration.id)}
                       >
-                        <Eye className="ml-2 h-4 w-4" />
+                        <Eye className="ml-1.5 h-3.5 w-3.5" />
                         التفاصيل
                       </Button>
                       <Select
@@ -1644,7 +1597,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                         onValueChange={(value: SectorRegistrationStatus) => handleStatusChange(registration.id, value)}
                         disabled={pendingId === registration.id}
                       >
-                        <SelectTrigger className="h-11 rounded-2xl border-stone-200 bg-white">
+                        <SelectTrigger className="h-8 text-xs bg-white border-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1660,31 +1613,33 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             })}
           </div>
 
-          <div className="flex flex-col gap-3 rounded-[1.5rem] border border-stone-200 bg-white/92 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-stone-500">
+          <div className="flex flex-col gap-2 rounded-lg border border-slate-100 bg-white px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-slate-500">
               صفحة {currentPage} من {totalPages}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button
                 variant="outline"
-                className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100"
+                size="sm"
+                className="text-xs"
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
                 disabled={currentPage === 1}
               >
-                <ChevronRight className="ml-2 h-4 w-4" />
+                <ChevronRight className="ml-1 h-3.5 w-3.5" />
                 السابق
               </Button>
-              <div className="min-w-20 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-center text-sm font-semibold text-stone-700">
+              <div className="min-w-16 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center text-xs font-semibold text-slate-600">
                 {currentPage} / {totalPages}
               </div>
               <Button
                 variant="outline"
-                className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100"
+                size="sm"
+                className="text-xs"
                 onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
                 disabled={currentPage >= totalPages}
               >
                 التالي
-                <ChevronLeft className="mr-2 h-4 w-4" />
+                <ChevronLeft className="mr-1 h-3.5 w-3.5" />
               </Button>
             </div>
           </div>
@@ -1692,69 +1647,64 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
       )}
 
       <Dialog open={Boolean(selected)} onOpenChange={(open) => !open && setSelectedId(null)}>
-      <DialogContent className="max-h-[92vh] max-w-[min(96vw,1120px)] overflow-hidden rounded-2xl border border-stone-200 bg-white p-0">
+      <DialogContent className="max-h-[92vh] max-w-[min(96vw,1000px)] overflow-hidden rounded-xl border border-slate-200 bg-white p-0">
           {selected && (
             <>
-              <div className="border-b border-stone-200 bg-white px-6 py-6 md:px-8">
-                <DialogHeader className="space-y-4 text-right">
-                  <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="outline" className="border-[#8b0000]/15 bg-white/80 px-3 py-1 text-[#8b0000]">
+              <div className="border-b border-slate-100 bg-white px-4 py-4 md:px-5">
+                <DialogHeader className="space-y-2.5 text-right">
+                  <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge variant="outline" className="border-[#8b0000]/15 bg-white text-xs text-[#8b0000]">
                           {getSectorName(selected)}
                         </Badge>
-                        <StatusBadge status={normalizeStatus(selected.status)} large />
+                        <StatusBadge status={normalizeStatus(selected.status)} />
                       </div>
-                      <DialogTitle className="text-2xl font-black tracking-tight text-stone-950 md:text-3xl">
+                      <DialogTitle className="text-lg font-bold text-slate-900">
                         {getApplicantName(selected)}
                       </DialogTitle>
-                      <DialogDescription className="max-w-2xl text-sm leading-7 text-stone-600">
-                        طلب شراكة أُرسل في {selected.created_at ? formatDateTime(selected.created_at) : '-'} ويمكن من هنا مراجعة جميع الحقول، نسخها، والتواصل مع مقدم الطلب مباشرة.
+                      <DialogDescription className="max-w-2xl text-xs text-slate-500">
+                        طلب شراكة أُرسل في {selected.created_at ? formatDateTime(selected.created_at) : '-'}
                       </DialogDescription>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100"
-                        onClick={() => copyRegistrationSummary(selected)}
-                      >
-                        {copiedKey === `summary-${selected.id}` ? <Check className="ml-2 h-4 w-4 text-emerald-600" /> : <Copy className="ml-2 h-4 w-4" />}
+                    <div className="flex flex-wrap gap-1.5">
+                      <Button variant="outline" size="sm" className="text-xs" onClick={() => copyRegistrationSummary(selected)}>
+                        {copiedKey === `summary-${selected.id}` ? <Check className="ml-1.5 h-3.5 w-3.5 text-emerald-600" /> : <Copy className="ml-1.5 h-3.5 w-3.5" />}
                         نسخ الملخص
                       </Button>
-                      <Button
-                        variant="outline"
-                        className="rounded-xl border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
-                        onClick={() => exportRegistrationPdf(selected)}
-                      >
-                        <Printer className="ml-2 h-4 w-4" />
-                        Export PDF (EN)
+                      <Button variant="outline" size="sm" className="text-xs text-blue-700" onClick={() => exportRegistrationPdf(selected)}>
+                        <Printer className="ml-1.5 h-3.5 w-3.5" />
+                        Export PDF
                       </Button>
                       <Button
                         variant="outline"
-                        className="rounded-xl border-stone-200 bg-white text-stone-700 hover:bg-stone-100"
+                        size="sm"
+                        className="text-xs text-amber-700"
                         onClick={() => handleStatusChange(selected.id, 'pending')}
                         disabled={pendingId === selected.id}
                       >
-                        <Clock3 className="ml-2 h-4 w-4 text-amber-600" />
+                        <Clock3 className="ml-1.5 h-3.5 w-3.5" />
                         مراجعة
                       </Button>
                       <Button
                         variant="outline"
-                        className="rounded-xl border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                        size="sm"
+                        className="text-xs text-emerald-700"
                         onClick={() => handleStatusChange(selected.id, 'approved')}
                         disabled={pendingId === selected.id}
                       >
-                        <CheckCircle2 className="ml-2 h-4 w-4" />
+                        <CheckCircle2 className="ml-1.5 h-3.5 w-3.5" />
                         قبول
                       </Button>
                       <Button
                         variant="outline"
-                        className="rounded-xl border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                        size="sm"
+                        className="text-xs text-rose-700"
                         onClick={() => handleStatusChange(selected.id, 'rejected')}
                         disabled={pendingId === selected.id}
                       >
-                        <ShieldAlert className="ml-2 h-4 w-4" />
+                        <ShieldAlert className="ml-1.5 h-3.5 w-3.5" />
                         رفض
                       </Button>
                     </div>
@@ -1762,31 +1712,30 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                 </DialogHeader>
               </div>
 
-              <ScrollArea className="max-h-[calc(92vh-11rem)]">
-                <div className="space-y-6 px-6 py-6 md:px-8">
-                  <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
-                    <Card className="rounded-2xl border-stone-200 bg-white shadow-sm xl:col-span-2">
-                      <CardContent className="p-5">
-                        <div className="flex items-start gap-4">
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.3rem] bg-[linear-gradient(135deg,#1d4ed8,#2563eb)] text-lg font-black text-white shadow-[0_18px_35px_-20px_rgba(37,99,235,0.8)]">
+              <ScrollArea className="max-h-[calc(92vh-9rem)]">
+                <div className="space-y-3 px-4 py-4 md:px-5">
+                  <div className="grid grid-cols-1 gap-2.5 xl:grid-cols-4">
+                    <Card className="border-slate-100 xl:col-span-2">
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2.5">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
                             {getApplicantInitials(selected)}
                           </div>
-                          <div className="min-w-0 space-y-2">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">Applicant Profile</p>
-                            <h3 className="text-xl font-bold text-stone-950">{getApplicantName(selected)}</h3>
-                            <div className="flex flex-wrap gap-2">
-                              <Badge variant="outline" className="border-stone-200 bg-stone-50 text-stone-700">
-                                <Building2 className="ml-1 h-3.5 w-3.5 text-[#8b0000]" />
+                          <div className="min-w-0 space-y-1.5">
+                            <h3 className="text-sm font-bold text-slate-900">{getApplicantName(selected)}</h3>
+                            <div className="flex flex-wrap gap-1.5">
+                              <Badge variant="outline" className="border-slate-200 bg-slate-50 text-xs text-slate-600">
+                                <Building2 className="ml-1 h-3 w-3 text-[#8b0000]" />
                                 {getSectorName(selected)}
                               </Badge>
                               {selected.user_id ? (
-                                <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700">
-                                  <UserRound className="ml-1 h-3.5 w-3.5" />
+                                <Badge variant="outline" className="border-blue-200 bg-blue-50 text-xs text-blue-700">
+                                  <UserRound className="ml-1 h-3 w-3" />
                                   مستخدم مسجل
                                 </Badge>
                               ) : (
-                                <Badge variant="outline" className="border-stone-200 bg-stone-50 text-stone-700">
-                                  <UserRound className="ml-1 h-3.5 w-3.5" />
+                                <Badge variant="outline" className="border-slate-200 bg-slate-50 text-xs text-slate-600">
+                                  <UserRound className="ml-1 h-3 w-3" />
                                   ضيف
                                 </Badge>
                               )}
@@ -1796,47 +1745,45 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                       </CardContent>
                     </Card>
 
-                    <Card className="rounded-2xl border-stone-200 bg-white shadow-sm">
-                      <CardContent className="p-5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">Created</p>
-                        <p className="mt-3 text-lg font-bold text-stone-950">{selected.created_at ? formatDate(selected.created_at) : '-'}</p>
-                        <p className="mt-1 text-sm text-stone-500">{formatRelativeDate(selected.created_at)}</p>
+                    <Card className="border-slate-100">
+                      <CardContent className="p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">تاريخ الإرسال</p>
+                        <p className="mt-1.5 text-sm font-bold text-slate-900">{selected.created_at ? formatDate(selected.created_at) : '-'}</p>
+                        <p className="mt-0.5 text-xs text-slate-500">{formatRelativeDate(selected.created_at)}</p>
                       </CardContent>
                     </Card>
 
-                    <Card className="rounded-2xl border-stone-200 bg-white shadow-sm">
-                      <CardContent className="p-5">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">Reference</p>
-                            <p className="mt-3 text-lg font-black tracking-[0.08em] text-stone-950">{getRegistrationReference(selected)}</p>
-                            <p className="mt-2 text-xs text-stone-500">
+                    <Card className="border-slate-100">
+                      <CardContent className="p-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">المرجع</p>
+                            <p className="mt-1.5 truncate text-sm font-bold tracking-[0.04em] text-slate-900">{getRegistrationReference(selected)}</p>
+                            <p className="mt-0.5 text-[11px] text-slate-500">
                               {selected.updated_at ? `آخر تحديث: ${formatCompactDateTime(selected.updated_at)}` : 'لم يتم تحديث الطلب بعد'}
                             </p>
                           </div>
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 text-stone-700">
-                            <Hash className="h-5 w-5" />
-                          </div>
+                          <Hash className="h-4 w-4 shrink-0 text-slate-400" />
                         </div>
                         <button
                           type="button"
                           onClick={() => copyText(selected.id, `full-id-${selected.id}`)}
-                          className="mt-4 inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-semibold text-stone-700 transition-colors hover:bg-stone-100"
+                          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-100 bg-slate-50 px-2 py-1 text-[11px] font-semibold text-slate-600 transition-colors hover:bg-slate-100"
                         >
-                          {copiedKey === `full-id-${selected.id}` ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                          {copiedKey === `full-id-${selected.id}` ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
                           نسخ المعرف الكامل
                         </button>
                       </CardContent>
                     </Card>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
-                    <Card className="rounded-2xl border-stone-200 bg-white shadow-sm">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-lg font-black text-stone-950">قنوات التواصل</CardTitle>
-                        <CardDescription>إرسال عبر Outlook، فتح واتساب، الاتصال المباشر، أو نسخ البيانات.</CardDescription>
+                  <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+                    <Card className="border-slate-100">
+                      <CardHeader className="p-3 pb-1.5">
+                        <CardTitle className="text-sm font-bold text-slate-900">قنوات التواصل</CardTitle>
+                        <CardDescription className="text-xs">إرسال عبر Outlook، فتح واتساب، الاتصال المباشر، أو نسخ البيانات.</CardDescription>
                       </CardHeader>
-                      <CardContent className="space-y-3">
+                      <CardContent className="space-y-2 p-3 pt-0">
                         {getApplicantEmail(selected) ? (
                           <ContactPill
                             label="EMAIL"
@@ -1850,7 +1797,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                       href={buildOutlookComposeUrl(selected) || '#'}
                                       target="_blank"
                                       rel="noreferrer"
-                                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100"
                                     >
                                       <ExternalLink className="h-4 w-4" />
                                     </a>
@@ -1861,7 +1808,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   <TooltipTrigger asChild>
                                     <button
                                       type="button"
-                                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-700 transition-colors hover:bg-stone-200"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
                                       onClick={() => copyText(getApplicantEmail(selected) || '', `email-${selected.id}`)}
                                     >
                                       {copiedKey === `email-${selected.id}` ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
@@ -1873,7 +1820,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                             }
                           />
                         ) : (
-                          <div className="rounded-2xl border border-dashed border-stone-200 px-4 py-5 text-sm text-stone-400">
+                          <div className="rounded-lg border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-400">
                             لا يوجد بريد إلكتروني واضح في هذا الطلب.
                           </div>
                         )}
@@ -1891,7 +1838,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                     <TooltipTrigger asChild>
                                       <a
                                         href={`tel:${phone}`}
-                                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-700 transition-colors hover:bg-stone-200"
+                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
                                       >
                                         <PhoneCall className="h-4 w-4" />
                                       </a>
@@ -1904,7 +1851,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                         href={`https://wa.me/${formatPhoneForWhatsApp(phone)}`}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100"
+                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100"
                                       >
                                         <ExternalLink className="h-4 w-4" />
                                       </a>
@@ -1915,7 +1862,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                     <TooltipTrigger asChild>
                                       <button
                                         type="button"
-                                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-700 transition-colors hover:bg-stone-200"
+                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
                                         onClick={() => copyText(phone, `phone-${selected.id}-${index}`)}
                                       >
                                         {copiedKey === `phone-${selected.id}-${index}` ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
@@ -1928,45 +1875,45 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                             />
                           ))
                         ) : (
-                          <div className="rounded-2xl border border-dashed border-stone-200 px-4 py-5 text-sm text-stone-400">
+                          <div className="rounded-lg border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-400">
                             لا يوجد رقم هاتف واضح في هذا الطلب.
                           </div>
                         )}
                       </CardContent>
                     </Card>
 
-                    <Card className="rounded-2xl border-stone-200 bg-white shadow-sm">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-lg font-black text-stone-950">كل الحقول المرسلة</CardTitle>
-                        <CardDescription>عرض كامل لجميع القيم القادمة من نموذج القطاع مع عناوينها المترجمة.</CardDescription>
+                    <Card className="border-slate-100">
+                      <CardHeader className="p-3 pb-1.5">
+                        <CardTitle className="text-sm font-bold text-slate-900">كل الحقول المرسلة</CardTitle>
+                        <CardDescription className="text-xs">عرض كامل لجميع القيم القادمة من نموذج القطاع مع عناوينها المترجمة.</CardDescription>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="p-3 pt-0">
                         {getDataEntries(selected).length > 0 ? (
-                          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                             {getDataEntries(selected).map((entry) => (
-                              <div key={entry.key} className="rounded-[1.35rem] border border-stone-200 bg-stone-50/70 p-4">
+                              <div key={entry.key} className="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
                                 <div className="flex items-start justify-between gap-2">
                                   <div className="min-w-0">
-                                    <p className="text-sm font-bold text-stone-900">{entry.label}</p>
+                                    <p className="text-xs font-bold text-slate-800">{entry.label}</p>
                                     {entry.description && (
-                                      <p className="mt-1 text-xs leading-6 text-stone-500">{entry.description}</p>
+                                      <p className="mt-0.5 text-[11px] leading-5 text-slate-500">{entry.description}</p>
                                     )}
                                   </div>
                                   <button
                                     type="button"
                                     onClick={() => copyText(entry.value, `field-${selected.id}-${entry.key}`)}
-                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-800"
+                                    className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                                   >
-                                    {copiedKey === `field-${selected.id}-${entry.key}` ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                                    {copiedKey === `field-${selected.id}-${entry.key}` ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
                                   </button>
                                 </div>
-                                <Separator className="my-3 bg-stone-200" />
-                                <p className="break-words text-sm font-medium leading-7 text-stone-800">{entry.value}</p>
+                                <Separator className="my-2 bg-slate-100" />
+                                <p className="break-words text-xs font-medium leading-6 text-slate-700">{entry.value}</p>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="rounded-[1.5rem] border border-dashed border-stone-200 px-4 py-8 text-center text-sm text-stone-400">
+                          <div className="rounded-lg border border-dashed border-slate-200 px-3 py-6 text-center text-xs text-slate-400">
                             لم يتم العثور على حقول إضافية صالحة داخل هذا الطلب.
                           </div>
                         )}
@@ -1974,47 +1921,51 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                     </Card>
                   </div>
 
-                  <Card className="rounded-2xl border-stone-200 bg-white shadow-sm">
-                    <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <Card className="border-slate-100">
+                    <CardHeader className="flex flex-col gap-2.5 p-3 md:flex-row md:items-center md:justify-between">
                       <div>
-                        <CardTitle className="text-lg font-black text-stone-950">إجراءات سريعة</CardTitle>
-                        <CardDescription>إدارة الحالة أو حذف الطلب مباشرة من نافذة التفاصيل.</CardDescription>
+                        <CardTitle className="text-sm font-bold text-slate-900">إجراءات سريعة</CardTitle>
+                        <CardDescription className="text-xs">إدارة الحالة أو حذف الطلب مباشرة من نافذة التفاصيل.</CardDescription>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         <Button
                           variant="outline"
-                          className="rounded-xl border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                          size="sm"
+                          className="text-xs text-emerald-700"
                           onClick={() => handleStatusChange(selected.id, 'approved')}
                           disabled={pendingId === selected.id}
                         >
-                          <CheckCircle2 className="ml-2 h-4 w-4" />
+                          <CheckCircle2 className="ml-1.5 h-3.5 w-3.5" />
                           قبول الطلب
                         </Button>
                         <Button
                           variant="outline"
-                          className="rounded-xl border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                          size="sm"
+                          className="text-xs text-amber-700"
                           onClick={() => handleStatusChange(selected.id, 'pending')}
                           disabled={pendingId === selected.id}
                         >
-                          <Clock3 className="ml-2 h-4 w-4" />
+                          <Clock3 className="ml-1.5 h-3.5 w-3.5" />
                           إبقاؤه قيد المراجعة
                         </Button>
                         <Button
                           variant="outline"
-                          className="rounded-xl border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                          size="sm"
+                          className="text-xs text-rose-700"
                           onClick={() => handleStatusChange(selected.id, 'rejected')}
                           disabled={pendingId === selected.id}
                         >
-                          <ShieldAlert className="ml-2 h-4 w-4" />
+                          <ShieldAlert className="ml-1.5 h-3.5 w-3.5" />
                           رفض الطلب
                         </Button>
                         <Button
                           variant="danger"
-                          className="rounded-xl"
+                          size="sm"
+                          className="text-xs"
                           onClick={() => handleDelete(selected)}
                           isLoading={deletingId === selected.id}
                         >
-                          <Trash2 className="ml-2 h-4 w-4" />
+                          <Trash2 className="ml-1.5 h-3.5 w-3.5" />
                           حذف الطلب
                         </Button>
                       </div>
