@@ -4,7 +4,7 @@
 
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
-import { Search, Users, Phone, Mail, CalendarClock, FileWarning, ArrowUpRight, SlidersHorizontal, MessageCircle, X, BriefcaseBusiness, CircleAlert, Clock3 } from 'lucide-react'
+import { Search, Users, Phone, Mail, CalendarClock, FileWarning, ArrowUpRight, SlidersHorizontal, MessageCircle, X, BriefcaseBusiness, CircleAlert, Clock3, type LucideIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -52,13 +52,13 @@ export function CustomersTable({ clients }: { clients: Customer[] }) {
       </header>
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-5" aria-label="Customer overview">
-        {[
+        {([
           ['Total customers', summary.total, Users, 'text-blue-600 bg-blue-50'],
           ['Active applications', summary.active, BriefcaseBusiness, 'text-violet-600 bg-violet-50'],
           ['Missing documents', summary.missing, CircleAlert, 'text-rose-600 bg-rose-50'],
           ['Payment pending', summary.payment, Clock3, 'text-amber-600 bg-amber-50'],
           ['With appointments', summary.appointments, CalendarClock, 'text-emerald-600 bg-emerald-50'],
-        ].map(([label, value, Icon, tone]) => (
+        ] as Array<[string, number, LucideIcon, string]>).map(([label, value, Icon, tone]) => (
           <div key={String(label)} className="flex items-center gap-3 rounded-lg border border-[var(--jaz-line)] bg-white px-3 py-3">
             <div className={cn('flex size-9 items-center justify-center rounded-lg', tone as string)}><Icon className="size-4" /></div>
             <div><p className="text-xl font-bold leading-none tabular-nums text-[var(--jaz-ink)]">{value as number}</p><p className="mt-1 text-[11px] text-[var(--jaz-muted)]">{label as string}</p></div>

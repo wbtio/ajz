@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { notifyAdmins, notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
 import { isRecurrence, nextDueDate } from "@/lib/recurrence";
+import type { Database } from "@/lib/database.types";
+
+type TeamTaskInsert = Database["public"]["Tables"]["team_tasks"]["Insert"];
 
 async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClient>>) {
   const {
@@ -16,19 +19,6 @@ async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClien
     .single();
 
   return profile;
-}
-
-async function hasAttachmentsColumn(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const { data, error } = await supabase
-    .from("information_schema.columns")
-    .select("column_name")
-    .eq("table_schema", "public")
-    .eq("table_name", "team_tasks")
-    .eq("column_name", "attachments")
-    .maybeSingle();
-
-  if (error) return false;
-  return !!data;
 }
 
 function isOwner(profile: { full_name: string | null; email: string }, assignee: string | null) {
@@ -62,13 +52,9 @@ export async function PATCH(
   if (!isAdmin && !isOwner(profile, task.assignee)) {
     return NextResponse.json({ error: "هذه المهمة مسندة لعضو آخر" }, { status: 403 });
   }
-  const supportsAttachments = await hasAttachmentsColumn(supabase);
-
   // عضو الفريق يستطيع فقط تحديث حالة مهمته الخاصة، والمدير وحده يعدّل بقية الحقول
   const allowed = isAdmin
-    ? (supportsAttachments
-      ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence", "attachments"] as const)
-      : (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence"] as const))
+    ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence", "attachments"] as const)
     : (["status"] as const);
 
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -98,7 +84,7 @@ export async function PATCH(
 
   // عند إنجاز مهمة متكررة، تُنشأ نسخة جديدة تلقائيًا بدل إعادة إضافتها يدويًا
   if (update.status === "done" && task.status !== "done" && isRecurrence(task.recurrence)) {
-    const nextInsert: Record<string, unknown> = {
+    const nextInsert: TeamTaskInsert = {
       title: task.title,
       description: task.description,
       category: task.category,
@@ -108,9 +94,7 @@ export async function PATCH(
       due_date: nextDueDate(task.recurrence, task.due_date),
       recurrence: task.recurrence,
     };
-    if (supportsAttachments) {
-      nextInsert.attachments = task.attachments ?? [];
-    }
+    nextInsert.attachments = task.attachments ?? [];
 
     const { data: nextTask } = await supabase
       .from("team_tasks")

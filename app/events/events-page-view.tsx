@@ -63,6 +63,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     sub_sector: 'ict',
     sub_sector_ar: null,
     updated_at: null,
+    updated_by: null,
     participation_roles: ['participation', 'exhibitor', 'visitor'],
   },
   {
@@ -99,6 +100,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     sub_sector: 'healthcare-pharma',
     sub_sector_ar: null,
     updated_at: null,
+    updated_by: null,
     participation_roles: ['participation', 'speaker', 'exhibitor'],
   },
   {
@@ -135,6 +137,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     sub_sector: 'chemistry-energy-materials',
     sub_sector_ar: null,
     updated_at: null,
+    updated_by: null,
     participation_roles: ['participation', 'visitor'],
   },
   {
@@ -171,6 +174,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     sub_sector: 'construction',
     sub_sector_ar: null,
     updated_at: null,
+    updated_by: null,
     participation_roles: ['participation', 'speaker'],
   },
   {
@@ -207,6 +211,7 @@ const MOCK_EVENTS: (Event & { participation_roles: string[] })[] = [
     sub_sector: 'education-training',
     sub_sector_ar: null,
     updated_at: null,
+    updated_by: null,
     participation_roles: ['participation', 'visitor'],
   },
 ]
@@ -319,7 +324,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
 
       // 5. Participation Type Filter
       if (participationTypes.length > 0) {
-        const roles = (event as any).participation_roles || ['participation']
+        const roles = (event as Event & { participation_roles?: string[] }).participation_roles || ['participation']
         const hasMatch = participationTypes.some((t) => roles.includes(t))
         if (!hasMatch) return false
       }

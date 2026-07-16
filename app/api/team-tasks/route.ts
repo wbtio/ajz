@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
 import { isRecurrence } from "@/lib/recurrence";
+import type { Database } from "@/lib/database.types";
+
+type TeamTaskInsert = Database["public"]["Tables"]["team_tasks"]["Insert"];
 
 async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClient>>) {
   const {
@@ -16,19 +19,6 @@ async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClien
     .single();
 
   return profile;
-}
-
-async function hasAttachmentsColumn(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const { data, error } = await supabase
-    .from("information_schema.columns")
-    .select("column_name")
-    .eq("table_schema", "public")
-    .eq("table_name", "team_tasks")
-    .eq("column_name", "attachments")
-    .maybeSingle();
-
-  if (error) return false;
-  return !!data;
 }
 
 export async function GET() {
@@ -72,9 +62,7 @@ export async function POST(req: NextRequest) {
   // عضو الفريق لا يمكنه إسناد مهمة لغيره، فقط لنفسه
   const assignee =
     profile.role === "admin" ? body.assignee ?? null : profile.full_name || profile.email;
-  const supportsAttachments = await hasAttachmentsColumn(supabase);
-
-  const insertBody: Record<string, unknown> = {
+  const insertBody: TeamTaskInsert = {
     title: body.title,
     description: body.description ?? null,
     category: body.category ?? "general",
@@ -85,9 +73,7 @@ export async function POST(req: NextRequest) {
     recurrence: isRecurrence(body.recurrence) ? body.recurrence : null,
   };
 
-  if (supportsAttachments) {
-    insertBody.attachments = Array.isArray(body.attachments) ? body.attachments : [];
-  }
+  insertBody.attachments = Array.isArray(body.attachments) ? body.attachments : [];
 
   const { data, error } = await supabase
     .from("team_tasks")
