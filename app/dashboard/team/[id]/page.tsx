@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
-    ArrowRight,
+    ArrowLeft,
     Mail,
     Phone,
     Shield,
@@ -21,7 +21,6 @@ import {
     ClipboardList,
     Clock,
     CheckCircle2,
-    Eye,
     Plus,
     Pencil,
     Trash2,
@@ -65,7 +64,6 @@ interface ActivityEvent {
 
 const activityIcon = (eventType: string) => {
     switch (eventType) {
-        case 'page_view': return Eye
         case 'team_task_created': return Plus
         case 'team_task_edited': return Pencil
         case 'team_task_status_changed': return CheckCircle2
@@ -75,15 +73,15 @@ const activityIcon = (eventType: string) => {
 }
 
 const statusMeta: Record<TeamTask['status'], { label: string; className: string; icon: React.ReactNode }> = {
-    todo: { label: 'قيد الانتظار', className: 'bg-rose-50 text-rose-700', icon: <ClipboardList className="w-3 h-3" /> },
-    in_progress: { label: 'تحت المعالجة', className: 'bg-amber-50 text-amber-700', icon: <Clock className="w-3 h-3" /> },
-    done: { label: 'تم الإنجاز', className: 'bg-emerald-50 text-emerald-700', icon: <CheckCircle2 className="w-3 h-3" /> },
+    todo: { label: 'To do', className: 'bg-rose-50 text-rose-700', icon: <ClipboardList className="w-3 h-3" /> },
+    in_progress: { label: 'In progress', className: 'bg-amber-50 text-amber-700', icon: <Clock className="w-3 h-3" /> },
+    done: { label: 'Completed', className: 'bg-emerald-50 text-emerald-700', icon: <CheckCircle2 className="w-3 h-3" /> },
 }
 
 const priorityMeta: Record<TeamTask['priority'], { label: string; className: string }> = {
-    high: { label: 'عالية', className: 'text-rose-700' },
-    medium: { label: 'متوسطة', className: 'text-amber-700' },
-    low: { label: 'منخفضة', className: 'text-stone-500' },
+    high: { label: 'High', className: 'text-rose-700' },
+    medium: { label: 'Medium', className: 'text-amber-700' },
+    low: { label: 'Low', className: 'text-stone-500' },
 }
 
 export default function TeamMemberProfilePage() {
@@ -153,7 +151,7 @@ export default function TeamMemberProfilePage() {
     const handleToggleActive = async () => {
         if (!member) return
         const willActivate = !member.is_active
-        if (!willActivate && !confirm(`تعطيل "${member.full_name || member.email}"؟ لن يتمكن من تسجيل الدخول حتى يُعاد تفعيله.`)) return
+        if (!willActivate && !confirm(`Disable "${member.full_name || member.email}"? They will not be able to sign in until reactivated.`)) return
         try {
             const res = await fetch(`/api/team-members/${member.id}`, {
                 method: 'PATCH',
@@ -161,7 +159,7 @@ export default function TeamMemberProfilePage() {
                 body: JSON.stringify({ is_active: willActivate }),
             })
             const data = await res.json()
-            if (!res.ok) throw new Error(data.error || 'حدث خطأ')
+            if (!res.ok) throw new Error(data.error || 'Something went wrong')
             setMember(data)
         } catch (err) {
             alert((err as Error).message)
@@ -180,20 +178,20 @@ export default function TeamMemberProfilePage() {
         return (
             <div className="flex h-[60vh] flex-col items-center justify-center gap-3">
                 <AlertTriangle className="w-10 h-10 text-rose-500" />
-                <p className="text-lg font-medium text-gray-700">تعذّر العثور على هذا العضو</p>
+                <p className="text-lg font-medium text-gray-700">Team member not found</p>
                 <Link href="/dashboard/team" className="text-blue-600 hover:underline text-sm">
-                    العودة إلى إدارة الفريق
+                    Back to Team Members
                 </Link>
             </div>
         )
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" dir="ltr">
             <div className="flex items-center gap-3">
                 <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard/team')}>
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                    الفريق
+                    <ArrowLeft className="w-4 h-4 mr-1" />
+                    Team Members
                 </Button>
             </div>
 
@@ -206,25 +204,25 @@ export default function TeamMemberProfilePage() {
                     </div>
                     <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                            <h1 className="text-2xl font-bold text-gray-900">{member.full_name || 'بدون اسم'}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">{member.full_name || 'Unnamed member'}</h1>
                             <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${
                                 member.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
                             }`}>
                                 {member.role === 'admin' ? <Shield className="w-3 h-3" /> : <UserCog className="w-3 h-3" />}
-                                {member.role === 'admin' ? 'مدير' : 'عضو'}
+                                {member.role === 'admin' ? 'Administrator' : 'Team member'}
                             </span>
                             <span className={cn(
                                 'inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full',
                                 member.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
                             )}>
                                 {member.is_active ? <Power className="w-3 h-3" /> : <PowerOff className="w-3 h-3" />}
-                                {member.is_active ? 'نشط' : 'معطّل'}
+                                {member.is_active ? 'Active' : 'Inactive'}
                             </span>
                         </div>
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
                             <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> {member.email}</span>
                             {member.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> {member.phone}</span>}
-                            {member.created_at && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> انضم في {formatDate(member.created_at)}</span>}
+                            {member.created_at && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> Joined {formatDate(member.created_at)}</span>}
                         </div>
                     </div>
                 </div>
@@ -234,52 +232,52 @@ export default function TeamMemberProfilePage() {
                     onClick={handleToggleActive}
                 >
                     {member.is_active ? <PowerOff className="w-4 h-4 ml-2" /> : <Power className="w-4 h-4 ml-2" />}
-                    {member.is_active ? 'تعطيل العضو' : 'تفعيل العضو'}
+                    {member.is_active ? 'Disable member' : 'Enable member'}
                 </Button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
                 <Card>
-                    <CardContent className="flex items-center gap-3 p-4">
-                        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
-                            <ListChecks className="w-5 h-5 text-purple-600" />
+                    <CardContent className="flex items-center gap-2 p-2.5">
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                            <ListChecks className="w-4 h-4 text-purple-600" />
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{stats.total}</div>
-                            <div className="text-xs text-gray-500">إجمالي المهام</div>
+                            <div className="text-[11px] text-gray-500">Total tasks</div>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardContent className="flex items-center gap-3 p-4">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
-                            <TrendingUp className="w-5 h-5 text-emerald-600" />
+                    <CardContent className="flex items-center gap-2 p-2.5">
+                        <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
+                            <TrendingUp className="w-4 h-4 text-emerald-600" />
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{stats.rate}%</div>
-                            <div className="text-xs text-gray-500">نسبة الإنجاز</div>
+                            <div className="text-[11px] text-gray-500">Completion rate</div>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardContent className="flex items-center gap-3 p-4">
-                        <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
-                            <Clock className="w-5 h-5 text-amber-600" />
+                    <CardContent className="flex items-center gap-2 p-2.5">
+                        <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+                            <Clock className="w-4 h-4 text-amber-600" />
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{stats.inProgress}</div>
-                            <div className="text-xs text-gray-500">قيد المعالجة</div>
+                            <div className="text-[11px] text-gray-500">In progress</div>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardContent className="flex items-center gap-3 p-4">
-                        <div className="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center shrink-0">
-                            <AlertTriangle className="w-5 h-5 text-rose-600" />
+                    <CardContent className="flex items-center gap-2 p-2.5">
+                        <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center shrink-0">
+                            <AlertTriangle className="w-4 h-4 text-rose-600" />
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{stats.overdue}</div>
-                            <div className="text-xs text-gray-500">مهام متأخرة</div>
+                            <div className="text-[11px] text-gray-500">Overdue tasks</div>
                         </div>
                     </CardContent>
                 </Card>
@@ -288,7 +286,7 @@ export default function TeamMemberProfilePage() {
             {member.role === 'team' && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">الصفحات المسموح بالوصول إليها</CardTitle>
+                        <CardTitle className="text-base">Allowed dashboard pages</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-wrap gap-1.5">
@@ -304,14 +302,14 @@ export default function TeamMemberProfilePage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">مهام العضو</CardTitle>
-                    <CardDescription>كل المهام المسندة لهذا العضو في لوحة المهام اليومية</CardDescription>
+                    <CardTitle className="text-base">Member tasks</CardTitle>
+                    <CardDescription>All tasks assigned to this member in Daily Tasks</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
                     {memberTasks.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 text-gray-300">
                             <ClipboardList className="w-10 h-10 mb-2" />
-                            <p className="text-sm font-medium text-gray-400">لا توجد مهام مسندة لهذا العضو</p>
+                            <p className="text-sm font-medium text-gray-400">No tasks assigned to this member</p>
                         </div>
                     ) : (
                         <div className="divide-y">
@@ -337,7 +335,7 @@ export default function TeamMemberProfilePage() {
                                     {task.status === 'done' && task.completed_at && (
                                         <span className="shrink-0 text-[11px] text-emerald-600 font-medium flex items-center gap-1">
                                             <CheckCircle2 className="w-3 h-3" />
-                                            أُنجزت في {formatDate(task.completed_at)}
+                                            Completed {formatDate(task.completed_at)}
                                         </span>
                                     )}
                                 </div>
@@ -351,15 +349,15 @@ export default function TeamMemberProfilePage() {
                 <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                         <History className="w-4 h-4 text-gray-400" />
-                        سجل النشاط
+                        Action log
                     </CardTitle>
-                    <CardDescription>كل صفحة فتحها وكل إجراء سجّله هذا العضو في لوحة التحكم، بالترتيب الزمني</CardDescription>
+                    <CardDescription>Important actions performed by this member, in chronological order</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
                     {activity.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 text-gray-300">
                             <History className="w-10 h-10 mb-2" />
-                            <p className="text-sm font-medium text-gray-400">لا يوجد نشاط مسجَّل لهذا العضو بعد</p>
+                            <p className="text-sm font-medium text-gray-400">No actions recorded for this member yet</p>
                         </div>
                     ) : (
                         <div className="max-h-[28rem] overflow-y-auto divide-y">

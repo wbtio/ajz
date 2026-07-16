@@ -34,13 +34,14 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { full_name, email, password, phone, role, permissions } = body as {
+  const { full_name, email, password, phone, role, permissions, avatar_url } = body as {
     full_name: string;
     email: string;
     password: string;
     phone?: string;
     role: "admin" | "team";
     permissions?: string[];
+    avatar_url?: string | null;
   };
 
   if (!full_name || !email || !password || !role) {
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
       phone: phone || null,
       role,
       permissions: role === "team" ? permissions ?? [] : null,
+      avatar_url: avatar_url || null,
     })
     .eq("id", created.user.id)
     .select()

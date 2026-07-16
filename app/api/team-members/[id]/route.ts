@@ -45,12 +45,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   const body = await request.json();
-  const { full_name, phone, role, permissions, is_active } = body as {
+  const { full_name, phone, role, permissions, is_active, avatar_url } = body as {
     full_name?: string;
     phone?: string | null;
     role?: "admin" | "team";
     permissions?: string[];
     is_active?: boolean;
+    avatar_url?: string | null;
   };
 
   if (is_active === false && id === userId) {
@@ -68,6 +69,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     update.permissions = permissions;
   }
   if (is_active !== undefined) update.is_active = is_active;
+  if (avatar_url !== undefined) update.avatar_url = avatar_url;
 
   const { data, error } = await admin.from("users").update(update).eq("id", id).select().single();
 

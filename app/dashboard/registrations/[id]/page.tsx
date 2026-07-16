@@ -125,6 +125,14 @@ interface RegistrationEdit {
   created_at: string;
 }
 
+interface LinkedAppointment {
+  id: string;
+  slot_date: string;
+  slot_time: string;
+  status: string;
+  visa_centers: { name: string; city: string } | null;
+}
+
 // ─── Helpers ─────────────────────────────────────────────
 function extractPhones(data: Record<string, unknown>): string[] {
   const phones: string[] = [];
@@ -229,6 +237,7 @@ export default function RegistrationDetailPage() {
   const [edits, setEdits] = useState<RegistrationEdit[]>([]);
   const [embassy, setEmbassy] = useState<EmbassyApplication>(DEFAULT_EMBASSY_APPLICATION);
   const [newRequirement, setNewRequirement] = useState("");
+  const [linkedAppointment, setLinkedAppointment] = useState<LinkedAppointment | null>(null);
 
   const supabase = createClient();
 
@@ -276,11 +285,12 @@ export default function RegistrationDetailPage() {
     );
 
     // سجل التعديلات — يبقى دائمًا حتى بعد تحديث الصفحة (بعكس التايملاين الجلسة السابق)
-    const { data: editRows } = await supabase
-      .from("registration_edits")
-      .select("*")
-      .eq("registration_id", id)
-      .order("created_at", { ascending: false });
+    const [editsResult, appointmentResult] = await Promise.all([
+      supabase.from("registration_edits").select("*").eq("registration_id", id).order("created_at", { ascending: false }),
+      supabase.from("visa_availability_slots").select("id, slot_date, slot_time, status, visa_centers(name, city)").eq("assigned_registration_id", id).order("slot_date", { ascending: true }).order("slot_time", { ascending: true }).limit(1).maybeSingle(),
+    ]);
+    const editRows = editsResult.data;
+    setLinkedAppointment((appointmentResult.data as LinkedAppointment | null) || null);
     const loadedEdits = (editRows as RegistrationEdit[] | null) || [];
     setEdits(loadedEdits);
     setTimeline(
@@ -618,6 +628,15 @@ export default function RegistrationDetailPage() {
             </h2>
 
             <div className="space-y-3">
+              {linkedAppointment && (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs">
+                  <div className="flex min-w-0 items-center gap-2 text-emerald-800">
+                    <CalendarClock className="h-4 w-4 shrink-0" />
+                    <span className="truncate font-semibold">Linked appointment: {linkedAppointment.visa_centers?.name || 'Visa center'}{linkedAppointment.visa_centers?.city ? ` · ${linkedAppointment.visa_centers.city}` : ''}</span>
+                  </div>
+                  <span className="shrink-0 font-bold text-emerald-700">{linkedAppointment.slot_date} · {String(linkedAppointment.slot_time).slice(0, 5)}</span>
+                </div>
+              )}
               {/* Platform + reference number */}
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-semibold text-slate-500">المنصة:</span>

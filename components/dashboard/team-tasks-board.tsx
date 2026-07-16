@@ -19,8 +19,11 @@ import {
   TrendingUp,
   Target,
   Pencil,
+  Paperclip,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverTrigger,
@@ -55,18 +58,43 @@ interface Task {
   completed_at: string | null;
   completed_by: string | null;
   recurrence: Recurrence | null;
+  attachments: Attachment[];
 }
+
+interface Attachment {
+  name: string;
+  url: string;
+  type?: string | null;
+  size?: number | null;
+  uploaded_at: string;
+}
+
+const normalizeTask = (task: Task): Task => ({
+  ...task,
+  attachments: Array.isArray(task.attachments) ? task.attachments : [],
+});
 
 interface Member {
   id: string;
   full_name: string | null;
   email: string;
+  phone: string | null;
   role: string;
   avatar_url: string | null;
 }
 
 const memberName = (m: Member) => m.full_name || m.email;
 const initials = (name: string) => name.charAt(0).toUpperCase();
+const memberEmailLabel = (m: Member) => m.email || "";
+
+const normalizeWhatsAppNumber = (value: string | null | undefined) => {
+  let digits = (value || "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("9640")) digits = `964${digits.slice(4)}`;
+  else if (digits.startsWith("0")) digits = `964${digits.slice(1)}`;
+  else if (digits.startsWith("7")) digits = `964${digits}`;
+  return digits;
+};
 
 const avatarPalette = [
   "bg-blue-100 text-blue-700",
@@ -84,6 +112,15 @@ const avatarColor = (name: string) => {
   return avatarPalette[hash];
 };
 
+function MemberAvatar({ member, name, size = "size-6" }: { member?: Member; name: string; size?: string }) {
+  return (
+    <Avatar className={cn(size, "shrink-0")} title={name}>
+      <AvatarImage src={member?.avatar_url || undefined} alt={name} />
+      <AvatarFallback className={cn("text-[10px] font-bold", avatarColor(name))}>{initials(name)}</AvatarFallback>
+    </Avatar>
+  );
+}
+
 const columns: {
   id: ColumnStatus;
   title: string;
@@ -92,37 +129,37 @@ const columns: {
 }[] = [
   {
     id: "todo",
-    title: "قيد الانتظار",
+    title: "To do",
     dot: "bg-slate-400",
     icon: <ClipboardList className="h-4 w-4 text-slate-500" />,
   },
   {
     id: "in_progress",
-    title: "تحت المعالجة",
+    title: "In progress",
     dot: "bg-amber-500",
     icon: <Clock className="h-4 w-4 text-amber-600" />,
   },
   {
     id: "done",
-    title: "تم الإنجاز",
+    title: "Completed",
     dot: "bg-emerald-500",
     icon: <CheckCircle2 className="h-4 w-4 text-emerald-600" />,
   },
 ];
 
 const categoryMeta: Record<Category, { label: string; className: string }> = {
-  development: { label: "التطوير", className: "bg-indigo-50 text-indigo-700" },
-  events: { label: "الفعاليات", className: "bg-sky-50 text-sky-700" },
-  visas: { label: "الدعوات والتأشيرات", className: "bg-rose-50 text-rose-700" },
-  partners: { label: "الشركاء", className: "bg-teal-50 text-teal-700" },
-  marketing: { label: "التسويق", className: "bg-fuchsia-50 text-fuchsia-700" },
-  general: { label: "عام", className: "bg-stone-100 text-stone-600" },
+  development: { label: "Development", className: "bg-indigo-50 text-indigo-700" },
+  events: { label: "Events", className: "bg-sky-50 text-sky-700" },
+  visas: { label: "Invitations & visas", className: "bg-rose-50 text-rose-700" },
+  partners: { label: "Partners", className: "bg-teal-50 text-teal-700" },
+  marketing: { label: "Marketing", className: "bg-fuchsia-50 text-fuchsia-700" },
+  general: { label: "General", className: "bg-stone-100 text-stone-600" },
 };
 
 const priorityMeta: Record<Priority, { label: string; className: string; dot: string; rank: number }> = {
-  high: { label: "عالية", className: "text-rose-700", dot: "bg-rose-500", rank: 0 },
-  medium: { label: "متوسطة", className: "text-amber-700", dot: "bg-amber-500", rank: 1 },
-  low: { label: "منخفضة", className: "text-stone-500", dot: "bg-stone-400", rank: 2 },
+  high: { label: "High", className: "text-rose-700", dot: "bg-rose-500", rank: 0 },
+  medium: { label: "Medium", className: "text-amber-700", dot: "bg-amber-500", rank: 1 },
+  low: { label: "Low", className: "text-stone-500", dot: "bg-stone-400", rank: 2 },
 };
 
 const emptyForm = {
@@ -160,33 +197,47 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
     assignee: isAdmin ? "" : myName,
   }));
   const [saving, setSaving] = useState(false);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
+  const [membersLoaded, setMembersLoaded] = useState(false);
   const [assigneeOpen, setAssigneeOpen] = useState(false);
   const [dueOpen, setDueOpen] = useState(false);
   const [dueTime, setDueTime] = useState("09:00");
   const [dueMode, setDueMode] = useState<"duration" | "date">("duration");
   const [customHours, setCustomHours] = useState("");
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   async function fetchTasks() {
     try {
       setLoading(true);
       const res = await fetch("/api/team-tasks");
-      if (!res.ok) throw new Error("تعذّر تحميل المهام");
-      setTasks(await res.json());
+      if (!res.ok) throw new Error("Unable to load tasks");
+      const data = await res.json();
+      setTasks(Array.isArray(data) ? data.map(normalizeTask) : []);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "خطأ في تحميل المهام");
+      setError(err instanceof Error ? err.message : "Unable to load tasks");
     } finally {
       setLoading(false);
     }
   }
 
+  async function loadMembers() {
+    if (membersLoaded) return members;
+    try {
+      const res = await fetch("/api/team-members");
+      const data = res.ok ? await res.json() : [];
+      const loadedMembers = Array.isArray(data) ? data : [];
+      setMembers(loadedMembers);
+      setMembersLoaded(true);
+      return loadedMembers as Member[];
+    } catch {
+      return [] as Member[];
+    }
+  }
+
   useEffect(() => {
-    fetchTasks();
-    fetch("/api/team-members")
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => setMembers(data))
-      .catch(() => {});
+    void Promise.all([fetchTasks(), loadMembers()]);
   }, []);
 
   const updateTaskStatus = async (taskId: string, status: ColumnStatus) => {
@@ -210,7 +261,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   };
 
   const deleteTask = async (taskId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه المهمة؟")) return;
+    if (!confirm("Are you sure you want to delete this task?")) return;
     const current = tasks.find((t) => t.id === taskId);
     try {
       await fetch(`/api/team-tasks/${taskId}`, { method: "DELETE" });
@@ -224,6 +275,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
 
   const resetForm = () => {
     setForm({ ...emptyForm, assignee: isAdmin ? "" : myName });
+    setAttachments([]);
     setDueTime("09:00");
     setCustomHours("");
     setDueMode("duration");
@@ -231,11 +283,13 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   };
 
   const openCreateForm = () => {
+    void loadMembers();
     resetForm();
     setShowForm(true);
   };
 
   const openTaskDetails = (task: Task) => {
+    void loadMembers();
     setEditingTaskId(task.id);
     setForm({
       title: task.title,
@@ -246,6 +300,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
       due_date: task.due_date || "",
       recurrence: task.recurrence || "",
     });
+    setAttachments(Array.isArray(task.attachments) ? task.attachments : []);
     setDueTime(
       task.due_date
         ? `${String(new Date(task.due_date).getHours()).padStart(2, "0")}:${String(
@@ -272,10 +327,11 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
             due_date: form.due_date || null,
             assignee: form.assignee.trim() || null,
             recurrence: form.recurrence || null,
+            attachments,
           }),
         });
-        if (!res.ok) throw new Error("تعذّر الحفظ");
-        const updated: Task = await res.json();
+        if (!res.ok) throw new Error("Unable to save task");
+        const updated = normalizeTask(await res.json());
         setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
         track("team_task_edited", { title: updated.title });
       } else {
@@ -287,10 +343,11 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
             title: form.title.trim(),
             due_date: form.due_date || null,
             assignee: form.assignee.trim() || null,
+            attachments,
           }),
         });
-        if (!res.ok) throw new Error("تعذّر الحفظ");
-        const created: Task = await res.json();
+        if (!res.ok) throw new Error("Unable to save task");
+        const created = normalizeTask(await res.json());
         setTasks((prev) => [created, ...prev]);
         track("team_task_created", { title: created.title });
       }
@@ -298,7 +355,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
       setShowForm(false);
     } catch (err) {
       console.error(err);
-      alert("حدث خطأ أثناء الحفظ");
+      alert("An error occurred while saving the task.");
     } finally {
       setSaving(false);
     }
@@ -345,10 +402,10 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
 
   const formatDue = (iso: string) => {
     const d = new Date(iso);
-    return `${d.toLocaleDateString("ar", {
+    return `${d.toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",
-    })} · ${d.toLocaleTimeString("ar", {
+    })} · ${d.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     })}`;
@@ -368,7 +425,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
     );
   };
 
-  // نظرة عامة على الإنتاجية: تُحسب دائمًا على كامل المهام بغض النظر عن الفلاتر
+  // Productivity overview always uses all tasks, regardless of active filters.
   const stats = useMemo(() => {
     const total = tasks.length;
     const done = tasks.filter((t) => t.status === "done").length;
@@ -413,6 +470,109 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
     updateTaskStatus(task.id, task.status === "done" ? "todo" : "done");
   };
 
+  const taskShareUrl = (taskId: string) => {
+    if (typeof window === "undefined") return `/dashboard/team-tasks?task=${taskId}`;
+    return `${window.location.origin}/dashboard/team-tasks?task=${taskId}`;
+  };
+
+  const memberByName = (name: string, memberList = members) => {
+    const normalized = name.trim().toLocaleLowerCase();
+    if (!normalized) return undefined;
+
+    const exact = memberList.find((member) =>
+      [member.id, member.full_name, member.email]
+        .filter(Boolean)
+        .some((value) => String(value).trim().toLocaleLowerCase() === normalized)
+    );
+    if (exact) return exact;
+
+    const partialMatches = memberList.filter((member) => {
+      const fullName = (member.full_name || "").trim().toLocaleLowerCase();
+      return fullName && (fullName.startsWith(`${normalized} `) || normalized.startsWith(`${fullName} `));
+    });
+    return partialMatches.length === 1 ? partialMatches[0] : undefined;
+  };
+
+  const openWhatsAppShare = async (task: Task, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const memberList = await loadMembers();
+    const recipient = memberByName(task.assignee || "", memberList);
+    const phone = normalizeWhatsAppNumber(recipient?.phone);
+    if (!phone) {
+      alert(`No phone number is saved for the assignee${task.assignee ? ` (${task.assignee})` : ""}. Add a number in Team Members and try again.`);
+      return;
+    }
+    const message = [
+      `Task: ${task.title}`,
+      task.description ? `Description: ${task.description}` : null,
+      `Link: ${taskShareUrl(task.id)}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const openEmailShare = async (task: Task, recipientEmail?: string | null, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const memberList = await loadMembers();
+    const to = (recipientEmail || memberByName(task.assignee || "", memberList)?.email || "").trim();
+    if (!to) {
+      alert("No email address is saved for this task's assignee.");
+      return;
+    }
+    const subject = `New task: ${task.title}`;
+    const body = [
+      `Hello,`,
+      ``,
+      `A new task has been assigned for review:`,
+      `- Title: ${task.title}`,
+      task.description ? `- Description: ${task.description}` : null,
+      `- Link: ${taskShareUrl(task.id)}`,
+      ``,
+      `Regards,`,
+      `JAZ Admin`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const uploadAttachmentFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingAttachment(true);
+    try {
+      const uploaded = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const payload = new FormData();
+          payload.append("file", file);
+          payload.append("bucket", "team-task-attachments");
+          payload.append("type", "task-attachment");
+          const res = await fetch("/api/upload-document", { method: "POST", body: payload });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || "Unable to upload file");
+          }
+          const data = await res.json();
+          return {
+            name: file.name,
+            url: data.url,
+            type: file.type || null,
+            size: file.size,
+            uploaded_at: new Date().toISOString(),
+          } satisfies Attachment;
+        })
+      );
+      setAttachments((current) => [...uploaded, ...current]);
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "Unable to upload file");
+    } finally {
+      setUploadingAttachment(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -430,82 +590,58 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
           onClick={fetchTasks}
           className="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
         >
-          إعادة المحاولة
+          Try again
         </button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-5">
-      {/* الترويسة */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-stone-950">المهام اليومية</h1>
-          <p className="mt-1 text-sm text-stone-500">
-            نظّم مهام الفريق وتابع الإنجاز أولًا بأول
-          </p>
-        </div>
-        <button
-          onClick={openCreateForm}
-          className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-700"
-        >
-          <Plus className="h-4 w-4" />
-          مهمة جديدة
-        </button>
-      </div>
-
-      {/* نظرة عامة على الإنتاجية */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl border border-stone-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-stone-400">
-            <Target className="h-4 w-4" />
-            <span className="text-xs font-semibold">الإجمالي</span>
+    <div className="space-y-5" dir="ltr">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex h-10 items-center gap-2 rounded-lg border border-stone-200 bg-white px-3">
+            <Target className="h-3.5 w-3.5 text-stone-400" />
+            <span className="text-xs font-medium text-stone-500">Total</span>
+            <strong className="text-sm text-stone-900">{stats.total}</strong>
           </div>
-          <p className="mt-2 text-2xl font-black text-stone-900">{stats.total}</p>
-        </div>
-        <div className="rounded-2xl border border-stone-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-rose-500">
-            <Flame className="h-4 w-4" />
-            <span className="text-xs font-semibold">متأخرة</span>
+          <div className="flex h-10 items-center gap-2 rounded-lg border border-stone-200 bg-white px-3">
+            <Flame className="h-3.5 w-3.5 text-rose-500" />
+            <span className="text-xs font-medium text-stone-500">Overdue</span>
+            <strong className={cn("text-sm", stats.overdue > 0 ? "text-rose-600" : "text-stone-900")}>{stats.overdue}</strong>
           </div>
-          <p className={cn("mt-2 text-2xl font-black", stats.overdue > 0 ? "text-rose-600" : "text-stone-900")}>
-            {stats.overdue}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-stone-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-amber-500">
-            <Clock className="h-4 w-4" />
-            <span className="text-xs font-semibold">اليوم</span>
+          <div className="flex h-10 items-center gap-2 rounded-lg border border-stone-200 bg-white px-3">
+            <Clock className="h-3.5 w-3.5 text-amber-500" />
+            <span className="text-xs font-medium text-stone-500">Today</span>
+            <strong className="text-sm text-stone-900">{stats.dueToday}</strong>
           </div>
-          <p className="mt-2 text-2xl font-black text-stone-900">{stats.dueToday}</p>
-        </div>
-        <div className="rounded-2xl border border-stone-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-emerald-500">
-            <TrendingUp className="h-4 w-4" />
-            <span className="text-xs font-semibold">نسبة الإنجاز</span>
-          </div>
-          <div className="mt-2 flex items-center gap-2">
-            <p className="text-2xl font-black text-stone-900">{stats.rate}%</p>
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-stone-100">
-              <div
-                className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                style={{ width: `${stats.rate}%` }}
-              />
+          <div className="flex h-10 items-center gap-2 rounded-lg border border-stone-200 bg-white px-3">
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+            <span className="text-xs font-medium text-stone-500">Completion</span>
+            <strong className="text-sm text-stone-900">{stats.rate}%</strong>
+            <div className="h-1.5 w-10 overflow-hidden rounded-full bg-stone-100" aria-hidden>
+              <div className="h-full rounded-full bg-emerald-500 transition-all duration-500" style={{ width: `${stats.rate}%` }} />
             </div>
           </div>
         </div>
+        <button
+          onClick={openCreateForm}
+          className="flex h-10 items-center gap-2 rounded-lg bg-[#8B0000] px-5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#6B0000]"
+        >
+          <Plus className="h-4 w-4" />
+          Create task
+        </button>
       </div>
 
-      {/* شريط الأدوات: بحث وفلترة */}
+      {/* Search and filters */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-350" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-350" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="ابحث في المهام..."
-            className="w-full rounded-xl border border-stone-200 bg-white py-2 pe-9 ps-3 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+            placeholder="Search tasks..."
+            className="w-full rounded-xl border border-stone-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
           />
         </div>
         <button
@@ -517,7 +653,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
               : "border border-stone-200 bg-white text-stone-600 hover:bg-stone-50"
           )}
         >
-          الكل
+          All
         </button>
         {(Object.keys(categoryMeta) as Category[]).map((cat) => (
           <button
@@ -535,7 +671,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
         ))}
       </div>
 
-      {/* اللوحة */}
+      {/* Task board */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {columns.map((col) => (
           <div
@@ -588,7 +724,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                     <div className="flex items-start gap-2.5">
                       <button
                         onClick={(e) => toggleDone(task, e)}
-                        title={task.status === "done" ? "إعادة فتح المهمة" : "تعليم كمنجزة"}
+                        title={task.status === "done" ? "Reopen task" : "Mark as completed"}
                         className={cn(
                           "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
                           task.status === "done"
@@ -625,7 +761,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                           </span>
                           {task.recurrence && (
                             <span
-                              title={`تتكرر ${RECURRENCE_LABELS[task.recurrence]}`}
+                              title={`Repeats ${task.recurrence}`}
                               className="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-1.5 py-0.5 text-[10px] font-bold text-indigo-700"
                             >
                               <Repeat className="h-3 w-3" />
@@ -647,18 +783,17 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                           </p>
                         )}
 
+                        {task.attachments.length > 0 && (
+                          <div className="mt-2 flex items-center gap-1.5 text-[10px] font-semibold text-stone-500">
+                            <Paperclip className="h-3 w-3" />
+                            {task.attachments.length} attachment{task.attachments.length === 1 ? "" : "s"}
+                          </div>
+                        )}
+
                         <div className="mt-2.5 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             {task.assignee && (
-                              <span
-                                title={task.assignee}
-                                className={cn(
-                                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
-                                  avatarColor(task.assignee)
-                                )}
-                              >
-                                {initials(task.assignee)}
-                              </span>
+                              <MemberAvatar member={memberByName(task.assignee)} name={task.assignee} />
                             )}
                             {task.due_date && (
                               <span
@@ -686,6 +821,20 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
+                        <button
+                          type="button"
+                          onClick={(e) => openWhatsAppShare(task, e)}
+                          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-100"
+                        >
+                          Share via WhatsApp
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => openEmailShare(task, undefined, e)}
+                          className="mt-2 ml-2 inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold text-sky-700 transition-colors hover:bg-sky-100"
+                        >
+                          Share via email
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -695,7 +844,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
               {tasksByColumn(col.id).length === 0 && (
                 <div className="flex flex-col items-center justify-center py-10 text-stone-300">
                   <ClipboardList className="mb-2 h-8 w-8" />
-                  <p className="text-xs font-medium">لا توجد مهام</p>
+                  <p className="text-xs font-medium">No tasks</p>
                 </div>
               )}
             </div>
@@ -703,7 +852,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
         ))}
       </div>
 
-      {/* نافذة إنشاء / تعديل مهمة */}
+      {/* Create or edit task dialog */}
       {showForm && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
@@ -718,10 +867,10 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 {editingTaskId ? (
                   <>
                     <Pencil className="h-5 w-5 text-blue-600" />
-                    تفاصيل المهمة
+                    Task details
                   </>
                 ) : (
-                  "مهمة جديدة"
+                  "New task"
                 )}
               </h2>
               <button
@@ -729,10 +878,35 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 className="rounded-xl p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700"
               >
                 <X className="h-5 w-5" />
-              </button>
-            </div>
+                </button>
+              </div>
 
-            {/* عضو الفريق يستطيع فقط تغيير حالة مهمته الخاصة، والمدير وحده يعدّل بقية الحقول */}
+              {editingTaskId && (
+                <button
+                  type="button"
+                  onClick={(e) => openWhatsAppShare(tasks.find((t) => t.id === editingTaskId) || {
+                    id: editingTaskId,
+                    title: form.title,
+                    description: form.description,
+                    category: form.category,
+                    priority: form.priority,
+                    status: "todo",
+                    assignee: form.assignee || null,
+                    due_date: form.due_date || null,
+                    created_at: new Date().toISOString(),
+                    updated_at: null,
+                    completed_at: null,
+                    completed_by: null,
+                    recurrence: form.recurrence || null,
+                    attachments,
+                  }, e)}
+                  className="mb-4 inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-100"
+                >
+                  Share task via WhatsApp
+                </button>
+              )}
+
+            {/* Team members can change their task status; admins can edit all fields. */}
             {editingTaskId && !isAdmin ? (
               <div className="space-y-4">
                 <div>
@@ -753,7 +927,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
 
                 <div>
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                    الحالة
+                    Status
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {columns.map((col) => (
@@ -781,14 +955,14 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 px-5 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50"
                 >
                   <Trash2 className="h-4 w-4" />
-                  حذف المهمة
+                  Delete task
                 </button>
               </div>
             ) : (
             <div className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                  عنوان المهمة *
+                  Task title *
                 </label>
                 <div className="flex items-center gap-1.5 rounded-xl border border-stone-200 pe-1.5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                   <input
@@ -798,11 +972,11 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveTask();
                     }}
-                    placeholder="مثال: تجهيز خطاب دعوة لعميل معرض دبي"
+                    placeholder="Example: Prepare an invitation letter for a client"
                     className="w-full flex-1 rounded-xl px-4 py-2.5 text-sm outline-none"
                   />
                   <VoiceInput
-                    title="تفريغ صوتي للعنوان"
+                    title="Voice input for title"
                     onResult={(text) =>
                       setForm((f) => ({
                         ...f,
@@ -815,7 +989,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
 
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                  الوصف
+                  Description
                 </label>
                 <div className="flex items-start gap-1.5 rounded-xl border border-stone-200 pe-1.5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                   <textarea
@@ -824,11 +998,11 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                       setForm({ ...form, description: e.target.value })
                     }
                     rows={3}
-                    placeholder="تفاصيل إضافية (اختياري)"
+                    placeholder="Additional details (optional)"
                     className="w-full flex-1 resize-none rounded-xl px-4 py-2.5 text-sm outline-none"
                   />
                   <VoiceInput
-                    title="تفريغ صوتي للوصف"
+                    title="Voice input for description"
                     className="mt-1.5"
                     onResult={(text) =>
                       setForm((f) => ({
@@ -842,10 +1016,67 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 </div>
               </div>
 
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-stone-700">
+                  Attachments
+                </label>
+                <div className="space-y-3 rounded-2xl border border-dashed border-stone-300 bg-stone-50/70 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-stone-800">Attach files</p>
+                      <p className="text-xs text-stone-500">Upload a PDF, image, or document for the assigned team member.</p>
+                    </div>
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-bold text-[#8B0000] shadow-sm ring-1 ring-inset ring-stone-200 transition-colors hover:bg-stone-50">
+                      {uploadingAttachment ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      {uploadingAttachment ? 'Uploading' : 'Upload file'}
+                      <input
+                        type="file"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => uploadAttachmentFiles(e.target.files)}
+                      />
+                    </label>
+                  </div>
+
+                  {attachments.length > 0 ? (
+                    <div className="space-y-2">
+                      {attachments.map((file, index) => (
+                        <div key={`${file.url}-${index}`} className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 py-2">
+                          <Paperclip className="h-4 w-4 shrink-0 text-stone-400" />
+                          <div className="min-w-0 flex-1">
+                            <a href={file.url} target="_blank" rel="noreferrer" className="block truncate text-sm font-medium text-stone-800 hover:text-[#8B0000]">
+                              {file.name}
+                            </a>
+                            <p className="text-[11px] text-stone-400">
+                              {file.type || 'file'} · {Math.max(1, Math.round((file.size || 0) / 1024))} KB
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setAttachments((current) => current.filter((_, i) => i !== index))}
+                            className="rounded-lg p-1.5 text-stone-300 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="rounded-xl border border-stone-200 bg-white px-3 py-3 text-xs text-stone-400">
+                      No attachments yet. You can keep this task text-only or add a reference file.
+                    </p>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                    التصنيف
+                    Category
                   </label>
                   <select
                     value={form.category}
@@ -863,7 +1094,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                    الأولوية
+                    Priority
                   </label>
                   <select
                     value={form.priority}
@@ -872,22 +1103,20 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                     }
                     className="w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500"
                   >
-                    <option value="high">عالية</option>
-                    <option value="medium">متوسطة</option>
-                    <option value="low">منخفضة</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
                   </select>
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                    المسؤول
+                    Assignee
                   </label>
                   {!isAdmin ? (
                     <div className="flex w-full items-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[11px] font-bold text-blue-700">
-                        {myName.charAt(0).toUpperCase()}
-                      </span>
-                      <span className="flex-1 truncate text-right text-stone-600">
-                        {myName} (أنت)
+                      <MemberAvatar member={memberByName(myName)} name={myName} />
+                      <span className="flex-1 truncate text-left text-stone-600">
+                        {myName} (You)
                       </span>
                     </div>
                   ) : (
@@ -899,16 +1128,14 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                       >
                         {form.assignee ? (
                           <>
-                            <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold", avatarColor(form.assignee))}>
-                              {form.assignee.charAt(0).toUpperCase()}
-                            </span>
-                            <span className="flex-1 truncate text-right">
+                            <MemberAvatar member={memberByName(form.assignee)} name={form.assignee} />
+                            <span className="flex-1 truncate text-left">
                               {form.assignee}
                             </span>
                           </>
                         ) : (
-                          <span className="flex-1 text-right text-stone-400">
-                            اختر المسؤول
+                          <span className="flex-1 text-left text-stone-400">
+                            Select assignee
                           </span>
                         )}
                         <ChevronDown className="h-4 w-4 shrink-0 text-stone-400" />
@@ -917,7 +1144,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                     <PopoverContent className="w-64 p-1.5" align="start">
                       {members.length === 0 ? (
                         <p className="p-3 text-center text-xs text-stone-400">
-                          لا يوجد أعضاء
+                          No team members
                         </p>
                       ) : (
                         <div className="max-h-56 overflow-y-auto">
@@ -937,11 +1164,12 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                                   selected && "bg-blue-50"
                                 )}
                               >
-                                <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold", avatarColor(name))}>
-                                  {initials(name)}
-                                </span>
-                                <span className="flex-1 truncate text-right">
-                                  {name}
+                                <MemberAvatar member={m} name={name} size="size-7" />
+                                <span className="flex-1 min-w-0 text-left">
+                                  <span className="block truncate">{name}</span>
+                                  <span className="block truncate text-[11px] font-normal text-stone-400">
+                                    {memberEmailLabel(m)}
+                                  </span>
                                 </span>
                                 {selected && (
                                   <Check className="h-4 w-4 shrink-0 text-blue-600" />
@@ -957,7 +1185,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 </div>
                 <div className="col-span-2">
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                    موعد التسليم
+                    Due date
                   </label>
                   <Popover
                     open={dueOpen}
@@ -973,12 +1201,12 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                       >
                         <Calendar className="h-4 w-4 shrink-0 text-stone-400" />
                         {form.due_date ? (
-                          <span className="flex-1 truncate text-right">
+                          <span className="flex-1 truncate text-left">
                             {formatDue(form.due_date)}
                           </span>
                         ) : (
-                          <span className="flex-1 text-right text-stone-400">
-                            بدون موعد — اختر مدة أو تاريخًا
+                          <span className="flex-1 text-left text-stone-400">
+                            No due date, choose a duration or date
                           </span>
                         )}
                         {form.due_date && (
@@ -1009,7 +1237,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                           )}
                         >
                           <Clock className="h-3.5 w-3.5" />
-                          خلال مدة
+                          Duration
                         </button>
                         <button
                           type="button"
@@ -1022,7 +1250,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                           )}
                         >
                           <Calendar className="h-3.5 w-3.5" />
-                          تاريخ محدد
+                          Specific date
                         </button>
                       </div>
 
@@ -1036,7 +1264,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                                 onClick={() => applyDueIn(h)}
                                 className="rounded-lg border border-stone-200 py-1.5 text-xs font-bold text-stone-600 transition-colors hover:border-blue-400 hover:text-blue-700"
                               >
-                                {h} س
+                                {h}h
                               </button>
                             ))}
                           </div>
@@ -1046,7 +1274,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                               min={1}
                               value={customHours}
                               onChange={(e) => setCustomHours(e.target.value)}
-                              placeholder="عدد ساعات آخر"
+                              placeholder="Custom hours"
                               className="w-full rounded-lg border border-stone-200 px-2.5 py-1.5 text-xs outline-none focus:border-blue-500"
                             />
                             <button
@@ -1055,7 +1283,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                               onClick={() => applyDueIn(Number(customHours))}
                               className="shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
                             >
-                              تطبيق
+                              Apply
                             </button>
                           </div>
                           <div className="flex flex-wrap gap-1.5 border-t border-stone-100 pt-2.5">
@@ -1064,21 +1292,21 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                               onClick={() => applyDueAt(0, 17)}
                               className="rounded-full border border-stone-200 px-2.5 py-1 text-[11px] font-semibold text-stone-600 transition-colors hover:border-blue-400 hover:text-blue-700"
                             >
-                              نهاية اليوم
+                              End of day
                             </button>
                             <button
                               type="button"
                               onClick={() => applyDueAt(1, 9)}
                               className="rounded-full border border-stone-200 px-2.5 py-1 text-[11px] font-semibold text-stone-600 transition-colors hover:border-blue-400 hover:text-blue-700"
                             >
-                              غدًا صباحًا
+                              Tomorrow morning
                             </button>
                             <button
                               type="button"
                               onClick={() => applyDueAt(7, 9)}
                               className="rounded-full border border-stone-200 px-2.5 py-1 text-[11px] font-semibold text-stone-600 transition-colors hover:border-blue-400 hover:text-blue-700"
                             >
-                              الأسبوع القادم
+                              Next week
                             </button>
                           </div>
                         </div>
@@ -1104,7 +1332,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 </div>
                 <div className="col-span-2">
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
-                    التكرار
+                    Recurrence
                   </label>
                   <select
                     value={form.recurrence}
@@ -1113,15 +1341,15 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                     }
                     className="w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500"
                   >
-                    <option value="">بدون تكرار</option>
+                    <option value="">No recurrence</option>
                     {(Object.keys(RECURRENCE_LABELS) as Recurrence[]).map((r) => (
                       <option key={r} value={r}>
-                        {RECURRENCE_LABELS[r]}
+                        {r === "daily" ? "Daily" : r === "weekly" ? "Weekly" : "Monthly"}
                       </option>
                     ))}
                   </select>
                   <p className="mt-1 text-[11px] text-stone-400">
-                    عند إنجاز هذه المهمة تُنشأ نسخة جديدة منها تلقائيًا بنفس التكرار
+                    Completing this task automatically creates the next recurring copy.
                   </p>
                 </div>
               </div>
@@ -1139,7 +1367,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   ) : (
                     <Plus className="h-4 w-4" />
                   )}
-                  {editingTaskId ? "حفظ التغييرات" : "إضافة المهمة"}
+                  {editingTaskId ? "Save changes" : "Add task"}
                 </button>
                 {editingTaskId && (
                   <button
@@ -1153,7 +1381,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   onClick={() => setShowForm(false)}
                   className="rounded-xl border border-stone-200 px-5 py-3 text-sm font-semibold text-stone-600 transition-colors hover:bg-stone-50"
                 >
-                  إلغاء
+                  Cancel
                 </button>
               </div>
             </div>

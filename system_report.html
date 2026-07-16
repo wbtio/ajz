@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل توحيد العملاء والطلبات - JAZ System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: #09090b;
+            --foreground: #fafafa;
+            --card: #09090b;
+            --card-foreground: #fafafa;
+            --popover: #09090b;
+            --popover-foreground: #fafafa;
+            --primary: #3b82f6;
+            --primary-foreground: #f8fafc;
+            --secondary: #18181b;
+            --secondary-foreground: #fafafa;
+            --muted: #27272a;
+            --muted-foreground: #a1a1aa;
+            --accent: #27272a;
+            --accent-foreground: #fafafa;
+            --destructive: #ef4444;
+            --border: #27272a;
+            --radius: 12px;
+            --font-main: 'IBM Plex Sans Arabic', sans-serif;
+            --font-outfit: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+            font-family: var(--font-main);
+            line-height: 1.625;
+            padding: 3rem 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .badge-system {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--secondary);
+            color: var(--foreground);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+            font-family: var(--font-outfit);
+            gap: 0.5rem;
+        }
+
+        .badge-system::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--primary);
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--muted-foreground);
+            font-weight: 400;
+        }
+
+        section {
+            margin-bottom: 3.5rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            font-size: 0.925rem;
+            color: var(--muted-foreground);
+            margin-bottom: 1.25rem;
+            text-align: justify;
+        }
+
+        .grid-compare {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .box-concept {
+            background-color: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .box-concept h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .box-concept h3 span {
+            color: var(--primary);
+            font-family: var(--font-outfit);
+        }
+
+        .box-concept ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .box-concept li {
+            font-size: 0.85rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+            padding-right: 1rem;
+            position: relative;
+        }
+
+        .box-concept li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: var(--primary);
+        }
+
+        /* Flow Diagram */
+        .diagram-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            background-color: #0c0c0e;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .diagram-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .flow-step {
+            display: inline-block;
+            background-color: var(--secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            margin: 0 0.75rem;
+            color: var(--muted-foreground);
+            font-weight: bold;
+        }
+
+        /* Manager pitch */
+        .manager-pitch {
+            background-color: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            margin: 2rem 0;
+        }
+
+        .manager-pitch h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .manager-pitch p {
+            font-size: 0.9rem;
+            color: #e4e4e7;
+            margin-bottom: 0;
+            line-height: 1.65;
+        }
+
+        /* Checklist Integration points */
+        .integration-points {
+            list-style: none;
+        }
+
+        .integration-points li {
+            position: relative;
+            padding-right: 1.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+        }
+
+        .integration-points li::before {
+            content: "✦";
+            position: absolute;
+            right: 0;
+            color: var(--primary);
+        }
+
+        .integration-points li strong {
+            color: var(--foreground);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        footer p {
+            text-align: center;
+        }
+
+        .footer-note {
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="badge-system">JAZ-ALIGNMENT-SPEC</div>
+            <h1>دليل توحيد وتنسيق صفحتي "العملاء" و "الطلبات"</h1>
+            <div class="subtitle">كيف نجعل النظام يبدو كمنصة واحدة متجانسة للموظفين والإدارة</div>
+        </header>
+
+        <section>
+            <h2>1. فهم المفهوم: ما الفرق وكيف يرتبطان؟</h2>
+            <p>
+                لكي يظهر النظام بشكل متكامل ولا يشعر الموظف بأنهما نظامين منفصلين، يجب توضيح العلاقة بينهما:
+            </p>
+            <div class="grid-compare">
+                <div class="box-concept">
+                    <h3>العملاء <span>(Clients)</span></h3>
+                    <p>يمثل <strong>الملف الشخصي الدائم للزبون</strong>. المعلومات التي لا تتغير بتغير الأحداث.</p>
+                    <ul>
+                        <li>الاسم الكامل ومحل وتاريخ الولادة</li>
+                        <li>رقم الجواز وتاريخ إصداره وانتهاءه</li>
+                        <li>معلومات الشركة والوظيفة الحالية</li>
+                    </ul>
+                </div>
+
+                <div class="box-concept">
+                    <h3>الطلبات <span>(Requests / Applications)</span></h3>
+                    <p>يمثل <strong>طلب المشاركة في حدث معين</strong>. المعلومات والخطوات المرتبطة بالرحلة الحالية.</p>
+                    <ul>
+                        <li>نوع التذكرة وحالة الدفع للمعرض الحالي</li>
+                        <li>ملف الفيزا ومواعيد التبصيم وحالة الموافقة</li>
+                        <li>دمج الملف النهائي والمستندات المؤرشفة</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. الترابط البصري والعملي في واجهة المستخدم</h2>
+            <p>
+                لتجنب أي تشتت بصري للموظفين، قمنا بتوحيد عناصر التصميم تماماً بين الصفحتين بالاعتماد على المبادئ التالية:
+            </p>
+            <ul class="integration-points">
+                <li>
+                    <strong>توحيد الهوية البصرية (Visual Hierarchy):</strong>
+                    الصفحتان تستخدمان نفس نمط الخطوط (IBM Plex Sans Arabic)، وتوزيع البطاقات البسيط، والجداول المسطحة بحواف رقيقة (1px border)، ونفس الألوان التعبيرية للحالات (Badge Statuses).
+                </li>
+                <li>
+                    <strong>الترابط بضغطة زر واحدة (Single-Click Context):</strong>
+                    داخل صفحة "العملاء"، عند تصفح عميل معين، يظهر في الأسفل جدول بجميع "طلبات المشاركة" التاريخية والنشطة الخاصة به. وبالمثل، في صفحة "الطلبات"، يظهر اسم العميل كعنصر تفاعلي يمكن النقر عليه للانتقال الفوري إلى ملفه الدائم.
+                </li>
+                <li>
+                    <strong>المعالج المدمج (Unified Flow):</strong>
+                    مسار الخطوات السبعة المدمج يبدأ بالبحث عن العميل وينتهي بعرض الطلبات والمتابعة في نفس الواجهة، مما يجعل الانتقال بين إدارة العميل ومتابعة طلبه انسيابياً للغاية.
+                </li>
+            </ul>
+
+            <div class="diagram-container">
+                <div class="diagram-title">دورة حياة البيانات المتكاملة</div>
+                <div class="flow-step">1. ملف العميل الرئيسي</div>
+                <div class="flow-arrow">←</div>
+                <div class="flow-step">2. إنشاء طلب للحدث</div>
+                <div class="flow-arrow">←</div>
+                <div class="flow-step">3. تحديث مسار تتبع التأشيرة والدفع</div>
+            </div>
+        </section>
+
+        <section>
+            <div class="manager-pitch">
+                <h4>كيف نشرح هذه الرؤية للمدير (الدكتور)؟</h4>
+                <p>
+                    "دكتور، لتفادي الفوضى والتكرار في النظام، قمنا بإنشاء هيكلية ذكية ومترابطة؛ فالعميل الواحد قد يسجل معنا في معرض SIAL Paris هذا العام، ومعرض SPACE العام القادم. لذلك، قمنا بفصل **الملف الشخصي الثابت للعميل** (الذي يحتوي جوازه ومواليده) عن **طلب المشاركة** (الذي يحتوي الفيزا والدفع الخاص بالرحلة).
+                    وبصرياً، دمجنا الاثنين في واجهة واحدة متناسقة تماماً. عندما يفتح الموظف صفحة العملاء، سيرى جدول تقدم طلباتهم فوراً، وبنقرة واحدة يمكنه الانتقال لمعاملة الفيزا أو للملف الشخصي للزبون. هذا يضمن بقاء البيانات نظيفة للشركة وبنفس الوقت يسهل تصفحها كمنظومة واحدة."
+                </p>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-note">JAZ System Alignment Specification</div>
+            <p>تم إعداد هذا التوثيق لتوحيد الرؤية الهيكلية لصفحتي العملاء والطلبات بصرياً وعملياً.</p>
+        </footer>
+    </div>
+
+</body>
+</html>

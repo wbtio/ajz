@@ -481,3 +481,147 @@ html[lang="ar"] :is(button, input, textarea, select) {
 .sector-card-crimson .absolute.-inset-px {
   background: radial-gradient(100px circle at var(--x, 50%) var(--y, 50%), rgba(139, 0, 0, 0.08), transparent 80%) !important;
 }
+
+/* ============================================================
+   JAZ APPLICATIONS DASHBOARD — light scope helpers
+   Brand system: Pristine White + Obsidian Navy + Sovereign Red
+   Visual strategy: Restrained Committed (10% accent sovereignty rule)
+
+   Spatial system (4pt base):
+   - Insets (tight inside container): 4 8 12 16
+   - Grouping: 20 24
+   - Section separation: 32 40 56 72
+
+   Type system:
+   - Display   28/32 (700, -0.02em tracking)
+   - Title     20/28 (700)
+   - Headline  16/24 (600)
+   - Body      14/22 (400)
+   - Meta      12/18 (500, 0.02em tracking, uppercase)
+   - Numeric   13/16 (600, JetBrains Mono, tabular-nums)
+
+   Color system (light scope):
+   - ink           #0b1426 (obsidian navy w/ chroma toward brand)
+   - ink-soft      #3d4a5c (tinted mid-gray)
+   - muted         #6b7689 (body meta)
+   - whisper       #aab1bc (lowest, disabled)
+   - line          rgba(11, 20, 38, 0.08)
+   - line-strong   rgba(11, 20, 38, 0.14)
+   - surface       #ffffff
+   - surface-2     #f5f7fa (platinum)
+   - sovereign     #8B0000
+   - sovereign-2   #6B0000
+   - emerald       #047857 (success)
+   - emerald-soft  #ecfdf5
+   - amber         #b45309 (warn)
+   - amber-soft    #fffbeb
+   - info          #1d4ed8 (info)
+   - info-soft     #eff6ff
+   ============================================================ */
+
+.jaz-apps-dashboard {
+  --jaz-ink: #0b1426;
+  --jaz-ink-soft: #3d4a5c;
+  --jaz-muted: #6b7689;
+  --jaz-whisper: #aab1bc;
+  --jaz-line: rgba(11, 20, 38, 0.08);
+  --jaz-line-strong: rgba(11, 20, 38, 0.14);
+  --jaz-surface: #ffffff;
+  --jaz-surface-2: #f5f7fa;
+  --jaz-sovereign: #8B0000;
+  --jaz-sovereign-2: #6B0000;
+  --jaz-emerald: #047857;
+  --jaz-emerald-soft: #ecfdf5;
+  --jaz-amber: #b45309;
+  --jaz-amber-soft: #fffbeb;
+  --jaz-info: #1d4ed8;
+  --jaz-info-soft: #eff6ff;
+
+  background-color: transparent;
+  color: var(--jaz-ink);
+}
+
+.jaz-apps-dashboard .jaz-mono {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.jaz-apps-dashboard .jaz-no-scrollbar::-webkit-scrollbar { display: none; }
+.jaz-apps-dashboard .jaz-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Display text */
+.jaz-apps-dashboard .jaz-display {
+  font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+  line-height: 1.15;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+}
+.jaz-apps-dashboard .jaz-title {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.014em;
+  font-weight: 700;
+}
+.jaz-apps-dashboard .jaz-headline {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.jaz-apps-dashboard .jaz-body {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  font-weight: 400;
+}
+.jaz-apps-dashboard .jaz-meta {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--jaz-muted);
+}
+.jaz-apps-dashboard .jaz-numeric {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 1.6875rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline borders (1px, low chroma) */
+.jaz-apps-dashboard .jaz-divide > * + * {
+  border-top: 1px solid var(--jaz-line);
+}
+.jaz-apps-dashboard .jaz-hairline {
+  border: 1px solid var(--jaz-line);
+}
+.jaz-apps-dashboard .jaz-hairline-strong {
+  border: 1px solid var(--jaz-line-strong);
+}
+
+/* Touch: remove double-tap zoom delay on interactive elements */
+.jaz-apps-dashboard button,
+.jaz-apps-dashboard a,
+.jaz-apps-dashboard select,
+.jaz-apps-dashboard input[type="submit"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Active timeline node pulse — communicates “this step needs action” */
+@keyframes jaz-node-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.20); }
+  50%      { box-shadow: 0 0 0 4px rgba(139, 0, 0, 0); }
+}
+.jaz-apps-dashboard .jaz-node-active { animation: jaz-node-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .jaz-apps-dashboard .jaz-node-active { animation: none; }
+  .jaz-apps-dashboard * { transition-duration: 0.01ms !important; }
+}
+
+@media print {
+  .jaz-apps-dashboard .jaz-node-active { animation: none !important; }
+}

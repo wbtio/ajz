@@ -1,0 +1,666 @@
+FILE: /Users/hasanainalmazrai/Library/CloudStorage/GoogleDrive-muntazar689@gmail.com/My Drive/منتظر.docx
+PARAGRAPHS: 704 TABLES: 2
+
+P1: تمام. بما أن موظف الـIT بدأ بتصميم البرنامج، فأنا أنصحك من البداية أن لا يربط العميل بالحدث مباشرة فقط. الأفضل أن ينشئ كيان ثالث اسمه:
+P2: ملف المشاركة — Participation Case
+P3: لأن نفس العميل ممكن يسجل على أكثر من حدث، ونفس الحدث ممكن يضم عشرات العملاء.
+P4: يعني هيكل النظام يكون:
+P5: Client → Participation Case → Event
+P6: وهذا ملف المشاركة يحمل كل شيء: الباكيج، السعر، الدفع، التسجيل، الدعوة، الفيزا، الموعد، التأمين، النواقص، الملاحظات، الموظف المسؤول، وحالة الملف.
+P8: العملية الكاملة لتسجيل العميل على حدث داخل نظام JAZ
+P9: المرحلة 1 — استقبال الطلب
+P10: الموظف يضغط:
+P11: + New Participation Request
+طلب مشاركة جديد
+P12: النظام يسأل أولًا:
+P13: البحث عن العميل
+P14: البحث بواسطة:
+P15: رقم الهاتف
+P16: البريد الإلكتروني
+P17: رقم الجواز
+P18: الاسم الكامل
+P19: قاعدة مهمة
+P20: إذا العميل موجود مسبقًا:
+P21: لا يتم إنشاء Client جديد
+P22: بل يتم فتح ملفه وإضافة Participation Case جديد.
+P23: مثال:
+P24: CLIENT: AHMED ALI HASSAN
+P25: وعنده:
+P26: Participation Case 001 → SILMO PARIS 2026
+P27: Participation Case 002 → BATIMAT 2026
+P28: Participation Case 003 → CERSAIE 2026
+P30: المرحلة 2 — إنشاء أو اختيار العميل
+P31: أولًا: المعلومات الأساسية
+P32: Personal Information
+P33: Client ID
+P34: Full Name as Passport
+P35: First Name
+P36: Last Name / Surname
+P37: Date of Birth
+P38: Place of Birth
+P39: Sex
+P40: Nationality
+P41: Marital Status
+P42: Residence Country
+P43: City
+P44: Full Address
+P46: معلومات الجواز
+P47: Passport Number
+P48: Passport Type
+P49: Issue Date
+P50: Expiry Date
+P51: Place of Issue
+P52: Passport Copy
+P53: قاعدة النظام
+P54: جميع المعلومات تكون:
+P55: AS PER PASSPORT
+P56: ويظهر تنبيه ثابت:
+P57: Passport data must be copied exactly as shown in the passport. No assumptions or manual corrections are permitted without supervisor approval.
+P59: معلومات الاتصال
+P60: Active Email
+P61: Active Phone Number
+P62: WhatsApp Number
+P63: Alternative Phone Number
+P65: المعلومات المهنية
+P66: Employer Name
+P67: Workplace Type
+P68: Work Address
+P69: City
+P70: Governorate
+P71: Job Title
+P72: Department
+P73: Exact Professional Specialty
+P74: Work Phone
+P75: Work Email
+P76: Company Website
+P78: معلومات الفيزا والإقامة
+P79: Previous Schengen Visa?
+P80: Yes
+P81: No
+P82: Schengen Visas during last 5 years
+P83: Previous Visa Copies
+P84: Residence Permit in another country?
+P85: Country of Residence
+P86: Residence Expiry Date
+P88: المرحلة 3 — اختيار الحدث
+P89: بعد اختيار العميل، يضغط الموظف:
+P90: Select Event
+P91: تظهر قائمة الأحداث الموجودة مسبقًا في النظام.
+P92: مثال:
+P93: SILMO PARIS 2026
+P94: ويجلب النظام تلقائيًا:
+P95: Event ID
+P96: Official Event Name
+P97: Country
+P98: City
+P99: Venue
+P100: Start Date
+P101: End Date
+P102: Sector
+P103: Organizer
+P104: Registration Deadline
+P105: Invitation Available?
+P106: Visa Support Available?
+P107: Event Status
+P108: Registration Status
+P110: حالة الحدث
+P111: أقترح الحالات التالية:
+P112: Registration Open
+P113: Registration Closing Soon
+P114: Registration Closed
+P115: Pending Verification
+P116: Suspended
+P117: Completed
+P118: قاعدة مهمة
+P119: إذا الحدث مغلق:
+P120: Registration Closed
+P121: لا يسمح النظام بإكمال العملية إلا بصلاحية:
+P122: Supervisor Override
+P124: المرحلة 4 — إنشاء ملف المشاركة
+P125: بمجرد اختيار:
+P126: Client + Event
+P127: النظام ينشئ تلقائيًا:
+P128: Participation Case ID
+P129: مثال:
+P130: JAZ-PC-2026-00451
+P131: ويحتوي:
+P132: Client
+P133: Event
+P134: Assigned Employee
+P135: Created Date
+P136: Created By
+P137: Branch
+P138: Source
+P139: Current Status
+P141: المرحلة 5 — تحديد مصدر العميل
+P142: مهم جدًا للتسويق عندك.
+P143: الحقل:
+P144: Client Source
+P145: الخيارات:
+P146: Facebook Ad
+P147: Instagram
+P148: WhatsApp
+P149: Website
+P150: Referral
+P151: Existing Client
+P152: Direct Visit
+P153: Chamber of Commerce
+P154: Union
+P155: Association
+P156: Company Referral
+P157: JAZ Database
+P158: Other
+P159: ثم:
+P160: Campaign Name
+P161: مثال:
+P162: SILMO PARIS JULY CAMPAIGN
+P163: بهذا مستقبلًا تعرفين أي إعلان جاب مبيعات فعلية.
+P165: المرحلة 6 — اختيار نوع الخدمة
+P166: النظام يعرض:
+P167: Service Package
+P168: 1. Registration Only
+P169: تسجيل فقط
+P170: 2. Registration + Invitation
+P171: تسجيل + دعوة
+P172: 3. Registration + Invitation + Visa Services
+P173: تسجيل + دعوة + خدمات الفيزا
+P174: 4. Full Package
+P175: الخدمة الكاملة
+P176: وهنا مهم جدًا:
+P177: السعر لا يكون ثابتًا داخل النظام لكل الأحداث.
+P178: لأن أنتِ سابقًا حددتِ أن الرسوم تختلف من معرض إلى آخر.
+P179: لذلك السعر يكون مرتبطًا بـ:
+P180: Event + Package
+P181: مثال:
+P183: المرحلة 7 — إنشاء قائمة المتطلبات تلقائيًا
+P184: بناءً على الباكيج، النظام ينشئ:
+P185: Requirements Checklist
+P186: مثلاً إذا اختار:
+P187: Registration + Invitation + Visa Services
+P188: يظهر:
+P189: Basic Documents
+P190: Passport Copy
+P191: Active Email
+P192: Active Phone
+P193: Address
+P194: Marital Status
+P195: Professional Information
+P196: Employer Name
+P197: Workplace Location
+P198: Job Title
+P199: Work Phone
+P200: Work Email
+P201: Exact Specialty
+P202: Visa Information
+P203: Previous Schengen Visas
+P204: Other Residence Permits
+P205: Supporting Documents
+P206: Employment Letter
+P207: Company Documents
+P208: Professional Evidence
+P209: Other Supporting Documents
+P211: المرحلة 8 — فحص اكتمال البيانات
+P212: النظام يعمل:
+P213: Initial Completeness Check
+P214: ويعطي نسبة:
+P215: 65% Complete
+P216: مثلاً:
+P217: Received
+P218: Passport
+P219: Email
+P220: Phone
+P221: Job Title
+P222: Missing
+P223: Work Email
+P224: Work Phone
+P225: Schengen History
+P226: Exact Specialty
+P228: حالة الملف هنا
+P229: تكون:
+P230: DATA INCOMPLETE
+البيانات غير مكتملة
+P231: وعندما تكتمل:
+P232: DATA COMPLETE
+البيانات مكتملة
+P234: المرحلة 9 — السعر والعرض المالي
+P235: بعد اختيار الباكيج:
+P236: النظام ينشئ:
+P237: Service Price
+P238: Discount
+P239: Approved Discount
+P240: Final Price
+P241: Currency
+P242: Payment Method
+P243: العملة:
+P244: USD
+P245: IQD
+P246: EUR
+P248: حالة الدفع
+P249: Not Invoiced
+P250: Invoice Issued
+P251: Payment Pending
+P252: Partially Paid
+P253: Paid
+P254: Refunded
+P255: Cancelled
+P257: قاعدة مهمة جدًا
+P258: أي Discount يجب أن يحتوي:
+P259: Discount Amount
+P260: Discount Reason
+P261: Approved By
+P262: الموظف العادي لا يغير السعر بحرية.
+P264: المرحلة 10 — تأكيد الدفع
+P265: بعد الدفع:
+P266: PAYMENT CONFIRMED
+P267: يتم تسجيل:
+P268: Amount
+P269: Currency
+P270: Payment Date
+P271: Payment Method
+P272: Receipt Number
+P273: Receipt Copy
+P274: Received By
+P276: المرحلة 11 — بدء تسجيل الحدث
+P277: النظام ينشئ Task تلقائي:
+P278: Event Registration
+P279: الموظف يدخل:
+P280: Registration Website
+P281: Registration Account Email
+P282: Registration Date
+P283: Registration Reference
+P284: Registration Type
+P285: Visitor Category
+P286: Company Name Used
+P287: Job Title Used
+P289: حالة التسجيل
+P290: تبدأ:
+P291: REGISTRATION NOT STARTED
+P292: ثم:
+P293: REGISTRATION IN PROGRESS
+P294: ثم:
+P295: REGISTRATION DRAFT
+P297: المرحلة 12 — مراجعة قبل الإرسال
+P298: وهذه نقطة أعتبرها ضرورية جدًا عندك.
+P299: الموظفة الجديدة لا تضغط Final Submit مباشرة.
+P300: بل:
+P301: Draft Completed
+P302: ثم:
+P303: Send for Review
+P304: النظام ينقل الملف إلى:
+P305: UNDER REVIEW
+P306: المشرف يراجع:
+P307: Name
+P308: Passport Number
+P309: Date of Birth
+P310: Nationality
+P311: Company Name
+P312: Position
+P313: Email
+P314: Event
+P315: Dates
+P316: ثم:
+P317: Approve
+P318: أو
+P319: Return for Correction
+P321: المرحلة 13 — الإرسال النهائي
+P322: بعد موافقة المشرف:
+P323: APPROVED FOR SUBMISSION
+P324: ثم الموظف ينفذ التسجيل.
+P325: ويحفظ:
+P326: Submission Date
+P327: Confirmation Number
+P328: Registration Number
+P329: Confirmation Email
+P330: Screenshot
+P331: PDF Confirmation
+P333: المرحلة 14 — استلام الـBadge
+P334: إذا تم إصدار بطاقة:
+P335: Badge Received
+P336: يحفظ النظام:
+P337: Badge Number
+P338: Badge Name
+P339: Badge Issue Date
+P340: Badge PDF
+P341: QR Code
+P342: Confirmation Email
+P344: هنا يعمل النظام Automatic Matching
+P345: يقارن:
+P346: Passport Name ↔ Badge Name
+P347: إذا اختلف:
+P348: CRITICAL MISMATCH
+P349: مثال:
+P350: Passport:
+P351: MOHAMMED ALI HASSAN
+P352: Badge:
+P353: MOHAMED ALI HASAN
+P354: النظام يفتح:
+P355: ERROR CASE
+P356: ولا يسمح بالانتقال للمرحلة التالية بدون معالجة.
+P358: المرحلة 15 — مسار الدعوة
+P359: إذا الباكيج يحتوي Invitation:
+P360: النظام ينشئ:
+P361: Invitation Request
+P362: البيانات:
+P363: Invitation Required?
+P364: Invitation Type
+P365: Request Date
+P366: Requested From
+P367: Organizer Contact
+P368: Invitation Status
+P370: حالات الدعوة
+P371: Not Required
+P372: Required
+P373: Pending Data
+P374: Ready to Request
+P375: Requested
+P376: Under Processing
+P377: Received
+P378: Correction Required
+P379: Approved
+P381: عند استلام الدعوة
+P382: يحفظ:
+P383: Invitation Number
+P384: Issue Date
+P385: Travel Start Date
+P386: Travel End Date
+P387: Event Name
+P388: Passport Number
+P389: PDF Copy
+P391: المرحلة 16 — فحص الدعوة
+P392: النظام يقارن تلقائيًا:
+P393: ثم:
+P394: MATCHED
+P395: أو:
+P396: MISMATCH DETECTED
+P398: المرحلة 17 — تحديد هل توجد خدمة فيزا
+P399: السؤال:
+P400: Visa Service Included?
+P401: No
+P402: ينتقل لمسار المشاركة فقط.
+P403: Yes
+P404: يفتح:
+P405: Visa Process Module
+P407: المرحلة 18 — تحديد الدولة
+P408: مثلاً:
+P409: France
+P410: هنا يظهر Workflow خاص بفرنسا.
+P411: France Visa Workflow
+P412: وبناءً على طريقتكم الحالية في JAZ:
+P414: الخطوة 1 — استلام حساب العميل / البريد
+P415: Client Email
+P416: France-Visas Account Status
+P417: TLS Account Status
+P418: الحالات:
+P419: Not Created
+P420: Pending Activation
+P421: Activated
+P422: Access Problem
+P424: الخطوة 2 — تفعيل الحسابات
+P425: يتم تسجيل:
+P426: France-Visas Activated
+P427: TLS Activated
+P428: بعدها تظهر مرحلة:
+P429: Account Setup Complete
+P431: الخطوة 3 — متابعة الدفع حسب العملية المعتمدة
+P432: حالة:
+P433: Payment Required
+P434: Payment Pending
+P435: Payment Completed
+P437: الخطوة 4 — تجهيز الدعوة
+P438: الحالة:
+P439: Invitation Pending
+P440: Invitation Received
+P441: Invitation Verified
+P443: الخطوة 5 — بدء France-Visas Application
+P444: النظام يسجل:
+P445: France-Visas Number
+P446: Application Start Date
+P447: Application Status
+P448: الحالات
+P449: Not Started
+P450: Draft
+P451: Under Review
+P452: Reference Number Obtained
+P453: Pending Appointment
+P454: Finalized
+P456: قاعدة JAZ
+P457: في البداية:
+P458: Keep Application as Draft
+P459: إلى أن يتم استكمال المسار المطلوب.
+P461: الخطوة 6 — الحصول على France-Visas Number
+P462: الحقل:
+P463: France-Visas Reference Number
+P464: مثال:
+P465: FRA1BG2026XXXXXXX
+P467: الخطوة 7 — TLS
+P468: TLS Account
+P469: TLS Application Linked
+P470: Appointment Search Started
+P472: الخطوة 8 — حجز الموعد
+P473: يحفظ النظام:
+P474: Appointment Date
+P475: Appointment Time
+P476: TLS Center
+P477: Appointment Reference
+P478: Appointment Confirmation PDF
+P479: الحالة:
+P480: APPOINTMENT BOOKED
+P482: الخطوة 9 — إكمال التطبيق النهائي
+P483: بعد الموعد:
+P484: Finalize Application
+P485: لكن لا يتم بدون مراجعة.
+P487: المرحلة 19 — التأمين
+P488: حسب نظامكم الحالي:
+P489: Insurance is the last step
+P490: يحفظ:
+P491: Insurance Company
+P492: Policy Number
+P493: Coverage Start
+P494: Coverage End
+P495: Coverage Amount
+P496: Insurance PDF
+P498: المرحلة 20 — محرك تطابق التواريخ
+P499: هذه من أهم وظائف البرنامج عندكم.
+P500: النظام يقارن:
+P501: Event Dates
+P502: Invitation Dates
+P503: Visa Application Dates
+P504: Appointment Date
+P505: Insurance Dates
+P506: Hotel Dates
+P507: Flight Dates
+P509: مثال
+P510: Event:
+P511: 28/09/2026 – 01/10/2026
+P512: Invitation:
+P513: 26/09/2026 – 03/10/2026
+P514: Insurance:
+P515: 26/09/2026 – 03/10/2026
+P516: Hotel:
+P517: 26/09/2026 – 03/10/2026
+P518: Flight:
+P519: 26/09/2026 – 03/10/2026
+P520: الحالة:
+P521: DATE CONSISTENCY PASSED
+P523: أما إذا:
+P524: Insurance ends:
+P525: 30/09/2026
+P526: والرحلة:
+P527: 03/10/2026
+P528: يظهر:
+P529: CRITICAL DATE CONFLICT
+P531: المرحلة 21 — ZERO ERROR DATA AUDIT
+P532: قبل إكمال الملف، النظام ينشئ:
+P533: Data Matching Matrix
+P534: ويفحص:
+P535: Passport
+P536: Invitation
+P537: Badge
+P538: Visa Application
+P539: TLS Appointment
+P540: Insurance
+P542: الحقول الحساسة
+P543: Full Name
+P544: يجب التطابق.
+P545: Passport Number
+P546: يجب التطابق 100%.
+P547: Date of Birth
+P548: يجب التطابق.
+P549: Place of Birth
+P550: يجب التطابق.
+P551: Sex
+P552: يجب التطابق.
+P553: Nationality
+P554: يجب التطابق.
+P555: Passport Issue Date
+P556: يجب التطابق.
+P557: Passport Expiry Date
+P558: يجب التطابق.
+P560: المرحلة 22 — Final QC
+P561: الموظف يضغط:
+P562: Request Final QC
+P563: الحالة:
+P564: FINAL QC PENDING
+P565: المشرف يراجع:
+P566: Identity
+P567: Passport
+P568: Name
+P569: Number
+P570: DOB
+P571: Event
+P572: Registration
+P573: Badge
+P574: Event dates
+P575: Invitation
+P576: Correct information
+P577: Correct dates
+P578: Visa
+P579: Application
+P580: Reference
+P581: Appointment
+P582: Travel
+P583: Insurance
+P584: Hotel
+P585: Flight
+P587: النتيجة
+P588: Approved
+P589: QC PASSED
+P590: أو:
+P591: Returned
+P592: CORRECTION REQUIRED
+P594: المرحلة 23 — جاهزية الملف
+P595: بعد النجاح:
+P596: READY FOR NEXT STAGE
+P597: أو حسب العملية:
+P598: READY FOR VISA APPOINTMENT
+P599: أو:
+P600: READY FOR PARTICIPATION
+P602: المرحلة 24 — إغلاق الملف
+P603: في النهاية:
+P604: CASE CLOSED
+P605: مع سبب الإغلاق:
+P606: Registration Completed
+P607: Participation Completed
+P608: Visa Completed
+P609: Client Cancelled
+P610: Event Cancelled
+P611: No Response
+P612: Rejected
+P613: Other
+P615: الحالات الرئيسية التي أقترحها داخل البرنامج
+P616: بالترتيب:
+P617: NEW REQUEST
+P618: CLIENT IDENTIFIED
+P619: DATA INCOMPLETE
+P620: DATA COMPLETE
+P621: EVENT SELECTED
+P622: PACKAGE SELECTED
+P623: PAYMENT PENDING
+P624: PAYMENT CONFIRMED
+P625: REGISTRATION IN PROGRESS
+P626: REGISTRATION DRAFT
+P627: UNDER REVIEW
+P628: APPROVED FOR SUBMISSION
+P629: REGISTRATION SUBMITTED
+P630: BADGE RECEIVED
+P631: INVITATION REQUIRED
+P632: INVITATION REQUESTED
+P633: INVITATION RECEIVED
+P634: VISA IN PROGRESS
+P635: APPOINTMENT PENDING
+P636: APPOINTMENT BOOKED
+P637: INSURANCE PENDING
+P638: DOCUMENT MATCHING
+P639: FINAL QC
+P640: CORRECTION REQUIRED
+P641: READY FOR NEXT STAGE
+P642: COMPLETED
+P643: ON HOLD
+P644: CANCELLED
+P645: CLOSED
+P647: وأهم نقطة أوصي بها موظف الـIT
+P648: لا يجعل البرنامج مجرد:
+P649: اسم العميل
+اسم الحدث
+السعر
+P650: هذا سيكون ضعيفًا جدًا.
+P651: أنا أرى أن قلب البرنامج يجب أن يكون:
+P652: Participation Case Management System
+P653: وكل ملف مشاركة يحتوي على 8 Tabs:
+P654: 1. Client
+P655: بيانات العميل
+P656: 2. Event
+P657: بيانات الحدث
+P658: 3. Service & Payment
+P659: الخدمة والدفع
+P660: 4. Registration
+P661: تسجيل الحدث والـBadge
+P662: 5. Invitation
+P663: الدعوة
+P664: 6. Visa Process
+P665: عملية الفيزا
+P666: 7. Documents & QC
+P667: الوثائق والتدقيق
+P668: 8. Timeline & Activity Log
+P669: كل حركة تمت على الملف
+P671: Activity Log مهم جدًا
+P672: مثال:
+P673: 07/07/2026 09:15
+P674: Client Created
+P675: By: Employee A
+P677: 07/07/2026 10:20
+P678: Passport Uploaded
+P679: By: Employee A
+P681: 07/07/2026 11:05
+P682: Missing Work Email
+P683: By: Employee A
+P685: 07/07/2026 13:40
+P686: Payment Confirmed
+P687: By: Finance
+P689: 08/07/2026 09:10
+P690: Event Registration Draft Created
+P691: By: Employee B
+P693: 08/07/2026 11:30
+P694: Returned for Correction
+P695: Reason: Passport number mismatch
+P696: By: Supervisor
+P697: هذا يخليك تعرفين بالضبط:
+P698: من سوّى؟ شنو سوّى؟ متى سوّى؟ ومن وافق؟
+P700: رأيي الصريح
+P701: هذا هو الـWorkflow الذي أنصح أن تبنون عليه برنامج JAZ من البداية. لأن شغلكم مو CRM بسيط؛ شغلكم فعليًا يجمع:
+P702: Clients + Events + Registration + Invitation + Visa Coordination + Documents + Payment + Quality Control
+P703: وأهم قرار تقني هنا هو أن يكون Participation Case هو قلب النظام، وليس العميل وحده ولا الحدث وحده.
+
+TABLE 1
+R1: Event | Package | Price
+R2: SILMO | Registration Only | X
+R3: SILMO | Registration + Invitation | X
+R4: BATIMAT | Registration Only | X
+R5: BATIMAT | Full Package | X
+
+TABLE 2
+R1: Field | Passport | Invitation
+R2: Full Name | ✓ | ✓
+R3: Passport Number | ✓ | ✓
+R4: Nationality | ✓ | ✓
+R5: DOB | ✓ | ✓

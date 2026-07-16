@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useTranslation } from '@/lib/i18n/context'
+import { useState } from 'react'
 import { canAccessPath } from '@/lib/permissions'
 import {
     LayoutDashboard,
@@ -15,7 +15,8 @@ import {
     MessageSquare,
     BookOpen,
     Link as LinkIcon,
-    ChevronLeft,
+    ChevronRight,
+    ChevronDown,
     ClipboardList,
     Search,
     BarChart3,
@@ -23,9 +24,10 @@ import {
     ScanLine,
     Trophy,
     Sparkles,
-    FolderKanban,
+    Inbox,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { TaskAssignmentPrompt } from '@/components/dashboard/task-assignment-prompt'
 
 interface DashboardUser {
     id: string
@@ -50,52 +52,53 @@ interface NavItem {
 
 export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarProps) {
     const pathname = usePathname()
-    const { t } = useTranslation()
-
     const navSections: { title: string; accent?: boolean; items: NavItem[] }[] = [
         {
-            title: 'نظرة عامة',
+            title: 'Overview',
             items: [
-                { name: t.common.home, href: '/dashboard/home', icon: LayoutDashboard },
+                { name: 'Dashboard', href: '/dashboard/home', icon: LayoutDashboard },
                 { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
             ],
         },
         {
-            title: 'الفريق والإنجازات',
+            title: 'Team Operations',
             accent: true,
             items: [
-                { name: 'المهام اليومية', href: '/dashboard/team-tasks', icon: CheckSquare },
-                { name: 'الفريق', href: '/dashboard/team', icon: Users, adminOnly: true },
-                { name: 'قارئ الجوازات', href: '/dashboard/passport-scanner', icon: ScanLine },
-                { name: 'طلبات التعديل', href: '/tasks', icon: ClipboardList, adminOnly: true },
+                { name: 'Daily Tasks', href: '/dashboard/team-tasks', icon: CheckSquare },
+                { name: 'Team Members', href: '/dashboard/team', icon: Users, adminOnly: true },
+                { name: 'Passport Scanner', href: '/dashboard/passport-scanner', icon: ScanLine },
+                { name: 'Change Requests', href: '/tasks', icon: ClipboardList, adminOnly: true },
             ],
         },
         {
-            title: 'إدارة المشاركات',
+            title: 'Application Operations',
             items: [
-                { name: 'ملفات المشاركة', href: '/dashboard/participation-cases', icon: FolderKanban },
+                { name: 'Applications', href: '/dashboard/participation-cases/work/clients', icon: Inbox },
+                { name: 'Customers', href: '/dashboard/customers', icon: Users },
+                { name: 'Visa Availability', href: '/dashboard/visa-availability', icon: Calendar },
+                { name: 'Draft Events', href: '/dashboard/draft-events', icon: Calendar },
             ],
         },
         {
-            title: 'إدارة الموقع',
+            title: 'Content Management',
             items: [
-                { name: t.nav.events, href: '/dashboard/events', icon: Calendar },
-                { name: t.nav.blog, href: '/dashboard/blog', icon: BookOpen },
-                { name: t.nav.sectors, href: '/dashboard/sectors', icon: Building2 },
-                { name: t.nav.partners, href: '/dashboard/partners', icon: Users },
-                { name: t.nav.training, href: '/dashboard/trainings', icon: GraduationCap },
-                { name: t.nav.links, href: '/dashboard/links', icon: LinkIcon },
-                { name: t.nav.contact, href: '/dashboard/messages', icon: MessageSquare },
-                { name: t.dashboard.users, href: '/dashboard/users', icon: Users },
-                { name: t.dashboard.registrations, href: '/dashboard/registrations', icon: FileText },
-                { name: t.dashboard.sectorRegistrations, href: '/dashboard/sector-registrations', icon: ClipboardList },
+                { name: 'Published Events', href: '/dashboard/events', icon: Calendar },
+                { name: 'Articles', href: '/dashboard/blog', icon: BookOpen },
+                { name: 'Sectors', href: '/dashboard/sectors', icon: Building2 },
+                { name: 'Partners', href: '/dashboard/partners', icon: Users },
+                { name: 'Training Programs', href: '/dashboard/trainings', icon: GraduationCap },
+                { name: 'Quick Links', href: '/dashboard/links', icon: LinkIcon },
+                { name: 'Messages', href: '/dashboard/messages', icon: MessageSquare },
+                { name: 'Users', href: '/dashboard/users', icon: Users },
+                { name: 'Registrations', href: '/dashboard/registrations', icon: FileText },
+                { name: 'Sector Registrations', href: '/dashboard/sector-registrations', icon: ClipboardList },
                 { name: 'Event Discovery', href: '/dashboard/event-discovery/sessions', icon: Search },
             ],
         },
         {
-            title: 'النظام',
+            title: 'System',
             items: [
-                { name: t.dashboard.settings, href: '/dashboard/settings', icon: Settings },
+                { name: 'Settings', href: '/dashboard/settings', icon: Settings },
             ],
         },
     ]
@@ -113,11 +116,20 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
         }))
         .filter((section) => section.items.length > 0)
 
+    const sectionForPath = (path: string) => visibleSections.find((section) =>
+        section.items.some((item) => path === item.href || path.startsWith(`${item.href}/`))
+    )?.title
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>(() =>
+        Object.fromEntries(visibleSections.map((section) => [section.title, section.title === sectionForPath(pathname)]))
+    )
+
     return (
         <aside
+            dir="ltr"
+            aria-label="Dashboard navigation"
             className={cn(
-                'sticky top-0 z-30 h-screen shrink-0 overflow-hidden border-l border-stone-200/70 bg-white shadow-[4px_0_24px_rgba(0,0,0,0.03)] transition-[width] duration-300 ease-in-out',
-                collapsed ? 'w-0 border-l-0 shadow-none' : 'w-60'
+                'sticky top-0 z-30 h-screen shrink-0 overflow-hidden border-r border-stone-200/70 bg-white transition-[width] duration-300 ease-in-out motion-reduce:transition-none',
+                collapsed ? 'w-0 border-r-0' : 'w-60'
             )}
         >
             <div className="flex h-screen w-60 flex-col">
@@ -134,10 +146,17 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-3 py-4 scrollbar-thin scrollbar-thumb-stone-200 scrollbar-track-transparent">
-                    <nav className="space-y-4">
-                        {visibleSections.map((section) => (
+                    <nav className="flex flex-col gap-4">
+                        {visibleSections.map((section) => {
+                            const isOpen = openSections[section.title] || section.title === sectionForPath(pathname)
+                            return (
                             <div key={section.title}>
-                                <div className="mb-1.5 flex items-center gap-1.5 px-1.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setOpenSections((current) => ({ ...current, [section.title]: !current[section.title] }))}
+                                    className="mb-1.5 flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left hover:bg-stone-50"
+                                    aria-expanded={isOpen}
+                                >
                                     {section.accent && <Trophy className="h-2.5 w-2.5 text-amber-500" />}
                                     <p
                                         className={cn(
@@ -147,17 +166,15 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
                                     >
                                         {section.title}
                                     </p>
-                                </div>
-                                <div
-                                    className={cn(
-                                        'space-y-1',
-                                        section.accent &&
-                                            'rounded-xl border border-amber-200/60 bg-[linear-gradient(160deg,rgba(255,251,235,0.6),rgba(255,255,255,0.4))] p-1'
-                                    )}
-                                >
+                                    <ChevronDown className={cn('ml-auto h-3.5 w-3.5 text-stone-400 transition-transform', !isOpen && '-rotate-90')} aria-hidden />
+                                </button>
+                                <div className={cn('flex flex-col gap-1 overflow-hidden transition-[max-height,opacity] duration-200', isOpen ? 'max-h-[36rem] opacity-100' : 'max-h-0 opacity-0')}>
                                     {section.items.map((item) => {
+                                        // Match nested pages only when the path boundary is explicit.
+                                        // Without the trailing slash check, /dashboard/team-tasks
+                                        // also activates /dashboard/team.
                                         const isActive = pathname === item.href ||
-                                            (item.href !== '/dashboard/home' && pathname.startsWith(item.href))
+                                            (item.href !== '/dashboard/home' && pathname.startsWith(`${item.href}/`))
 
                                         return (
                                             <Link
@@ -165,41 +182,43 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
                                                 href={item.href}
                                                 title={item.name}
                                                 className={cn(
-                                                    'group relative flex items-center gap-2.5 overflow-hidden rounded-xl px-2.5 py-2 text-[13px] font-medium transition-all duration-200',
+                                                    'group relative flex items-center gap-2.5 overflow-hidden rounded-lg px-2.5 py-2 text-[13px] font-medium transition-[background-color,border-color,color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B0000]/35',
                                                     isActive
-                                                        ? 'border border-blue-200/70 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] text-blue-700 shadow-[0_10px_20px_-16px_rgba(59,130,246,0.6)]'
+                                                        ? 'border border-red-200/70 bg-red-50/70 text-[#8B0000]'
                                                         : 'border border-transparent text-stone-500 hover:border-stone-200 hover:bg-white hover:text-stone-950'
                                                 )}
                                             >
                                                 {isActive && (
-                                                    <div className="absolute right-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-l-full bg-blue-600" />
+                                                    <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-[#8B0000]" aria-hidden />
                                                 )}
 
                                                 <item.icon className={cn(
                                                     'h-4 w-4 shrink-0 transition-colors duration-200',
-                                                    isActive ? 'text-blue-600' : 'text-stone-400 group-hover:text-stone-600'
+                                                    isActive ? 'text-[#8B0000]' : 'text-stone-400 group-hover:text-stone-600'
                                                 )} />
                                                 <span className="flex-1 truncate">{item.name}</span>
                                                 {isActive && (
-                                                    <ChevronLeft className="h-3.5 w-3.5 shrink-0 text-blue-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                                                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-red-400 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
                                                 )}
                                             </Link>
                                         )
                                     })}
                                 </div>
                             </div>
-                        ))}
+                            )
+                        })}
                     </nav>
                 </div>
 
+                <TaskAssignmentPrompt />
                 <div className="border-t border-stone-200/70 bg-white p-3">
-                    <div className="flex items-center gap-2 rounded-xl border border-amber-200/60 bg-[linear-gradient(135deg,rgba(255,251,235,0.7),rgba(255,255,255,0.9))] p-2">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#f59e0b,#d97706)] text-white">
-                            <Sparkles className="h-3.5 w-3.5" />
+                    <div className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 p-2">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-stone-900 text-white">
+                            <Sparkles className="h-3.5 w-3.5" aria-hidden />
                         </div>
                         <div className="min-w-0">
-                            <p className="truncate text-[11px] font-bold text-stone-800">فريق JAZ</p>
-                            <p className="truncate text-[9px] font-medium text-stone-500">كل مهمة تُنجَز خطوة نحو الهدف</p>
+                            <p className="truncate text-[11px] font-bold text-stone-800">JAZ Operations</p>
+                            <p className="truncate text-[9px] font-medium text-stone-500">Authorized staff workspace</p>
                         </div>
                     </div>
                 </div>

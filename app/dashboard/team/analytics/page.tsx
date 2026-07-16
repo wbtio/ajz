@@ -31,21 +31,23 @@ interface TeamMember {
 
 interface TeamTask {
     id: string
+    title: string
     category: string
     status: 'todo' | 'in_progress' | 'done'
     assignee: string | null
     due_date: string | null
     created_at: string
     completed_at: string | null
+    updated_at?: string | null
 }
 
 const categoryLabels: Record<string, string> = {
-    development: 'التطوير',
-    events: 'الفعاليات',
-    visas: 'الدعوات والتأشيرات',
-    partners: 'الشركاء',
-    marketing: 'التسويق',
-    general: 'عام',
+    development: 'Development',
+    events: 'Events',
+    visas: 'Invitations & visas',
+    partners: 'Partners',
+    marketing: 'Marketing',
+    general: 'General',
 }
 
 const PIE_COLORS = ['#6366f1', '#0ea5e9', '#f43f5e', '#14b8a6', '#d946ef', '#78716c']
@@ -117,17 +119,37 @@ export default function TeamAnalyticsPage() {
             const d = new Date()
             d.setDate(d.getDate() - i)
             d.setHours(0, 0, 0, 0)
-            buckets.push({ date: d.toISOString().slice(0, 10), label: formatDate(d).slice(5), completed: 0 })
+            buckets.push({ date: d.toISOString().slice(0, 10), label: formatDate(d).slice(5), completed: 0, created: 0, completionRate: 0 } as typeof buckets[number] & { created: number; completionRate: number })
         }
         const index = new Map(buckets.map((b, i) => [b.date, i]))
         for (const t of tasks) {
+            const createdIndex = index.get(t.created_at.slice(0, 10))
+            if (createdIndex !== undefined) (buckets[createdIndex] as typeof buckets[number] & { created: number }).created += 1
             if (!t.completed_at) continue
             const key = t.completed_at.slice(0, 10)
             const i = index.get(key)
             if (i !== undefined) buckets[i].completed += 1
         }
-        return buckets
+        return buckets.map((bucket) => ({
+            ...bucket,
+            completionRate: (bucket as typeof bucket & { created: number }).created > 0
+                ? Math.round((bucket.completed / (bucket as typeof bucket & { created: number }).created) * 100)
+                : 0,
+        }))
     }, [tasks])
+
+    const taskActivity = useMemo(() => {
+        const duration = (task: TeamTask) => {
+            if (!task.completed_at) return 'In progress'
+            const hours = (new Date(task.completed_at).getTime() - new Date(task.created_at).getTime()) / 3_600_000
+            return hours < 24 ? `${Math.max(1, Math.round(hours * 10) / 10)} h` : `${Math.round(hours / 24 * 10) / 10} d`
+        }
+        const memberName = new Map(members.map((member) => [member.full_name || member.email, member.full_name || member.email]))
+        return [...tasks]
+            .sort((a, b) => new Date(b.completed_at || b.updated_at || b.created_at).getTime() - new Date(a.completed_at || a.updated_at || a.created_at).getTime())
+            .slice(0, 20)
+            .map((task) => ({ ...task, memberName: memberName.get(task.assignee || '') || task.assignee || 'Unassigned', duration: duration(task) }))
+    }, [members, tasks])
 
     const categoryBreakdown = useMemo(() => {
         const counts = new Map<string, number>()
@@ -149,19 +171,19 @@ export default function TeamAnalyticsPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5" dir="ltr">
             <div className="flex items-center gap-3">
                 <Link href="/dashboard/team">
                     <button className="flex items-center gap-1 rounded-xl px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-100">
                         <ArrowRight className="w-4 h-4" />
-                        الفريق
+                        Team members
                     </button>
                 </Link>
             </div>
 
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">لوحة أداء الفريق</h1>
-                <p className="text-sm text-gray-500 mt-1">نظرة تحليلية على إنتاجية الفريق وإنجاز المهام</p>
+                <h1 className="text-2xl font-bold text-gray-900">Team Analytics</h1>
+                <p className="text-sm text-gray-500 mt-1">A clear view of team productivity and task delivery</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -172,7 +194,7 @@ export default function TeamAnalyticsPage() {
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{overall.total}</div>
-                            <div className="text-xs text-gray-500">إجمالي المهام</div>
+                            <div className="text-xs text-gray-500">Total tasks</div>
                         </div>
                     </CardContent>
                 </Card>
@@ -183,7 +205,7 @@ export default function TeamAnalyticsPage() {
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{overall.rate}%</div>
-                            <div className="text-xs text-gray-500">نسبة الإنجاز الكلية</div>
+                            <div className="text-xs text-gray-500">Completion rate</div>
                         </div>
                     </CardContent>
                 </Card>
@@ -193,8 +215,8 @@ export default function TeamAnalyticsPage() {
                             <Clock className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
-                            <div className="text-xl font-bold text-gray-900">{overall.avgHours || '-'}{overall.avgHours ? ' س' : ''}</div>
-                            <div className="text-xs text-gray-500">متوسط وقت الإنجاز</div>
+                            <div className="text-xl font-bold text-gray-900">{overall.avgHours || '-'}{overall.avgHours ? ' h' : ''}</div>
+                            <div className="text-xs text-gray-500">Average completion time</div>
                         </div>
                     </CardContent>
                 </Card>
@@ -205,7 +227,7 @@ export default function TeamAnalyticsPage() {
                         </div>
                         <div>
                             <div className="text-xl font-bold text-gray-900">{overall.overdue}</div>
-                            <div className="text-xs text-gray-500">مهام متأخرة</div>
+                            <div className="text-xs text-gray-500">Overdue tasks</div>
                         </div>
                     </CardContent>
                 </Card>
@@ -214,8 +236,8 @@ export default function TeamAnalyticsPage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardTitle className="text-base">الإنجاز خلال آخر 14 يوم</CardTitle>
-                        <CardDescription>عدد المهام المُنجزة يوميًا</CardDescription>
+                        <CardTitle className="text-base">Completed in the last 14 days</CardTitle>
+                        <CardDescription>Tasks completed per day</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="h-[280px] w-full">
@@ -225,7 +247,7 @@ export default function TeamAnalyticsPage() {
                                     <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                                     <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                                     <Tooltip />
-                                    <Line type="monotone" dataKey="completed" name="مُنجزة" stroke="#059669" strokeWidth={2} dot={false} />
+                                    <Line type="monotone" dataKey="completed" name="Completed" stroke="#059669" strokeWidth={2} dot={false} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -234,12 +256,12 @@ export default function TeamAnalyticsPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">توزيع المهام حسب التصنيف</CardTitle>
+                        <CardTitle className="text-base">Tasks by category</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="h-[280px] w-full">
                             {categoryBreakdown.length === 0 ? (
-                                <div className="flex h-full items-center justify-center text-sm text-gray-400">لا توجد بيانات</div>
+                                <div className="flex h-full items-center justify-center text-sm text-gray-400">No task data available</div>
                             ) : (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -260,12 +282,66 @@ export default function TeamAnalyticsPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">لوحة صدارة الأعضاء</CardTitle>
-                    <CardDescription>ترتيب حسب عدد المهام المُنجزة</CardDescription>
+                    <CardTitle className="text-base">Daily completion rate</CardTitle>
+                    <CardDescription>Completed tasks compared with tasks created each day</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-[240px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={trend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                                <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
+                                <Tooltip formatter={(value) => [`${value}%`, 'Completion rate']} />
+                                <Line type="monotone" dataKey="completionRate" name="Completion rate" stroke="#2563eb" strokeWidth={2} dot={{ r: 2 }} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Task activity log</CardTitle>
+                    <CardDescription>Recent work completed or updated by each team member</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[720px]">
+                            <thead className="border-y bg-gray-50">
+                                <tr>
+                                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">Task</th>
+                                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">Member</th>
+                                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">Status</th>
+                                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">Duration</th>
+                                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">Completed</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y">
+                                {taskActivity.map((task) => (
+                                    <tr key={task.id} className="hover:bg-gray-50">
+                                        <td className="px-4 py-3 text-sm font-medium text-gray-800">{task.title || 'Untitled task'}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-600">{task.memberName}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-600">{task.status === 'done' ? 'Completed' : task.status === 'in_progress' ? 'In progress' : 'To do'}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-600">{task.duration}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-500">{task.completed_at ? formatDate(task.completed_at) : '—'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        {taskActivity.length === 0 && <div className="p-8 text-center text-sm text-gray-400">No task activity yet</div>}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Member leaderboard</CardTitle>
+                    <CardDescription>Ranked by completed tasks</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
                     {leaderboard.length === 0 ? (
-                        <div className="p-8 text-center text-gray-400 text-sm">لا توجد مهام مسندة بعد</div>
+                        <div className="p-8 text-center text-gray-400 text-sm">No assigned tasks yet</div>
                     ) : (
                         <>
                             <div className="w-full px-4 pt-4" style={{ height: Math.max(200, leaderboard.length * 44) }}>
@@ -279,7 +355,7 @@ export default function TeamAnalyticsPage() {
                                         <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
                                         <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
                                         <Tooltip />
-                                        <Bar dataKey="done" name="مُنجزة" fill="#2563eb" radius={[0, 6, 6, 0]} barSize={18} />
+                                        <Bar dataKey="done" name="Completed" fill="#2563eb" radius={[0, 6, 6, 0]} barSize={18} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -288,11 +364,11 @@ export default function TeamAnalyticsPage() {
                                 <table className="w-full">
                                     <thead className="bg-gray-50 border-y">
                                         <tr>
-                                            <th className="text-right py-2.5 px-4 text-xs font-medium text-gray-500">العضو</th>
-                                            <th className="text-right py-2.5 px-4 text-xs font-medium text-gray-500">الإجمالي</th>
-                                            <th className="text-right py-2.5 px-4 text-xs font-medium text-gray-500">المُنجزة</th>
-                                            <th className="text-right py-2.5 px-4 text-xs font-medium text-gray-500">نسبة الإنجاز</th>
-                                            <th className="text-right py-2.5 px-4 text-xs font-medium text-gray-500">متأخرة</th>
+                                            <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Member</th>
+                                            <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Total</th>
+                                            <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Completed</th>
+                                            <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Completion rate</th>
+                                            <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Overdue</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y">

@@ -20,13 +20,14 @@ export default async function CaseDetailsPage({ params }: { params: Promise<{ id
         redirect('/dashboard/home')
     }
 
-    // التسجيل مع الفعالية والموظف
+    // التسجيل مع الفعالية والموظف والعميل المستقل
     const { data: registration } = await supabase
         .from('registrations')
         .select(`
             *,
             events(id, title, title_ar, date, end_date, country, country_ar, location, location_ar, sector, status),
-            employee:users!registrations_assigned_employee_id_fkey(id, full_name, email)
+            employee:users!registrations_assigned_employee_id_fkey(id, full_name, email),
+            clients(*)
         `)
         .eq('id', id)
         .maybeSingle()

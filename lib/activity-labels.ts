@@ -51,6 +51,18 @@ export function describeActivity(e: ActivityEvent): string {
       return `حذف مهمة: ${title ?? ""}`;
     case "team_task_edited":
       return `عدّل تفاصيل مهمة: ${title ?? ""}`;
+    case "registration_visa_updated":
+      return `حدّث تفاصيل التأشيرة في الطلب: ${String(meta.description ?? "")}`;
+    case "registration_payment_updated":
+      return `حدّث بيانات الدفع في الطلب: ${String(meta.description ?? "")}`;
+    case "registration_document_uploaded":
+      return `رفع وثيقة في الطلب: ${String(meta.description ?? "")}`;
+    case "registration_client_updated":
+      return `حدّث بيانات العميل في الطلب: ${String(meta.description ?? "")}`;
+    case "registration_status_changed":
+      return `غيّر حالة الطلب: ${String(meta.description ?? "")}`;
+    case "registration_case_created":
+      return `أنشأ طلباً جديداً: ${String(meta.description ?? "")}`;
     default:
       return e.event_type;
   }

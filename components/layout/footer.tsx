@@ -72,8 +72,9 @@ export function Footer() {
   const normalizedPathname = pathname?.toLowerCase() ?? ''
   const isEventDetailsPage = /^\/events\/[^/]+\/?$/.test(normalizedPathname)
   const isDepartmentsPage = normalizedPathname === '/departments'
+  const isChromeHidden = typeof document !== 'undefined' && document.body.classList.contains('admin-login-surface')
 
-  if (normalizedPathname.startsWith('/dashboard') || isEventDetailsPage) {
+  if (normalizedPathname.startsWith('/dashboard') || normalizedPathname.startsWith('/admin-login') || isEventDetailsPage || isChromeHidden) {
     return null
   }
 
@@ -266,4 +267,3 @@ export function Footer() {
     </footer>
   )
 }
-

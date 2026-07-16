@@ -8,7 +8,6 @@ import { Icon as Iconify } from '@iconify/react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
-import { UserNotificationsBell } from '@/components/layout/user-notifications-bell'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type CurrentUser = {
@@ -329,8 +328,7 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
               {/* Auth actions */}
               {currentUser ? (
                 <>
-                {/* Logged in → notifications + avatar dropdown */}
-                <UserNotificationsBell isRtl={isRtl} />
+                {/* Logged in user avatar dropdown */}
                 <div className="relative" ref={userMenuRef}>
                   <button
                     type="button"

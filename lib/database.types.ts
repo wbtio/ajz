@@ -47,6 +47,577 @@ export type Database = {
         }
         Relationships: []
       }
+      case_documents: {
+        Row: {
+          case_id: string
+          created_at: string
+          doc_type: string
+          file_url: string
+          id: string
+          label: string | null
+          notes: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          doc_type: string
+          file_url: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          doc_type?: string
+          file_url?: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_documents_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "participation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_events: {
+        Row: {
+          action: string
+          case_id: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          performed_by: string | null
+          performed_by_name: string | null
+        }
+        Insert: {
+          action: string
+          case_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+        }
+        Update: {
+          action?: string
+          case_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_events_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "participation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_events_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_invitations: {
+        Row: {
+          case_id: string
+          created_at: string
+          id: string
+          invitation_number: string | null
+          invitation_required: boolean | null
+          invitation_type: string | null
+          issue_date: string | null
+          notes: string | null
+          organizer_contact: string | null
+          pdf_url: string | null
+          request_date: string | null
+          requested_from: string | null
+          status: string | null
+          travel_end_date: string | null
+          travel_start_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          id?: string
+          invitation_number?: string | null
+          invitation_required?: boolean | null
+          invitation_type?: string | null
+          issue_date?: string | null
+          notes?: string | null
+          organizer_contact?: string | null
+          pdf_url?: string | null
+          request_date?: string | null
+          requested_from?: string | null
+          status?: string | null
+          travel_end_date?: string | null
+          travel_start_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          id?: string
+          invitation_number?: string | null
+          invitation_required?: boolean | null
+          invitation_type?: string | null
+          issue_date?: string | null
+          notes?: string | null
+          organizer_contact?: string | null
+          pdf_url?: string | null
+          request_date?: string | null
+          requested_from?: string | null
+          status?: string | null
+          travel_end_date?: string | null
+          travel_start_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_invitations_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: true
+            referencedRelation: "participation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_payments: {
+        Row: {
+          amount_paid: number | null
+          case_id: string
+          created_at: string
+          currency: string | null
+          discount_amount: number | null
+          discount_approved_by: string | null
+          discount_reason: string | null
+          final_price: number | null
+          id: string
+          notes: string | null
+          payment_date: string | null
+          payment_method: string | null
+          payment_status: string | null
+          receipt_number: string | null
+          receipt_url: string | null
+          received_by: string | null
+          service_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number | null
+          case_id: string
+          created_at?: string
+          currency?: string | null
+          discount_amount?: number | null
+          discount_approved_by?: string | null
+          discount_reason?: string | null
+          final_price?: number | null
+          id?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          receipt_number?: string | null
+          receipt_url?: string | null
+          received_by?: string | null
+          service_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number | null
+          case_id?: string
+          created_at?: string
+          currency?: string | null
+          discount_amount?: number | null
+          discount_approved_by?: string | null
+          discount_reason?: string | null
+          final_price?: number | null
+          id?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          receipt_number?: string | null
+          receipt_url?: string | null
+          received_by?: string | null
+          service_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_payments_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: true
+            referencedRelation: "participation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_payments_discount_approved_by_fkey"
+            columns: ["discount_approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_payments_received_by_fkey"
+            columns: ["received_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_registrations: {
+        Row: {
+          account_email: string | null
+          badge_name: string | null
+          badge_number: string | null
+          badge_pdf_url: string | null
+          case_id: string
+          company_name_used: string | null
+          confirmation_email: string | null
+          confirmation_number: string | null
+          created_at: string
+          id: string
+          job_title_used: string | null
+          notes: string | null
+          registration_date: string | null
+          registration_reference: string | null
+          registration_type: string | null
+          registration_website: string | null
+          screenshot_url: string | null
+          status: string | null
+          updated_at: string
+          visitor_category: string | null
+        }
+        Insert: {
+          account_email?: string | null
+          badge_name?: string | null
+          badge_number?: string | null
+          badge_pdf_url?: string | null
+          case_id: string
+          company_name_used?: string | null
+          confirmation_email?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          id?: string
+          job_title_used?: string | null
+          notes?: string | null
+          registration_date?: string | null
+          registration_reference?: string | null
+          registration_type?: string | null
+          registration_website?: string | null
+          screenshot_url?: string | null
+          status?: string | null
+          updated_at?: string
+          visitor_category?: string | null
+        }
+        Update: {
+          account_email?: string | null
+          badge_name?: string | null
+          badge_number?: string | null
+          badge_pdf_url?: string | null
+          case_id?: string
+          company_name_used?: string | null
+          confirmation_email?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          id?: string
+          job_title_used?: string | null
+          notes?: string | null
+          registration_date?: string | null
+          registration_reference?: string | null
+          registration_type?: string | null
+          registration_website?: string | null
+          screenshot_url?: string | null
+          status?: string | null
+          updated_at?: string
+          visitor_category?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_registrations_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: true
+            referencedRelation: "participation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_visas: {
+        Row: {
+          account_setup_complete: boolean | null
+          application_start_date: string | null
+          application_status: string | null
+          appointment_booked: boolean | null
+          appointment_pdf_url: string | null
+          appointment_reference: string | null
+          case_id: string
+          created_at: string
+          destination_country: string | null
+          france_visas_account_status: string | null
+          france_visas_number: string | null
+          id: string
+          insurance_amount: number | null
+          insurance_company: string | null
+          insurance_coverage_end: string | null
+          insurance_coverage_start: string | null
+          insurance_pdf_url: string | null
+          insurance_policy_number: string | null
+          notes: string | null
+          tls_account_status: string | null
+          tls_appointment_date: string | null
+          tls_center: string | null
+          updated_at: string
+          visa_approved: boolean | null
+          visa_decision_date: string | null
+        }
+        Insert: {
+          account_setup_complete?: boolean | null
+          application_start_date?: string | null
+          application_status?: string | null
+          appointment_booked?: boolean | null
+          appointment_pdf_url?: string | null
+          appointment_reference?: string | null
+          case_id: string
+          created_at?: string
+          destination_country?: string | null
+          france_visas_account_status?: string | null
+          france_visas_number?: string | null
+          id?: string
+          insurance_amount?: number | null
+          insurance_company?: string | null
+          insurance_coverage_end?: string | null
+          insurance_coverage_start?: string | null
+          insurance_pdf_url?: string | null
+          insurance_policy_number?: string | null
+          notes?: string | null
+          tls_account_status?: string | null
+          tls_appointment_date?: string | null
+          tls_center?: string | null
+          updated_at?: string
+          visa_approved?: boolean | null
+          visa_decision_date?: string | null
+        }
+        Update: {
+          account_setup_complete?: boolean | null
+          application_start_date?: string | null
+          application_status?: string | null
+          appointment_booked?: boolean | null
+          appointment_pdf_url?: string | null
+          appointment_reference?: string | null
+          case_id?: string
+          created_at?: string
+          destination_country?: string | null
+          france_visas_account_status?: string | null
+          france_visas_number?: string | null
+          id?: string
+          insurance_amount?: number | null
+          insurance_company?: string | null
+          insurance_coverage_end?: string | null
+          insurance_coverage_start?: string | null
+          insurance_pdf_url?: string | null
+          insurance_policy_number?: string | null
+          notes?: string | null
+          tls_account_status?: string | null
+          tls_appointment_date?: string | null
+          tls_center?: string | null
+          updated_at?: string
+          visa_approved?: boolean | null
+          visa_decision_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_visas_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: true
+            referencedRelation: "participation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          alt_phone: string | null
+          city: string | null
+          company_website: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string | null
+          department: string | null
+          email: string | null
+          employer_name: string | null
+          first_name: string | null
+          full_address: string | null
+          full_name_as_passport: string
+          id: string
+          job_title: string | null
+          last_name: string | null
+          linked_user_id: string | null
+          marital_status: string | null
+          national_id: string | null
+          nationality: string | null
+          notes: string | null
+          other_residence_permit: Json | null
+          passport_copy_url: string | null
+          passport_expiry_date: string | null
+          passport_history: Json | null
+          passport_issue_date: string | null
+          passport_number: string | null
+          passport_place_of_issue: string | null
+          passport_type: string | null
+          phone: string | null
+          place_of_birth: string | null
+          previous_schengen_visa: boolean | null
+          professional_specialty: string | null
+          residence_country: string | null
+          schengen_visas_last_5y: Json | null
+          sex: string | null
+          title_salutation: string | null
+          updated_at: string
+          whatsapp_number: string | null
+          work_address: string | null
+          work_city: string | null
+          work_email: string | null
+          work_governorate: string | null
+          work_phone: string | null
+          workplace_type: string | null
+        }
+        Insert: {
+          alt_phone?: string | null
+          city?: string | null
+          company_website?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          department?: string | null
+          email?: string | null
+          employer_name?: string | null
+          first_name?: string | null
+          full_address?: string | null
+          full_name_as_passport: string
+          id?: string
+          job_title?: string | null
+          last_name?: string | null
+          linked_user_id?: string | null
+          marital_status?: string | null
+          national_id?: string | null
+          nationality?: string | null
+          notes?: string | null
+          other_residence_permit?: Json | null
+          passport_copy_url?: string | null
+          passport_expiry_date?: string | null
+          passport_history?: Json | null
+          passport_issue_date?: string | null
+          passport_number?: string | null
+          passport_place_of_issue?: string | null
+          passport_type?: string | null
+          phone?: string | null
+          place_of_birth?: string | null
+          previous_schengen_visa?: boolean | null
+          professional_specialty?: string | null
+          residence_country?: string | null
+          schengen_visas_last_5y?: Json | null
+          sex?: string | null
+          title_salutation?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+          work_address?: string | null
+          work_city?: string | null
+          work_email?: string | null
+          work_governorate?: string | null
+          work_phone?: string | null
+          workplace_type?: string | null
+        }
+        Update: {
+          alt_phone?: string | null
+          city?: string | null
+          company_website?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          department?: string | null
+          email?: string | null
+          employer_name?: string | null
+          first_name?: string | null
+          full_address?: string | null
+          full_name_as_passport?: string
+          id?: string
+          job_title?: string | null
+          last_name?: string | null
+          linked_user_id?: string | null
+          marital_status?: string | null
+          national_id?: string | null
+          nationality?: string | null
+          notes?: string | null
+          other_residence_permit?: Json | null
+          passport_copy_url?: string | null
+          passport_expiry_date?: string | null
+          passport_history?: Json | null
+          passport_issue_date?: string | null
+          passport_number?: string | null
+          passport_place_of_issue?: string | null
+          passport_type?: string | null
+          phone?: string | null
+          place_of_birth?: string | null
+          previous_schengen_visa?: boolean | null
+          professional_specialty?: string | null
+          residence_country?: string | null
+          schengen_visas_last_5y?: Json | null
+          sex?: string | null
+          title_salutation?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+          work_address?: string | null
+          work_city?: string | null
+          work_email?: string | null
+          work_governorate?: string | null
+          work_phone?: string | null
+          workplace_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_linked_user_id_fkey"
+            columns: ["linked_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conference_sections: {
         Row: {
           color: string | null
@@ -63,6 +634,7 @@ export type Database = {
           title_ar: string
           title_en: string
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           color?: string | null
@@ -79,6 +651,7 @@ export type Database = {
           title_ar: string
           title_en: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           color?: string | null
@@ -95,6 +668,7 @@ export type Database = {
           title_ar?: string
           title_en?: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -414,6 +988,7 @@ export type Database = {
           title: string
           title_ar: string | null
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           awards?: Json | null
@@ -449,6 +1024,7 @@ export type Database = {
           title: string
           title_ar?: string | null
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           awards?: Json | null
@@ -484,6 +1060,7 @@ export type Database = {
           title?: string
           title_ar?: string | null
           updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -761,6 +1338,120 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participation_cases: {
+        Row: {
+          assigned_employee_id: string | null
+          branch: string | null
+          campaign_name: string | null
+          case_number: string
+          client_id: string
+          closed_at: string | null
+          closure_reason: string | null
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          discount_amount: number | null
+          discount_approved_by: string | null
+          discount_reason: string | null
+          event_id: string
+          final_price: number | null
+          id: string
+          payment_method: string | null
+          payment_status: string | null
+          service_package: string | null
+          service_price: number | null
+          source: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_employee_id?: string | null
+          branch?: string | null
+          campaign_name?: string | null
+          case_number: string
+          client_id: string
+          closed_at?: string | null
+          closure_reason?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          discount_amount?: number | null
+          discount_approved_by?: string | null
+          discount_reason?: string | null
+          event_id: string
+          final_price?: number | null
+          id?: string
+          payment_method?: string | null
+          payment_status?: string | null
+          service_package?: string | null
+          service_price?: number | null
+          source?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_employee_id?: string | null
+          branch?: string | null
+          campaign_name?: string | null
+          case_number?: string
+          client_id?: string
+          closed_at?: string | null
+          closure_reason?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          discount_amount?: number | null
+          discount_approved_by?: string | null
+          discount_reason?: string | null
+          event_id?: string
+          final_price?: number | null
+          id?: string
+          payment_method?: string | null
+          payment_status?: string | null
+          service_package?: string | null
+          service_price?: number | null
+          source?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participation_cases_assigned_employee_id_fkey"
+            columns: ["assigned_employee_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participation_cases_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participation_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participation_cases_discount_approved_by_fkey"
+            columns: ["discount_approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participation_cases_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -1055,6 +1746,54 @@ export type Database = {
           },
         ]
       }
+      registration_events: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          performed_by: string | null
+          performed_by_name: string | null
+          registration_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+          registration_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+          registration_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_events_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registration_events_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           additional_data: Json | null
@@ -1063,6 +1802,8 @@ export type Database = {
           case_number: string | null
           case_source: string | null
           case_status: string | null
+          client_id: string | null
+          client_snapshot: Json | null
           created_at: string | null
           current_step: number
           documents: Json
@@ -1088,6 +1829,8 @@ export type Database = {
           case_number?: string | null
           case_source?: string | null
           case_status?: string | null
+          client_id?: string | null
+          client_snapshot?: Json | null
           created_at?: string | null
           current_step?: number
           documents?: Json
@@ -1113,6 +1856,8 @@ export type Database = {
           case_number?: string | null
           case_source?: string | null
           case_status?: string | null
+          client_id?: string | null
+          client_snapshot?: Json | null
           created_at?: string | null
           current_step?: number
           documents?: Json
@@ -1133,6 +1878,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "registrations_assigned_employee_id_fkey"
+            columns: ["assigned_employee_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "registrations_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
@@ -1142,61 +1901,6 @@ export type Database = {
           {
             foreignKeyName: "registrations_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "registrations_assigned_employee_id_fkey"
-            columns: ["assigned_employee_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      registration_events: {
-        Row: {
-          id: string
-          registration_id: string
-          action: string
-          description: string | null
-          performed_by: string | null
-          performed_by_name: string | null
-          metadata: Json | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          registration_id: string
-          action: string
-          description?: string | null
-          performed_by?: string | null
-          performed_by_name?: string | null
-          metadata?: Json | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          registration_id?: string
-          action?: string
-          description?: string | null
-          performed_by?: string | null
-          performed_by_name?: string | null
-          metadata?: Json | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "registration_events_registration_id_fkey"
-            columns: ["registration_id"]
-            isOneToOne: false
-            referencedRelation: "registrations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "registration_events_performed_by_fkey"
-            columns: ["performed_by"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -1492,6 +2196,7 @@ export type Database = {
       team_tasks: {
         Row: {
           assignee: string | null
+          attachments: Json | null
           category: string
           completed_at: string | null
           completed_by: string | null
@@ -1507,6 +2212,7 @@ export type Database = {
         }
         Insert: {
           assignee?: string | null
+          attachments?: Json | null
           category?: string
           completed_at?: string | null
           completed_by?: string | null
@@ -1522,6 +2228,7 @@ export type Database = {
         }
         Update: {
           assignee?: string | null
+          attachments?: Json | null
           category?: string
           completed_at?: string | null
           completed_by?: string | null
@@ -1676,648 +2383,182 @@ export type Database = {
           },
         ]
       }
-      // ─── نظام إدارة ملفات المشاركة (Participation Case Management) ───
-      clients: {
+      visa_availability_logs: {
         Row: {
-          id: string
-          full_name_as_passport: string
-          first_name: string | null
-          last_name: string | null
-          date_of_birth: string | null
-          place_of_birth: string | null
-          sex: string | null
-          nationality: string | null
-          marital_status: string | null
-          residence_country: string | null
-          city: string | null
-          full_address: string | null
-          passport_number: string | null
-          passport_type: string | null
-          passport_issue_date: string | null
-          passport_expiry_date: string | null
-          passport_place_of_issue: string | null
-          passport_copy_url: string | null
-          email: string | null
-          phone: string | null
-          whatsapp_number: string | null
-          alt_phone: string | null
-          employer_name: string | null
-          workplace_type: string | null
-          work_address: string | null
-          work_city: string | null
-          work_governorate: string | null
-          job_title: string | null
-          department: string | null
-          professional_specialty: string | null
-          work_phone: string | null
-          work_email: string | null
-          company_website: string | null
-          previous_schengen_visa: boolean | null
-          schengen_visas_last_5y: Json | null
-          other_residence_permit: Json | null
-          linked_user_id: string | null
-          notes: string | null
-          created_by: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          full_name_as_passport: string
-          first_name?: string | null
-          last_name?: string | null
-          date_of_birth?: string | null
-          place_of_birth?: string | null
-          sex?: string | null
-          nationality?: string | null
-          marital_status?: string | null
-          residence_country?: string | null
-          city?: string | null
-          full_address?: string | null
-          passport_number?: string | null
-          passport_type?: string | null
-          passport_issue_date?: string | null
-          passport_expiry_date?: string | null
-          passport_place_of_issue?: string | null
-          passport_copy_url?: string | null
-          email?: string | null
-          phone?: string | null
-          whatsapp_number?: string | null
-          alt_phone?: string | null
-          employer_name?: string | null
-          workplace_type?: string | null
-          work_address?: string | null
-          work_city?: string | null
-          work_governorate?: string | null
-          job_title?: string | null
-          department?: string | null
-          professional_specialty?: string | null
-          work_phone?: string | null
-          work_email?: string | null
-          company_website?: string | null
-          previous_schengen_visa?: boolean | null
-          schengen_visas_last_5y?: Json | null
-          other_residence_permit?: Json | null
-          linked_user_id?: string | null
-          notes?: string | null
-          created_by?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          full_name_as_passport?: string
-          first_name?: string | null
-          last_name?: string | null
-          date_of_birth?: string | null
-          place_of_birth?: string | null
-          sex?: string | null
-          nationality?: string | null
-          marital_status?: string | null
-          residence_country?: string | null
-          city?: string | null
-          full_address?: string | null
-          passport_number?: string | null
-          passport_type?: string | null
-          passport_issue_date?: string | null
-          passport_expiry_date?: string | null
-          passport_place_of_issue?: string | null
-          passport_copy_url?: string | null
-          email?: string | null
-          phone?: string | null
-          whatsapp_number?: string | null
-          alt_phone?: string | null
-          employer_name?: string | null
-          workplace_type?: string | null
-          work_address?: string | null
-          work_city?: string | null
-          work_governorate?: string | null
-          job_title?: string | null
-          department?: string | null
-          professional_specialty?: string | null
-          work_phone?: string | null
-          work_email?: string | null
-          company_website?: string | null
-          previous_schengen_visa?: boolean | null
-          schengen_visas_last_5y?: Json | null
-          other_residence_permit?: Json | null
-          linked_user_id?: string | null
-          notes?: string | null
-          created_by?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clients_linked_user_id_fkey"
-            columns: ["linked_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "clients_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      participation_cases: {
-        Row: {
-          id: string
-          case_number: string
-          client_id: string
-          event_id: string
-          assigned_employee_id: string | null
-          branch: string | null
-          source: string | null
-          campaign_name: string | null
-          service_package: string | null
-          service_price: number | null
-          discount_amount: number | null
-          discount_reason: string | null
-          discount_approved_by: string | null
-          final_price: number | null
-          currency: string | null
-          payment_method: string | null
-          payment_status: string | null
-          status: string | null
-          closure_reason: string | null
-          closed_at: string | null
-          created_by: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          case_number?: string
-          client_id: string
-          event_id: string
-          assigned_employee_id?: string | null
-          branch?: string | null
-          source?: string | null
-          campaign_name?: string | null
-          service_package?: string | null
-          service_price?: number | null
-          discount_amount?: number | null
-          discount_reason?: string | null
-          discount_approved_by?: string | null
-          final_price?: number | null
-          currency?: string | null
-          payment_method?: string | null
-          payment_status?: string | null
-          status?: string | null
-          closure_reason?: string | null
-          closed_at?: string | null
-          created_by?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          case_number?: string
-          client_id?: string
-          event_id?: string
-          assigned_employee_id?: string | null
-          branch?: string | null
-          source?: string | null
-          campaign_name?: string | null
-          service_package?: string | null
-          service_price?: number | null
-          discount_amount?: number | null
-          discount_reason?: string | null
-          discount_approved_by?: string | null
-          final_price?: number | null
-          currency?: string | null
-          payment_method?: string | null
-          payment_status?: string | null
-          status?: string | null
-          closure_reason?: string | null
-          closed_at?: string | null
-          created_by?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "participation_cases_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "participation_cases_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "participation_cases_assigned_employee_id_fkey"
-            columns: ["assigned_employee_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      case_events: {
-        Row: {
-          id: string
-          case_id: string
           action: string
-          description: string | null
+          center_id: string
+          created_at: string
+          id: string
           performed_by: string | null
-          performed_by_name: string | null
-          metadata: Json | null
-          created_at: string | null
+          performed_by_name: string
+          registration_id: string | null
+          screenshot_url: string | null
         }
         Insert: {
-          id?: string
-          case_id: string
           action: string
-          description?: string | null
+          center_id: string
+          created_at?: string
+          id?: string
           performed_by?: string | null
-          performed_by_name?: string | null
-          metadata?: Json | null
-          created_at?: string | null
+          performed_by_name: string
+          registration_id?: string | null
+          screenshot_url?: string | null
         }
         Update: {
-          id?: string
-          case_id?: string
           action?: string
-          description?: string | null
+          center_id?: string
+          created_at?: string
+          id?: string
           performed_by?: string | null
-          performed_by_name?: string | null
-          metadata?: Json | null
-          created_at?: string | null
+          performed_by_name?: string
+          registration_id?: string | null
+          screenshot_url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "case_events_case_id_fkey"
-            columns: ["case_id"]
+            foreignKeyName: "visa_availability_logs_center_id_fkey"
+            columns: ["center_id"]
             isOneToOne: false
-            referencedRelation: "participation_cases"
+            referencedRelation: "visa_centers"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "case_events_performed_by_fkey"
+            foreignKeyName: "visa_availability_logs_performed_by_fkey"
             columns: ["performed_by"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      // ─── جداول تبويبات ملف المشاركة (المرحلة 2) ───
-      case_payments: {
-        Row: {
-          id: string
-          case_id: string
-          service_price: number | null
-          discount_amount: number | null
-          discount_reason: string | null
-          discount_approved_by: string | null
-          final_price: number | null
-          currency: string | null
-          payment_method: string | null
-          payment_status: string | null
-          amount_paid: number | null
-          payment_date: string | null
-          receipt_number: string | null
-          receipt_url: string | null
-          received_by: string | null
-          notes: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          case_id: string
-          service_price?: number | null
-          discount_amount?: number | null
-          discount_reason?: string | null
-          discount_approved_by?: string | null
-          final_price?: number | null
-          currency?: string | null
-          payment_method?: string | null
-          payment_status?: string | null
-          amount_paid?: number | null
-          payment_date?: string | null
-          receipt_number?: string | null
-          receipt_url?: string | null
-          received_by?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          case_id?: string
-          service_price?: number | null
-          discount_amount?: number | null
-          discount_reason?: string | null
-          discount_approved_by?: string | null
-          final_price?: number | null
-          currency?: string | null
-          payment_method?: string | null
-          payment_status?: string | null
-          amount_paid?: number | null
-          payment_date?: string | null
-          receipt_number?: string | null
-          receipt_url?: string | null
-          received_by?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "case_payments_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: true
-            referencedRelation: "participation_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      case_registrations: {
-        Row: {
-          id: string
-          case_id: string
-          registration_website: string | null
-          account_email: string | null
-          registration_date: string | null
-          registration_reference: string | null
-          registration_type: string | null
-          visitor_category: string | null
-          company_name_used: string | null
-          job_title_used: string | null
-          status: string | null
-          confirmation_number: string | null
-          confirmation_email: string | null
-          badge_name: string | null
-          badge_number: string | null
-          badge_pdf_url: string | null
-          screenshot_url: string | null
-          notes: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          case_id: string
-          registration_website?: string | null
-          account_email?: string | null
-          registration_date?: string | null
-          registration_reference?: string | null
-          registration_type?: string | null
-          visitor_category?: string | null
-          company_name_used?: string | null
-          job_title_used?: string | null
-          status?: string | null
-          confirmation_number?: string | null
-          confirmation_email?: string | null
-          badge_name?: string | null
-          badge_number?: string | null
-          badge_pdf_url?: string | null
-          screenshot_url?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          case_id?: string
-          registration_website?: string | null
-          account_email?: string | null
-          registration_date?: string | null
-          registration_reference?: string | null
-          registration_type?: string | null
-          visitor_category?: string | null
-          company_name_used?: string | null
-          job_title_used?: string | null
-          status?: string | null
-          confirmation_number?: string | null
-          confirmation_email?: string | null
-          badge_name?: string | null
-          badge_number?: string | null
-          badge_pdf_url?: string | null
-          screenshot_url?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "case_registrations_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: true
-            referencedRelation: "participation_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      case_invitations: {
-        Row: {
-          id: string
-          case_id: string
-          invitation_required: boolean | null
-          invitation_type: string | null
-          request_date: string | null
-          requested_from: string | null
-          organizer_contact: string | null
-          status: string | null
-          invitation_number: string | null
-          issue_date: string | null
-          travel_start_date: string | null
-          travel_end_date: string | null
-          pdf_url: string | null
-          notes: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          case_id: string
-          invitation_required?: boolean | null
-          invitation_type?: string | null
-          request_date?: string | null
-          requested_from?: string | null
-          organizer_contact?: string | null
-          status?: string | null
-          invitation_number?: string | null
-          issue_date?: string | null
-          travel_start_date?: string | null
-          travel_end_date?: string | null
-          pdf_url?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          case_id?: string
-          invitation_required?: boolean | null
-          invitation_type?: string | null
-          request_date?: string | null
-          requested_from?: string | null
-          organizer_contact?: string | null
-          status?: string | null
-          invitation_number?: string | null
-          issue_date?: string | null
-          travel_start_date?: string | null
-          travel_end_date?: string | null
-          pdf_url?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "case_invitations_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: true
-            referencedRelation: "participation_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      case_visas: {
-        Row: {
-          id: string
-          case_id: string
-          destination_country: string | null
-          france_visas_account_status: string | null
-          tls_account_status: string | null
-          account_setup_complete: boolean | null
-          france_visas_number: string | null
-          application_start_date: string | null
-          application_status: string | null
-          tls_appointment_date: string | null
-          tls_center: string | null
-          appointment_reference: string | null
-          appointment_pdf_url: string | null
-          appointment_booked: boolean | null
-          visa_approved: boolean | null
-          visa_decision_date: string | null
-          insurance_company: string | null
-          insurance_policy_number: string | null
-          insurance_coverage_start: string | null
-          insurance_coverage_end: string | null
-          insurance_amount: number | null
-          insurance_pdf_url: string | null
-          notes: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          case_id: string
-          destination_country?: string | null
-          france_visas_account_status?: string | null
-          tls_account_status?: string | null
-          account_setup_complete?: boolean | null
-          france_visas_number?: string | null
-          application_start_date?: string | null
-          application_status?: string | null
-          tls_appointment_date?: string | null
-          tls_center?: string | null
-          appointment_reference?: string | null
-          appointment_pdf_url?: string | null
-          appointment_booked?: boolean | null
-          visa_approved?: boolean | null
-          visa_decision_date?: string | null
-          insurance_company?: string | null
-          insurance_policy_number?: string | null
-          insurance_coverage_start?: string | null
-          insurance_coverage_end?: string | null
-          insurance_amount?: number | null
-          insurance_pdf_url?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          case_id?: string
-          destination_country?: string | null
-          france_visas_account_status?: string | null
-          tls_account_status?: string | null
-          account_setup_complete?: boolean | null
-          france_visas_number?: string | null
-          application_start_date?: string | null
-          application_status?: string | null
-          tls_appointment_date?: string | null
-          tls_center?: string | null
-          appointment_reference?: string | null
-          appointment_pdf_url?: string | null
-          appointment_booked?: boolean | null
-          visa_approved?: boolean | null
-          visa_decision_date?: string | null
-          insurance_company?: string | null
-          insurance_policy_number?: string | null
-          insurance_coverage_start?: string | null
-          insurance_coverage_end?: string | null
-          insurance_amount?: number | null
-          insurance_pdf_url?: string | null
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "case_visas_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: true
-            referencedRelation: "participation_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      case_documents: {
-        Row: {
-          id: string
-          case_id: string
-          doc_type: string
-          label: string | null
-          file_url: string
-          uploaded_by: string | null
-          notes: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          case_id: string
-          doc_type: string
-          label?: string | null
-          file_url: string
-          uploaded_by?: string | null
-          notes?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          case_id?: string
-          doc_type?: string
-          label?: string | null
-          file_url?: string
-          uploaded_by?: string | null
-          notes?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "case_documents_case_id_fkey"
-            columns: ["case_id"]
+            foreignKeyName: "visa_availability_logs_registration_id_fkey"
+            columns: ["registration_id"]
             isOneToOne: false
-            referencedRelation: "participation_cases"
+            referencedRelation: "registrations"
             referencedColumns: ["id"]
           },
         ]
+      }
+      visa_availability_slots: {
+        Row: {
+          assigned_registration_id: string | null
+          center_id: string
+          created_at: string
+          id: string
+          slot_date: string
+          slot_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_registration_id?: string | null
+          center_id: string
+          created_at?: string
+          id?: string
+          slot_date: string
+          slot_time: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_registration_id?: string | null
+          center_id?: string
+          created_at?: string
+          id?: string
+          slot_date?: string
+          slot_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visa_availability_slots_assigned_registration_id_fkey"
+            columns: ["assigned_registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visa_availability_slots_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "visa_centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visa_centers: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          id: string
+          last_updated: string
+          name: string
+          service: string
+          updated_by: string | null
+          updated_by_name: string | null
+          visa_category: string
+          visa_type: string
+          website_url: string | null
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          name: string
+          service?: string
+          updated_by?: string | null
+          updated_by_name?: string | null
+          visa_category: string
+          visa_type: string
+          website_url?: string | null
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          name?: string
+          service?: string
+          updated_by?: string | null
+          updated_by_name?: string | null
+          visa_category?: string
+          visa_type?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visa_centers_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visa_staff_notes: {
+        Row: {
+          created_at: string
+          id: string
+          note: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -2465,4 +2706,3 @@ export type Sector = Tables<'sectors'>
 export type User = Tables<'users'>
 export type Post = Tables<'posts'>
 export type Registration = Tables<'registrations'>
-

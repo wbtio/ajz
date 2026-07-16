@@ -18,6 +18,19 @@ async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClien
   return profile;
 }
 
+async function hasAttachmentsColumn(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data, error } = await supabase
+    .from("information_schema.columns")
+    .select("column_name")
+    .eq("table_schema", "public")
+    .eq("table_name", "team_tasks")
+    .eq("column_name", "attachments")
+    .maybeSingle();
+
+  if (error) return false;
+  return !!data;
+}
+
 function isOwner(profile: { full_name: string | null; email: string }, assignee: string | null) {
   return assignee !== null && (assignee === profile.full_name || assignee === profile.email);
 }
@@ -49,10 +62,13 @@ export async function PATCH(
   if (!isAdmin && !isOwner(profile, task.assignee)) {
     return NextResponse.json({ error: "هذه المهمة مسندة لعضو آخر" }, { status: 403 });
   }
+  const supportsAttachments = await hasAttachmentsColumn(supabase);
 
   // عضو الفريق يستطيع فقط تحديث حالة مهمته الخاصة، والمدير وحده يعدّل بقية الحقول
   const allowed = isAdmin
-    ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence"] as const)
+    ? (supportsAttachments
+      ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence", "attachments"] as const)
+      : (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence"] as const))
     : (["status"] as const);
 
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -82,18 +98,23 @@ export async function PATCH(
 
   // عند إنجاز مهمة متكررة، تُنشأ نسخة جديدة تلقائيًا بدل إعادة إضافتها يدويًا
   if (update.status === "done" && task.status !== "done" && isRecurrence(task.recurrence)) {
+    const nextInsert: Record<string, unknown> = {
+      title: task.title,
+      description: task.description,
+      category: task.category,
+      priority: task.priority,
+      status: "todo",
+      assignee: task.assignee,
+      due_date: nextDueDate(task.recurrence, task.due_date),
+      recurrence: task.recurrence,
+    };
+    if (supportsAttachments) {
+      nextInsert.attachments = task.attachments ?? [];
+    }
+
     const { data: nextTask } = await supabase
       .from("team_tasks")
-      .insert({
-        title: task.title,
-        description: task.description,
-        category: task.category,
-        priority: task.priority,
-        status: "todo",
-        assignee: task.assignee,
-        due_date: nextDueDate(task.recurrence, task.due_date),
-        recurrence: task.recurrence,
-      })
+      .insert(nextInsert)
       .select()
       .single();
 

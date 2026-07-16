@@ -1,10 +1,10 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
 import {
     FolderKanban,
     Plus,
@@ -17,90 +17,75 @@ import {
     Calendar,
 } from 'lucide-react'
 import { NewCaseDialog } from './new-case-dialog'
+import { cn } from '@/lib/utils'
 
 const STATUS_LABELS: Record<string, string> = {
-    new_request: 'طلب جديد',
-    data_incomplete: 'بيانات ناقصة',
-    data_complete: 'بيانات مكتملة',
-    payment_pending: 'بانتظار الدفع',
-    payment_confirmed: 'تم تأكيد الدفع',
-    registration_in_progress: 'التسجيل جارٍ',
-    under_review: 'تحت المراجعة',
-    invitation_requested: 'تم طلب الدعوة',
-    invitation_received: 'تم استلام الدعوة',
-    visa_in_progress: 'الفيزا قيد المعالجة',
-    appointment_booked: 'تم حجز الموعد',
-    final_qc: 'مراقبة الجودة',
-    correction_required: 'يلزم تصحيح',
-    completed: 'مكتمل',
-    on_hold: 'متوقف مؤقتاً',
-    cancelled: 'ملغي',
-    closed: 'مغلق',
+    new_request: 'New Request',
+    data_incomplete: 'Incomplete Data',
+    data_complete: 'Data Complete',
+    payment_pending: 'Payment Pending',
+    payment_confirmed: 'Payment Confirmed',
+    registration_in_progress: 'Registration In Progress',
+    under_review: 'Under Review',
+    invitation_requested: 'Invitation Requested',
+    invitation_received: 'Invitation Received',
+    visa_in_progress: 'Visa In Progress',
+    appointment_booked: 'Appointment Booked',
+    final_qc: 'Quality Control',
+    correction_required: 'Correction Required',
+    completed: 'Completed',
+    on_hold: 'On Hold',
+    cancelled: 'Cancelled',
+    closed: 'Closed',
 }
 
-const STATUS_COLORS: Record<string, string> = {
-    completed: 'bg-emerald-50 text-emerald-700',
-    cancelled: 'bg-rose-50 text-rose-700',
-    closed: 'bg-slate-100 text-slate-500',
-    on_hold: 'bg-amber-50 text-amber-700',
-    correction_required: 'bg-rose-50 text-rose-700',
-    payment_confirmed: 'bg-emerald-50 text-emerald-700',
+const STATUS_TONE: Record<string, 'success' | 'warn' | 'sovereign' | 'info' | 'muted'> = {
+    completed: 'success',
+    payment_confirmed: 'success',
+    closed: 'muted',
+    on_hold: 'warn',
+    correction_required: 'sovereign',
+    cancelled: 'sovereign',
 }
 
 const PAYMENT_LABELS: Record<string, string> = {
-    paid: 'مدفوع',
-    pending: 'بانتظار الدفع',
-    partially_paid: 'مدفوع جزئياً',
-    not_invoiced: 'بدون فاتورة',
+    paid: 'Paid',
+    pending: 'Pending',
+    partially_paid: 'Partially Paid',
+    not_invoiced: 'Not Invoiced',
 }
 
-const PAYMENT_COLORS: Record<string, string> = {
-    paid: 'bg-emerald-50 text-emerald-700',
-    pending: 'bg-amber-50 text-amber-700',
-    partially_paid: 'bg-amber-50 text-amber-700',
-    not_invoiced: 'bg-slate-100 text-slate-600',
+const PAYMENT_TONE: Record<string, 'success' | 'warn' | 'muted'> = {
+    paid: 'success',
+    pending: 'warn',
+    partially_paid: 'warn',
+    not_invoiced: 'muted',
 }
 
 const STATUS_FILTER_OPTIONS = [
-    { value: 'all', label: 'كل الحالات' },
-    { value: 'new_request', label: 'طلب جديد' },
-    { value: 'data_incomplete', label: 'بيانات ناقصة' },
-    { value: 'data_complete', label: 'بيانات مكتملة' },
-    { value: 'payment_pending', label: 'بانتظار الدفع' },
-    { value: 'payment_confirmed', label: 'تم تأكيد الدفع' },
-    { value: 'registration_in_progress', label: 'التسجيل جارٍ' },
-    { value: 'under_review', label: 'تحت المراجعة' },
-    { value: 'invitation_requested', label: 'تم طلب الدعوة' },
-    { value: 'invitation_received', label: 'تم استلام الدعوة' },
-    { value: 'visa_in_progress', label: 'الفيزا قيد المعالجة' },
-    { value: 'appointment_booked', label: 'تم حجز الموعد' },
-    { value: 'final_qc', label: 'مراقبة الجودة' },
-    { value: 'correction_required', label: 'يلزم تصحيح' },
-    { value: 'completed', label: 'مكتمل' },
-    { value: 'on_hold', label: 'متوقف مؤقتاً' },
-    { value: 'cancelled', label: 'ملغي' },
-    { value: 'closed', label: 'مغلق' },
+    { value: 'all', label: 'All statuses' },
+    { value: 'new_request', label: 'New Request' },
+    { value: 'data_incomplete', label: 'Incomplete Data' },
+    { value: 'data_complete', label: 'Data Complete' },
+    { value: 'payment_pending', label: 'Payment Pending' },
+    { value: 'payment_confirmed', label: 'Payment Confirmed' },
+    { value: 'registration_in_progress', label: 'Registration In Progress' },
+    { value: 'under_review', label: 'Under Review' },
+    { value: 'invitation_requested', label: 'Invitation Requested' },
+    { value: 'invitation_received', label: 'Invitation Received' },
+    { value: 'visa_in_progress', label: 'Visa In Progress' },
+    { value: 'appointment_booked', label: 'Appointment Booked' },
+    { value: 'final_qc', label: 'Quality Control' },
+    { value: 'correction_required', label: 'Correction Required' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'on_hold', label: 'On Hold' },
+    { value: 'cancelled', label: 'Cancelled' },
+    { value: 'closed', label: 'Closed' },
 ]
-
-function statusBadge(status: string) {
-    return (
-        <span className={`inline-flex px-2 py-0.5 text-[11px] font-semibold rounded-full ${STATUS_COLORS[status] || 'bg-blue-50 text-blue-700'}`}>
-            {STATUS_LABELS[status] || status}
-        </span>
-    )
-}
-
-function paymentBadge(ps: string) {
-    return (
-        <span className={`inline-flex px-2 py-0.5 text-[11px] font-semibold rounded-full ${PAYMENT_COLORS[ps] || 'bg-slate-100 text-slate-600'}`}>
-            {PAYMENT_LABELS[ps] || ps}
-        </span>
-    )
-}
 
 function formatDate(d: string | null) {
     if (!d) return '—'
-    try { return new Date(d).toLocaleDateString('ar-IQ') } catch { return '—' }
+    try { return new Date(d).toLocaleDateString('en-GB') } catch { return '—' }
 }
 
 function getPhone(formData: any): string | null {
@@ -147,110 +132,205 @@ export function CasesView({ initialCases, events }: CasesViewProps) {
 
     return (
         <div className="space-y-6" dir="rtl">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[linear-gradient(135deg,#8b0000,#c2410c)] flex items-center justify-center shadow-sm">
-                        <FolderKanban className="w-5 h-5 text-white" />
+            {/* ====== Header ============================================ */}
+            <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span aria-hidden className="size-1.5 rounded-full bg-[var(--jaz-sovereign)]" />
+                    <span className="jaz-meta tracking-[0.16em]">Applications / Inbox</span>
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900">ملفات المشاركة</h1>
-                        <p className="text-xs text-slate-500 mt-0.5">إدارة طلبات المشاركة في الفعاليات</p>
-                    </div>
+                    <h1 className="jaz-display text-[var(--jaz-ink)]">Applications</h1>
+                    <p className="text-[13px] leading-relaxed text-[var(--jaz-muted)] mt-2 max-w-prose">
+                        All incoming requests from WhatsApp, the website, and the app in one place. Browse, filter, or open a new file.
+                    </p>
                 </div>
-                <Button onClick={() => setIsNewDialogOpen(true)} className="bg-[linear-gradient(135deg,#8b0000,#c2410c)] hover:opacity-90 text-white gap-1.5 rounded-xl h-10">
-                    <Plus className="w-4 h-4" />
-                    طلب مشاركة جديد
-                </Button>
+                <button
+                    onClick={() => setIsNewDialogOpen(true)}
+                    className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--jaz-sovereign)] hover:bg-[var(--jaz-sovereign-2)] text-white text-[13px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--jaz-sovereign)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--jaz-surface)]"
+                >
+                    <Plus className="size-4" />
+                    New Request
+                </button>
+            </header>
+
+            {/* ====== KPI strip ========================================= */}
+            <div className="flex items-stretch gap-6 md:gap-8 border-y border-[var(--jaz-line)] py-5">
+                <DataStat icon={FolderKanban} label="Total Requests" value={kpis.total} tone="info" />
+                <div aria-hidden className="self-stretch w-px bg-[var(--jaz-line)]" />
+                <DataStat icon={Clock} label="In Progress" value={kpis.inProgress} tone="warn" />
+                <div aria-hidden className="self-stretch w-px bg-[var(--jaz-line)] hidden sm:block" />
+                <DataStat icon={CheckCircle2} label="Completed" value={kpis.completed} tone="emerald" />
+                <div aria-hidden className="self-stretch w-px bg-[var(--jaz-line)] hidden sm:block" />
+                <DataStat icon={AlertCircle} label="Needs Attention" value={kpis.needsAttention} tone="sovereign" />
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <KpiCard icon={FolderKanban} label="إجمالي الملفات" value={kpis.total} color="bg-blue-50 text-blue-600" />
-                <KpiCard icon={Clock} label="قيد المعالجة" value={kpis.inProgress} color="bg-amber-50 text-amber-600" />
-                <KpiCard icon={CheckCircle2} label="مكتمل" value={kpis.completed} color="bg-emerald-50 text-emerald-600" />
-                <KpiCard icon={AlertCircle} label="تحتاج متابعة" value={kpis.needsAttention} color="bg-rose-50 text-rose-600" />
-            </div>
-
-            <Card className="border-slate-200 shadow-sm rounded-xl p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2">
-                <div className="relative flex-1">
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="بحث برقم الملف، الاسم، الهاتف، الإيميل..."
-                        className="pr-9 border-slate-200 focus:border-[#8b0000] focus:ring-[#8b0000]/20 rounded-lg bg-white" />
+            {/* ====== Filter row ========================================= */}
+            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                <div className="relative flex-1 md:max-w-md">
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-[var(--jaz-whisper)] pointer-events-none" />
+                    <Input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search by case number, name, phone, or email…"
+                        aria-label="Search cases"
+                        className="pr-9 h-10 border-[var(--jaz-line)] bg-[var(--jaz-surface)] focus:border-[var(--jaz-sovereign)]/40 focus:ring-2 focus:ring-[var(--jaz-sovereign)]/15 rounded-md placeholder:text-[var(--jaz-whisper)]"
+                    />
                 </div>
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                    className="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 focus:border-[#8b0000] focus:outline-none min-w-[160px]">
+                <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="h-10 px-3 rounded-md border border-[var(--jaz-line)] bg-[var(--jaz-surface)] text-[13px] text-[var(--jaz-ink)] focus:outline-none focus:border-[var(--jaz-sovereign)]/40 focus:ring-2 focus:ring-[var(--jaz-sovereign)]/15 transition-colors min-w-[180px]"
+                >
                     {STATUS_FILTER_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
-            </Card>
+                <span className="jaz-meta md:ms-auto">Results: {filteredCases.length}</span>
+            </div>
 
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
+            {/* ====== Table ============================================ */}
+            <div className="rounded-md border border-[var(--jaz-line)] bg-[var(--jaz-surface)] overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-slate-50/80 border-b border-slate-200">
+                    <table className="w-full text-[13px] min-w-[920px]">
+                        <thead className="bg-[var(--jaz-surface-2)]/60 border-b border-[var(--jaz-line)]">
                             <tr className="text-right">
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">رقم الملف</th>
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">العميل</th>
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">الفعالية</th>
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">الحالة</th>
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">الدفع</th>
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">الموظف</th>
-                                <th className="py-3 px-4 font-semibold text-slate-600 text-xs">التاريخ</th>
-                                <th className="py-3 px-4"></th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Case #</th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Client</th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Event</th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Status</th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Payment</th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Assigned To</th>
+                                <th className="py-2.5 px-5 font-semibold text-[10.5px] uppercase tracking-[0.08em] text-[var(--jaz-muted)]">Date</th>
+                                <th className="py-2.5 px-5"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-[var(--jaz-line)]">
                             {filteredCases.map((c) => {
                                 const phone = getPhone(c.form_data)
                                 return (
-                                    <tr key={c.id} className="hover:bg-slate-50/60 transition-colors cursor-pointer" onClick={() => router.push(`/dashboard/participation-cases/${c.id}`)}>
-                                        <td className="py-3 px-4">
-                                            <span className="font-mono text-xs font-semibold text-[#8b0000]">{c.case_number}</span>
+                                    <tr
+                                        key={c.id}
+                                        onClick={() => router.push(`/dashboard/participation-cases/${c.id}`)}
+                                        className="hover:bg-[var(--jaz-surface-2)]/40 transition-colors duration-150 cursor-pointer"
+                                    >
+                                        <td className="py-3 px-5">
+                                            <span className="jaz-mono text-[12px] font-semibold text-[var(--jaz-sovereign)]">{c.case_number}</span>
                                         </td>
-                                        <td className="py-3 px-4">
-                                            <div className="font-medium text-slate-900">{c.full_name || '—'}</div>
-                                            {phone && <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5"><Phone className="w-3 h-3" /> {phone}</div>}
+                                        <td className="py-3 px-5">
+                                            <div className="font-semibold text-[var(--jaz-ink)]">{c.full_name || '—'}</div>
+                                            {phone && (
+                                                <div className="text-[11px] text-[var(--jaz-muted)] flex items-center gap-1 mt-0.5">
+                                                    <Phone className="size-3" /> <span dir="ltr">{phone}</span>
+                                                </div>
+                                            )}
                                         </td>
-                                        <td className="py-3 px-4">
-                                            <div className="text-slate-800">{c.events?.title_ar || c.events?.title || '—'}</div>
-                                            {c.events?.date && <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5"><Calendar className="w-3 h-3" /> {formatDate(c.events.date)}</div>}
+                                        <td className="py-3 px-5">
+                                            <div className="text-[var(--jaz-ink)]">{c.events?.title_ar || c.events?.title || '—'}</div>
+                                            {c.events?.date && (
+                                                <div className="text-[11px] text-[var(--jaz-muted)] flex items-center gap-1 mt-0.5">
+                                                    <Calendar className="size-3" /> {formatDate(c.events.date)}
+                                                </div>
+                                            )}
                                         </td>
-                                        <td className="py-3 px-4">{statusBadge(c.case_status)}</td>
-                                        <td className="py-3 px-4">{paymentBadge(c.payment_status)}</td>
-                                        <td className="py-3 px-4 text-slate-600 text-xs">{c.employee?.full_name || '—'}</td>
-                                        <td className="py-3 px-4 text-slate-500 text-xs whitespace-nowrap">{formatDate(c.created_at)}</td>
-                                        <td className="py-3 px-4"><ChevronLeft className="w-4 h-4 text-slate-400" /></td>
+                                        <td className="py-3 px-5">
+                                            <Pill tone={STATUS_TONE[c.case_status] || 'info'}>{STATUS_LABELS[c.case_status] || c.case_status}</Pill>
+                                        </td>
+                                        <td className="py-3 px-5">
+                                            <Pill tone={PAYMENT_TONE[c.payment_status] || 'muted'}>{PAYMENT_LABELS[c.payment_status] || c.payment_status}</Pill>
+                                        </td>
+                                        <td className="py-3 px-5 text-[var(--jaz-ink-soft)] text-[12px]">{c.employee?.full_name || '—'}</td>
+                                        <td className="py-3 px-5 text-[var(--jaz-muted)] text-[12px] whitespace-nowrap">{formatDate(c.created_at)}</td>
+                                        <td className="py-3 px-5">
+                                            <ChevronLeft className="size-4 text-[var(--jaz-whisper)]" />
+                                        </td>
                                     </tr>
                                 )
                             })}
                             {filteredCases.length === 0 && (
                                 <tr>
-                                    <td colSpan={8} className="py-16 text-center">
-                                        <FolderKanban className="w-10 h-10 mx-auto text-slate-300 mb-2" />
-                                        <p className="text-slate-500 text-sm">
-                                            {initialCases.length === 0 ? 'لا توجد ملفات مشاركة بعد. ابدأ بإنشاء أول ملف.' : 'لا توجد ملفات تطابق بحثك.'}
-                                        </p>
+                                    <td colSpan={8}>
+                                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                                            <div className="size-12 rounded-md bg-[var(--jaz-surface-2)] border border-[var(--jaz-line)] flex items-center justify-center mb-3">
+                                                <FolderKanban className="size-5 text-[var(--jaz-muted)]" aria-hidden />
+                                            </div>
+                                            <h3 className="text-[13px] font-semibold text-[var(--jaz-ink)]">
+                                                {initialCases.length === 0 ? 'No requests yet' : 'No matching requests'}
+                                            </h3>
+                                            <p className="text-[12px] text-[var(--jaz-muted)] mt-1.5 max-w-xs">
+                                                {initialCases.length === 0
+                                                    ? 'Start by creating the first request from the button above.'
+                                                    : 'Try a different search term or change the selected status.'}
+                                            </p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
             <NewCaseDialog open={isNewDialogOpen} onOpenChange={setIsNewDialogOpen} events={events} />
         </div>
     )
 }
 
-function KpiCard({ icon: Icon, label, value, color }: { icon: typeof FolderKanban; label: string; value: number; color: string }) {
+function DataStat({
+    label,
+    value,
+    icon: Icon,
+    tone,
+}: {
+    label: string
+    value: number
+    icon: typeof FolderKanban
+    tone: 'info' | 'emerald' | 'warn' | 'sovereign'
+}) {
+    const toneClass = {
+        info: 'text-[var(--jaz-info)]',
+        emerald: 'text-[var(--jaz-emerald)]',
+        warn: 'text-[var(--jaz-amber)]',
+        sovereign: 'text-[var(--jaz-sovereign)]',
+    } as const
     return (
-        <Card className="border-slate-200 shadow-sm rounded-xl p-4 flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${color}`}>
-                <Icon className="w-5 h-5" />
+        <div className="flex items-center gap-3">
+            <span
+                aria-hidden
+                className={cn(
+                    'flex size-10 items-center justify-center rounded-md bg-[var(--jaz-surface-2)] border border-[var(--jaz-line)]',
+                    toneClass[tone],
+                )}
+            >
+                <Icon className="size-4" />
+            </span>
+            <div className="flex flex-col gap-0.5">
+                <span className="jaz-numeric text-[var(--jaz-ink)]">{value}</span>
+                <span className="jaz-meta">{label}</span>
             </div>
-            <div>
-                <div className="text-2xl font-bold text-slate-900 leading-none">{value}</div>
-                <div className="text-[11px] text-slate-500 mt-1">{label}</div>
-            </div>
-        </Card>
+        </div>
+    )
+}
+
+function Pill({
+    children,
+    tone = 'info',
+}: {
+    children: React.ReactNode
+    tone?: 'success' | 'warn' | 'sovereign' | 'info' | 'muted'
+}) {
+    const toneClass = {
+        success: 'border-[var(--jaz-emerald)]/20 bg-[var(--jaz-emerald-soft)] text-[var(--jaz-emerald)]',
+        warn: 'border-[var(--jaz-amber)]/20 bg-[var(--jaz-amber-soft)] text-[var(--jaz-amber)]',
+        sovereign: 'border-[var(--jaz-sovereign)]/20 bg-[var(--jaz-sovereign)]/8 text-[var(--jaz-sovereign)]',
+        info: 'border-[var(--jaz-info)]/20 bg-[var(--jaz-info-soft)] text-[var(--jaz-info)]',
+        muted: 'border-[var(--jaz-line)] bg-[var(--jaz-surface-2)] text-[var(--jaz-muted)]',
+    } as const
+    return (
+        <span
+            className={cn(
+                'inline-flex items-center px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.06em] rounded-full border whitespace-nowrap',
+                toneClass[tone],
+            )}
+        >
+            {children}
+        </span>
     )
 }

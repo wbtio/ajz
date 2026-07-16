@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDashboardRole, defaultRouteForRole } from '@/lib/permissions'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Shield, Lock, Mail, AlertCircle } from 'lucide-react'
+import { Shield, Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
 export default function AdminLoginPage() {
     const router = useRouter()
@@ -15,6 +16,12 @@ export default function AdminLoginPage() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+
+    useEffect(() => {
+        document.body.classList.add('admin-login-surface')
+        return () => document.body.classList.remove('admin-login-surface')
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -31,7 +38,7 @@ export default function AdminLoginPage() {
 
         if (authError) {
             console.error('Auth error:', authError)
-            setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+            setError('Invalid email or password')
             setIsLoading(false)
             return
         }
@@ -46,14 +53,14 @@ export default function AdminLoginPage() {
         if (profileError || !isDashboardRole(profile?.role)) {
             console.error('Profile error or no dashboard access:', profileError, profile)
             await supabase.auth.signOut()
-            setError('ليس لديك صلاحية الوصول إلى لوحة التحكم')
+            setError('You do not have access to the dashboard')
             setIsLoading(false)
             return
         }
 
         if (profile?.is_active === false) {
             await supabase.auth.signOut()
-            setError('تم تعطيل حسابك مؤقتًا، يرجى مراجعة المدير')
+            setError('Your account is temporarily disabled. Please contact an administrator.')
             setIsLoading(false)
             return
         }
@@ -63,41 +70,39 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
+        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#f8fbff_0%,_#eef4fb_38%,_#e8eef7_100%)] flex items-center justify-center p-4">
+            <div className="w-full max-w-md" dir="ltr">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-                        <Shield className="w-8 h-8 text-white" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 bg-white border border-slate-200 shadow-lg shadow-slate-200/60">
+                        <Shield className="w-8 h-8 text-blue-600" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white">لوحة التحكم</h1>
-                    <p className="text-gray-400 mt-2">JAZ Admin Panel</p>
+                    <h1 className="text-2xl font-semibold tracking-tight text-slate-900">JAZ Operations Hub</h1>
                 </div>
 
-                <Card className="border-gray-700 bg-gray-800/50 backdrop-blur">
-                    <CardHeader className="text-center pb-2">
-                        <h2 className="text-xl font-bold text-white">تسجيل دخول المدير</h2>
-                        <p className="text-gray-400 text-sm">أدخل بيانات حساب المدير</p>
+                <Card className="border-slate-200 bg-white shadow-xl shadow-slate-200/70">
+                    <CardHeader className="text-left pb-2">
+                        <h2 className="text-xl font-semibold text-slate-900">Administrator Sign In</h2>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4" dir="ltr">
                             {error && (
-                                <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-3 rounded-lg">
+                                <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-lg">
                                     <AlertCircle className="w-4 h-4 shrink-0" />
                                     <span>{error}</span>
                                 </div>
                             )}
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">
-                                    البريد الإلكتروني
+                                <label className="block w-full text-left text-sm font-medium text-slate-700 mb-1">
+                                    Email address
                                 </label>
                                 <div className="relative">
-                                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                    <input
+                                    <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                    <Input
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full pr-10 pl-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="h-12 pl-10 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-100"
                                         placeholder="admin@jaz.iq"
                                         required
                                         dir="ltr"
@@ -106,47 +111,52 @@ export default function AdminLoginPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">
-                                    كلمة المرور
+                                <label className="block w-full text-left text-sm font-medium text-slate-700 mb-1">
+                                    Password
                                 </label>
                                 <div className="relative">
-                                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                    <input
-                                        type="password"
+                                    <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                    <Input
+                                        type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pr-10 pl-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="h-12 pl-10 pr-20 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-100"
                                         placeholder="••••••••"
                                         required
                                         dir="ltr"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
+                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                        {showPassword ? 'Hide' : 'Show'}
+                                    </button>
                                 </div>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+                                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-200"
                                 isLoading={isLoading}
                             >
                                 <Lock className="w-4 h-4 ml-2" />
-                                دخول لوحة التحكم
+                                Sign in
                             </Button>
                         </form>
 
-                        <div className="mt-6 pt-6 border-t border-gray-700 text-center">
+                        <div className="mt-6 pt-6 border-t border-slate-100 text-left">
                             <Link
                                 href="/"
-                                className="text-gray-400 hover:text-white text-sm transition-colors"
+                                className="text-slate-500 hover:text-slate-900 text-sm transition-colors"
                             >
-                                العودة للموقع الرئيسي
+                                Back to website
                             </Link>
                         </div>
                     </CardContent>
                 </Card>
-
-                <p className="text-center text-gray-500 text-sm mt-6">
-                    © {new Date().getFullYear()} JAZ. جميع الحقوق محفوظة.
-                </p>
             </div>
         </div>
     )

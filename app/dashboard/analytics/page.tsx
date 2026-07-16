@@ -36,19 +36,16 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
           {/* impeccable-variants-start 8add3f64 */}
           {/* Original */}
           <div data-impeccable-variant="original">
-            <div className="space-y-8 animate-in fade-in duration-700 max-w-7xl mx-auto pb-10">
+            <div className="space-y-4 max-w-7xl mx-auto pb-5" dir="ltr" lang="en">
                 {/* Header & Filters */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-white/50 backdrop-blur-xl p-6 rounded-3xl border border-stone-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white p-3.5 rounded-xl border border-stone-200/60 shadow-sm">
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight bg-gradient-to-br from-stone-900 to-stone-600 bg-clip-text text-transparent">
+                        <h1 className="text-2xl font-bold tracking-tight text-stone-900">
                             Analytics Overview
                         </h1>
-                        <p className="text-stone-500 mt-2 text-sm max-w-lg leading-relaxed">
-                            Track your event engagement, visitor behavior, and conversion signals to optimize your platform.
-                        </p>
                     </div>
 
-                    <div className="flex bg-stone-100/80 backdrop-blur-md rounded-xl p-1.5 border border-stone-200/50 shadow-inner">
+                    <div className="flex bg-stone-100/80 rounded-lg p-1 border border-stone-200/50">
                         <Link 
                             href="?range=today" 
                             className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${range === 'today' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
@@ -71,7 +68,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                 </div>
 
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
                     <AnimatedStatCard
                         name="Unique Visitors"
                         value={kpis.visitors}
@@ -120,12 +117,12 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                 </div>
 
                 {/* Main Chart */}
-                <div className="rounded-3xl border border-stone-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+                <div className="rounded-xl border border-stone-200/60 bg-white shadow-sm overflow-hidden">
                     <AnalyticsMainChart data={chartData} />
                 </div>
 
                 {/* Detailed Event Performance (NEW) */}
-                <Card className="rounded-3xl border-stone-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden bg-white/50 backdrop-blur-xl">
+                    <Card className="rounded-xl border-stone-200/60 shadow-sm overflow-hidden bg-white">
                     <CardHeader className="bg-white/40 pb-4 border-b border-stone-100">
                         <div className="flex items-center gap-3">
                             <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100">
@@ -182,7 +179,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                     </CardContent>
                 </Card>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {/* Top Pages */}
                     <Card className="rounded-3xl border-stone-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                         <CardHeader className="bg-stone-50/50 pb-4 border-b border-stone-100">
@@ -265,52 +262,6 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                     </Card>
                 </div>
 
-                {/* Recent Conversions Activity Feed */}
-                <Card className="rounded-3xl border-stone-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden bg-white">
-                    <CardHeader className="border-b border-stone-100 pb-4 bg-gradient-to-r from-stone-50 to-white">
-                        <CardTitle className="text-xl flex items-center gap-2">
-                            <div className="relative flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
-                            </div>
-                            Live Conversion Activity
-                        </CardTitle>
-                        <CardDescription>The most recent successful forms or registrations.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                        <div className="space-y-4">
-                            {conversions.length > 0 ? (
-                                conversions.map((conv: any, idx: number) => (
-                                    <div key={idx} className="group flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white rounded-2xl border border-stone-100 shadow-sm hover:shadow-md transition-all duration-300 hover:border-rose-100">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`p-3 rounded-xl shadow-inner transition-transform group-hover:scale-110 ${conv.event_type === 'form_submit' ? 'bg-gradient-to-br from-rose-100 to-rose-50 text-rose-600 ring-1 ring-rose-200' : 'bg-gradient-to-br from-indigo-100 to-indigo-50 text-indigo-600 ring-1 ring-indigo-200'}`}>
-                                                {conv.event_type === 'form_submit' ? <CheckCircle className="w-5 h-5" /> : <MousePointerClick className="w-5 h-5" />}
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-stone-800 capitalize flex items-center gap-2">
-                                                    {conv.event_type.replace(/_/g, ' ')}
-                                                    <Badge variant="secondary" className="text-[10px] uppercase tracking-wider bg-stone-100 text-stone-500">New</Badge>
-                                                </p>
-                                                <p className="text-sm text-stone-500 mt-1 font-medium">{conv.label}</p>
-                                            </div>
-                                        </div>
-                                        <div className="mt-3 sm:mt-0 px-3 py-1.5 bg-stone-50 rounded-lg text-sm text-stone-500 font-medium border border-stone-100">
-                                            {new Date(conv.created_at!).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border-2 border-dashed border-stone-100 bg-stone-50/50">
-                                    <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center mb-3">
-                                        <CheckCircle className="w-6 h-6 text-stone-300" />
-                                    </div>
-                                    <p className="text-stone-500 font-medium">Waiting for conversion signals...</p>
-                                    <p className="text-sm text-stone-400 mt-1">Actions will appear here in real-time</p>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
           </div>
           {/* Variants: insert below this line */}

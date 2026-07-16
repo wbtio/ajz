@@ -2,12 +2,19 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Plane, UserCog, FileText, Calendar, Shield, Info } from 'lucide-react'
 import { saveRegistrationJsonb } from '../../actions'
-import { SectionHeader, SaveButton, FieldLabel, FileUploadField, inputClass, selectClass } from './shared'
+import {
+    Section,
+    FieldLabel,
+    FormGrid,
+    FormField,
+    SaveFooter,
+    InlineAlert,
+    FileUploadField,
+    inputClass,
+    selectClass,
+} from './shared'
 
 const ACCT_STATUS = [
     { value: 'not_created', label: 'لم يُنشأ' },
@@ -69,103 +76,146 @@ export function TabVisa({ registration }: { registration: any }) {
 
     return (
         <div className="space-y-4">
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={UserCog} title="حسابات العميل" />
-                <div className="p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div><FieldLabel>دولة الوجهة</FieldLabel>
-                            <Input value={form.destination_country} onChange={(e) => set('destination_country', e.target.value)} className={inputClass} /></div>
-                        <div><FieldLabel>حالة حساب France-Visas</FieldLabel>
-                            <select value={form.france_visas_account_status} onChange={(e) => set('france_visas_account_status', e.target.value)} className={selectClass}>
-                                {ACCT_STATUS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select></div>
-                        <div><FieldLabel>حالة حساب TLS</FieldLabel>
-                            <select value={form.tls_account_status} onChange={(e) => set('tls_account_status', e.target.value)} className={selectClass}>
-                                {ACCT_STATUS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select></div>
-                    </div>
-                    <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                        <input type="checkbox" checked={form.account_setup_complete} onChange={(e) => set('account_setup_complete', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-[#8b0000] focus:ring-[#8b0000]/20" />
-                        اكتمل إعداد الحسابات
-                    </label>
-                </div>
-            </Card>
+            <Section title="Client accounts" desc="France-Visas + TLS portal account states." icon={UserCog}>
+                <FormGrid>
+                    <FormField label="Destination country">
+                        <input value={form.destination_country} onChange={(e) => set('destination_country', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="France-Visas account">
+                        <select value={form.france_visas_account_status} onChange={(e) => set('france_visas_account_status', e.target.value)} className={selectClass}>
+                            {ACCT_STATUS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                    </FormField>
+                    <FormField label="TLS account">
+                        <select value={form.tls_account_status} onChange={(e) => set('tls_account_status', e.target.value)} className={selectClass}>
+                            {ACCT_STATUS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                    </FormField>
+                </FormGrid>
+                <label className="mt-4 flex items-center gap-2.5 text-[13px] text-[var(--jaz-ink)] cursor-pointer select-none">
+                    <input
+                        type="checkbox"
+                        checked={form.account_setup_complete}
+                        onChange={(e) => set('account_setup_complete', e.target.checked)}
+                        className="size-4 rounded border-[var(--jaz-line-strong)] text-[var(--jaz-sovereign)] focus:ring-[var(--jaz-sovereign)]/30 focus:ring-offset-0 cursor-pointer accent-[var(--jaz-sovereign)]"
+                    />
+                    Account setup completed
+                </label>
+            </Section>
 
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={FileText} title="France-Visas Application" />
-                <div className="p-4 space-y-3">
-                    <div className="bg-blue-50/60 border border-blue-100 rounded-lg p-3 text-xs text-blue-800 flex items-start gap-2">
-                        <Info className="w-4 h-4 shrink-0 mt-0.5" />
+            <Section title="France-Visas application" icon={FileText}>
+                <div className="space-y-4"> 
+                    <InlineAlert variant="info">
+                        <Info className="size-3.5 shrink-0 mt-0.5" />
                         <span>قاعدة JAZ: أبقِ الطلب كـ <strong>مسودة</strong> حتى يكتمل المسار.</span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div><FieldLabel>الرقم المرجعي</FieldLabel>
-                            <Input value={form.france_visas_number} onChange={(e) => set('france_visas_number', e.target.value)} dir="ltr" className={inputClass} placeholder="FRA1BG2026XXXXXXX" /></div>
-                        <div><FieldLabel>تاريخ بدء الطلب</FieldLabel>
-                            <Input type="date" value={form.application_start_date} onChange={(e) => set('application_start_date', e.target.value)} className={inputClass} /></div>
-                        <div className="md:col-span-2"><FieldLabel>حالة الطلب</FieldLabel>
+                    </InlineAlert>
+                    <FormGrid>
+                        <FormField label="Application reference">
+                            <input
+                                value={form.france_visas_number}
+                                onChange={(e) => set('france_visas_number', e.target.value)}
+                                dir="ltr"
+                                className={inputClass}
+                                placeholder="FRA1BG2026XXXXXXX"
+                            />
+                        </FormField>
+                        <FormField label="Application start date">
+                            <input
+                                type="date"
+                                value={form.application_start_date}
+                                onChange={(e) => set('application_start_date', e.target.value)}
+                                className={inputClass}
+                            />
+                        </FormField>
+                        <FormField label="Status" span={2}>
                             <select value={form.application_status} onChange={(e) => set('application_status', e.target.value)} className={selectClass}>
                                 {APP_STATUS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select></div>
-                    </div>
+                            </select>
+                        </FormField>
+                    </FormGrid>
                 </div>
-            </Card>
+            </Section>
 
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={Calendar} title="موعد TLS" />
-                <div className="p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div><FieldLabel>تاريخ ووقت الموعد</FieldLabel>
-                            <Input type="datetime-local" value={form.tls_appointment_date} onChange={(e) => set('tls_appointment_date', e.target.value)} className={inputClass} /></div>
-                        <div><FieldLabel>مركز TLS</FieldLabel>
-                            <Input value={form.tls_center} onChange={(e) => set('tls_center', e.target.value)} className={inputClass} /></div>
-                        <div className="md:col-span-2"><FieldLabel>الرقم المرجعي للموعد</FieldLabel>
-                            <Input value={form.appointment_reference} onChange={(e) => set('appointment_reference', e.target.value)} dir="ltr" className={inputClass} /></div>
-                        <div className="md:col-span-2">
-                            <FileUploadField caseId={registration.id} docType="tls_appointment" label="PDF تأكيد الموعد" />
-                        </div>
-                    </div>
-                    <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                        <input type="checkbox" checked={form.appointment_booked} onChange={(e) => set('appointment_booked', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-[#8b0000] focus:ring-[#8b0000]/20" />
-                        تم حجز الموعد
-                    </label>
+            <Section title="TLS appointment" icon={Calendar}>
+                <FormGrid>
+                    <FormField label="Appointment date & time">
+                        <input
+                            type="datetime-local"
+                            value={form.tls_appointment_date}
+                            onChange={(e) => set('tls_appointment_date', e.target.value)}
+                            className={inputClass}
+                        />
+                    </FormField>
+                    <FormField label="TLS center">
+                        <input value={form.tls_center} onChange={(e) => set('tls_center', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Appointment reference" span={2}>
+                        <input value={form.appointment_reference} onChange={(e) => set('appointment_reference', e.target.value)} dir="ltr" className={inputClass} />
+                    </FormField>
+                    <FormField label="Confirmation PDF" span={2}>
+                        <FileUploadField caseId={registration.id} documents={registration.documents} docType="tls_appointment" label="Upload confirmation PDF" />
+                    </FormField>
+                </FormGrid>
+                <label className="mt-4 flex items-center gap-2.5 text-[13px] text-[var(--jaz-ink)] cursor-pointer select-none">
+                    <input
+                        type="checkbox"
+                        checked={form.appointment_booked}
+                        onChange={(e) => set('appointment_booked', e.target.checked)}
+                        className="size-4 rounded border-[var(--jaz-line-strong)] text-[var(--jaz-sovereign)] focus:ring-[var(--jaz-sovereign)]/30 focus:ring-offset-0 cursor-pointer accent-[var(--jaz-sovereign)]"
+                    />
+                    Appointment booked
+                </label>
+            </Section>
+
+            <Section title="Health insurance" icon={Shield}>
+                <FormGrid>
+                    <FormField label="Insurance company">
+                        <input value={form.insurance_company} onChange={(e) => set('insurance_company', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Policy number">
+                        <input value={form.insurance_policy_number} onChange={(e) => set('insurance_policy_number', e.target.value)} dir="ltr" className={inputClass} />
+                    </FormField>
+                    <FormField label="Coverage start">
+                        <input type="date" value={form.insurance_coverage_start} onChange={(e) => set('insurance_coverage_start', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Coverage end">
+                        <input type="date" value={form.insurance_coverage_end} onChange={(e) => set('insurance_coverage_end', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Coverage amount">
+                        <input type="number" value={form.insurance_amount} onChange={(e) => set('insurance_amount', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Insurance PDF" span={2}>
+                        <FileUploadField caseId={registration.id} documents={registration.documents} docType="insurance" label="Upload insurance PDF" />
+                    </FormField>
+                </FormGrid>
+            </Section>
+
+            <Section title="Visa decision & notes" icon={Plane}>
+                <label className="flex items-center gap-2.5 text-[13px] text-[var(--jaz-ink)] cursor-pointer select-none">
+                    <input
+                        type="checkbox"
+                        checked={form.visa_approved}
+                        onChange={(e) => set('visa_approved', e.target.checked)}
+                        className="size-4 rounded border-[var(--jaz-line-strong)] text-[var(--jaz-sovereign)] focus:ring-[var(--jaz-sovereign)]/30 focus:ring-offset-0 cursor-pointer accent-[var(--jaz-sovereign)]"
+                    />
+                    Visa approved
+                </label>
+                <FormGrid className="mt-4">
+                    <FormField label="Decision date">
+                        <input type="date" value={form.visa_decision_date} onChange={(e) => set('visa_decision_date', e.target.value)} className={inputClass} />
+                    </FormField>
+                </FormGrid>
+                <div className="mt-4">
+                    <FieldLabel>Notes</FieldLabel>
+                    <textarea
+                        value={form.notes}
+                        onChange={(e) => set('notes', e.target.value)}
+                        rows={3}
+                        className="min-h-[88px] py-2.5 px-3 rounded-md border border-[var(--jaz-line)] bg-[var(--jaz-surface)] text-[13px] text-[var(--jaz-ink)] placeholder:text-[var(--jaz-whisper)] focus:outline-none focus:border-[var(--jaz-sovereign)]/50 focus:ring-2 focus:ring-[var(--jaz-sovereign)]/15 transition-colors duration-150 w-full resize-y"
+                    />
                 </div>
-            </Card>
-
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={Shield} title="التأمين الصحي" />
-                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div><FieldLabel>شركة التأمين</FieldLabel>
-                        <Input value={form.insurance_company} onChange={(e) => set('insurance_company', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>رقم الوثيقة</FieldLabel>
-                        <Input value={form.insurance_policy_number} onChange={(e) => set('insurance_policy_number', e.target.value)} dir="ltr" className={inputClass} /></div>
-                    <div><FieldLabel>بداية التغطية</FieldLabel>
-                        <Input type="date" value={form.insurance_coverage_start} onChange={(e) => set('insurance_coverage_start', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>نهاية التغطية</FieldLabel>
-                        <Input type="date" value={form.insurance_coverage_end} onChange={(e) => set('insurance_coverage_end', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>قيمة التغطية</FieldLabel>
-                        <Input type="number" value={form.insurance_amount} onChange={(e) => set('insurance_amount', e.target.value)} className={inputClass} /></div>
-                    <div className="md:col-span-2">
-                        <FileUploadField caseId={registration.id} docType="insurance" label="PDF وثيقة التأمين" />
-                    </div>
-                </div>
-            </Card>
-
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={Plane} title="نتيجة الفيزا وملاحظات" />
-                <div className="p-4 space-y-3">
-                    <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                        <input type="checkbox" checked={form.visa_approved} onChange={(e) => set('visa_approved', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-[#8b0000] focus:ring-[#8b0000]/20" />
-                        تم منح الفيزا
-                    </label>
-                    <div><FieldLabel>تاريخ القرار</FieldLabel>
-                        <Input type="date" value={form.visa_decision_date} onChange={(e) => set('visa_decision_date', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>ملاحظات</FieldLabel>
-                        <Textarea value={form.notes} onChange={(e) => set('notes', e.target.value)} rows={2} className={inputClass} /></div>
-                </div>
-            </Card>
-
-            <SaveButton saving={saving} onSave={handleSave} label="حفظ بيانات الفيزا" />
+                <SaveFooter saving={saving} onSave={handleSave} label="Save visa record" />
+            </Section>
         </div>
     )
 }

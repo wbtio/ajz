@@ -4,11 +4,18 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { CreditCard, AlertTriangle, Receipt } from 'lucide-react'
 import { savePaymentData } from '../../actions'
-import { SectionHeader, SaveButton, FieldLabel, FileUploadField, inputClass, selectClass } from './shared'
+import {
+    Section,
+    FormGrid,
+    FormField,
+    SaveFooter,
+    InlineAlert,
+    FileUploadField,
+    inputClass,
+    selectClass,
+} from './shared'
 
 const PAYMENT_STATUS_OPTIONS = [
     { value: 'pending', label: 'بانتظار الدفع' },
@@ -77,61 +84,72 @@ export function TabPayment({ registration }: { registration: any }) {
 
     return (
         <div className="space-y-4">
-            <div className="bg-amber-50/70 border border-amber-100 rounded-lg p-3 text-xs text-amber-800 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+            <InlineAlert variant="warn">
+                <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
                 <span>أي خصم يحتاج: المبلغ، السبب، وموافقة المشرف.</span>
-            </div>
+            </InlineAlert>
 
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={CreditCard} title="الخدمة والسعر والخصم" />
-                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="md:col-span-2"><FieldLabel>نوع الخدمة</FieldLabel>
+            <Section title="Service, price & discount" icon={CreditCard}>
+                <FormGrid>
+                    <FormField label="Service package" span={2}>
                         <select value={form.service_package} onChange={(e) => set('service_package', e.target.value)} className={selectClass}>
                             {SERVICE_PACKAGES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                        </select></div>
-                    <div><FieldLabel>المبلغ الإجمالي</FieldLabel>
-                        <Input type="number" value={form.total_amount} onChange={(e) => set('total_amount', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>العملة</FieldLabel>
+                        </select>
+                    </FormField>
+                    <FormField label="Total amount">
+                        <input type="number" value={form.total_amount} onChange={(e) => set('total_amount', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Currency">
                         <select value={form.currency} onChange={(e) => set('currency', e.target.value)} className={selectClass}>
                             {CURRENCY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                        </select></div>
-                    <div><FieldLabel>حالة الدفع</FieldLabel>
+                        </select>
+                    </FormField>
+                    <FormField label="Payment status">
                         <select value={form.payment_status} onChange={(e) => set('payment_status', e.target.value)} className={selectClass}>
                             {PAYMENT_STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                        </select></div>
-                    <div><FieldLabel>مبلغ الخصم</FieldLabel>
-                        <Input type="number" value={form.discount_amount} onChange={(e) => set('discount_amount', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>سبب الخصم</FieldLabel>
-                        <Input value={form.discount_reason} onChange={(e) => set('discount_reason', e.target.value)} className={inputClass} /></div>
-                    <label className="md:col-span-2 flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                        <input type="checkbox" checked={form.discount_approved} onChange={(e) => set('discount_approved', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-[#8b0000] focus:ring-[#8b0000]/20" />
-                        تمت موافقة المشرف على الخصم
-                    </label>
-                </div>
-            </Card>
+                        </select>
+                    </FormField>
+                    <FormField label="Discount amount">
+                        <input type="number" value={form.discount_amount} onChange={(e) => set('discount_amount', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Discount reason" span={2}>
+                        <input value={form.discount_reason} onChange={(e) => set('discount_reason', e.target.value)} className={inputClass} />
+                    </FormField>
+                </FormGrid>
+                <label className="mt-4 flex items-center gap-2.5 text-[13px] text-[var(--jaz-ink)] cursor-pointer select-none">
+                    <input
+                        type="checkbox"
+                        checked={form.discount_approved}
+                        onChange={(e) => set('discount_approved', e.target.checked)}
+                        className="size-4 rounded border-[var(--jaz-line-strong)] text-[var(--jaz-sovereign)] focus:ring-[var(--jaz-sovereign)]/30 focus:ring-offset-0 cursor-pointer accent-[var(--jaz-sovereign)]"
+                    />
+                    Discount approved by supervisor
+                </label>
+            </Section>
 
-            <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
-                <SectionHeader icon={Receipt} title="تفاصيل الدفع" />
-                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div><FieldLabel>طريقة الدفع</FieldLabel>
+            <Section title="Receipt" icon={Receipt}>
+                <FormGrid>
+                    <FormField label="Payment method">
                         <select value={form.payment_method} onChange={(e) => set('payment_method', e.target.value)} className={selectClass}>
                             <option value="">—</option>
                             <option value="cash">نقداً</option>
                             <option value="bank_transfer">حوالة بنكية</option>
                             <option value="card">بطاقة</option>
                             <option value="online">إلكتروني</option>
-                        </select></div>
-                    <div><FieldLabel>رقم الإيصال</FieldLabel>
-                        <Input value={form.receipt_number} onChange={(e) => set('receipt_number', e.target.value)} className={inputClass} /></div>
-                    <div><FieldLabel>تاريخ الدفع</FieldLabel>
-                        <Input type="date" value={form.receipt_date} onChange={(e) => set('receipt_date', e.target.value)} className={inputClass} /></div>
-                    <div className="md:col-span-2">
-                        <FileUploadField caseId={registration.id} docType="payment_receipt" label="صورة/ PDF الإيصال" />
-                    </div>
-                </div>
-            </Card>
-
-            <SaveButton saving={saving} onSave={handleSave} label="حفظ بيانات الدفع" />
+                        </select>
+                    </FormField>
+                    <FormField label="Receipt number">
+                        <input value={form.receipt_number} onChange={(e) => set('receipt_number', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Payment date" span={2}>
+                        <input type="date" value={form.receipt_date} onChange={(e) => set('receipt_date', e.target.value)} className={inputClass} />
+                    </FormField>
+                    <FormField label="Receipt file / PDF" span={2}>
+                        <FileUploadField caseId={registration.id} documents={registration.documents} docType="payment_receipt" label="Upload receipt file" />
+                    </FormField>
+                </FormGrid>
+                <SaveFooter saving={saving} onSave={handleSave} label="Save payment record" />
+            </Section>
         </div>
     )
 }

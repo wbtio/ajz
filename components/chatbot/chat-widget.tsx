@@ -19,6 +19,7 @@ import {
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { FAQ, type FaqItem } from '@/lib/chatbot/faq'
+import { usePathname } from 'next/navigation'
 
 type Role = 'user' | 'assistant'
 interface Message {
@@ -79,12 +80,15 @@ export function ChatWidget() {
   const { locale, dir } = useI18n()
   const t = STRINGS[locale] ?? STRINGS.ar
   const categories = FAQ[locale] ?? FAQ.ar
+  const pathname = usePathname()
 
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [activeCat, setActiveCat] = useState<string | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const normalizedPathname = pathname?.toLowerCase() ?? ''
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -107,6 +111,8 @@ export function ChatWidget() {
     const text = `${t.waIntro}\n\n${transcript}`
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`
   }
+
+  if (normalizedPathname.startsWith('/dashboard') || normalizedPathname.startsWith('/admin-login')) return null
 
   return (
     <div dir={dir} className="fixed bottom-5 end-5 z-[60] flex flex-col items-end gap-3 print:hidden">

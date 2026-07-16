@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "تسجيل دخول المدير | JAZ",
-    description: "لوحة تحكم JAZ",
+    title: "Administrator Sign In | JAZ",
+    description: "JAZ operations hub sign in",
 };
 
 export default function AdminLoginLayout({

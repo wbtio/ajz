@@ -68,7 +68,7 @@ export async function getAnalyticsSummary(range: AnalyticsRange = '7d') {
 
     const { data: events, error } = await supabase
         .from('analytics_events')
-        .select('*')
+        .select('id, event_type, path, session_id, metadata, created_at')
         .gte('created_at', startDate.toISOString())
 
     if (error) {

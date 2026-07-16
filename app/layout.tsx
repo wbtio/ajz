@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isDashboardRole, defaultRouteForRole } from "@/lib/permissions";
-import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/header";
@@ -20,6 +20,20 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-plus-jakarta-sans",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -79,6 +93,13 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#ffffff',
+  viewportFit: 'cover',
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -116,7 +137,7 @@ export default async function RootLayout({
 
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body className={`${ibmPlexSansArabic.variable} ${plusJakartaSans.variable} font-sans antialiased bg-white text-gray-900`}>
+      <body className={`${ibmPlexSansArabic.variable} ${plusJakartaSans.variable} ${outfit.variable} ${jetBrainsMono.variable} font-sans antialiased bg-white text-gray-900`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
