@@ -35,10 +35,25 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname.toLowerCase()
 
+  // This deployment is the internal admin-only instance. Keep the public
+  // website routes unavailable while allowing the dashboard and its APIs.
+  const isAdminSurfacePath =
+    pathname === '/admin-login' ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/api')
+
+  if (!isAdminSurfacePath) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/admin-login'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
   // تحديد المسارات التي تتطلب التحقق من المستخدم
   const isProtectedPath = 
     pathname.startsWith('/dashboard') || 
-    pathname === '/admin-login'
+    pathname === '/admin-login' ||
+    pathname.startsWith('/api')
 
   // تحسين الأداء: عدم استدعاء getUser إلا إذا كان المسار يتطلب حماية أو منطق توجيه
   if (isProtectedPath) {
