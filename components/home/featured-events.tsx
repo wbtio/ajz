@@ -71,8 +71,7 @@ export function FeaturedEvents({ events = [] }: FeaturedEventsProps) {
       : e.location || e.location_ar || null,
   }))
 
-  const displayEvents =
-    realEvents.length > 0 ? realEvents.slice(0, 3) : defaultFlyers
+  const displayEvents = realEvents.slice(0, 3)
 
   function parseDateForBadge(dateStr: string | null, locale: string) {
     if (!dateStr) return { day: '', month: '', year: '' }
@@ -92,6 +91,12 @@ export function FeaturedEvents({ events = [] }: FeaturedEventsProps) {
           action={{ label: t.homepage.events.viewAll, href: '/events' }}
         />
 
+        {displayEvents.length === 0 ? (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+            <p className="text-base font-bold text-slate-800">الفعاليات الخاصة بعام 2026 انتهت، ونعمل حالياً على تجهيز فعاليات عام 2027.</p>
+            <p className="mt-2 text-sm text-slate-500">سيتم الإعلان عن الفعاليات الجديدة فور جاهزيتها.</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-5 mt-4 lg:mt-5">
           {displayEvents.map((event, index) => {
             const { day, month, year } = parseDateForBadge(event.date, locale)
@@ -163,6 +168,7 @@ export function FeaturedEvents({ events = [] }: FeaturedEventsProps) {
             )
           })}
         </div>
+        )}
       </Container>
     </section>
   )

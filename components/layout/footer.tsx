@@ -189,7 +189,7 @@ export function Footer() {
               </h3>
               <p className="text-xs text-[#9fb0c7] leading-relaxed">
                 {locale === 'ar'
-                  ? 'اشترك لتصلك مستجدات الفعاليات وأخبار الشراكات.'
+                  ? 'اشترك لتصلك مستجدات الفعاليات وأخبار الجاز.'
                   : 'Subscribe to receive updates on events and partnership news.'}
               </p>
 
@@ -250,8 +250,8 @@ export function Footer() {
         <div className="mt-8 pt-4 border-t border-[#6f85a3]/10 flex flex-col md:flex-row justify-between items-center gap-3.5 text-xs text-[#6f85a3]/70 text-center md:text-start">
           <p>
             {locale === 'ar'
-              ? '© 2024 المنطقة السنوية المشتركة (JAZ). جميع الحقوق محفوظة.'
-              : '© 2024 Joint Annual Zone (JAZ). All rights reserved.'}
+              ? '© 2026 الجاز. جميع الحقوق محفوظة.'
+              : '© 2026 Joint Annual Zone (JAZ). All rights reserved.'}
           </p>
           <div className="flex items-center gap-4">
             <Link className="hover:text-[#f7e382] transition-colors" href="/privacy">

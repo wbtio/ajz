@@ -131,9 +131,9 @@ export const translations = {
     homepage: {
       hero: {
         title: "بوابة العراق للمعارض والشراكات الدولية",
-        description: "نربط المؤسسات بالمعارض الدولية ونبني شراكات مستدامة.",
+        description: "تتخصص JAZ في تنظيم المعارض والمؤتمرات، وتنسيق مشاركة المهنيين العراقيين في الفعاليات الدولية المتخصصة.",
         ctaCooperation: "طلب تعاون",
-        ctaParticipation: "المشاركة الدولية",
+        ctaParticipation: "استكشف الفعاليات",
         ctaPartner: "شراكة في العراق",
         ctaInvitation: "دعم الدعوات",
         statPartnerCountriesVal: "15",
@@ -147,7 +147,7 @@ export const translations = {
       },
       sectors: {
         title: "قطاعات تركيزنا",
-        subtitle: "أربعة محاور نركّز عليها لربط المؤسسات العراقية بالأسواق العالمية.",
+        subtitle: "تعمل الجاز من خلال أقسام متخصصة تعكس طبيعة الفعاليات والمعارض والمؤتمرات التي تنظمها وتنسق المشاركة فيها، بما يتيح توجيه كل مشاركة وفق المجال المهني والمؤسسي المناسب.",
         viewAll: "استعرض كل الأقسام",
         medicalTitle: "الرعاية الصحية وعلوم الحياة",
         medicalDesc: "ربط المؤسسات الصحية بالابتكار العالمي والتطورات الطبية.",
@@ -160,11 +160,11 @@ export const translations = {
       },
       services: {
         title: "خدماتنا",
-        subtitle: "مسارات خدمية متكاملة تغطي التسجيل وإدارة الوفود وتطوير الشراكات.",
+        subtitle: "تقدّم الجاز خدمات تنظيمية وإدارية متخصصة في مجال المعارض والمؤتمرات، بما يشمل تنظيم الفعاليات، وتنسيق المشاركات المهنية والمؤسسية، ودعم الجهات العراقية في الوصول إلى الفعاليات الدولية ذات الصلة بمجالات عملها.",
         viewAll: "استعرض كل الخدمات",
         items: [
-          "إقامة المعارض الدولية",
-          "تنسيق اللقاءات الثنائية والمؤسسية",
+          "تنظيم المعارض والمؤتمرات",
+          "تنسيق المشاركات الدولية",
           "التدريب والتطوير",
           "تنظيم الفعاليات والتمثيل التجاري",
           "تطوير الشراكات",
@@ -174,12 +174,12 @@ export const translations = {
       },
       events: {
         title: "الفعاليات الدولية البارزة",
-        subtitle: "مجموعة مختارة من المعارض والقمم والمنتديات الدولية القادمة.",
+        subtitle: "يمكن للزوار استعراض الفعاليات القادمة حسب القطاع، الدولة، شهر الانعقاد.",
         viewAll: "استعرض كل الفعاليات"
       },
       process: {
-        title: "عملية الشراكة لدينا",
-        subtitle: "تضمن عمليتنا المجربة بناء علاقات هادفة وتحقيق نتائج ملموسة.",
+        title: "آلية العمل",
+        subtitle: "تبدأ الجاز بدراسة طبيعة الجهة المشاركة ومجال عملها، لتحديد نوع الفعالية المناسبة لها.",
         discoverTitle: "اكتشاف",
         discoverDesc: "نفهم أهدافك واحتياجاتك.",
         connectTitle: "تواصل",
@@ -437,20 +437,20 @@ export const translations = {
     about: {
       title: "من نحن",
       sectionTitle: "من نحن",
-      sectionSubtitle: "بوابتك إلى العالم الدولي للمعارض والمؤتمرات",
+      sectionSubtitle: "بوابتكم إلى المعارض والمؤتمرات الدولية",
       heroTitle:
         "Joint Annual Zone: بوابتك إلى العالم الدولي للمعارض والمؤتمرات",
       description:
-        "منذ أكثر من عقد، تعمل Joint Annual Zone (JAZ) كبوابة استراتيجية تربط القطاع المهني في العراق بالمعارض والمؤتمرات والشبكات الدولية ذات الأثر الحقيقي.",
+        "جاز شركة متخصصة في تنظيم المعارض والمؤتمرات، وتنسيق المشاركات المهنية والمؤسسية في الفعاليات الدولية المتخصصة.",
       aboutLabel: "نظرة عامة",
       longDescription:
         "شركة الجاز: منظم دولي للمعارض والمؤتمرات يعتمد استراتيجي وطني ودولي، لأكثر من عشر سنوات، عملنا كبوابة تربط قطاع الأعمال والمهنيين في العراق بأهم الفعاليات الدولية المؤثرة.",
       mission: "رسالتنا",
       missionText:
-        "تنسيق المساحات الاستراتيجية التي يلتقي فيها المهنيون والشركات، وتمكينهم من خلق فرص نمو حقيقية.",
+        "تسعى الجاز إلى تنظيم المعارض والمؤتمرات وتنسيق المشاركات المهنية والمؤسسية، بما يتيح للمؤسسات والشركات الوصول إلى الفعاليات الدولية المتخصصة بطريقة منظمة وفعالة.",
       vision: "رؤيتنا",
       visionText:
-        "أن نكون البوابة الأكثر ثقة في العراق نحو المعارض والمؤتمرات الدولية.",
+        "أن تكون جاز جهة فاعلة في تنظيم المعارض والمؤتمرات، وتمثيل الحضور المؤسسي في المنصات الدولية المتخصصة.",
       partnerTitle: "لماذا الشراكة مع JAZ؟",
       partnerText:
         "نربط المهنيين العراقيين بالفرص الدولية، ونُيسّر تفاعلات نوعية تدفع التقدم والنجاح.",
@@ -502,10 +502,10 @@ export const translations = {
         experience: "سنوات خبرة",
       },
       whoWeAreTitle: "من نحن",
-      whoWeAreSubtitle: "منصة عراقية تربط الحكومة والشركات والأكاديميا بالمعارض والشركاء الدوليين.",
-      whoWeAreText: "جاز (المنطقة السنوية المشتركة) هي منصة عراقية مخصصة تربط الحكومة والشركات والأكاديميا والمهنيين بالمعارض والمؤتمرات الدولية والشركاء المؤسسيين. نحن نسهل المشاركة وننظم الوفود ونبني تعاوناً طويل الأمد يقود النمو المستدام والأثر العالمي.",
+      whoWeAreSubtitle: "بوابتكم إلى المعارض والمؤتمرات الدولية",
+      whoWeAreText: "جاز شركة متخصصة في تنظيم المعارض والمؤتمرات، وتنسيق المشاركات المهنية والمؤسسية في الفعاليات الدولية المتخصصة. تعمل الشركة على دعم حضور المؤسسات والشركات والمهنيين في المنصات الدولية، من خلال تنظيم الفعاليات، وتنسيق المشاركات، وتوفير مسارات مهنية واضحة للتواصل والتبادل المعرفي.",
       whereWeOperate: "أين نعمل",
-      whereWeOperateSubtitle: "ثلاث مكاتب استراتيجية تغطي العراق من الشمال إلى الجنوب.",
+      whereWeOperateSubtitle: "البصرة، بغداد، أربيل",
       erbilTitle: "أربيل",
       erbilDesc: "خدمة إقليم كردستان والمحافظات الشمالية.",
       baghdadTitle: "بغداد",
@@ -513,22 +513,19 @@ export const translations = {
       basraTitle: "البصرة",
       basraDesc: "بوابتنا إلى الخليج والتجارة الدولية.",
       whyJaz: "لماذا جاز",
-      whyJazSubtitle: "خمس مزايا تجعل التعاون مع منصة جاز قراراً موثوقاً.",
+      whyJazSubtitle: "نعتمد آليات عمل واضحة في تنظيم وإدارة الفعاليات.",
       whyJazItems: [
-        "تنسيق رسمي مع الجهات الحكومية.",
-        "الوصول إلى المعارض العالمية.",
-        "دعم مخصص للوفود والمشاركات.",
-        "تسهيل الشراكات الاستراتيجية.",
-        "دعم شامل من البداية للنهاية."
+        "نعتمد آليات عمل واضحة في تنظيم وإدارة الفعاليات.",
+        "ننسق مشاركة الجهات في المعارض والمؤتمرات الدولية.",
+        "نساعد المؤسسات والشركات والمهنيين في الوصول إلى الفعاليات المناسبة لطبيعة أعمالهم."
       ],
       ourValues: "قيمنا",
-      ourValuesSubtitle: "خمسة مبادئ توجّه كل شراكة ومشاركة نقوم بها.",
+      ourValuesSubtitle: "مبادئنا في إدارة الفعاليات وتنسيق المشاركات.",
       valuesItems: [
-        { title: "النزاهة", desc: "نتصرف بصدق وشفافية." },
-        { title: "التميز", desc: "نسعى لتحقيق الجودة دائماً." },
-        { title: "التعاون", desc: "الشراكات تخلق تأثيراً أعظم." },
-        { title: "الابتكار", desc: "نتبنى حلولاً جديدة." },
-        { title: "الأثر", desc: "مدفوعون بنتائج ملموسة." }
+        { title: "المهنية", desc: "نعتمد أسلوب عمل منظم وواضح في إدارة الفعاليات وتنسيق المشاركات." },
+        { title: "الدقة", desc: "نحرص على متابعة التفاصيل الإدارية والتنظيمية المرتبطة بكل فعالية." },
+        { title: "التواصل", desc: "نؤمن بأهمية بناء شبكة تواصل فعالة بين الجهات العراقية والجهات الدولية ذات العلاقة." },
+        { title: "المعرفة", desc: "نسعى إلى دعم تبادل الخبرات والمعارف من خلال المشاركة في المعارض والمؤتمرات المتخصصة." }
       ],
       leadership: "القيادة والحضور",
       leadershipText: "يقع مقرنا الرئيسي في البصرة، مع مكاتب في بغداد وأربيل. نعمل وثيقاً مع الوزارات والجامعات وقادة القطاع الخاص.",
@@ -566,7 +563,7 @@ export const translations = {
     servicesPage: {
       hero: {
         title: "خدماتنا",
-        description: "تقوم جاز بتنسيق وتسهيل التبادل التجاري الثنائي، والوفود الطبية، والشراكات الدولية الاستراتيجية لربط العراق بأحدث المنصات والفرص العالمية.",
+        description: "تقدّم الجاز خدمات تنظيمية وإدارية متخصصة في مجال المعارض والمؤتمرات، بما يشمل تنظيم الفعاليات، وتنسيق المشاركات المهنية والمؤسسية، ودعم الجهات العراقية في الوصول إلى الفعاليات الدولية ذات الصلة بمجالات عملها.",
         ctaCooperation: "طلب التعاون",
         ctaParticipation: "استكشاف المشاركات",
         ctaInvitation: "طلب دعم الدعوات"
@@ -582,20 +579,20 @@ export const translations = {
         govLabel: "شراكات قنصلية"
       },
       coreServices: {
-        title: "ركائز الخدمات",
-        subtitle: "أربعة مسارات خدمية تغطي الوصول للفعاليات، التحالفات المؤسسية، التمثيل الميداني، واللوجستيات القنصلية.",
+        title: "خدماتنا",
+        subtitle: "تقدّم الجاز خدمات تنظيمية وإدارية متخصصة في مجال المعارض والمؤتمرات.",
         items: [
           {
-            title: "إقامة المعارض الدولية",
-            desc: "تنظيم وإقامة المعارض التجارية الدولية والمشاركة المتكاملة فيها، بما يشمل إدارة الوفود الرسمية بالكامل — من التسجيل وتأشيرات السفر إلى التنسيق القنصلي."
+            title: "تنظيم المعارض والمؤتمرات",
+            desc: "تعمل الجاز على تنظيم وإدارة المعارض والمؤتمرات والفعاليات المهنية."
           },
           {
-            title: "تنسيق اللقاءات الثنائية والمؤسسية",
-            desc: "بناء شراكات رسمية، ومشاريع مشتركة، واتفاقيات نقل المعرفة والتكنولوجيا بين الشركات العالمية والوزارات والجهات المطورة محلياً."
+            title: "تنسيق المشاركات الدولية",
+            desc: "تنسق الجاز مشاركة المؤسسات والشركات والمهنيين العراقيين في المعارض والمؤتمرات الدولية."
           },
           {
-            title: "التمثيل الميداني ودخول السوق العراقي",
-            desc: "تقديم خدمات التمثيل الميداني والدعم الاستراتيجي لدخول السوق، وربط المنظمات الدولية بالوزارات المعنية وغرف التجارة في العراق."
+            title: "التدريب والتطوير",
+            desc: "تعمل الجاز على تنظيم برامج تدريبية ومهنية مرتبطة بمتطلبات سوق العمل والقطاعات المتخصصة."
           },
           {
             title: "اللوجستيات القنصلية والتغطية الإعلامية",
@@ -885,10 +882,10 @@ export const translations = {
     },
     homepage: {
       hero: {
-        title: "Iraq's Gateway to Global Exhibitions & Partnerships",
-        description: "Connecting institutions with international exhibitions and sustainable partnerships.",
+        title: "Your Gateway to International Exhibitions and Conferences",
+        description: "Our Company specializes in organizing exhibitions and conferences and coordinating the participation of Iraqi institutions, businesses, and professionals in specialized international events",
         ctaCooperation: "Request Cooperation",
-        ctaParticipation: "International Participation",
+        ctaParticipation: "Explore Events",
         ctaPartner: "Partner in Iraq",
         ctaInvitation: "Invitation Support",
         statPartnerCountriesVal: "15",
@@ -902,7 +899,7 @@ export const translations = {
       },
       sectors: {
         title: "Our Focus Sectors",
-        subtitle: "Four domains we focus on to connect Iraqi institutions with global markets.",
+        subtitle: "Our Company operates through specialized departments that reflect the nature of the exhibitions, conferences, and events it organizes and coordinates participation in.",
         viewAll: "Browse all sectors",
         medicalTitle: "Healthcare & Life Sciences",
         medicalDesc: "Connecting health institutions with global innovation and medical advancements.",
@@ -915,7 +912,7 @@ export const translations = {
       },
       services: {
         title: "Our Services",
-        subtitle: "Integrated service tracks covering registration, delegation management, and partnership development.",
+        subtitle: "Our Company provides specialized organizational and administrative services in the field of exhibitions and conferences.",
         viewAll: "Browse all services",
         items: [
           "International Exhibition Participation",
@@ -929,20 +926,20 @@ export const translations = {
       },
       events: {
         title: "Featured International Events",
-        subtitle: "A curated selection of upcoming international exhibitions, summits, and forums.",
+        subtitle: "Visitors can explore upcoming events by sector, country, and month of occurrence.",
         viewAll: "Browse all events"
       },
       process: {
-        title: "Our Partnership Process",
-        subtitle: "Our proven process ensures meaningful connections and measurable outcomes.",
-        discoverTitle: "Discover",
-        discoverDesc: "We understand your goals and needs.",
-        connectTitle: "Connect",
-        connectDesc: "We connect you with the right opportunities and partners.",
-        collaborateTitle: "Collaborate",
-        collaborateDesc: "We facilitate engagement, participation, and partnerships.",
-        growTitle: "Grow",
-        growDesc: "We support long-term impact and sustainable success."
+        title: "Work Process",
+        subtitle: "Our Company begins by reviewing the participating entity and its field of work to identify the most suitable type of event.",
+        discoverTitle: "Identifying the Nature of Participation",
+        discoverDesc: "We review the participating entity and its field of work.",
+        connectTitle: "Selecting the Appropriate Event",
+        connectDesc: "We guide participants toward events relevant to their specialization.",
+        collaborateTitle: "Organizing Requirements",
+        collaborateDesc: "We follow up on the administrative and organizational requirements.",
+        growTitle: "Coordinating Participation",
+        growDesc: "We coordinate procedures from the beginning until the event date."
       },
       partners: {
         title: "Trusted by Institutions & Partners",
@@ -1195,20 +1192,20 @@ export const translations = {
       title: "About Us",
       sectionTitle: "About Us",
       sectionSubtitle:
-        "Your Gateway to the International World of Exhibitions and Conferences",
+        "Your Gateway to International Exhibitions and Conferences",
       heroTitle:
         "Joint Annual Zone: Your Gateway to the International World of Exhibitions and Conferences",
       description:
-        "For over a decade, Joint Annual Zone (JAZ) has served as Iraq’s specialized strategic gateway, connecting local ambition with international innovation across trade, technology, medicine, and academia.",
+        "Joint Annual Zone is a company specialized in organizing exhibitions and conferences and coordinating professional and institutional participation in specialized international events.",
       aboutLabel: "Overview",
       longDescription:
         "Joint Annual Zone (JAZ) is an international exhibition and conference organizer with a strategic network of branches inside and outside Iraq. For over a decade, we have been the gateway for Iraqi professionals and businesses, facilitating access to high-impact international events.",
       mission: "Our Mission",
       missionText:
-        "To lead the 'Zone' where professionals and corporations converge.",
+        "Our Company seeks to organize exhibitions and conferences and coordinate professional and institutional participation, enabling institutions and businesses to access specialized international events in a structured and effective manner.",
       vision: "Our Vision",
       visionText:
-        "To be the premier gateway to the international world of exhibitions and conferences.",
+        "To be an active entity in organizing exhibitions and conferences and representing institutional presence on specialized international platforms.",
       partnerTitle: "Why Partner with JAZ?",
       partnerText:
         "We connect Iraqi professionals with international opportunities, facilitating meaningful interactions that drive progress and success.",
@@ -1324,7 +1321,7 @@ export const translations = {
     servicesPage: {
       hero: {
         title: "Our Services",
-        description: "JAZ coordinates and facilitates bilateral trade, medical delegations, and strategic international partnerships to connect Iraq with global opportunities.",
+        description: "Our Company provides specialized organizational and administrative services in the field of exhibitions and conferences, including event organization, professional and institutional participation coordination, and supporting Iraqi entities in accessing international events relevant to their fields of work.",
         ctaCooperation: "Request Cooperation",
         ctaParticipation: "Explore Participation",
         ctaInvitation: "Request Invitation Support"
@@ -1340,20 +1337,20 @@ export const translations = {
         govLabel: "Consular Partnerships"
       },
       coreServices: {
-        title: "Service Pillars",
-        subtitle: "Four service tracks covering event access, institutional alliances, in-country representation, and consular logistics.",
+        title: "Our Services",
+        subtitle: "Our Company provides specialized organizational and administrative services in the field of exhibitions and conferences.",
         items: [
           {
-            title: "International Exhibition Participation",
-            desc: "We facilitate end-to-end participation in leading global trade exhibitions, including full delegation management — registrations, visa credentials, and consular coordination."
+            title: "Exhibition and Conference Organization",
+            desc: "Our Company organizes and manages exhibitions, conferences, and professional events."
           },
           {
-            title: "B2B & Institutional Matchmaking",
-            desc: "We establish formal partnerships, joint ventures, and technology transfer agreements between global enterprises, ministries, and regional developers."
+            title: "International Participation Coordination",
+            desc: "Our Company coordinates the participation of Iraqi institutions, businesses, and professionals in international exhibitions and conferences."
           },
           {
-            title: "In-Country Market Representation",
-            desc: "We provide localized representation and market entry support, connecting international organizations with key government ministries and commerce leaders in Iraq."
+            title: "Training & Development",
+            desc: "Our Company organizes training and professional development programs aligned with labor market requirements and specialized sectors."
           },
           {
             title: "Consular Logistics & Media Integration",

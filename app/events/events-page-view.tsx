@@ -269,7 +269,9 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
 
   // Use only database events (mock events removed - they caused 404s)
   const allEvents = useMemo(() => {
-    return [...events]
+    // Events remain stored in the database, but the public catalogue is paused
+    // while the 2027 calendar is being prepared.
+    return []
   }, [events])
 
   // Extract unique countries
@@ -391,8 +393,8 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
   // Localized texts for layout elements
   const pageTexts = isRTL
     ? {
-        noResultsTitle: 'لم يتم العثور على فعاليات مطابقة',
-        noResultsDesc: 'يرجى تجربة تغيير خيارات التصفية أو البحث للوصول إلى فعاليات أخرى.',
+        noResultsTitle: 'نعمل حالياً على تجهيز فعاليات عام 2027',
+        noResultsDesc: 'الفعاليات الخاصة بعام 2026 انتهت، وسيتم الإعلان عن فعاليات 2027 فور جاهزيتها.',
         ctaTitle: 'هل تحتاج إلى دعوة أو دعم للمشاركة؟',
         ctaDesc: 'يمكن لفريقنا المساعدة في خطابات الدعوة وتنسيق الشراكات ووثائق دعم التأشيرة وتسهيل مشاركتكم.',
         ctaBtnRequest: 'طلب دعم الدعوة',
@@ -400,7 +402,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         supportBadge: 'دعم الدعوة متاح',
         sectorLabel: 'القطاع الاستراتيجي',
         gridTitle: 'الفعاليات والمعارض',
-        gridSubtitle: 'تصفّح الفعاليات القادمة والمكتملة وسجّل حضورك عبر منصة جاز.',
+        gridSubtitle: 'نعمل حالياً على تجهيز فعاليات عام 2027.',
         resultsCount: (n: number) => `${n} فعالية`,
         loadMore: 'تحميل المزيد من الفعاليات',
         showingRange: (shown: number, total: number) => `عرض ${shown} من أصل ${total} فعالية`,
@@ -438,7 +440,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
         <Container>
           <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
             {/* Sidebar Filters */}
-            <EventsFilter
+            {false && <EventsFilter
               sectors={sectors}
               uniqueCountries={uniqueCountries}
               selectedSector={selectedSector}
@@ -454,7 +456,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
               priceFilter={priceFilter}
               setPriceFilter={setPriceFilterPaginated}
               onClear={handleClearFilters}
-            />
+            />}
 
             {/* Events Grid Section */}
             <section className="flex-grow min-w-0">
