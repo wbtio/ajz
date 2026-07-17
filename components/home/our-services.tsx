@@ -22,7 +22,7 @@ export function OurServices() {
   const shouldReduceMotion = useReducedMotion() ?? false
 
   const services = (t.homepage.services.items ?? []).slice(0, 3)
-  const half = Math.ceil(services.length / 2)
+  const serviceAccents = ['#8B0000', '#16a34a', '#b08d4b']
 
   return (
     <section
@@ -36,24 +36,22 @@ export function OurServices() {
           dark
         />
 
-        <ul className="grid grid-cols-1 md:grid-cols-2 mt-4 lg:mt-5">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4 mt-6 lg:mt-8">
           {services.map((service, index) => {
-            const isOdd = index % 2 === 0
-            const isLastMobile = index === services.length - 1
-            const isLastRowDesktop = index >= services.length - 2
+            const isLead = index === 0
             return (
               <motion.li
                 key={index}
                 initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.4, delay: (index % half) * 0.05 }}
+                transition={{ duration: 0.4, delay: index * 0.06 }}
                 className={[
-                  'group relative flex items-center gap-4 px-2 py-2.5 lg:px-3 lg:py-3',
-                  'border-b border-white/10 transition-colors duration-300 group-hover:bg-white/[0.02]',
-                  isOdd ? 'md:border-e md:border-white/10' : '',
-                  isLastMobile ? 'border-b-0' : '',
-                  isLastRowDesktop ? 'md:border-b-0' : '',
+                  'group relative overflow-hidden flex items-center gap-4 rounded-xl border border-white/10 transition-all duration-300',
+                  isLead
+                    ? 'md:row-span-2 min-h-[190px] bg-white/[0.08] px-6 py-6 lg:px-8 lg:py-8'
+                    : 'min-h-[88px] bg-white/[0.035] px-4 py-4 lg:px-5 lg:py-5',
+                  'hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.1]',
                 ].join(' ')}
               >
                 <Link
@@ -63,12 +61,24 @@ export function OurServices() {
                 />
 
                 {/* Icon */}
-                <span className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-white/[0.04] border border-white/10 text-slate-300 transition-all duration-300 group-hover:bg-[#8B0000] group-hover:border-[#8B0000] group-hover:text-white">
-                  <Icon icon={SERVICE_ICONS[index % SERVICE_ICONS.length]} className="w-5 h-5" />
+                <span
+                  className={[
+                    'shrink-0 rounded-lg flex items-center justify-center border border-white/10 transition-all duration-300 group-hover:text-white',
+                    isLead ? 'w-14 h-14' : 'w-11 h-11',
+                  ].join(' ')}
+                  style={{
+                    color: serviceAccents[index],
+                    backgroundColor: `${serviceAccents[index]}18`,
+                  }}
+                >
+                  <Icon icon={SERVICE_ICONS[index % SERVICE_ICONS.length]} className={isLead ? 'w-7 h-7' : 'w-5 h-5'} />
                 </span>
 
                 {/* Label */}
-                <span className="flex-1 text-sm sm:text-base font-bold text-slate-100 leading-snug transition-colors duration-300 group-hover:text-white">
+                <span className={[
+                  'flex-1 text-slate-100 leading-snug transition-colors duration-300 group-hover:text-white',
+                  isLead ? 'text-lg lg:text-2xl font-black' : 'text-sm sm:text-base font-bold',
+                ].join(' ')}>
                   {service}
                 </span>
 
