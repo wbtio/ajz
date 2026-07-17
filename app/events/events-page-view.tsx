@@ -268,7 +268,7 @@ export function EventsPageView({ sectors, events, stats }: EventsPageViewProps) 
   }
 
   // Use only database events (mock events removed - they caused 404s)
-  const allEvents = useMemo(() => {
+  const allEvents = useMemo<Event[]>(() => {
     // Events remain stored in the database, but the public catalogue is paused
     // while the 2027 calendar is being prepared.
     return []
