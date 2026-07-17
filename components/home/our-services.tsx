@@ -26,14 +26,13 @@ export function OurServices() {
 
   return (
     <section
-      className="relative bg-[#0b1426] text-white py-4 lg:py-6 overflow-hidden"
+      className="relative bg-[#f5f7fa] text-[#0f172a] py-6 lg:py-8 overflow-hidden"
       data-purpose="our-services"
     >
       <Container className="relative">
         <SectionHeader
           title={t.homepage.services.title}
           action={{ label: t.homepage.services.viewAll, href: '/services' }}
-          dark
         />
 
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4 mt-6 lg:mt-8">
@@ -47,11 +46,11 @@ export function OurServices() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.4, delay: index * 0.06 }}
                 className={[
-                  'group relative overflow-hidden flex items-center gap-4 rounded-xl border border-white/10 transition-all duration-300',
+                  'group relative overflow-hidden flex items-center gap-4 rounded-xl border border-slate-200 bg-white transition-all duration-300',
                   isLead
-                    ? 'md:row-span-2 min-h-[190px] bg-white/[0.08] px-6 py-6 lg:px-8 lg:py-8'
-                    : 'min-h-[88px] bg-white/[0.035] px-4 py-4 lg:px-5 lg:py-5',
-                  'hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.1]',
+                    ? 'md:row-span-2 min-h-[190px] px-6 py-6 lg:px-8 lg:py-8'
+                    : 'min-h-[88px] px-4 py-4 lg:px-5 lg:py-5',
+                  'hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50',
                 ].join(' ')}
               >
                 <Link
@@ -63,7 +62,7 @@ export function OurServices() {
                 {/* Icon */}
                 <span
                   className={[
-                    'shrink-0 rounded-lg flex items-center justify-center border border-white/10 transition-all duration-300 group-hover:text-white',
+                    'shrink-0 rounded-lg flex items-center justify-center border border-slate-200 transition-all duration-300 group-hover:text-white',
                     isLead ? 'w-14 h-14' : 'w-11 h-11',
                   ].join(' ')}
                   style={{
@@ -76,7 +75,7 @@ export function OurServices() {
 
                 {/* Label */}
                 <span className={[
-                  'flex-1 text-slate-100 leading-snug transition-colors duration-300 group-hover:text-white',
+                  'flex-1 text-slate-900 leading-snug transition-colors duration-300 group-hover:text-[#8B0000]',
                   isLead ? 'text-lg lg:text-2xl font-black' : 'text-sm sm:text-base font-bold',
                 ].join(' ')}>
                   {service}
@@ -84,7 +83,7 @@ export function OurServices() {
 
                 {/* Arrow */}
                 <svg
-                  className="w-4 h-4 shrink-0 text-white/45 transition-all duration-300 rtl:rotate-180 group-hover:text-[#c0392b] group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+                  className="w-4 h-4 shrink-0 text-slate-400 transition-all duration-300 rtl:rotate-180 group-hover:text-[#8B0000] group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
