@@ -52,6 +52,14 @@ export function PaymentStep() {
                     <label className="text-slate-500 font-medium">Payment Category</label>
                     <select value={paymentCategory} onChange={(e) => setPaymentCategory(e.target.value)} className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white focus:outline-none">
                       <option value="Visa Application & Services">Visa Application & Services</option>
+                      <option value="Event Registration">Event Registration</option>
+                      <option value="Invitation Letter">Invitation Letter</option>
+                      <option value="Travel Insurance">Travel Insurance</option>
+                      <option value="Appointment Booking">Appointment Booking</option>
+                      <option value="Document Processing">Document Processing</option>
+                      <option value="Consultation">Consultation</option>
+                      <option value="Training / Event Package">Training / Event Package</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                   <div className="space-y-1">
@@ -60,6 +68,14 @@ export function PaymentStep() {
                       <option value="Bank Transfer">Bank Transfer</option>
                       <option value="Cash">Cash</option>
                       <option value="Asiacell Transfer">Asiacell Transfer</option>
+                      <option value="Zain Cash">Zain Cash</option>
+                      <option value="Qi Card">Qi Card</option>
+                      <option value="Visa / Mastercard">Visa / Mastercard</option>
+                      <option value="POS Terminal">POS Terminal</option>
+                      <option value="K Pay">K Pay</option>
+                      <option value="Online Payment">Online Payment</option>
+                      <option value="Cheque">Cheque</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                   <div className="space-y-1">

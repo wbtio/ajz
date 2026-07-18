@@ -132,10 +132,17 @@ export function TabPayment({ registration }: { registration: any }) {
                     <FormField label="Payment method">
                         <select value={form.payment_method} onChange={(e) => set('payment_method', e.target.value)} className={selectClass}>
                             <option value="">—</option>
-                            <option value="cash">نقداً</option>
-                            <option value="bank_transfer">حوالة بنكية</option>
-                            <option value="card">بطاقة</option>
-                            <option value="online">إلكتروني</option>
+                            <option value="cash">Cash</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="card">Card / POS</option>
+                            <option value="online">Online Payment</option>
+                            <option value="asiacell_transfer">Asiacell Transfer</option>
+                            <option value="zain_cash">Zain Cash</option>
+                            <option value="qi_card">Qi Card</option>
+                            <option value="visa_mastercard">Visa / Mastercard</option>
+                            <option value="k_pay">K Pay</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="other">Other</option>
                         </select>
                     </FormField>
                     <FormField label="Receipt number">

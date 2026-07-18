@@ -6,6 +6,15 @@ export type Customer = {
   email?: string | null
   phone?: string | null
   whatsapp_number?: string | null
+  employer_name?: string | null
+  job_title?: string | null
+  department?: string | null
+  workplace_type?: string | null
+  work_address?: string | null
+  work_city?: string | null
+  work_governorate?: string | null
+  work_phone?: string | null
+  work_email?: string | null
   nationality?: string | null
   city?: string | null
   passport_number?: string | null

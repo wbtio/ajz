@@ -26,7 +26,11 @@ export default async function CustomersPage() {
     .from('clients')
     .select(`
       id, full_name_as_passport, first_name, last_name, email, phone, whatsapp_number,
-      nationality, city, passport_number, passport_expiry_date, updated_at,
+      nationality, city, employer_name, job_title, department, workplace_type,
+      work_address, work_city, work_governorate, work_phone, work_email,
+      source_event_name, jaz_sector, preferred_contact_method, imported_source_date,
+      imported_employee_name, referred_by, inquiry_reason, follow_up_date, source_note,
+      passport_number, passport_expiry_date, updated_at,
       registrations(
         id, case_number, current_step, case_status, status, payment_status, documents, additional_data,
         updated_at, created_at, events(id, title, title_ar, date),

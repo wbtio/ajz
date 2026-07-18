@@ -27,7 +27,6 @@ import { WizardClient } from '../new-registration/wizard-client'
 import {
     Search,
     Download,
-    Printer,
     Plus,
     FolderKanban,
     ArrowUpRight,
@@ -676,14 +675,6 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
                         >
                             <Download className="size-3.5" aria-hidden />
                             <span>Export CSV</span>
-                        </button>
-                        <button
-                            onClick={() => window.print()}
-                            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-[var(--jaz-line)] bg-[var(--jaz-surface)] text-[12.5px] font-medium text-[var(--jaz-ink-soft)] hover:text-[var(--jaz-sovereign)] hover:border-[var(--jaz-sovereign)]/30 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--jaz-sovereign)]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-                        >
-                            <Printer className="size-3.5" aria-hidden />
-                            <span className="hidden sm:inline">Print report</span>
-                            <span className="sm:hidden">Print</span>
                         </button>
                     </div>
                 </div>

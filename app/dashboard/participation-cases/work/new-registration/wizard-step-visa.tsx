@@ -108,7 +108,7 @@ export function VisaStep() {
                   </select>
                 </div>
                 <div className="space-y-1.5 lg:col-span-2">
-                  <label className="text-xs font-bold text-slate-600">Visa Application Platform *</label>
+                  <label className="text-xs font-bold text-slate-600">Visa Application</label>
                   <Input value={visaPlatform} onChange={(e) => setVisaPlatform(e.target.value)} className="border-slate-200" placeholder="Official portal or platform" aria-describedby="visa-platform-help" />
                 </div>
                 <div className="space-y-1.5 lg:col-span-2">
@@ -154,11 +154,11 @@ export function VisaStep() {
                   </Button>
                 </div>
                 <div className="space-y-1.5 lg:col-span-2 lg:order-1">
-                  <label className="text-xs font-bold text-slate-600">Portal Account Email *</label>
+                  <label className="text-xs font-bold text-slate-600">Account Email *</label>
                   <Input value={visaPortalEmail} onChange={(e) => setVisaPortalEmail(e.target.value)} className="border-slate-200" />
                 </div>
                 <div className="space-y-1.5 lg:col-span-2 lg:order-2">
-                  <label className="text-xs font-bold text-slate-600">Portal Account Password *</label>
+                  <label className="text-xs font-bold text-slate-600">Account Password *</label>
                   <div className="relative">
                     <Input type={showPassword ? "text" : "password"} value={visaPortalPassword} onChange={(e) => setVisaPortalPassword(e.target.value)} className="border-slate-200 pr-10" />
                     <button type="button" onClick={() => setShowPassword((p) => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">

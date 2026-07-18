@@ -1126,7 +1126,13 @@ export async function continueWithClientAction(input: {
             .eq('id', targetRegId)
     }
 
-    await purgeExpiredApplicationDocuments(targetRegId)
+    // Cleanup is best-effort. A deployment without the service-role key must
+    // not prevent staff from continuing with an existing client.
+    try {
+        await purgeExpiredApplicationDocuments(targetRegId)
+    } catch (cleanupError) {
+        console.error('Expired application document cleanup skipped:', cleanupError)
+    }
 
     await logEvent(supabase, targetRegId, 'client_updated', 'تم تحديث بيانات العميل وربطه بطلب جديد/مسودة', user.id, profile?.full_name || profile?.email || 'موظف', { client_id: input.clientId, passport_changed: !!passportChanged })
 

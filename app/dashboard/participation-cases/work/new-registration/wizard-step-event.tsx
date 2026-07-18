@@ -43,7 +43,7 @@ export function EventStep() {
                     ))}
                   </select>
                 </div>
-                <div className="space-y-1.5 lg:col-span-6">
+                <div className="space-y-1.5 lg:col-span-3">
                   <label className="text-xs font-bold text-slate-600">Participation Type *</label>
                   <select
                     value={participationType}
@@ -60,7 +60,7 @@ export function EventStep() {
                     <option value="Speaker">Speaker</option>
                   </select>
                 </div>
-                <div className="space-y-1.5 sm:col-span-2 lg:col-span-6">
+                <div className="space-y-1.5 sm:col-span-2 lg:col-span-9">
                   <label className="text-xs font-bold text-slate-600">Travel Purpose *</label>
                   <div className="min-h-10 px-3 py-2 border border-slate-200 rounded-md bg-slate-50 text-sm leading-5 text-slate-700">{travelPurpose}</div>
                 </div>
