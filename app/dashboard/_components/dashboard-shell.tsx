@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DashboardSidebar } from '@/components/dashboard/sidebar'
-import { DashboardHeader } from '@/components/dashboard/dashboard-header'
+import { DashboardSidebar } from '@/app/dashboard/_components/sidebar'
+import { DashboardHeader } from '@/app/dashboard/_components/dashboard-header'
 
 interface DashboardUser {
     id: string

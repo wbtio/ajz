@@ -1,6 +1,6 @@
 import { getAnalyticsSummary, AnalyticsRange } from '@/lib/actions/analytics.actions'
-import { AnimatedStatCard } from '@/components/dashboard/animated-stat-card'
-import { AnalyticsMainChart } from '@/components/dashboard/analytics-charts'
+import { AnimatedStatCard } from '@/app/dashboard/_components/animated-stat-card'
+import { AnalyticsMainChart } from '@/app/dashboard/_components/analytics-charts'
 import { Users, Eye, MousePointerClick, Search, CheckCircle, TrendingUp, Calendar as CalendarIcon, MousePointer2, FileText } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -38,9 +38,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
           <div data-impeccable-variant="original">
             <div className="space-y-4 max-w-7xl mx-auto pb-5" dir="ltr" lang="en">
                 {/* Header & Filters */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white p-3.5 rounded-xl border border-stone-200/60 shadow-sm">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white p-2.5 rounded-xl border border-stone-200/60 shadow-sm">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-stone-900">
+                        <h1 className="text-xl font-bold tracking-tight text-stone-900">
                             Analytics Overview
                         </h1>
                     </div>
@@ -48,19 +48,19 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                     <div className="flex bg-stone-100/80 rounded-lg p-1 border border-stone-200/50">
                         <Link 
                             href="?range=today" 
-                            className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${range === 'today' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
+                            className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-all duration-300 ${range === 'today' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
                         >
                             Today
                         </Link>
                         <Link 
                             href="?range=7d" 
-                            className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${range === '7d' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
+                            className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-all duration-300 ${range === '7d' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
                         >
                             7 Days
                         </Link>
                         <Link 
                             href="?range=30d" 
-                            className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${range === '30d' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
+                            className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-all duration-300 ${range === '30d' ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/50' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50'}`}
                         >
                             30 Days
                         </Link>
@@ -123,13 +123,13 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
 
                 {/* Detailed Event Performance (NEW) */}
                     <Card className="rounded-xl border-stone-200/60 shadow-sm overflow-hidden bg-white">
-                    <CardHeader className="bg-white/40 pb-4 border-b border-stone-100">
+                    <CardHeader className="bg-white/40 px-5 py-3 border-b border-stone-100">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100">
+                            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100">
                                 <TrendingUp className="w-5 h-5" />
                             </div>
                             <div>
-                                <CardTitle className="text-xl">Detailed Event Performance</CardTitle>
+                                <CardTitle className="text-lg">Detailed Event Performance</CardTitle>
                                 <CardDescription>Track views, clicks, and conversion rates for specific events.</CardDescription>
                             </div>
                         </div>
@@ -139,19 +139,19 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                             <Table>
                                 <TableHeader className="bg-stone-50/50">
                                     <TableRow className="hover:bg-transparent">
-                                        <TableHead className="pl-6 text-stone-500 font-semibold h-12">Event Title</TableHead>
-                                        <TableHead className="text-right text-stone-500 font-semibold h-12">Views</TableHead>
-                                        <TableHead className="text-right text-stone-500 font-semibold h-12">Clicks</TableHead>
-                                        <TableHead className="text-right pr-6 text-stone-500 font-semibold h-12">Conv. Rate</TableHead>
+                                        <TableHead className="pl-5 text-stone-500 font-semibold h-10">Event Title</TableHead>
+                                        <TableHead className="text-right text-stone-500 font-semibold h-10">Views</TableHead>
+                                        <TableHead className="text-right text-stone-500 font-semibold h-10">Clicks</TableHead>
+                                        <TableHead className="text-right pr-5 text-stone-500 font-semibold h-10">Conv. Rate</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {detailedEventPerformance.length > 0 ? (
                                         detailedEventPerformance.map((ev, idx) => (
                                             <TableRow key={idx} className="transition-colors hover:bg-stone-50/80 group">
-                                                <TableCell className="pl-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 opacity-50 group-hover:opacity-100 transition-opacity">
+                                                <TableCell className="pl-5 py-2.5">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <div className="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 opacity-50 group-hover:opacity-100 transition-opacity">
                                                             <CalendarIcon className="w-4 h-4" />
                                                         </div>
                                                         <span className="font-semibold text-stone-700">{ev.title}</span>
@@ -159,7 +159,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                                                 </TableCell>
                                                 <TableCell className="text-right font-medium text-stone-600">{ev.views.toLocaleString()}</TableCell>
                                                 <TableCell className="text-right font-medium text-stone-600">{ev.clicks.toLocaleString()}</TableCell>
-                                                <TableCell className="text-right pr-6">
+                                                <TableCell className="text-right pr-5">
                                                     <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold px-2.5 py-0.5 rounded-lg">
                                                         {ev.conversionRate}
                                                     </Badge>
@@ -181,14 +181,14 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
 
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {/* Top Pages */}
-                    <Card className="rounded-3xl border-stone-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-                        <CardHeader className="bg-stone-50/50 pb-4 border-b border-stone-100">
+                    <Card className="rounded-xl border-stone-200/60 shadow-sm overflow-hidden">
+                        <CardHeader className="bg-stone-50/50 px-5 py-3 border-b border-stone-100">
                             <CardTitle className="text-lg flex items-center gap-2 text-stone-800">
                                 <FileText className="w-4 h-4 text-blue-500" /> Top Content
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <div className="overflow-auto max-h-[350px] scrollbar-thin scrollbar-thumb-stone-200">
+                            <div className="overflow-auto max-h-[220px] scrollbar-thin scrollbar-thumb-stone-200">
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-white shadow-sm z-10">
                                         <TableRow className="hover:bg-transparent">
@@ -200,7 +200,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                                         {topPages.length > 0 ? (
                                             topPages.map((page, idx) => (
                                                 <TableRow key={idx} className="hover:bg-blue-50/30 transition-colors">
-                                                    <TableCell className="pl-6 py-3">
+                                                    <TableCell className="pl-5 py-2">
                                                         <div className="flex flex-col">
                                                             <span className="font-medium text-stone-800">{page.label}</span>
                                                             {page.label !== page.path && (
@@ -223,14 +223,14 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                     </Card>
 
                     {/* System Events */}
-                    <Card className="rounded-3xl border-stone-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-                        <CardHeader className="bg-stone-50/50 pb-4 border-b border-stone-100">
+                    <Card className="rounded-xl border-stone-200/60 shadow-sm overflow-hidden">
+                        <CardHeader className="bg-stone-50/50 px-5 py-3 border-b border-stone-100">
                             <CardTitle className="text-lg flex items-center gap-2 text-stone-800">
                                 <MousePointer2 className="w-4 h-4 text-purple-500" /> Action Frequency
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <div className="overflow-auto max-h-[350px] scrollbar-thin scrollbar-thumb-stone-200">
+                            <div className="overflow-auto max-h-[220px] scrollbar-thin scrollbar-thumb-stone-200">
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-white shadow-sm z-10">
                                         <TableRow className="hover:bg-transparent">
@@ -242,7 +242,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                                         {actionFrequencies.length > 0 ? (
                                             actionFrequencies.map((ev, idx) => (
                                                 <TableRow key={idx} className="hover:bg-purple-50/30 transition-colors">
-                                                    <TableCell className="pl-6 py-3">
+                                                    <TableCell className="pl-5 py-2">
                                                         <Badge variant="outline" className="capitalize bg-white text-stone-600 border-stone-200 shadow-sm px-3 py-1 rounded-lg">
                                                             {ev.event.replace(/_/g, ' ')}
                                                         </Badge>

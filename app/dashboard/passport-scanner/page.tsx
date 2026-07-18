@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { PassportScanner } from "@/components/dashboard/passport-scanner";
+import { PassportScanner } from "@/app/dashboard/_components/passport-scanner";
 
 export default async function PassportScannerPage() {
   const supabase = await createClient();

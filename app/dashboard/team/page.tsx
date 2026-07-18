@@ -63,6 +63,20 @@ const AVATAR_PRESETS = [
     url: `https://api.dicebear.com/10.x/${style}/svg?seed=${seed}&backgroundColor=f1f5f9&radius=50`,
 }))
 
+const ACCESS_BADGE_COLORS = [
+    'border-sky-200/80 bg-sky-50 text-sky-700',
+    'border-emerald-200/80 bg-emerald-50 text-emerald-700',
+    'border-violet-200/80 bg-violet-50 text-violet-700',
+    'border-amber-200/80 bg-amber-50 text-amber-800',
+    'border-rose-200/80 bg-rose-50 text-rose-700',
+] as const
+
+function accessBadgeColor(path: string) {
+    let hash = 0
+    for (let index = 0; index < path.length; index += 1) hash = (hash * 31 + path.charCodeAt(index)) >>> 0
+    return ACCESS_BADGE_COLORS[hash % ACCESS_BADGE_COLORS.length]
+}
+
 export default function TeamPage() {
     const [members, setMembers] = useState<TeamMember[]>([])
     const [tasks, setTasks] = useState<TeamTask[]>([])
@@ -313,13 +327,13 @@ export default function TeamPage() {
                 <CardHeader className="pb-3">
                     <div className="flex flex-wrap items-center gap-2">
                         <div className="relative flex-1 min-w-[200px]">
-                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search by name or email..."
-                                className="pr-9"
-                                dir="rtl"
+                                className="pl-9 text-left"
+                                dir="ltr"
                             />
                         </div>
                         <select
@@ -412,7 +426,7 @@ export default function TeamPage() {
                                                 ) : (
                                                     <div className="flex flex-wrap gap-1 max-w-xs">
                                                         {(member.permissions && member.permissions.length > 0 ? member.permissions : DEFAULT_TEAM_PATHS).map((p) => (
-                                                            <span key={p} className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                                                            <span key={p} className={cn('rounded border px-1.5 py-0.5 text-[10px] font-medium', accessBadgeColor(p))}>
                                                                 {DASHBOARD_PAGES.find((d) => d.path === p)?.label || p}
                                                             </span>
                                                         ))}

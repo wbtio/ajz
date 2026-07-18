@@ -25,12 +25,12 @@ interface AnalyticsChartsProps {
 export function AnalyticsMainChart({ data }: AnalyticsChartsProps) {
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>Traffic Overview</CardTitle>
+            <CardHeader className="px-5 py-3">
+                <CardTitle className="text-xl">Traffic Overview</CardTitle>
                 <CardDescription>Page views and unique visitors over time.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="h-[400px] w-full">
+            <CardContent className="px-5 py-3">
+                <div className="h-[250px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                             data={data}

@@ -29,6 +29,44 @@ function isStaff(profile: { role: string | null } | null) {
     return profile?.role === 'admin' || profile?.role === 'team'
 }
 
+/** Remove application documents older than the retention window.
+ *  Client/profile fields stay intact; only files attached to old applications
+ *  and their JSONB references are removed.
+ */
+async function purgeExpiredApplicationDocuments(currentRegistrationId?: string) {
+    const admin = createAdminClient()
+    const cutoff = new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+    let query = admin
+        .from('registrations')
+        .select('id, documents')
+        .lt('created_at', cutoff)
+    if (currentRegistrationId) query = query.neq('id', currentRegistrationId)
+
+    const { data: registrations, error } = await query
+    if (error || !registrations?.length) return
+
+    for (const registration of registrations) {
+        const documents = Array.isArray(registration.documents) ? registration.documents as any[] : []
+        if (!documents.length) continue
+
+        const removalsByBucket = new Map<string, string[]>()
+        for (const document of documents) {
+            const rawPath = typeof document?.path === 'string' ? document.path : ''
+            const marker = '/storage/v1/object/public/'
+            const markerIndex = rawPath.indexOf(marker)
+            if (markerIndex < 0) continue
+            const [bucket, ...pathParts] = rawPath.slice(markerIndex + marker.length).split('/')
+            const path = pathParts.join('/')
+            if (bucket && path) removalsByBucket.set(bucket, [...(removalsByBucket.get(bucket) || []), path])
+        }
+
+        for (const [bucket, paths] of removalsByBucket) {
+            await admin.storage.from(bucket).remove(paths)
+        }
+        await admin.from('registrations').update({ documents: [], updated_at: new Date().toISOString() }).eq('id', registration.id)
+    }
+}
+
 // ── مساعد داخلي: تسجيل حدث على التسجيل ──
 async function logEvent(
     supabase: SupabaseClient<Database>,
@@ -143,17 +181,18 @@ export async function searchClients(input: {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  2) توليد رقم ملف تسلسلي JAZ-PC-{سنة}-{تسلسل}
+//  2) توليد رقم ملف تسلسلي JAZ-{آخر رقمين من السنة}-{تسلسل}
 // ─────────────────────────────────────────────────────────────────
 async function generateCaseNumber(supabase: SupabaseClient<Database>): Promise<string> {
-    const year = new Date().getFullYear()
+    const fullYear = new Date().getFullYear()
+    const year = fullYear.toString().slice(-2)
     const { count } = await supabase
         .from('registrations')
         .select('*', { count: 'exact', head: true })
-        .like('case_number', `JAZ-PC-${year}-%`)
+        .like('case_number', `JAZ-${year}-%`)
 
     const next = ((count ?? 0) + 1).toString().padStart(5, '0')
-    return `JAZ-PC-${year}-${next}`
+    return `JAZ-${year}-${next}`
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -936,6 +975,7 @@ export async function continueWithClientAction(input: {
         phone?: string
         email?: string
         companyName?: string
+        companySpecialty?: string
         dateOfBirth?: string
         placeOfBirth?: string
         passportIssueDate?: string
@@ -981,6 +1021,7 @@ export async function continueWithClientAction(input: {
         if (input.newData.phone) updates.phone = input.newData.phone
         if (input.newData.email) updates.email = input.newData.email
         if (input.newData.companyName) updates.employer_name = input.newData.companyName
+        if (input.newData.companySpecialty) updates.professional_specialty = input.newData.companySpecialty
         if (input.newData.maritalStatus) updates.marital_status = input.newData.maritalStatus
         if (input.newData.salutation) updates.title_salutation = input.newData.salutation
         if (input.newData.gender) updates.sex = input.newData.gender
@@ -1085,6 +1126,8 @@ export async function continueWithClientAction(input: {
             .eq('id', targetRegId)
     }
 
+    await purgeExpiredApplicationDocuments(targetRegId)
+
     await logEvent(supabase, targetRegId, 'client_updated', 'تم تحديث بيانات العميل وربطه بطلب جديد/مسودة', user.id, profile?.full_name || profile?.email || 'موظف', { client_id: input.clientId, passport_changed: !!passportChanged })
 
     revalidatePath('/dashboard/participation-cases')
@@ -1107,6 +1150,7 @@ export async function createNewClientAndApplication(input: {
         phone?: string
         email?: string
         companyName?: string
+        companySpecialty?: string
         dateOfBirth?: string
         placeOfBirth?: string
         passportIssueDate?: string
@@ -1146,6 +1190,7 @@ export async function createNewClientAndApplication(input: {
             phone: input.clientData.phone || null,
             email: input.clientData.email || null,
             employer_name: input.clientData.companyName || null,
+            professional_specialty: input.clientData.companySpecialty || null,
             passport_history: []
         })
         .select('*')
@@ -1200,6 +1245,8 @@ export async function createNewClientAndApplication(input: {
         company_name: newClient.employer_name,
         timestamp: new Date().toISOString()
     }
+
+    await purgeExpiredApplicationDocuments(newReg.id)
 
     await (supabase as any)
         .from('registrations')

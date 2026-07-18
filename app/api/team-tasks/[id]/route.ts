@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { notifyAdmins, notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
+import { normalizeAssigneeIdentity, notifyAdmins, notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
 import { isRecurrence, nextDueDate } from "@/lib/recurrence";
 import type { Database } from "@/lib/database.types";
+import { canAccessPath } from "@/lib/permissions";
 
 type TeamTaskInsert = Database["public"]["Tables"]["team_tasks"]["Insert"];
 
@@ -14,7 +15,7 @@ async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClien
 
   const { data: profile } = await supabase
     .from("users")
-    .select("id, full_name, email, role")
+    .select("id, full_name, email, role, permissions")
     .eq("id", user.id)
     .single();
 
@@ -22,7 +23,10 @@ async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClien
 }
 
 function isOwner(profile: { full_name: string | null; email: string }, assignee: string | null) {
-  return assignee !== null && (assignee === profile.full_name || assignee === profile.email);
+  return assignee !== null && (
+    normalizeAssigneeIdentity(assignee) === normalizeAssigneeIdentity(profile.full_name) ||
+    normalizeAssigneeIdentity(assignee) === normalizeAssigneeIdentity(profile.email)
+  );
 }
 
 export async function PATCH(
@@ -36,6 +40,10 @@ export async function PATCH(
 
   if (!profile) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 401 });
+  }
+
+  if (!canAccessPath(profile.role, "/dashboard/team-tasks", profile.permissions)) {
+    return NextResponse.json({ error: "لا تملك صلاحية الوصول إلى المهام اليومية" }, { status: 403 });
   }
 
   const { data: task, error: fetchError } = await supabase
@@ -52,9 +60,29 @@ export async function PATCH(
   if (!isAdmin && !isOwner(profile, task.assignee)) {
     return NextResponse.json({ error: "هذه المهمة مسندة لعضو آخر" }, { status: 403 });
   }
+
+  if (isAdmin && "assignee" in body && body.assignee) {
+    const assignee = String(body.assignee).trim();
+    const { data: assigneeUser, error: assigneeError } = await supabase
+      .from("users")
+      .select("id, full_name, email")
+      .in("role", ["admin", "team"]);
+
+    if (assigneeError) {
+      return NextResponse.json({ error: assigneeError.message }, { status: 500 });
+    }
+    const matchedAssignee = (assigneeUser ?? []).find(
+      (member) =>
+        normalizeAssigneeIdentity(member.full_name) === normalizeAssigneeIdentity(assignee) ||
+        normalizeAssigneeIdentity(member.email) === normalizeAssigneeIdentity(assignee),
+    );
+    if (!matchedAssignee) {
+      return NextResponse.json({ error: "المسؤول المختار غير موجود ضمن أعضاء الفريق" }, { status: 400 });
+    }
+  }
   // عضو الفريق يستطيع فقط تحديث حالة مهمته الخاصة، والمدير وحده يعدّل بقية الحقول
   const allowed = isAdmin
-    ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence", "attachments"] as const)
+    ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence"] as const)
     : (["status"] as const);
 
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -94,8 +122,6 @@ export async function PATCH(
       due_date: nextDueDate(task.recurrence, task.due_date),
       recurrence: task.recurrence,
     };
-    nextInsert.attachments = task.attachments ?? [];
-
     const { data: nextTask } = await supabase
       .from("team_tasks")
       .insert(nextInsert)
@@ -111,6 +137,7 @@ export async function PATCH(
           title: "نسخة جديدة من مهمة متكررة",
           body: nextTask.title,
           taskId: nextTask.id,
+          linkUrl: "/dashboard/team-tasks",
         });
       }
     }
@@ -137,6 +164,7 @@ export async function PATCH(
         title: "مهمة جديدة مسندة لك",
         body: data.title,
         taskId: data.id,
+        linkUrl: "/dashboard/team-tasks",
       });
     }
   }

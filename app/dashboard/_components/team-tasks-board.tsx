@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ClipboardList,
-  Clock,
-  CheckCircle2,
   Trash2,
   Loader2,
   AlertCircle,
@@ -21,71 +18,36 @@ import {
   Pencil,
   Paperclip,
   Upload,
+  ClipboardList,
+  Clock,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
-import { VoiceInput } from "@/components/dashboard/voice-input";
+import { VoiceInput } from "@/app/dashboard/_components/voice-input";
 import { useTracking } from "@/components/analytics/tracker";
 import { RECURRENCE_LABELS, type Recurrence } from "@/lib/recurrence";
+import { type Attachment, type Category, type ColumnStatus, type CurrentUser, type Member, type Priority, type Task, normalizeTask } from "./task-types";
+import { AssigneeLabel, categoryMeta, columns, emptyForm, MemberAvatar, memberEmailLabel, memberName, priorityMeta } from "./task-config";
 
-type ColumnStatus = "todo" | "in_progress" | "done";
-type Category =
-  | "development"
-  | "events"
-  | "visas"
-  | "partners"
-  | "marketing"
-  | "general";
-type Priority = "low" | "medium" | "high";
+type DateFilter = "all" | "overdue" | "yesterday" | "today" | "tomorrow" | "this_week" | "next_week" | "later" | "no_due_date";
 
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  category: Category;
-  priority: Priority;
-  status: ColumnStatus;
-  assignee: string | null;
-  due_date: string | null;
-  created_at: string;
-  updated_at: string | null;
-  completed_at: string | null;
-  completed_by: string | null;
-  recurrence: Recurrence | null;
-  attachments: Attachment[];
-}
-
-interface Attachment {
-  name: string;
-  url: string;
-  type?: string | null;
-  size?: number | null;
-  uploaded_at: string;
-}
-
-const normalizeTask = (task: Task): Task => ({
-  ...task,
-  attachments: Array.isArray(task.attachments) ? task.attachments : [],
-});
-
-interface Member {
-  id: string;
-  full_name: string | null;
-  email: string;
-  phone: string | null;
-  role: string;
-  avatar_url: string | null;
-}
-
-const memberName = (m: Member) => m.full_name || m.email;
-const initials = (name: string) => name.charAt(0).toUpperCase();
-const memberEmailLabel = (m: Member) => m.email || "";
+const dateFilterLabels: Record<DateFilter, string> = {
+  all: "All dates",
+  overdue: "Overdue",
+  yesterday: "Yesterday",
+  today: "Today",
+  tomorrow: "Tomorrow",
+  this_week: "This week",
+  next_week: "Next week",
+  later: "Later",
+  no_due_date: "No due date",
+};
 
 const normalizeWhatsAppNumber = (value: string | null | undefined) => {
   let digits = (value || "").replace(/\D/g, "");
@@ -95,88 +57,6 @@ const normalizeWhatsAppNumber = (value: string | null | undefined) => {
   else if (digits.startsWith("7")) digits = `964${digits}`;
   return digits;
 };
-
-const avatarPalette = [
-  "bg-blue-100 text-blue-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-amber-100 text-amber-700",
-  "bg-fuchsia-100 text-fuchsia-700",
-  "bg-cyan-100 text-cyan-700",
-  "bg-indigo-100 text-indigo-700",
-  "bg-orange-100 text-orange-700",
-];
-
-const avatarColor = (name: string) => {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = (hash + name.charCodeAt(i)) % avatarPalette.length;
-  return avatarPalette[hash];
-};
-
-function MemberAvatar({ member, name, size = "size-6" }: { member?: Member; name: string; size?: string }) {
-  return (
-    <Avatar className={cn(size, "shrink-0")} title={name}>
-      <AvatarImage src={member?.avatar_url || undefined} alt={name} />
-      <AvatarFallback className={cn("text-[10px] font-bold", avatarColor(name))}>{initials(name)}</AvatarFallback>
-    </Avatar>
-  );
-}
-
-const columns: {
-  id: ColumnStatus;
-  title: string;
-  dot: string;
-  icon: React.ReactNode;
-}[] = [
-  {
-    id: "todo",
-    title: "To do",
-    dot: "bg-slate-400",
-    icon: <ClipboardList className="h-4 w-4 text-slate-500" />,
-  },
-  {
-    id: "in_progress",
-    title: "In progress",
-    dot: "bg-amber-500",
-    icon: <Clock className="h-4 w-4 text-amber-600" />,
-  },
-  {
-    id: "done",
-    title: "Completed",
-    dot: "bg-emerald-500",
-    icon: <CheckCircle2 className="h-4 w-4 text-emerald-600" />,
-  },
-];
-
-const categoryMeta: Record<Category, { label: string; className: string }> = {
-  development: { label: "Development", className: "bg-indigo-50 text-indigo-700" },
-  events: { label: "Events", className: "bg-sky-50 text-sky-700" },
-  visas: { label: "Invitations & visas", className: "bg-rose-50 text-rose-700" },
-  partners: { label: "Partners", className: "bg-teal-50 text-teal-700" },
-  marketing: { label: "Marketing", className: "bg-fuchsia-50 text-fuchsia-700" },
-  general: { label: "General", className: "bg-stone-100 text-stone-600" },
-};
-
-const priorityMeta: Record<Priority, { label: string; className: string; dot: string; rank: number }> = {
-  high: { label: "High", className: "text-rose-700", dot: "bg-rose-500", rank: 0 },
-  medium: { label: "Medium", className: "text-amber-700", dot: "bg-amber-500", rank: 1 },
-  low: { label: "Low", className: "text-stone-500", dot: "bg-stone-400", rank: 2 },
-};
-
-const emptyForm = {
-  title: "",
-  description: "",
-  category: "general" as Category,
-  priority: "medium" as Priority,
-  assignee: "",
-  due_date: "",
-  recurrence: "" as Recurrence | "",
-};
-
-interface CurrentUser {
-  role: string | null;
-  full_name: string | null;
-  email: string;
-}
 
 export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   const isAdmin = currentUser.role === "admin";
@@ -188,6 +68,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<ColumnStatus | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [search, setSearch] = useState("");
 
   const [showForm, setShowForm] = useState(false);
@@ -238,6 +119,12 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
 
   useEffect(() => {
     void Promise.all([fetchTasks(), loadMembers()]);
+  }, []);
+
+  useEffect(() => {
+    const refreshTasks = () => void fetchTasks();
+    window.addEventListener("jaz:tasks-changed", refreshTasks);
+    return () => window.removeEventListener("jaz:tasks-changed", refreshTasks);
   }, []);
 
   const updateTaskStatus = async (taskId: string, status: ColumnStatus) => {
@@ -330,8 +217,9 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
             attachments,
           }),
         });
-        if (!res.ok) throw new Error("Unable to save task");
-        const updated = normalizeTask(await res.json());
+        const result = await res.json();
+        if (!res.ok) throw new Error(result?.error || "Unable to save task");
+        const updated = normalizeTask(result);
         setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
         track("team_task_edited", { title: updated.title });
       } else {
@@ -346,8 +234,9 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
             attachments,
           }),
         });
-        if (!res.ok) throw new Error("Unable to save task");
-        const created = normalizeTask(await res.json());
+        const result = await res.json();
+        if (!res.ok) throw new Error(result?.error || "Unable to save task");
+        const created = normalizeTask(result);
         setTasks((prev) => [created, ...prev]);
         track("team_task_created", { title: created.title });
       }
@@ -355,7 +244,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
       setShowForm(false);
     } catch (err) {
       console.error(err);
-      alert("An error occurred while saving the task.");
+      alert(err instanceof Error ? err.message : "An error occurred while saving the task.");
     } finally {
       setSaving(false);
     }
@@ -425,6 +314,34 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
     );
   };
 
+  const matchesDateFilter = useCallback((task: Task) => {
+    if (dateFilter === "all") return true;
+    if (!task.due_date) return dateFilter === "no_due_date";
+
+    const due = new Date(task.due_date);
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfDueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+    const dayOffset = Math.round((startOfDueDay.getTime() - startOfToday.getTime()) / 86_400_000);
+    const startOfThisWeek = new Date(startOfToday);
+    startOfThisWeek.setDate(startOfToday.getDate() - ((startOfToday.getDay() + 6) % 7));
+    const startOfNextWeek = new Date(startOfThisWeek);
+    startOfNextWeek.setDate(startOfThisWeek.getDate() + 7);
+    const startAfterNextWeek = new Date(startOfThisWeek);
+    startAfterNextWeek.setDate(startOfThisWeek.getDate() + 14);
+
+    switch (dateFilter) {
+      case "overdue": return task.status !== "done" && due < now;
+      case "yesterday": return dayOffset === -1;
+      case "today": return dayOffset === 0;
+      case "tomorrow": return dayOffset === 1;
+      case "this_week": return startOfDueDay >= startOfThisWeek && startOfDueDay < startOfNextWeek;
+      case "next_week": return startOfDueDay >= startOfNextWeek && startOfDueDay < startAfterNextWeek;
+      case "later": return startOfDueDay >= startAfterNextWeek;
+      default: return true;
+    }
+  }, [dateFilter]);
+
   // Productivity overview always uses all tasks, regardless of active filters.
   const stats = useMemo(() => {
     const total = tasks.length;
@@ -439,13 +356,14 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
     const q = search.trim().toLowerCase();
     return tasks.filter((t) => {
       if (categoryFilter !== "all" && t.category !== categoryFilter) return false;
+      if (!matchesDateFilter(t)) return false;
       if (q) {
         const hay = `${t.title} ${t.description ?? ""} ${t.assignee ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
-  }, [tasks, categoryFilter, search]);
+  }, [tasks, categoryFilter, matchesDateFilter, search]);
 
   const compareTasks = (a: Task, b: Task) => {
     const aOverdue = isOverdue(a) ? 0 : 1;
@@ -624,13 +542,29 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
             </div>
           </div>
         </div>
-        <button
-          onClick={openCreateForm}
-          className="flex h-10 items-center gap-2 rounded-lg bg-[#8B0000] px-5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#6B0000]"
-        >
-          <Plus className="h-4 w-4" />
-          Create task
-        </button>
+        <div className="flex items-center gap-2">
+          <label className="relative">
+            <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" aria-hidden />
+            <select
+              value={dateFilter}
+              onChange={(event) => setDateFilter(event.target.value as DateFilter)}
+              aria-label="Filter tasks by due date"
+              className="h-10 appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-8 pr-8 text-xs font-semibold text-stone-700 outline-none transition-colors hover:border-stone-300 focus:border-[#8B0000] focus:ring-1 focus:ring-[#8B0000]"
+            >
+              {(Object.keys(dateFilterLabels) as DateFilter[]).map((filter) => (
+                <option key={filter} value={filter}>{dateFilterLabels[filter]}</option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" aria-hidden />
+          </label>
+          <button
+            onClick={openCreateForm}
+            className="flex h-10 items-center gap-2 rounded-lg bg-[#8B0000] px-5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#6B0000]"
+          >
+            <Plus className="h-4 w-4" />
+            Add Task
+          </button>
+        </div>
       </div>
 
       {/* Search and filters */}
@@ -793,7 +727,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                         <div className="mt-2.5 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             {task.assignee && (
-                              <MemberAvatar member={memberByName(task.assignee)} name={task.assignee} />
+                              <AssigneeLabel member={memberByName(task.assignee)} name={task.assignee} />
                             )}
                             {task.due_date && (
                               <span
@@ -811,30 +745,37 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                               </span>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteTask(task.id);
-                            }}
-                            className="rounded-lg p-1.5 text-stone-300 opacity-0 transition-all hover:bg-rose-50 hover:text-rose-600 group-hover:opacity-100"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteTask(task.id);
+                              }}
+                              aria-label="Delete task"
+                              className="rounded-lg p-1.5 text-stone-300 opacity-0 transition-all hover:bg-rose-50 hover:text-rose-600 group-hover:opacity-100"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                         </div>
-                        <button
-                          type="button"
-                          onClick={(e) => openWhatsAppShare(task, e)}
-                          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-100"
-                        >
-                          Share via WhatsApp
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => openEmailShare(task, undefined, e)}
-                          className="mt-2 ml-2 inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold text-sky-700 transition-colors hover:bg-sky-100"
-                        >
-                          Share via email
-                        </button>
+                        {isAdmin && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(e) => openWhatsAppShare(task, e)}
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-100"
+                            >
+                              Share via WhatsApp
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => openEmailShare(task, undefined, e)}
+                              className="mt-2 ml-2 inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold text-sky-700 transition-colors hover:bg-sky-100"
+                            >
+                              Share via email
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -881,7 +822,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 </button>
               </div>
 
-              {editingTaskId && (
+              {editingTaskId && isAdmin && (
                 <button
                   type="button"
                   onClick={(e) => openWhatsAppShare(tasks.find((t) => t.id === editingTaskId) || {
@@ -947,16 +888,6 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    setShowForm(false);
-                    deleteTask(editingTaskId);
-                  }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 px-5 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete task
-                </button>
               </div>
             ) : (
             <div className="space-y-4">
@@ -1369,7 +1300,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   )}
                   {editingTaskId ? "Save changes" : "Add task"}
                 </button>
-                {editingTaskId && (
+                {editingTaskId && isAdmin && (
                   <button
                     onClick={() => deleteTask(editingTaskId)}
                     className="rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50"

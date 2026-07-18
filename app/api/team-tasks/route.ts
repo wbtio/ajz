@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
+import { normalizeAssigneeIdentity, notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
 import { isRecurrence } from "@/lib/recurrence";
 import type { Database } from "@/lib/database.types";
+import { canAccessPath } from "@/lib/permissions";
 
 type TeamTaskInsert = Database["public"]["Tables"]["team_tasks"]["Insert"];
 
@@ -14,7 +15,7 @@ async function getCurrentProfile(supabase: Awaited<ReturnType<typeof createClien
 
   const { data: profile } = await supabase
     .from("users")
-    .select("id, full_name, email, role")
+    .select("id, full_name, email, role, permissions")
     .eq("id", user.id)
     .single();
 
@@ -27,6 +28,10 @@ export async function GET() {
 
   if (!profile) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 401 });
+  }
+
+  if (!canAccessPath(profile.role, "/dashboard/team-tasks", profile.permissions)) {
+    return NextResponse.json({ error: "لا تملك صلاحية الوصول إلى المهام اليومية" }, { status: 403 });
   }
 
   const { data, error } = await supabase
@@ -42,7 +47,9 @@ export async function GET() {
   if (profile.role !== "admin") {
     const name = profile.full_name || profile.email;
     const visible = (data ?? []).filter(
-      (t) => t.assignee === name || t.assignee === profile.email
+      (t) =>
+        normalizeAssigneeIdentity(t.assignee) === normalizeAssigneeIdentity(name) ||
+        normalizeAssigneeIdentity(t.assignee) === normalizeAssigneeIdentity(profile.email)
     );
     return NextResponse.json(visible);
   }
@@ -61,7 +68,9 @@ export async function POST(req: NextRequest) {
 
   // عضو الفريق لا يمكنه إسناد مهمة لغيره، فقط لنفسه
   const assignee =
-    profile.role === "admin" ? body.assignee ?? null : profile.full_name || profile.email;
+    profile.role === "admin"
+      ? (typeof body.assignee === "string" ? body.assignee.trim() || null : null)
+      : (profile.full_name?.trim() || profile.email.trim());
   const insertBody: TeamTaskInsert = {
     title: body.title,
     description: body.description ?? null,
@@ -72,8 +81,6 @@ export async function POST(req: NextRequest) {
     due_date: body.due_date ?? null,
     recurrence: isRecurrence(body.recurrence) ? body.recurrence : null,
   };
-
-  insertBody.attachments = Array.isArray(body.attachments) ? body.attachments : [];
 
   const { data, error } = await supabase
     .from("team_tasks")
@@ -86,7 +93,7 @@ export async function POST(req: NextRequest) {
   }
 
   // إشعار العضو المسؤول بأن مهمة جديدة أُسندت له
-  if (assignee && assignee !== (profile.full_name || profile.email)) {
+  if (assignee && normalizeAssigneeIdentity(assignee) !== normalizeAssigneeIdentity(profile.full_name || profile.email)) {
     const assigneeId = await resolveUserIdByNameOrEmail(supabase, assignee);
     if (assigneeId) {
       await notifyUser(supabase, {
@@ -95,6 +102,7 @@ export async function POST(req: NextRequest) {
         title: "مهمة جديدة مسندة لك",
         body: data.title,
         taskId: data.id,
+        linkUrl: "/dashboard/team-tasks",
       });
     }
   }

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
 
 interface Notification {
     id: string
@@ -52,29 +53,28 @@ function timeAgoEnglish(iso: string) {
     return new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(iso))
 }
 
-const NOTIFICATION_POLL_MS = 120_000
-
-// تنبيه قصير وواضح، نغمتان فقط حتى يلفت انتباه الفريق من دون إزعاج.
+// Keep task assignments responsive while the employee dashboard is open.
+// A soft, brief chime: noticeable without interrupting work.
 function playAlertSound() {
     try {
         const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
         const ctx = new AudioCtx()
-        const notes = [659.25, 880] // E5, A5 — نغمة صاعدة هادئة وواضحة
+        const notes = [659.25, 783.99] // E5, G5 — gentle, short upward chime
         notes.forEach((freq, i) => {
-            const start = ctx.currentTime + i * 0.16
+            const start = ctx.currentTime + i * 0.09
             const osc = ctx.createOscillator()
             const gain = ctx.createGain()
             osc.type = 'sine'
             osc.frequency.setValueAtTime(freq, start)
             gain.gain.setValueAtTime(0, start)
-            gain.gain.linearRampToValueAtTime(0.2, start + 0.02)
-            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.24)
+            gain.gain.linearRampToValueAtTime(0.055, start + 0.015)
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.13)
             osc.connect(gain)
             gain.connect(ctx.destination)
             osc.start(start)
-            osc.stop(start + 0.26)
+            osc.stop(start + 0.14)
         })
-        setTimeout(() => ctx.close().catch(() => {}), 800)
+        setTimeout(() => ctx.close().catch(() => {}), 400)
     } catch {
         // بعض المتصفحات تمنع الصوت قبل أول تفاعل من المستخدم — نتجاهل الخطأ بصمت
     }
@@ -126,8 +126,35 @@ export function NotificationsBell() {
 
     useEffect(() => {
         fetchNotifications()
-        const interval = setInterval(fetchNotifications, NOTIFICATION_POLL_MS)
-        return () => clearInterval(interval)
+        const supabase = createClient()
+        let channel: ReturnType<typeof supabase.channel> | null = null
+
+        const subscribe = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            channel = supabase
+                .channel(`dashboard-notifications:${user.id}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'notifications',
+                        filter: `user_id=eq.${user.id}`,
+                    },
+                    () => {
+                        void fetchNotifications()
+                        window.dispatchEvent(new Event('jaz:tasks-changed'))
+                    },
+                )
+                .subscribe()
+        }
+
+        void subscribe()
+        return () => {
+            if (channel) void supabase.removeChannel(channel)
+        }
     }, [fetchNotifications])
 
     useEffect(() => {

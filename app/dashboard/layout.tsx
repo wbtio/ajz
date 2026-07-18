@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Toaster } from 'sonner'
-import { DashboardShell } from '@/components/dashboard/dashboard-shell'
+import { DashboardShell } from '@/app/dashboard/_components/dashboard-shell'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { isDashboardRole } from '@/lib/permissions'
 

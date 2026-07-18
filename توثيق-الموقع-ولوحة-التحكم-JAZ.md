@@ -75,7 +75,7 @@
 
 ## 3) لوحة التحكم (`/dashboard`) — للأدمن فقط
 
-محمية في `app/dashboard/layout.tsx`: تتطلب مستخدماً بدور `role = 'admin'`، وإلا تُحوِّل للصفحة الرئيسية. التنقّل من `components/dashboard/sidebar.tsx`:
+محمية في `app/dashboard/layout.tsx`: تتطلب مستخدماً بدور `role = 'admin'`، وإلا تُحوِّل للصفحة الرئيسية. التنقّل من `app/dashboard/_components/sidebar.tsx`:
 
 | القسم | المسار | الوظيفة |
 |---|---|---|

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { AlertTriangle, CalendarDays, CheckCircle2, ClipboardList, FileText, Users, type LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
-import { OperationsDashboardCharts } from '@/components/dashboard/operations-dashboard-charts'
+import { OperationsDashboardCharts } from '@/app/dashboard/_components/operations-dashboard-charts'
 
 export const metadata = { title: 'Dashboard | JAZ Admin' }
 
@@ -63,12 +63,12 @@ export default async function DashboardHomePage() {
   const completedTasks = (taskRows.data ?? []).filter((row) => row.status === 'done').length
 
   const cards: OverviewCard[] = [
-    { label: 'Applications', value: applications.count ?? 0, note: 'All submitted applications', href: '/dashboard/registrations', icon: FileText, tone: 'text-blue-600 bg-blue-50' },
+    { label: 'Applications', value: applications.count ?? 0, note: 'All submitted applications', href: '/dashboard/participation-cases/work/clients', icon: FileText, tone: 'text-blue-600 bg-blue-50' },
     { label: 'Available appointments', value: visaSlots.count ?? 0, note: 'Available or limited slots', href: '/dashboard/visa-availability', icon: CalendarDays, tone: 'text-emerald-600 bg-emerald-50' },
     { label: 'Draft events', value: draftEvents.count ?? 0, note: 'Events waiting for completion', href: '/dashboard/draft-events', icon: ClipboardList, tone: 'text-amber-600 bg-amber-50' },
     { label: 'Active team members', value: teamMembers.count ?? 0, note: 'Currently active members', href: '/dashboard/team', icon: Users, tone: 'text-violet-600 bg-violet-50' },
-    { label: 'Open tasks', value: tasks.count ?? 0, note: 'Tasks still in progress', href: '/dashboard/team', icon: CheckCircle2, tone: 'text-sky-600 bg-sky-50' },
-    { label: 'Overdue tasks', value: overdueTasks.count ?? 0, note: 'Needs immediate attention', href: '/dashboard/team', icon: AlertTriangle, tone: 'text-rose-600 bg-rose-50' },
+    { label: 'Open tasks', value: tasks.count ?? 0, note: 'Tasks still in progress', href: '/dashboard/team-tasks', icon: CheckCircle2, tone: 'text-sky-600 bg-sky-50' },
+    { label: 'Overdue tasks', value: overdueTasks.count ?? 0, note: 'Needs immediate attention', href: '/dashboard/team-tasks', icon: AlertTriangle, tone: 'text-rose-600 bg-rose-50' },
   ]
 
   return (
@@ -83,7 +83,12 @@ export default async function DashboardHomePage() {
 
       <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6" aria-label="Operational overview">
         {cards.map(({ label, value, note, href, icon: Icon, tone }) => (
-          <Link key={label} href={href} className="group">
+          <Link
+            key={label}
+            href={href}
+            aria-label={`Open ${label}`}
+            className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
             <Card className="h-full transition-colors group-hover:border-primary/40">
               <CardContent className="flex items-center gap-2.5 p-3">
                 <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${tone}`}><Icon className="size-4" /></div>

@@ -15,7 +15,7 @@ export function normalizeResidencePermit(value: unknown) {
   let parsed = value
   if (typeof value === 'string') { try { parsed = JSON.parse(value) } catch { parsed = null } }
   const permit = parsed && typeof parsed === 'object' ? parsed as Record<string, unknown> : {}
-  return { hasPermit: Boolean(permit.has_permit), country: String(permit.country ?? ''), number: String(permit.number ?? ''), expiryDate: String(permit.expiry_date ?? '') }
+  return { hasPermit: Boolean(permit.has_permit), country: String(permit.country ?? ''), number: String(permit.number ?? ''), issueDate: String(permit.issue_date ?? ''), expiryDate: String(permit.expiry_date ?? '') }
 }
 
 export function normalizeRegistrationDocuments(value: unknown): RegistrationDocument[] {

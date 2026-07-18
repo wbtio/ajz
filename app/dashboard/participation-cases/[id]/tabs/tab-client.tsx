@@ -184,7 +184,7 @@ export function TabClient({ registration }: TabClientProps) {
                     </FormField>
                     <FormField label="Gender">
                         <select value={form.sex} onChange={(e) => set('sex', e.target.value)} className={selectClass}>
-                            <option value="">—</option>
+                            <option value=""> </option>
                             <option value="male">ذكر</option>
                             <option value="female">أنثى</option>
                         </select>

@@ -2,6 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
+/** Names are entered manually and may contain accidental leading/trailing spaces. */
+export function normalizeAssigneeIdentity(value: string | null | undefined): string {
+  return (value ?? "").trim().replace(/\s+/g, " ").toLocaleLowerCase();
+}
+
 export async function resolveUserIdByNameOrEmail(
   supabase: SupabaseServerClient,
   nameOrEmail: string
@@ -12,7 +17,9 @@ export async function resolveUserIdByNameOrEmail(
     .in("role", ["admin", "team"]);
 
   const match = (data ?? []).find(
-    (u) => u.full_name === nameOrEmail || u.email === nameOrEmail
+    (u) =>
+      normalizeAssigneeIdentity(u.full_name) === normalizeAssigneeIdentity(nameOrEmail) ||
+      normalizeAssigneeIdentity(u.email) === normalizeAssigneeIdentity(nameOrEmail)
   );
   return match?.id ?? null;
 }

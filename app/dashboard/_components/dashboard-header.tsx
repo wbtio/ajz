@@ -8,7 +8,7 @@ import { DASHBOARD_PAGES } from '@/lib/permissions'
 import { PanelLeftClose, PanelLeftOpen, Settings, LogOut, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { NotificationsBell } from '@/components/dashboard/notifications-bell'
+import { NotificationsBell } from '@/app/dashboard/_components/notifications-bell'
 
 interface DashboardHeaderUser {
     email: string

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { canAccessPath } from '@/lib/permissions'
 import {
     LayoutDashboard,
@@ -23,11 +23,10 @@ import {
     CheckSquare,
     ScanLine,
     Trophy,
-    Sparkles,
     Inbox,
+    Timer,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { TaskAssignmentPrompt } from '@/components/dashboard/task-assignment-prompt'
 
 interface DashboardUser {
     id: string
@@ -52,6 +51,33 @@ interface NavItem {
 
 export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarProps) {
     const pathname = usePathname()
+    const [taskSummary, setTaskSummary] = useState<{ open: number; nextDue: string | null }>({ open: 0, nextDue: null })
+
+    const loadTaskSummary = useCallback(async () => {
+        try {
+            const response = await fetch('/api/team-tasks', { cache: 'no-store' })
+            if (!response.ok) return
+            const tasks = await response.json() as Array<{ status: string; due_date: string | null }>
+            const openTasks = tasks.filter((task) => task.status !== 'done')
+            const nextDue = openTasks
+                .map((task) => task.due_date)
+                .filter((date): date is string => Boolean(date))
+                .sort()[0] ?? null
+            setTaskSummary({ open: openTasks.length, nextDue })
+        } catch {
+            // The sidebar remains usable if the task API is temporarily unavailable.
+        }
+    }, [])
+
+    useEffect(() => {
+        const frame = window.requestAnimationFrame(() => void loadTaskSummary())
+        const refreshSummary = () => void loadTaskSummary()
+        window.addEventListener('jaz:tasks-changed', refreshSummary)
+        return () => {
+            window.cancelAnimationFrame(frame)
+            window.removeEventListener('jaz:tasks-changed', refreshSummary)
+        }
+    }, [loadTaskSummary])
     const navSections: { title: string; accent?: boolean; items: NavItem[] }[] = [
         {
             title: 'Overview',
@@ -210,17 +236,27 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
                     </nav>
                 </div>
 
-                <TaskAssignmentPrompt />
                 <div className="border-t border-stone-200/70 bg-white p-3">
-                    <div className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 p-2">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-stone-900 text-white">
-                            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                    <Link href="/dashboard/team-tasks" className="block rounded-lg border border-stone-200 bg-stone-50 p-2 transition-colors hover:border-red-200 hover:bg-red-50/40">
+                        <div className="flex items-center gap-2">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#8B0000] text-white">
+                                <Timer className="h-3.5 w-3.5" aria-hidden />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate text-[11px] font-bold text-stone-800">Current tasks</p>
+                                <p className="truncate text-[9px] font-medium text-stone-500">
+                                    {taskSummary.open} open {taskSummary.open === 1 ? 'task' : 'tasks'}
+                                </p>
+                            </div>
+                            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-[#8B0000] shadow-sm">
+                                {taskSummary.open}
+                            </span>
                         </div>
-                        <div className="min-w-0">
-                            <p className="truncate text-[11px] font-bold text-stone-800">JAZ Operations</p>
-                            <p className="truncate text-[9px] font-medium text-stone-500">Authorized staff workspace</p>
+                        <div className="mt-2 flex items-center gap-1.5 text-[9px] font-medium text-stone-500">
+                            <Calendar className="h-3 w-3" aria-hidden />
+                            {taskSummary.nextDue ? `Next due ${new Date(taskSummary.nextDue).toLocaleString('en', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : 'No upcoming deadlines'}
                         </div>
-                    </div>
+                    </Link>
                 </div>
             </div>
         </aside>
