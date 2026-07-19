@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { normalizeAssigneeIdentity, notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
 import { isRecurrence } from "@/lib/recurrence";
 import type { Database } from "@/lib/database.types";
-import { canAccessPath } from "@/lib/permissions";
+import { canAccessPath, hasExactPermission } from "@/lib/permissions";
 
 type TeamTaskInsert = Database["public"]["Tables"]["team_tasks"]["Insert"];
 
@@ -34,6 +34,8 @@ export async function GET() {
     return NextResponse.json({ error: "لا تملك صلاحية الوصول إلى المهام اليومية" }, { status: 403 });
   }
 
+  const canManageAllTasks = profile.role === "admin" || hasExactPermission(profile.role, "/dashboard/team-tasks", profile.permissions);
+
   const { data, error } = await supabase
     .from("team_tasks")
     .select("*")
@@ -43,8 +45,8 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // عضو الفريق يرى فقط المهام المسندة له، أما المدير فيرى كل المهام
-  if (profile.role !== "admin") {
+  // صاحب صلاحية Daily Tasks الكاملة يرى كل المهام، والباقي يرى ما أُسند إليه فقط
+  if (!canManageAllTasks) {
     const name = profile.full_name || profile.email;
     const visible = (data ?? []).filter(
       (t) =>
@@ -66,9 +68,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 401 });
   }
 
-  // عضو الفريق لا يمكنه إسناد مهمة لغيره، فقط لنفسه
+  const canManageAllTasks = profile.role === "admin" || hasExactPermission(profile.role, "/dashboard/team-tasks", profile.permissions);
+
+  // صاحب صلاحية Daily Tasks الكاملة يستطيع إسناد المهمة لأي عضو
   const assignee =
-    profile.role === "admin"
+    canManageAllTasks
       ? (typeof body.assignee === "string" ? body.assignee.trim() || null : null)
       : (profile.full_name?.trim() || profile.email.trim());
   const insertBody: TeamTaskInsert = {

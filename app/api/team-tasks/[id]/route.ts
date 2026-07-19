@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { normalizeAssigneeIdentity, notifyAdmins, notifyUser, resolveUserIdByNameOrEmail } from "@/lib/notifications";
 import { isRecurrence, nextDueDate } from "@/lib/recurrence";
 import type { Database } from "@/lib/database.types";
-import { canAccessPath } from "@/lib/permissions";
+import { canAccessPath, hasExactPermission } from "@/lib/permissions";
 
 type TeamTaskInsert = Database["public"]["Tables"]["team_tasks"]["Insert"];
 
@@ -27,6 +27,10 @@ function isOwner(profile: { full_name: string | null; email: string }, assignee:
     normalizeAssigneeIdentity(assignee) === normalizeAssigneeIdentity(profile.full_name) ||
     normalizeAssigneeIdentity(assignee) === normalizeAssigneeIdentity(profile.email)
   );
+}
+
+function canManageAllTasks(profile: { role: string | null; permissions: string[] | null }) {
+  return profile.role === "admin" || hasExactPermission(profile.role, "/dashboard/team-tasks", profile.permissions);
 }
 
 export async function PATCH(
@@ -56,12 +60,12 @@ export async function PATCH(
     return NextResponse.json({ error: "المهمة غير موجودة" }, { status: 404 });
   }
 
-  const isAdmin = profile.role === "admin";
-  if (!isAdmin && !isOwner(profile, task.assignee)) {
+  const hasFullTaskAccess = canManageAllTasks(profile);
+  if (!hasFullTaskAccess && !isOwner(profile, task.assignee)) {
     return NextResponse.json({ error: "هذه المهمة مسندة لعضو آخر" }, { status: 403 });
   }
 
-  if (isAdmin && "assignee" in body && body.assignee) {
+  if (hasFullTaskAccess && "assignee" in body && body.assignee) {
     const assignee = String(body.assignee).trim();
     const { data: assigneeUser, error: assigneeError } = await supabase
       .from("users")
@@ -81,7 +85,7 @@ export async function PATCH(
     }
   }
   // عضو الفريق يستطيع فقط تحديث حالة مهمته الخاصة، والمدير وحده يعدّل بقية الحقول
-  const allowed = isAdmin
+  const allowed = hasFullTaskAccess
     ? (["title", "description", "category", "priority", "status", "assignee", "due_date", "recurrence"] as const)
     : (["status"] as const);
 
@@ -144,7 +148,7 @@ export async function PATCH(
   }
 
   // إشعار الإدارة عند إنجاز عضو الفريق لمهمته
-  if (update.status === "done" && task.status !== "done" && !isAdmin) {
+  if (update.status === "done" && task.status !== "done" && !hasFullTaskAccess) {
     await notifyAdmins(supabase, {
       excludeUserId: profile.id,
       type: "task_completed",
@@ -155,7 +159,7 @@ export async function PATCH(
   }
 
   // إشعار العضو الجديد عند إعادة إسناد المهمة له من المدير
-  if (isAdmin && "assignee" in body && update.assignee && update.assignee !== task.assignee) {
+  if (hasFullTaskAccess && "assignee" in body && update.assignee && update.assignee !== task.assignee) {
     const assigneeId = await resolveUserIdByNameOrEmail(supabase, update.assignee as string);
     if (assigneeId && assigneeId !== profile.id) {
       await notifyUser(supabase, {
@@ -184,6 +188,10 @@ export async function DELETE(
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 401 });
   }
 
+  if (!canAccessPath(profile.role, "/dashboard/team-tasks", profile.permissions)) {
+    return NextResponse.json({ error: "لا تملك صلاحية الوصول إلى المهام اليومية" }, { status: 403 });
+  }
+
   const { data: task, error: fetchError } = await supabase
     .from("team_tasks")
     .select("assignee")
@@ -194,7 +202,7 @@ export async function DELETE(
     return NextResponse.json({ error: "المهمة غير موجودة" }, { status: 404 });
   }
 
-  if (profile.role !== "admin" && !isOwner(profile, task.assignee)) {
+  if (!canManageAllTasks(profile) && !isOwner(profile, task.assignee)) {
     return NextResponse.json({ error: "هذه المهمة مسندة لعضو آخر" }, { status: 403 });
   }
 
