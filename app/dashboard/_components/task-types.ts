@@ -44,6 +44,7 @@ export interface CurrentUser {
   role: string | null;
   full_name: string | null;
   email: string;
+  permissions?: string[] | null;
 }
 
 export const normalizeTask = (task: Task): Task => ({

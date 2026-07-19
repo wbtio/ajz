@@ -32,6 +32,7 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { VoiceInput } from "@/app/dashboard/_components/voice-input";
 import { useTracking } from "@/components/analytics/tracker";
 import { RECURRENCE_LABELS, type Recurrence } from "@/lib/recurrence";
+import { hasExactPermission } from "@/lib/permissions";
 import { type Attachment, type Category, type ColumnStatus, type CurrentUser, type Member, type Priority, type Task, normalizeTask } from "./task-types";
 import { AssigneeLabel, categoryMeta, columns, emptyForm, MemberAvatar, memberEmailLabel, memberName, priorityMeta } from "./task-config";
 
@@ -60,6 +61,7 @@ const normalizeWhatsAppNumber = (value: string | null | undefined) => {
 
 export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   const isAdmin = currentUser.role === "admin";
+  const canManageAllTasks = isAdmin || hasExactPermission(currentUser.role, "/dashboard/team-tasks", currentUser.permissions);
   const myName = currentUser.full_name || currentUser.email;
   const { track } = useTracking();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -75,7 +77,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [form, setForm] = useState(() => ({
     ...emptyForm,
-    assignee: isAdmin ? "" : myName,
+    assignee: canManageAllTasks ? "" : myName,
   }));
   const [saving, setSaving] = useState(false);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
@@ -161,7 +163,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
   };
 
   const resetForm = () => {
-    setForm({ ...emptyForm, assignee: isAdmin ? "" : myName });
+    setForm({ ...emptyForm, assignee: canManageAllTasks ? "" : myName });
     setAttachments([]);
     setDueTime("09:00");
     setCustomHours("");
@@ -745,7 +747,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                               </span>
                             )}
                           </div>
-                          {isAdmin && (
+                          {canManageAllTasks && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -758,7 +760,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                             </button>
                           )}
                         </div>
-                        {isAdmin && (
+                          {canManageAllTasks && (
                           <>
                             <button
                               type="button"
@@ -822,7 +824,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                 </button>
               </div>
 
-              {editingTaskId && isAdmin && (
+              {editingTaskId && canManageAllTasks && (
                 <button
                   type="button"
                   onClick={(e) => openWhatsAppShare(tasks.find((t) => t.id === editingTaskId) || {
@@ -848,7 +850,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
               )}
 
             {/* Team members can change their task status; admins can edit all fields. */}
-            {editingTaskId && !isAdmin ? (
+              {editingTaskId && !canManageAllTasks ? (
               <div className="space-y-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-stone-400">
@@ -1043,7 +1045,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   <label className="mb-1.5 block text-sm font-semibold text-stone-700">
                     Assignee
                   </label>
-                  {!isAdmin ? (
+                  {!canManageAllTasks ? (
                     <div className="flex w-full items-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
                       <MemberAvatar member={memberByName(myName)} name={myName} />
                       <span className="flex-1 truncate text-left text-stone-600">
@@ -1300,7 +1302,7 @@ export function TeamTasksBoard({ currentUser }: { currentUser: CurrentUser }) {
                   )}
                   {editingTaskId ? "Save changes" : "Add task"}
                 </button>
-                {editingTaskId && isAdmin && (
+                {editingTaskId && canManageAllTasks && (
                   <button
                     onClick={() => deleteTask(editingTaskId)}
                     className="rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50"
