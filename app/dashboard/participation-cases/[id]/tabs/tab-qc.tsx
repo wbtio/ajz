@@ -6,7 +6,8 @@ import { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Upload, Trash2, Loader2, FileText, AlertTriangle, CheckCircle2, XCircle, ExternalLink } from 'lucide-react'
-import { uploadRegistrationDocument, deleteRegistrationDocument } from '../../actions'
+import { deleteRegistrationDocument } from '../../actions'
+import { uploadRegistrationDocumentDirect } from '../../registration-document-upload'
 import { Section, InlineAlert, FieldLabel } from './shared'
 import { cn } from '@/lib/utils'
 
@@ -60,11 +61,7 @@ export function TabQc({ registration }: { registration: any }) {
     async function handleUpload(docType: string, label: string, file: File) {
         setUploading(docType)
         try {
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('bucket', 'events-bucket')
-            formData.append('type', docType)
-            const { error } = await uploadRegistrationDocument(registration.id, formData, docType, label)
+            const { error } = await uploadRegistrationDocumentDirect(registration.id, file, docType, label)
             if (error) toast.error(error)
             else toast.success(`تم رفع ${label}`)
             router.refresh()

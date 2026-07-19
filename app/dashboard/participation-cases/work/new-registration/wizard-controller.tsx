@@ -41,7 +41,8 @@ const VISA_SUBMISSION_METHODS = [
   "Other",
 ];
 import { hasExactPermission } from "@/lib/permissions";
-import { searchClientsWithMatchingScore, continueWithClientAction, createNewClientAndApplication, uploadRegistrationDocument, recordRegistrationActivity } from "../../actions";
+import { searchClientsWithMatchingScore, continueWithClientAction, createNewClientAndApplication, recordRegistrationActivity } from "../../actions";
+import { uploadRegistrationDocumentDirect } from "../../registration-document-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -263,9 +264,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     if (uploads.length === 0) return;
 
     for (const upload of uploads) {
-      const formData = new FormData();
-      formData.append("file", upload.file);
-      const result = await uploadRegistrationDocument(regId, formData, upload.type, upload.label);
+      const result = await uploadRegistrationDocumentDirect(regId, upload.file, upload.type, upload.label);
       if (result.error) throw new Error(result.error);
     }
 
@@ -1171,14 +1170,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     setUploadError(null);
     setUploadingDocumentType(docType);
     toast.loading(`Uploading ${label}...`);
     try {
-      const res = await uploadRegistrationDocument(registrationId, formData, docType, label);
+      const res = await uploadRegistrationDocumentDirect(registrationId, file, docType, label);
       toast.dismiss();
       if (res.error) {
         setUploadError({ type: docType, message: res.error });
@@ -1397,9 +1393,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       const mergedBytes = await mergedPdf.save();
       const requestedName = packageName.trim() || `${(client?.full_name_as_passport || "Client").replace(/\s+/g, "_")}_Visa_Package.pdf`;
       const fileName = requestedName.toLowerCase().endsWith(".pdf") ? requestedName : `${requestedName}.pdf`;
-      const formData = new FormData();
-      formData.append("file", new File([new Blob([mergedBytes as BlobPart], { type: "application/pdf" })], fileName, { type: "application/pdf" }));
-      const upload = await uploadRegistrationDocument(registrationId, formData, "merged_package", fileName);
+      const mergedFile = new File([new Blob([mergedBytes as BlobPart], { type: "application/pdf" })], fileName, { type: "application/pdf" });
+      const upload = await uploadRegistrationDocumentDirect(registrationId, mergedFile, "merged_package", fileName);
       if (upload.error) throw new Error(upload.error);
 
       const ad = (registration?.additional_data as any) || {};
@@ -1563,9 +1558,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       pdf.text(caseNumber || registrationId, right, 290, { align: "right" });
 
       const fileName = `Payment_Receipt_${caseNumber || registrationId}.pdf`;
-      const formData = new FormData();
-      formData.append("file", new File([pdf.output("blob")], fileName, { type: "application/pdf" }));
-      const upload = await uploadRegistrationDocument(registrationId, formData, "receipt", fileName);
+      const receiptFile = new File([pdf.output("blob")], fileName, { type: "application/pdf" });
+      const upload = await uploadRegistrationDocumentDirect(registrationId, receiptFile, "receipt", fileName);
       if (upload.error) throw new Error(upload.error);
       const receiptUrl = upload.url || "";
 
@@ -1653,9 +1647,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       clientPdf.text("Iraq's gateway to international exhibitions and partnerships", left, 278);
       clientPdf.text("info@jaz.iq  •  +964 771 900 0600  •  www.jaz.iq", left, 284);
       clientPdf.text(receiptId, right, 287, { align: "right" });
-      const clientFormData = new FormData();
-      clientFormData.append("file", new File([clientPdf.output("blob")], clientFileName, { type: "application/pdf" }));
-      const clientUpload = await uploadRegistrationDocument(registrationId, clientFormData, "client_receipt", clientFileName);
+      const clientReceiptFile = new File([clientPdf.output("blob")], clientFileName, { type: "application/pdf" });
+      const clientUpload = await uploadRegistrationDocumentDirect(registrationId, clientReceiptFile, "client_receipt", clientFileName);
       if (clientUpload.error) throw new Error(clientUpload.error);
       const clientReceiptUrl = clientUpload.url || "";
 

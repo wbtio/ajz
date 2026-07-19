@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Loader2, Upload, ExternalLink, Loader2 as Spinner } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { uploadRegistrationDocument } from '../../actions'
+import { uploadRegistrationDocumentDirect } from '../../registration-document-upload'
 
 /* ============================================================
    JAZ Design Tokens — Tab Suite
@@ -284,11 +284,7 @@ export function FileUploadField({
     async function handleFile(file: File) {
         setUploading(true)
         try {
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('bucket', 'events-bucket')
-            formData.append('type', docType)
-            const { error } = await uploadRegistrationDocument(caseId, formData, docType, label)
+            const { error } = await uploadRegistrationDocumentDirect(caseId, file, docType, label)
             if (error) toast.error(error)
             else {
                 toast.success(`تم رفع ${label}`)

@@ -605,103 +605,158 @@ export async function updateClientData(regId: string, data: Record<string, unkno
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  8) رفع وثيقة إلى documents JSONB (نفس شكل الموقع: مصفوفة)
+//  8) رفع وثيقة مباشرة إلى Supabase Storage ثم تسجيلها في documents
 // ─────────────────────────────────────────────────────────────────
-export async function uploadRegistrationDocument(
+const REGISTRATION_DOCUMENTS_BUCKET = 'events-bucket'
+
+function getRegistrationDocumentMaxSize(docType: string) {
+    return docType === 'merged_package' ? 50 * 1024 * 1024 : 10 * 1024 * 1024
+}
+
+function isSafeRegistrationUploadValue(value: string) {
+    return /^[a-zA-Z0-9_-]+$/.test(value)
+}
+
+export async function prepareRegistrationDocumentUpload(
     regId: string,
-    formData: FormData,
+    file: { name: string; size: number; type: string },
+    docType: string,
+) {
+    try {
+        const { supabase, user, profile } = await getCurrentUser()
+        if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+
+        if (!isSafeRegistrationUploadValue(regId) || !isSafeRegistrationUploadValue(docType)) {
+            return { error: 'بيانات المستند غير صالحة' }
+        }
+
+        if (!file?.name || !Number.isFinite(file.size) || file.size <= 0) {
+            return { error: 'لم يتم اختيار ملف صالح' }
+        }
+
+        const maxFileSize = getRegistrationDocumentMaxSize(docType)
+        if (file.size > maxFileSize) {
+            const maxSizeMb = Math.round(maxFileSize / (1024 * 1024))
+            return { error: `حجم الملف كبير جداً، الحد الأقصى ${maxSizeMb} ميغابايت` }
+        }
+
+        const safeFileName = file.name
+            .slice(0, 180)
+            .replace(/[^a-zA-Z0-9.-]/g, '_') || 'document'
+        const storagePath = `registrations/${regId}/${Date.now()}_${crypto.randomUUID()}_${docType}_${safeFileName}`
+        const { data, error } = await supabase.storage
+            .from(REGISTRATION_DOCUMENTS_BUCKET)
+            .createSignedUploadUrl(storagePath)
+
+        if (error || !data) {
+            console.error('prepareRegistrationDocumentUpload failed:', error)
+            return { error: error?.message || 'تعذر تجهيز رابط رفع الملف' }
+        }
+
+        return {
+            error: null,
+            bucket: REGISTRATION_DOCUMENTS_BUCKET,
+            path: data.path,
+            token: data.token,
+        }
+    } catch (error) {
+        console.error('prepareRegistrationDocumentUpload unexpected failure:', error)
+        return { error: 'تعذر بدء رفع الملف. حاول مرة أخرى.' }
+    }
+}
+
+export async function finalizeRegistrationDocumentUpload(
+    regId: string,
+    storagePath: string,
     docType: string,
     label: string,
 ) {
-    const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    try {
+        const { supabase, user, profile } = await getCurrentUser()
+        if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
 
-    const file = formData.get('file')
-    if (!file || typeof file === 'string' || typeof file.arrayBuffer !== 'function') {
-        return { error: 'لم يتم اختيار ملف' }
-    }
-
-    const maxFileSize = docType === 'merged_package'
-        ? 50 * 1024 * 1024
-        : 10 * 1024 * 1024
-    if (file.size > maxFileSize) {
-        const maxSizeMb = Math.round(maxFileSize / (1024 * 1024))
-        return { error: `حجم الملف كبير جداً، الحد الأقصى ${maxSizeMb} ميغابايت` }
-    }
-
-    // This action already has an authenticated staff session. Upload directly
-    // with the server-only admin client so an internal fetch does not lose the
-    // user's Supabase cookies between the Server Action and the route handler.
-    const adminSupabase = createAdminClient()
-    const bucketName = String(formData.get('bucket') || 'events-bucket')
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_') || 'document'
-    const storagePath = `registrations/${Date.now()}_${docType}_${safeFileName}`
-    const fileBuffer = Buffer.from(await file.arrayBuffer())
-
-    let { data: uploadData, error: uploadError } = await adminSupabase.storage
-        .from(bucketName)
-        .upload(storagePath, fileBuffer, {
-            contentType: file.type || 'application/octet-stream',
-            upsert: false,
-        })
-
-    if (uploadError && (uploadError.message.includes('not found') || uploadError.message.includes('Bucket'))) {
-        const { error: bucketError } = await adminSupabase.storage.createBucket(bucketName, { public: true })
-        if (!bucketError) {
-            const retry = await adminSupabase.storage
-                .from(bucketName)
-                .upload(storagePath, fileBuffer, {
-                    contentType: file.type || 'application/octet-stream',
-                    upsert: false,
-                })
-            uploadData = retry.data
-            uploadError = retry.error
+        const expectedPrefix = `registrations/${regId}/`
+        if (
+            !isSafeRegistrationUploadValue(regId)
+            || !isSafeRegistrationUploadValue(docType)
+            || !storagePath.startsWith(expectedPrefix)
+            || !label.trim()
+        ) {
+            return { error: 'بيانات المستند غير صالحة' }
         }
+
+        const { data: storedFile, error: fileError } = await supabase.storage
+            .from(REGISTRATION_DOCUMENTS_BUCKET)
+            .info(storagePath)
+
+        if (fileError || !storedFile) {
+            console.error('finalizeRegistrationDocumentUpload file verification failed:', fileError)
+            return { error: 'لم يكتمل رفع الملف إلى التخزين' }
+        }
+
+        const maxFileSize = getRegistrationDocumentMaxSize(docType)
+        if (typeof storedFile.size === 'number' && storedFile.size > maxFileSize) {
+            await supabase.storage.from(REGISTRATION_DOCUMENTS_BUCKET).remove([storagePath])
+            const maxSizeMb = Math.round(maxFileSize / (1024 * 1024))
+            return { error: `حجم الملف كبير جداً، الحد الأقصى ${maxSizeMb} ميغابايت` }
+        }
+
+        const { data: publicUrlData } = supabase.storage
+            .from(REGISTRATION_DOCUMENTS_BUCKET)
+            .getPublicUrl(storagePath)
+        const url = publicUrlData.publicUrl
+
+        const { data: current, error: registrationError } = await supabase
+            .from('registrations')
+            .select('documents')
+            .eq('id', regId)
+            .single()
+
+        if (registrationError || !current) {
+            console.error('finalizeRegistrationDocumentUpload registration lookup failed:', registrationError)
+            return { error: registrationError?.message || 'تعذر العثور على الطلب' }
+        }
+
+        const docsRaw = current.documents
+        const docs = Array.isArray(docsRaw) ? docsRaw : []
+        const newDoc = {
+            name: label.trim().slice(0, 200),
+            path: url,
+            uploadedAt: new Date().toISOString(),
+            type: docType,
+        }
+        const nextDocs = [
+            ...docs.filter((doc: any) => doc?.type !== docType),
+            newDoc,
+        ]
+
+        const { error } = await supabase
+            .from('registrations')
+            .update({ documents: nextDocs, updated_at: new Date().toISOString() })
+            .eq('id', regId)
+
+        if (error) {
+            console.error('finalizeRegistrationDocumentUpload failed:', error)
+            await supabase.storage.from(REGISTRATION_DOCUMENTS_BUCKET).remove([storagePath])
+            return { error: error.message }
+        }
+
+        await logEvent(
+            supabase,
+            regId,
+            'document_uploaded',
+            `تم رفع وثيقة: ${label}`,
+            user.id,
+            profile?.full_name || profile?.email || 'موظف',
+            { doc_type: docType, url },
+        )
+
+        revalidatePath(`/dashboard/participation-cases/${regId}`)
+        return { error: null, url }
+    } catch (error) {
+        console.error('finalizeRegistrationDocumentUpload unexpected failure:', error)
+        return { error: 'تم رفع الملف، لكن تعذر تسجيله في الطلب. حاول مرة أخرى.' }
     }
-
-    if (uploadError || !uploadData) {
-        console.error('uploadRegistrationDocument storage upload failed:', uploadError)
-        return { error: uploadError?.message || 'فشل رفع الملف إلى التخزين' }
-    }
-
-    const { data: publicUrlData } = adminSupabase.storage.from(bucketName).getPublicUrl(storagePath)
-    const url = publicUrlData.publicUrl
-
-    // اقرأ documents الحالية (قد تكون array أو object — نوحد على array)
-    const { data: current } = await supabase
-        .from('registrations')
-        .select('documents')
-        .eq('id', regId)
-        .single()
-    const docsRaw = current?.documents
-    const docs = Array.isArray(docsRaw) ? docsRaw : []
-
-    const newDoc = {
-        name: label,
-        path: url,
-        uploadedAt: new Date().toISOString(),
-        type: docType,
-    }
-
-    const nextDocs = [
-        ...docs.filter((doc: any) => doc?.type !== docType),
-        newDoc,
-    ]
-
-    const { error } = await supabase
-        .from('registrations')
-        .update({ documents: nextDocs, updated_at: new Date().toISOString() })
-        .eq('id', regId)
-
-    if (error) {
-        console.error('uploadRegistrationDocument failed:', error)
-        return { error: error.message }
-    }
-
-    await logEvent(supabase, regId, 'document_uploaded', `تم رفع وثيقة: ${label}`, user.id, profile?.full_name || profile?.email || 'موظف', { doc_type: docType, url })
-
-    revalidatePath(`/dashboard/participation-cases/${regId}`)
-    return { error: null, url }
 }
 
 // ─────────────────────────────────────────────────────────────────
