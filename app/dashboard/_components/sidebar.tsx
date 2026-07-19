@@ -25,6 +25,7 @@ import {
     Trophy,
     Inbox,
     Timer,
+    Wand2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -94,6 +95,7 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
                 { name: 'Team Members', href: '/dashboard/team', icon: Users, adminOnly: true },
                 { name: 'Passport Scanner', href: '/dashboard/passport-scanner', icon: ScanLine },
                 { name: 'Change Requests', href: '/tasks', icon: ClipboardList, adminOnly: true },
+                { name: 'Creative Prompts', href: '/dashboard/creative-prompts', icon: Wand2 },
             ],
         },
         {

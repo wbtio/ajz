@@ -925,7 +925,7 @@ export async function searchClientsWithMatchingScore(input: {
 
     const { data: candidates, error } = await supabase
         .from('clients')
-        .select('id, full_name_as_passport, last_name, date_of_birth, national_id, place_of_birth, passport_number, phone, email, employer_name, marital_status, sex, title_salutation')
+        .select('id, full_name_as_passport, last_name, date_of_birth, national_id, place_of_birth, passport_number, phone, email, employer_name, professional_specialty, marital_status, sex, title_salutation, job_title, department, work_city, work_governorate, work_phone, work_email')
         .or(orConditions.join(','))
         .limit(50)
 
@@ -980,6 +980,11 @@ export async function continueWithClientAction(input: {
         placeOfBirth?: string
         passportIssueDate?: string
         passportExpiryDate?: string
+        jobTitle?: string
+        department?: string
+        workCity?: string
+        workPhone?: string
+        workEmail?: string
     }
 }) {
     const { supabase, user, profile } = await getCurrentUser()
@@ -1036,6 +1041,18 @@ export async function continueWithClientAction(input: {
         if (input.newData.placeOfBirth) updates.place_of_birth = input.newData.placeOfBirth
         if (input.newData.nationalId) updates.national_id = input.newData.nationalId
     }
+
+    // Employment information is captured on the client-search step and must
+    // follow the client into future applications, even when passport details
+    // are intentionally left unchanged.
+    if (input.newData.jobTitle) updates.job_title = input.newData.jobTitle
+    if (input.newData.department) updates.department = input.newData.department
+    if (input.newData.workCity) {
+        updates.work_city = input.newData.workCity
+        updates.work_governorate = input.newData.workCity
+    }
+    if (input.newData.workPhone) updates.work_phone = input.newData.workPhone
+    if (input.newData.workEmail) updates.work_email = input.newData.workEmail
 
     const { error: updateErr } = await (supabase as any)
         .from('clients')
@@ -1161,6 +1178,11 @@ export async function createNewClientAndApplication(input: {
         placeOfBirth?: string
         passportIssueDate?: string
         passportExpiryDate?: string
+        jobTitle?: string
+        department?: string
+        workCity?: string
+        workPhone?: string
+        workEmail?: string
     }
 }) {
     const { supabase, user, profile } = await getCurrentUser()
@@ -1197,6 +1219,12 @@ export async function createNewClientAndApplication(input: {
             email: input.clientData.email || null,
             employer_name: input.clientData.companyName || null,
             professional_specialty: input.clientData.companySpecialty || null,
+            job_title: input.clientData.jobTitle || null,
+            department: input.clientData.department || null,
+            work_city: input.clientData.workCity || null,
+            work_governorate: input.clientData.workCity || null,
+            work_phone: input.clientData.workPhone || null,
+            work_email: input.clientData.workEmail || null,
             passport_history: []
         })
         .select('*')

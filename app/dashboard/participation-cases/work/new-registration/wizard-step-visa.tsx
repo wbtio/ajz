@@ -50,7 +50,7 @@ export function VisaStep() {
 
             {/* Visa Platform Setup form */}
             <div className="space-y-3">
-              <div className="grid grid-cols-1 gap-x-2 gap-y-3 rounded-xl border border-slate-200/80 bg-[linear-gradient(to_bottom,rgba(254,242,242,0.82)_0_52%,rgba(240,253,244,0.78)_52%_100%)] p-3 sm:grid-cols-2 lg:grid-cols-[repeat(14,minmax(0,1fr))]">
+              <div className="grid grid-cols-1 gap-x-1 gap-y-3 rounded-xl border border-slate-200/80 bg-[linear-gradient(to_bottom,rgba(254,242,242,0.82)_0_52%,rgba(240,253,244,0.78)_52%_100%)] p-3 sm:grid-cols-2 lg:grid-cols-[repeat(14,minmax(0,1fr))]">
                 <h3 className="text-sm font-bold text-slate-800 lg:col-span-14">Embassy Appointment And Setup</h3>
                 <div className="space-y-1.5 lg:col-span-2">
                   <label className="text-xs font-bold text-slate-600">Visa County</label>
@@ -124,19 +124,20 @@ export function VisaStep() {
                 <div className="space-y-1.5 lg:col-span-14">
                   <h4 className="text-sm font-bold text-slate-800">Visa Center Appointment</h4>
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:col-span-14 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,.85fr)_minmax(0,.9fr)_minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
+                <div className="min-w-0 space-y-1.5 lg:order-3">
                   <label className="text-xs font-bold text-slate-600">Appointment Date *</label>
                   <Input type="date" value={visaAppointmentDate} onChange={(e) => setVisaAppointmentDate(e.target.value)} min={new Date().toISOString().split("T")[0]} className="border-slate-200" />
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-4">
+                <div className="min-w-0 space-y-1.5 lg:order-4">
                   <label className="text-xs font-bold text-slate-600">Appointment Time *</label>
                   <Input type="time" value={visaAppointmentTime} onChange={(e) => setVisaAppointmentTime(e.target.value)} className="border-slate-200" />
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-5">
+                <div className="min-w-0 space-y-1.5 lg:order-5">
                   <label className="text-xs font-bold text-slate-600">Appointment Number *</label>
                   <Input value={visaAppointmentRefNumber} onChange={(e) => setVisaAppointmentRefNumber(e.target.value)} className="border-slate-200 font-mono" />
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-6">
+                <div className="min-w-0 space-y-1.5 lg:order-6">
                   <label className="text-xs font-bold text-slate-600">Appointment Status *</label>
                   <select value={visaAppointmentStatus} onChange={(e) => setVisaAppointmentStatus(e.target.value)} className={cn("w-full h-10 px-3 border rounded-md text-sm font-semibold focus:outline-none", visaAppointmentStatus === "Completed" ? "border-emerald-300 bg-emerald-50 text-emerald-700" : visaAppointmentStatus === "Pending" ? "border-amber-300 bg-amber-50 text-amber-700" : visaAppointmentStatus === "Cancelled" ? "border-red-300 bg-red-50 text-red-700" : visaAppointmentStatus === "Rescheduled" ? "border-blue-300 bg-blue-50 text-blue-700" : "border-slate-200 bg-white text-slate-700")}>
                     <option value="Booked">Booked</option>
@@ -146,18 +147,18 @@ export function VisaStep() {
                     <option value="Rescheduled">Rescheduled</option>
                   </select>
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-7">
+                <div className="min-w-0 space-y-1.5 lg:order-7">
                   <label className="flex items-center justify-between gap-2 text-xs font-bold text-slate-600"><span>Appointment Upload *</span></label>
                   <input type="file" id="appt-confirm-file" accept=".pdf" className="hidden" onChange={(e) => handleStep4FileUpload(e, "Appointment Confirmation", "appointment_confirmation")} />
                   <Button type="button" variant="outline" onClick={() => document.getElementById("appt-confirm-file")?.click()} className="h-[43px] w-full text-xs border-slate-200 text-slate-600">
                     {registration.documents?.find((d: any) => d.type === "appointment_confirmation") ? "Uploaded confirmation" : "Choose PDF File"}
                   </Button>
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-1">
+                <div className="min-w-0 space-y-1.5 lg:order-1">
                   <label className="text-xs font-bold text-slate-600">Account Email *</label>
                   <Input value={visaPortalEmail} onChange={(e) => setVisaPortalEmail(e.target.value)} className="border-slate-200" />
                 </div>
-                <div className="space-y-1.5 lg:col-span-2 lg:order-2">
+                <div className="min-w-0 space-y-1.5 lg:order-2">
                   <label className="text-xs font-bold text-slate-600">Account Password *</label>
                   <div className="relative">
                     <Input type={showPassword ? "text" : "password"} value={visaPortalPassword} onChange={(e) => setVisaPortalPassword(e.target.value)} className="border-slate-200 pr-10" />
@@ -165,6 +166,7 @@ export function VisaStep() {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                </div>
                 </div>
                 <div className="space-y-1.5 lg:col-span-2 lg:col-start-13 lg:row-start-2">
                   <label className="text-xs font-bold text-slate-600">Account Status *</label>

@@ -35,10 +35,10 @@ const ANNOTATION_FORMAT = {
       additionalProperties: false,
       required: [...FIELD_KEYS, "mrz"],
       properties: {
-        surname: { type: "string", description: "Surname / family name exactly as printed" },
+        surname: { type: "string", description: "Surname / family name exactly as printed on the passport, preserving hyphens, apostrophes, spaces, and punctuation" },
         given_names: { type: "string", description: "Given (first and middle) names exactly as printed" },
         date_of_birth: { type: "string", description: "Date of birth in YYYY-MM-DD" },
-        place_of_birth: { type: "string", description: "Place (city) of birth as printed" },
+        place_of_birth: { type: "string", description: "Complete place of birth exactly as printed, including city, district, governorate, and country when shown" },
         country_of_birth: { type: "string", description: "Country of birth, from the place-of-birth line if it includes a country, otherwise the issuing country" },
         nationality: { type: "string", description: "Nationality, prefer the 3-letter code (e.g. IRQ)" },
         sex: { type: "string", description: "M or F" },
@@ -58,10 +58,20 @@ const ANNOTATION_FORMAT = {
 
 const ANNOTATION_PROMPT = `This image is a passport. Extract only the fields needed for a Schengen visa application form, exactly as they appear.
 Rules:
+- Read and return ONLY the English/Latin text. Ignore all Arabic text and never translate Arabic into English.
+- For names, preserve the English spelling and punctuation exactly as printed (for example, keep the hyphen in AL-ABD ALI).
 - Cross-check printed fields against the MRZ (the two <<< lines at the bottom); the MRZ is authoritative.
+- For place_of_birth, copy the complete English place-of-birth text exactly as printed. Do not shorten it to only the city; include the governorate and country when they are shown (for example, IRAQ - Basra).
 - All dates must be in YYYY-MM-DD format.
 - Use an empty string "" for any field that is not visible or not readable. Never guess.
 - Copy the MRZ lines verbatim, preserving every < character.`;
+
+function englishOnly(value: string): string {
+  return value
+    .replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 // ── أدوات MRZ (صيغة TD3: سطران × 44 حرفًا) ──
 
@@ -238,7 +248,7 @@ export async function POST(req: NextRequest) {
     const ann = JSON.parse(data.document_annotation ?? "{}");
     for (const key of FIELD_KEYS) {
       const v = ann[key];
-      fields[key] = typeof v === "string" ? v.trim() : "";
+      fields[key] = typeof v === "string" ? englishOnly(v) : "";
     }
     annotationMrz = typeof ann.mrz === "string" ? ann.mrz.trim() : "";
   } catch {
@@ -251,6 +261,10 @@ export async function POST(req: NextRequest) {
   if (parsed) {
     for (const [key, value] of Object.entries(parsed.fields)) {
       if (!value) continue;
+      // Keep the surname exactly as read from the printed passport. The MRZ
+      // removes punctuation and separators, so it must not overwrite a
+      // reliable printed value.
+      if (key === "surname" && fields.surname) continue;
       // أرقام التحقق صحيحة → MRZ يتغلّب؛ وإلا يكمّل الفراغات فقط
       if (parsed.valid || !fields[key]) fields[key] = value;
     }

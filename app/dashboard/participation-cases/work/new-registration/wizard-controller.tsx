@@ -13,8 +13,14 @@ import { SearchableChoice } from "./searchable-choice";
 import type { PreviousSchengenVisa, VisaAppointmentReminder, VisaDocumentDefinition } from "./wizard-types";
 import { formatEventDate } from "./wizard-helpers";
 import { WizardView } from "./wizard-view";
+import { sanitizeEnglishText } from "@/lib/english-only";
 
 const IRAQI_GOVERNORATES = ["Baghdad", "Basra", "Nineveh", "Anbar", "Najaf", "Karbala", "Babil", "Wasit", "Qadisiyah", "Muthanna", "Dhi Qar", "Maysan", "Kirkuk", "Salah Al-Din", "Diyala", "Erbil", "Duhok", "Sulaymaniyah"];
+const normalizeWorkCity = (value: unknown) => {
+  const raw = sanitizeEnglishText(String(value || "")).trim();
+  const normalized = raw.replace(/\s+governorate$/i, "").trim();
+  return IRAQI_GOVERNORATES.find((city) => city.toLowerCase() === normalized.toLowerCase()) || raw;
+};
 const SCHENGEN_COUNTRIES = ["Austria", "Belgium", "Bulgaria", "Croatia", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Italy", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"];
 const VISA_TYPE_OPTIONS = [
   { value: "C", label: "C" },
@@ -44,7 +50,7 @@ import { ClientSummary } from "./client-summary";
 import { ApplicationSummary } from "./application-summary";
 import { REGISTRATION_STEPS, RegistrationProgress } from "./registration-progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, User, FileText, CheckCircle2, AlertTriangle, Eye, EyeOff, X, Plus, Printer, Download, FolderKanban, Lock, Clock, FileCode, RefreshCw, ExternalLink, MessageCircle, Bell, Volume2, Trash2, Upload } from "lucide-react";
+import { Search, User, FileText, CheckCircle2, AlertTriangle, Eye, EyeOff, X, Plus, Printer, Download, FolderKanban, Lock, Clock, FileCode, RefreshCw, ExternalLink, MessageCircle, Mail, Bell, Volume2, Trash2, Upload } from "lucide-react";
 
 // --- Types ---
 interface Event {
@@ -58,9 +64,11 @@ interface Event {
   location: string;
   location_ar: string | null;
   sector: string | null;
+  event_type?: string | null;
   status?: string | null;
   organizer?: string | null;
   registration_config: any;
+  conference_config?: any;
 }
 
 interface Employee {
@@ -129,11 +137,13 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const [selectedPotentialMatch, setSelectedPotentialMatch] = useState<any>(null);
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [phoneCountry, setPhoneCountry] = useState<CountryCode>("IQ");
+  const [workPhoneCountry, setWorkPhoneCountry] = useState<CountryCode>("IQ");
   const [showDocumentImport, setShowDocumentImport] = useState(false);
   const [documentImportType, setDocumentImportType] = useState<"passport" | "national-id">("passport");
   const [documentImportFile, setDocumentImportFile] = useState<File | null>(null);
   const [documentImportText, setDocumentImportText] = useState("");
   const [isImportingDocument, setIsImportingDocument] = useState(false);
+  const [ocrHighlightedFields, setOcrHighlightedFields] = useState<string[]>([]);
   const [importedClientDocuments, setImportedClientDocuments] = useState<Partial<Record<"passport" | "national-id", File>>>({});
   const [companySpecialtyOther, setCompanySpecialtyOther] = useState("");
   const [workCityOther, setWorkCityOther] = useState("");
@@ -163,6 +173,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         const nationalId = source.match(/\d{12}/)?.[0] || "";
         if (!nationalId) throw new Error("National ID must contain 12 digits.");
         setSearchForm((current) => ({ ...current, nationalId }));
+        setOcrHighlightedFields(["nationalId"]);
         toast.success("National ID updated.");
       } else {
         if (documentImportText.trim()) {
@@ -176,6 +187,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           const dateOfBirth = nextLine?.slice(13, 19) || "";
           const dateOfExpiry = nextLine?.slice(21, 27) || "";
           setSearchForm((current) => ({ ...current, passportNumber: passportNumber || current.passportNumber, dateOfBirth: dateOfBirth || current.dateOfBirth, passportExpiryDate: dateOfExpiry || current.passportExpiryDate }));
+          setOcrHighlightedFields(["passportNumber", "dateOfBirth", "passportExpiryDate"]);
           toast.success("Passport fields updated from pasted text.");
         } else if (documentImportFile) {
           if (!documentImportFile.type.startsWith("image/")) throw new Error("PDF processing will be enabled with the OCR document adapter.");
@@ -185,9 +197,17 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           const result = await response.json();
           if (!response.ok) throw new Error(result.error || "Could not read passport.");
           const fields = result.fields || {};
-          const rawBirthCity = String(fields.place_of_birth || "")
-            .split(",")[0]
-            .trim();
+          if (!String(fields.surname || "").trim()) {
+            toast.warning("The surname could not be extracted completely. Review it and enter it manually.");
+          }
+          const fullBirthPlace = String(fields.place_of_birth || "").trim();
+          const birthPlaceParts = fullBirthPlace
+            .split(/\s*(?:,|-|–|—)\s*/)
+            .map((part: string) => part.trim())
+            .filter(Boolean);
+          const rawBirthCity = birthPlaceParts.length > 1
+            ? birthPlaceParts[birthPlaceParts.length - 1]
+            : birthPlaceParts[0] || "";
           const birthCity = rawBirthCity.toLowerCase().replace(/\b\w/g, (letter: string) => letter.toUpperCase());
           const rawBirthCountry = String(fields.country_of_birth || fields.issuing_country || fields.nationality || "")
             .trim()
@@ -196,6 +216,12 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           const normalizedBirthCountry = countryCodeAliases[rawBirthCountry] || rawBirthCountry;
           const birthCountry = placeOfBirthCountries.find((country) => country.code === normalizedBirthCountry || country.label.toUpperCase() === rawBirthCountry)?.code || "";
           const birthCountryLabel = placeOfBirthCountries.find((country) => country.code === birthCountry)?.label || birthCountry;
+          const availableBirthCities = placeOfBirthCitiesByCountry[birthCountry] || [];
+          const normalizedCityText = birthCity.toLowerCase().replace(/\s+governorate$/i, "").trim();
+          const matchedBirthCity = availableBirthCities.find((city: string) => {
+            const normalizedCity = city.toLowerCase();
+            return normalizedCity === normalizedCityText || normalizedCityText.startsWith(`${normalizedCity} `);
+          }) || "";
           setSearchForm((current) => ({
             ...current,
             fullName: fields.given_names || current.fullName,
@@ -204,11 +230,14 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
             gender: fields.sex === "M" || fields.sex === "F" ? (fields.sex === "M" ? "Male" : "Female") : current.gender,
             dateOfBirth: fields.date_of_birth || current.dateOfBirth,
             placeOfBirthCountry: birthCountry || current.placeOfBirthCountry,
-            placeOfBirthCity: birthCity || current.placeOfBirthCity,
-            placeOfBirth: birthCountryLabel && birthCity ? `${birthCountryLabel}, ${birthCity}` : current.placeOfBirth,
+            placeOfBirthCity: matchedBirthCity || current.placeOfBirthCity,
+            // Keep the complete place exactly as OCR read it. The country and
+            // city fields remain normalized for the searchable selectors.
+            placeOfBirth: fullBirthPlace || (birthCountryLabel && birthCity ? `${birthCountryLabel}, ${birthCity}` : current.placeOfBirth),
             passportIssueDate: fields.date_of_issue || current.passportIssueDate,
             passportExpiryDate: fields.date_of_expiry || current.passportExpiryDate,
           }));
+          setOcrHighlightedFields(["fullName", "surname", "passportNumber", "gender", "dateOfBirth", "placeOfBirthCountry", "placeOfBirthCity", "passportIssueDate", "passportExpiryDate"]);
           toast.success("Passport fields updated from OCR.");
         } else throw new Error("Choose a file or paste document text first.");
       }
@@ -224,6 +253,25 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       setIsImportingDocument(false);
     }
   };
+
+  async function persistImportedClientDocuments(regId: string) {
+    const uploads = [
+      { file: importedClientDocuments.passport, type: "passport_copy", label: "Passport, Visa & Residence" },
+      { file: importedClientDocuments["national-id"], type: "national_id", label: "National ID" },
+    ].filter((entry): entry is { file: File; type: string; label: string } => Boolean(entry.file));
+
+    if (uploads.length === 0) return;
+
+    for (const upload of uploads) {
+      const formData = new FormData();
+      formData.append("file", upload.file);
+      const result = await uploadRegistrationDocument(regId, formData, upload.type, upload.label);
+      if (result.error) throw new Error(result.error);
+    }
+
+    setImportedClientDocuments({});
+    await loadRegistration(regId);
+  }
   const fullNameIsValid = !searchForm.fullName || /^[A-Za-z\s'.-]+$/.test(searchForm.fullName.trim());
   const surnameIsValid = !searchForm.surname || /^[A-Za-z\s'.-]+$/.test(searchForm.surname.trim());
   const passportNumberIsValid = !searchForm.passportNumber || /^[A-Z][0-9]{7,8}$/.test(searchForm.passportNumber);
@@ -320,7 +368,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         .from("registrations")
         .select(
           `
-                    id, event_id, notes, documents, additional_data,
+                    id, event_id, notes, documents, additional_data, created_at,
                     case_number, assigned_employee_id, updated_at,
                     registration_events (performed_by_name, created_at),
                     clients (
@@ -328,7 +376,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
                         sex, marital_status, passport_number, national_id,
                         phone, email, employer_name, date_of_birth,
                         place_of_birth, passport_issue_date, passport_expiry_date,
-                        job_title, department, work_city, work_phone, work_email,
+                        job_title, department, work_city, work_governorate, work_phone, work_email,
                         residence_country, previous_schengen_visa,
                         schengen_visas_last_5y, other_residence_permit
                     )
@@ -338,50 +386,73 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         .single();
 
       if (error || !reg) {
-        toast.error("خطأ في تحميل بيانات الطلب");
+        toast.error("Could not load the application data.");
         return;
       }
 
       setRegistration(reg);
       setCaseNumber(reg.case_number || "");
       setAssignedTo(reg.assigned_employee_id || "");
-      setAppNotes(reg.notes || "");
+      setAppNotes(sanitizeEnglishText(String(reg.notes || "")).trim());
       if (reg.clients) {
         setClient(reg.clients);
         const cl = reg.clients as any;
         const parsedPhone = cl.phone ? parsePhoneNumberFromString(cl.phone) : null;
         const residencePermit = normalizeResidencePermit(cl.other_residence_permit);
+        const companySpecialties = new Set([
+          "Construction & Engineering",
+          "Manufacturing & Factory",
+          "Technology & IT",
+          "Healthcare & Pharmaceutical",
+          "Education & Training",
+          "Finance & Banking",
+          "Energy & Utilities",
+          "Government Institution",
+          "Retail & Trading",
+          "Transport & Logistics",
+        ]);
+        const storedCompanySpecialty = sanitizeEnglishText(String(cl.professional_specialty || "")).trim();
+        const storedWorkCity = normalizeWorkCity(cl.work_city || cl.work_governorate);
+        const storedPlaceOfBirth = sanitizeEnglishText(String(cl.place_of_birth || "")).trim();
+        const storedPreviousVisas = normalizePreviousSchengenVisas(cl.schengen_visas_last_5y).map((visa) => ({
+          ...visa,
+          country: sanitizeEnglishText(visa.country).trim(),
+          visa_number: sanitizeEnglishText(visa.visa_number).trim(),
+        }));
         if (parsedPhone?.country) setPhoneCountry(parsedPhone.country);
+        setCompanySpecialtyOther(companySpecialties.has(storedCompanySpecialty) ? "" : storedCompanySpecialty);
+        setWorkCityIsOther(Boolean(storedWorkCity && !IRAQI_GOVERNORATES.includes(storedWorkCity)));
+        setWorkCityOther(IRAQI_GOVERNORATES.includes(storedWorkCity) ? "" : storedWorkCity);
         // Pre-fill editable info
         setSearchForm({
-          fullName: cl.full_name_as_passport || "",
-          surname: cl.last_name || "",
-          salutation: cl.title_salutation || "",
-          gender: cl.sex || "",
-          maritalStatus: cl.marital_status || "",
-          passportNumber: cl.passport_number || "",
-          nationalId: cl.national_id || "",
-          phone: parsedPhone?.nationalNumber || cl.phone || "",
-          email: cl.email || "",
-          companyName: cl.employer_name || "",
-          companySpecialty: cl.professional_specialty || "",
+          fullName: sanitizeEnglishText(String(cl.full_name_as_passport || "")).trim(),
+          surname: sanitizeEnglishText(String(cl.last_name || "")).trim(),
+          salutation: sanitizeEnglishText(String(cl.title_salutation || "")).trim(),
+          gender: sanitizeEnglishText(String(cl.sex || "")).trim(),
+          maritalStatus: sanitizeEnglishText(String(cl.marital_status || "")).trim(),
+          passportNumber: sanitizeEnglishText(String(cl.passport_number || "")).trim(),
+          nationalId: sanitizeEnglishText(String(cl.national_id || "")).trim(),
+          phone: sanitizeEnglishText(String(parsedPhone?.nationalNumber || cl.phone || "")).trim(),
+          email: sanitizeEnglishText(String(cl.email || "")).trim(),
+          companyName: sanitizeEnglishText(String(cl.employer_name || "")).trim(),
+          companySpecialty: companySpecialties.has(storedCompanySpecialty) ? storedCompanySpecialty : storedCompanySpecialty ? "Other" : "",
           dateOfBirth: cl.date_of_birth || "",
-          placeOfBirthCountry: (cl.place_of_birth || "").split(", ")[1] ? placeOfBirthCountries.find((country) => country.label === (cl.place_of_birth || "").split(", ")[0])?.code || "" : "",
-          placeOfBirthCity: (cl.place_of_birth || "").split(", ")[1] || "",
-          placeOfBirth: cl.place_of_birth || "",
+          placeOfBirthCountry: storedPlaceOfBirth.split(", ")[1] ? placeOfBirthCountries.find((country) => country.label === storedPlaceOfBirth.split(", ")[0])?.code || "" : "",
+          placeOfBirthCity: storedPlaceOfBirth.split(", ")[1] || "",
+          placeOfBirth: storedPlaceOfBirth,
           passportIssueDate: cl.passport_issue_date || "",
           passportExpiryDate: cl.passport_expiry_date || "",
-          jobTitle: cl.job_title || "",
-          department: cl.department || "",
-          workCity: cl.work_city || "",
-          workPhone: cl.work_phone || "",
-          workEmail: cl.work_email || "",
-          residenceCountry: cl.residence_country || "Iraq",
+          jobTitle: sanitizeEnglishText(String(cl.job_title || "")).trim(),
+          department: sanitizeEnglishText(String(cl.department || "")).trim(),
+          workCity: normalizeWorkCity(cl.work_city || cl.work_governorate),
+          workPhone: sanitizeEnglishText(String(cl.work_phone || "")).trim(),
+          workEmail: sanitizeEnglishText(String(cl.work_email || "")).trim(),
+          residenceCountry: sanitizeEnglishText(String(cl.residence_country || "Iraq")).trim() || "Iraq",
           previousSchengenVisa: Boolean(cl.previous_schengen_visa),
-          previousSchengenVisas: normalizePreviousSchengenVisas(cl.schengen_visas_last_5y),
+          previousSchengenVisas: storedPreviousVisas,
           hasOtherResidencePermit: residencePermit.hasPermit,
-          otherResidenceCountry: residencePermit.country,
-          otherResidenceNumber: residencePermit.number,
+          otherResidenceCountry: sanitizeEnglishText(residencePermit.country).trim(),
+          otherResidenceNumber: sanitizeEnglishText(residencePermit.number).trim(),
           otherResidenceIssueDate: residencePermit.issueDate,
           otherResidenceExpiryDate: residencePermit.expiryDate,
         });
@@ -452,14 +523,35 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       if (typeof ad.amount_paid === "number") setAmountPaid(ad.amount_paid);
     } catch (e) {
       console.error(e);
-      toast.error("فشل تحميل الطلب");
+      toast.error("Could not load the application.");
     }
+  }
+
+  function populateCompanyInformationFromClient(clientRecord: any) {
+    const jobTitle = sanitizeEnglishText(String(clientRecord.job_title || "")).trim();
+    const workCity = normalizeWorkCity(clientRecord.work_city || clientRecord.work_governorate);
+    const standardJobTitles = new Set(["Shareholder", "Owner", "Managing Director", "Authorized Manager", "General Manager", "Department Manager", "CEO", "CFO", "COO", "Engineer", "Accountant", "Sales Manager"]);
+    const standardWorkCities = new Set(IRAQI_GOVERNORATES);
+    setJobTitleIsOther(Boolean(jobTitle && !standardJobTitles.has(jobTitle)));
+    setJobTitleOther(jobTitle && !standardJobTitles.has(jobTitle) ? jobTitle : "");
+    setWorkCityIsOther(Boolean(workCity && !standardWorkCities.has(workCity)));
+    setWorkCityOther(workCity && !standardWorkCities.has(workCity) ? workCity : "");
+    setSearchForm((current) => ({
+      ...current,
+      companyName: sanitizeEnglishText(String(clientRecord.employer_name || "")).trim() || current.companyName,
+      companySpecialty: sanitizeEnglishText(String(clientRecord.professional_specialty || "")).trim() || current.companySpecialty,
+      jobTitle: jobTitle || current.jobTitle,
+      department: sanitizeEnglishText(String(clientRecord.department || "")).trim() || current.department,
+      workCity: workCity || current.workCity,
+      workPhone: clientRecord.work_phone || current.workPhone,
+      workEmail: clientRecord.work_email || current.workEmail,
+    }));
   }
 
   // --- Weighted Scoring Search Action ---
   function handleSearch() {
     if (!searchForm.fullName.trim() && !searchForm.nationalId.trim() && !searchForm.passportNumber.trim() && !searchForm.dateOfBirth) {
-      toast.error("الرجاء إدخال حقل بحث واحد على الأقل (الاسم الكامل، الرقم الوطني، رقم الجواز أو تاريخ الميلاد)");
+      toast.error("Enter at least one search field: full name, National ID, passport number, or date of birth.");
       return;
     }
     if (phoneValidation.error) {
@@ -487,9 +579,10 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         const topMatch = res.data[0];
         if (topMatch.matchType === "Exact Match" || topMatch.matchType === "Strong Match" || topMatch.matchType === "Potential Match") {
           setSelectedPotentialMatch(topMatch);
+          populateCompanyInformationFromClient(topMatch.client);
         }
       } else {
-        toast.info("لم يتم العثور على عملاء مطابقين مسبقاً.");
+        toast.info("No matching clients were found.");
       }
     });
   }
@@ -530,18 +623,19 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         clientId: match.client.id,
         updateProfile,
         eventId: selectedEventId,
-        newData: { ...normalizedSearchForm, companySpecialty: searchForm.companySpecialty === "Other" ? companySpecialtyOther : searchForm.companySpecialty },
+        newData: normalizedSearchForm,
       });
 
       if (res.error || !res.data) {
-        toast.error(res.error || "حدث خطأ أثناء ربط العميل");
+        toast.error(res.error || "Could not link the client.");
         return;
       }
 
-      toast.success(updateProfile ? "تم تحديث ملف العميل وحفظ المسودة بنجاح" : "تم ربط العميل بالمسودة بنجاح");
+      toast.success(updateProfile ? "Client profile updated and draft saved." : "Client linked to the draft.");
       setRegistrationId(res.data.registrationId);
       setCaseNumber(res.data.caseNumber);
       await updateDraftEventDetails(res.data.registrationId);
+      await persistImportedClientDocuments(res.data.registrationId);
       setStep(3);
     });
   }
@@ -567,21 +661,27 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
     setShowWarningDialog(false);
     startTransition(async () => {
-      const res = await createNewClientAndApplication({
-        eventId: selectedEventId,
-        clientData: { ...normalizedSearchForm, companySpecialty: searchForm.companySpecialty === "Other" ? companySpecialtyOther : searchForm.companySpecialty },
-      });
+      try {
+        const res = await createNewClientAndApplication({
+          eventId: selectedEventId,
+          clientData: normalizedSearchForm,
+        });
 
-      if (res.error || !res.data) {
-        toast.error(res.error || "حدث خطأ أثناء إنشاء الحساب");
-        return;
+        if (res.error || !res.data) {
+          toast.error(res.error || "Could not create the client account.");
+          return;
+        }
+
+        setRegistrationId(res.data.registrationId);
+        setCaseNumber(res.data.caseNumber);
+        await updateDraftEventDetails(res.data.registrationId);
+        await persistImportedClientDocuments(res.data.registrationId);
+        setStep(3);
+        toast.success("New client account and draft created.");
+      } catch (error) {
+        console.error("Failed to create new client and application:", error);
+        toast.error(error instanceof Error ? error.message : "Could not create the client account.");
       }
-
-      toast.success("تم إنشاء حساب عميل جديد والمسودة بنجاح");
-      setRegistrationId(res.data.registrationId);
-      setCaseNumber(res.data.caseNumber);
-      await updateDraftEventDetails(res.data.registrationId);
-      setStep(3);
     });
   }
 
@@ -603,7 +703,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       // Updating the reusable client profile is an explicit action outside this flow.
       await saveIntakeSnapshot();
     } catch (e: any) {
-      toast.error(e.message || "فشل الحفظ");
+      toast.error(e.message || "Could not save the application.");
     }
   }
 
@@ -637,7 +737,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         job_title: searchForm.jobTitle || null,
         department: searchForm.department || null,
         work_city: searchForm.workCity || null,
-        work_phone: searchForm.workPhone || null,
+        work_phone: workPhoneValidation.normalized || null,
         work_email: searchForm.workEmail || null,
         residence_country: searchForm.residenceCountry || null,
         previous_schengen_visa: searchForm.previousSchengenVisa,
@@ -665,10 +765,10 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
       if (error) throw error;
 
-      toast.success("تم حفظ المسودة بنجاح.");
+      toast.success("Draft saved.");
       await loadRegistration(registrationId);
     } catch (e: any) {
-      toast.error(e.message || "فشل حفظ المسودة");
+      toast.error(e.message || "Could not save the draft.");
     }
   }
 
@@ -694,7 +794,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           job_title: searchForm.jobTitle || null,
           department: searchForm.department || null,
           work_city: searchForm.workCity || null,
-          work_phone: searchForm.workPhone || null,
+          work_phone: workPhoneValidation.normalized || null,
           work_email: searchForm.workEmail || null,
           residence_country: searchForm.residenceCountry || null,
           previous_schengen_visa: searchForm.previousSchengenVisa,
@@ -728,18 +828,18 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
       if (error) throw error;
 
-      toast.success("تم حفظ تفاصيل الطلب بنجاح.");
+      toast.success("Application details saved.");
       setStep(4);
       loadRegistration(registrationId);
     } catch (e: any) {
-      toast.error(e.message || "خطأ أثناء حفظ تفاصيل الطلب");
+      toast.error(e.message || "Could not save the application details.");
     }
   }
 
   // --- Step 1: Save Event Selection ---
   async function handleSaveEventDetails() {
     if (!selectedEventId) {
-      toast.error("الرجاء اختيار فعالية أولاً");
+      toast.error("Select an event first.");
       return;
     }
 
@@ -762,10 +862,10 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           .eq("id", registrationId!);
 
         if (error) throw error;
-        toast.success("تم تحديث بيانات الفعالية.");
+        toast.success("Event details updated.");
         loadRegistration(registrationId);
       } catch (e: any) {
-        toast.error(e.message || "خطأ أثناء تحديث بيانات الفعالية");
+        toast.error(e.message || "Could not update the event details.");
         return;
       }
     }
@@ -821,16 +921,16 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
   async function requestReminderPermission() {
     playReminderSound();
-    toast.success("تم تفعيل تنبيه الموعد داخل لوحة التحكم.");
+    toast.success("Appointment reminder enabled in the dashboard.");
   }
 
   function addVisaReminder() {
     if (!newReminderAt) {
-      toast.error("اختر تاريخ ووقت التذكير أولاً.");
+      toast.error("Choose a reminder date and time first.");
       return;
     }
     if (new Date(newReminderAt).getTime() <= Date.now()) {
-      toast.error("يجب أن يكون وقت التذكير في المستقبل.");
+      toast.error("The reminder time must be in the future.");
       return;
     }
     setVisaReminders((current) =>
@@ -992,20 +1092,20 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         await recordRegistrationActivity({
           registrationId,
           action: "visa_updated",
-          description: advance ? "تم حفظ تفاصيل التأشيرة والانتقال إلى خطوة الوثائق" : "تم حفظ تغييرات التأشيرة تلقائياً",
+          description: advance ? "Visa details saved and moved to the documents step." : "Visa changes saved automatically.",
           step: 4,
           metadata: { destination: visaDestination, appointment_status: visaAppointmentStatus },
         });
       }
 
       if (!options?.silent) {
-        toast.success("تم حفظ تفاصيل الفيزا وموعد السفارة بنجاح.");
+        toast.success("Visa details and embassy appointment saved.");
         if (advance) setStep(5);
         loadRegistration(registrationId);
       }
       return true;
     } catch (e: any) {
-      if (!options?.silent) toast.error(e.message || "خطأ أثناء الحفظ");
+      if (!options?.silent) toast.error(e.message || "Could not save the visa details.");
       return false;
     }
   }
@@ -1053,7 +1153,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         setVisaSaveState("saved");
       } else {
         setVisaSaveState("error");
-        toast.error("تعذر حفظ التغييرات تلقائياً. ستتم إعادة المحاولة عند التعديل التالي.");
+        toast.error("Could not autosave the changes. The next edit will retry.");
       }
     }, 2000);
     return () => {
@@ -1066,7 +1166,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     const file = e.target.files?.[0];
     if (!file) return;
     if (!registrationId) {
-      toast.error("احفظ ملف العميل أولاً قبل رفع المستندات.");
+      toast.error("Save the client application before uploading documents.");
       e.target.value = "";
       return;
     }
@@ -1135,7 +1235,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
             toast.success(`Appointment details extracted successfully. Reference: ${ocrResult.appointmentReferenceNumber}`);
           } else if (docType === "visa_application_form" && ocrResponse.ok && ocrResult.applicationNumber) {
             setVisaAppRefNumber(ocrResult.applicationNumber);
-            toast.success(`تم استخراج Application Number: ${ocrResult.applicationNumber}`);
+            toast.success(`Application number extracted: ${ocrResult.applicationNumber}`);
           } else {
             toast.warning(docType === "appointment_confirmation" ? "The file was uploaded, but appointment details could not be extracted confidently. Please review them manually." : "The file was uploaded, but Application Number could not be extracted confidently. Please review it manually.");
           }
@@ -1157,17 +1257,17 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   // --- Step 5: Document Assembly & Package Index ---
   async function handleMergeFiles() {
     if (!registrationId) {
-      toast.error("احفظ ملف العميل أولاً قبل إنشاء الحزمة.");
+      toast.error("Save the client application before creating the package.");
       return;
     }
     const selectedDocuments = mergeableDocuments.filter((document) => packageDocumentPaths.includes(document.path));
     if (selectedDocuments.length === 0 && !includeClientInfoInPackage) {
-      toast.error("اختر ملفاً واحداً على الأقل، أو فعّل إضافة معلومات العميل.");
+      toast.error("Select at least one file or include the client information page.");
       return;
     }
 
     setIsPackageGenerating(true);
-    toast.loading("جاري دمج الملفات في حزمة PDF واحدة...");
+    toast.loading("Combining files into one PDF package...");
     try {
       // Client information is rendered first, then the selected source files are
       // appended as real pages in the same PDF package.
@@ -1270,7 +1370,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
       for (const document of selectedDocuments) {
         const response = await fetch(document.path);
-        if (!response.ok) throw new Error(`تعذر تحميل الملف: ${document.name}`);
+        if (!response.ok) throw new Error(`Could not load file: ${document.name}`);
         const bytes = new Uint8Array(await response.arrayBuffer());
         const contentType = response.headers.get("content-type")?.toLowerCase() || "";
         const lowerName = document.name.toLowerCase();
@@ -1290,7 +1390,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           const scale = Math.min(555.28 / image.width, 801.89 / image.height);
           page.drawImage(image, { x: (595.28 - image.width * scale) / 2, y: (841.89 - image.height * scale) / 2, width: image.width * scale, height: image.height * scale });
         } else {
-          throw new Error(`صيغة الملف غير مدعومة للدمج: ${document.name}. استخدم PDF أو PNG أو JPG.`);
+          throw new Error(`Unsupported package file: ${document.name}. Use PDF, PNG, or JPG.`);
         }
       }
 
@@ -1325,11 +1425,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
       if (error) throw error;
       toast.dismiss();
-      toast.success("تم إنشاء ملف PDF للحزمة وحفظه داخل الطلب.");
+      toast.success("The PDF package was created and saved to the application.");
       await loadRegistration(registrationId);
     } catch (error: any) {
       toast.dismiss();
-      toast.error(error?.message || "تعذر إنشاء ملف الحزمة");
+      toast.error(error?.message || "Could not create the package PDF.");
     } finally {
       setIsPackageGenerating(false);
     }
@@ -1346,7 +1446,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
   async function handleGenerateReceipt() {
     if (!registrationId) return;
-    toast.loading("جاري توليد الوصل المالي للعميل...");
+    toast.loading("Generating the client receipt...");
     try {
       const { jsPDF } = await import("jspdf");
       const receiptId = `RCPT-${new Date().getFullYear()}-${caseNumber.split("-").pop() || "00124"}`;
@@ -1591,11 +1691,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       if (error) throw error;
 
       toast.dismiss();
-      toast.success("تم إصدار الوصل وحفظه داخل الطلب.");
+      toast.success("Receipt generated and saved to the application.");
       await loadRegistration(registrationId);
     } catch (error: any) {
       toast.dismiss();
-      toast.error(error?.message || "خطأ في توليد الوصل المالي");
+      toast.error(error?.message || "Could not generate the receipt.");
     }
   }
 
@@ -1606,7 +1706,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   async function handlePrintReceipt() {
     const receipt = getStoredReceipt();
     if (!receipt?.path) {
-      toast.error("أنشئ الوصل أولاً قبل الطباعة.");
+      toast.error("Generate the receipt before printing.");
       return;
     }
 
@@ -1630,19 +1730,19 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       }, 300);
     };
     document.body.appendChild(printFrame);
-    toast.success("تم فتح نافذة طباعة الوصل.");
+    toast.success("Receipt print window opened.");
   }
 
   async function handleDownloadReceipt() {
     const receipt = getStoredReceipt();
     if (!receipt?.path) {
-      toast.error("أنشئ الوصل أولاً قبل التنزيل.");
+      toast.error("Generate the receipt before downloading.");
       return;
     }
 
     try {
       const response = await fetch(receipt.path);
-      if (!response.ok) throw new Error("تعذر تحميل ملف الوصل.");
+      if (!response.ok) throw new Error("Could not download the receipt file.");
       const objectUrl = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       link.href = objectUrl;
@@ -1651,9 +1751,9 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       link.click();
       link.remove();
       URL.revokeObjectURL(objectUrl);
-      toast.success("تم تنزيل الوصل.");
+      toast.success("Receipt downloaded.");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "تعذر تنزيل الوصل.");
+      toast.error(error instanceof Error ? error.message : "Could not download the receipt.");
     }
   }
 
@@ -1683,14 +1783,14 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       await recordRegistrationActivity({
         registrationId,
         action: "payment_updated",
-        description: "تم حفظ مسودة بيانات الدفع",
+        description: "Payment draft saved.",
         step: 6,
         metadata: { payment_status: registration?.payment_status, amount_paid: amountPaid },
       });
-      toast.success("تم حفظ مسودة الدفع.");
+      toast.success("Payment draft saved.");
       await loadRegistration(registrationId);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "تعذر حفظ مسودة الدفع.");
+      toast.error(error instanceof Error ? error.message : "Could not save the payment draft.");
     }
   }
 
@@ -1698,7 +1798,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     if (!registrationId) return;
     const receipt = getStoredReceipt();
     if (!receipt?.path) {
-      toast.error("أنشئ الوصل أولاً قبل الأرشفة.");
+      toast.error("Generate the receipt before archiving.");
       return;
     }
 
@@ -1718,10 +1818,10 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         })
         .eq("id", registrationId);
       if (error) throw error;
-      toast.success("تمت أرشفة الوصل داخل الطلب.");
+      toast.success("Receipt archived in the application.");
       await loadRegistration(registrationId);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "تعذر أرشفة الوصل.");
+      toast.error(error instanceof Error ? error.message : "Could not archive the receipt.");
     }
   }
 
@@ -1730,7 +1830,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     let phone = rawPhone.replace(/\D/g, "");
     if (phone.startsWith("0")) phone = `964${phone.slice(1)}`;
     if (phone.length < 8) {
-      toast.error("أضف رقم واتساب صالحاً لفتح المحادثة.");
+      toast.error("Add a valid WhatsApp number before opening the conversation.");
       return;
     }
     const selectedFiles = registrationDocuments
@@ -1740,8 +1840,35 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         return `• ${document.name}: ${link}`;
       })
       .join("\n");
-    const message = deliveryMessage.trim() || `مرحباً ${client?.full_name_as_passport || searchForm.fullName || ""}، تم تجهيز ملفات طلب الفيزا ${caseNumber}.\n\n${selectedFiles}`;
+    const message = deliveryMessage.trim() || `Hello ${client?.full_name_as_passport || searchForm.fullName || ""}, your visa application files for ${caseNumber} are ready.\n\n${selectedFiles}`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  }
+
+  function openDeliveryEmail() {
+    const recipient = String(client?.email || searchForm.email || "").trim();
+    if (!recipient) {
+      toast.error("Add the client's email address first.");
+      return;
+    }
+
+    const selectedFiles = registrationDocuments
+      .filter((document) => deliveryDocumentPaths.includes(document.path))
+      .map((document) => {
+        const link = /^https?:\/\//i.test(document.path) ? document.path : `${window.location.origin}${document.path}`;
+        return `• ${document.name}: ${link}`;
+      })
+      .join("\n");
+    const clientName = client?.full_name_as_passport || searchForm.fullName || "Client";
+    const eventName = selectedEvent?.title || selectedEvent?.title_ar || "";
+    const message = [
+      deliveryMessage.trim(),
+      `Client: ${clientName}`,
+      `Case: ${caseNumber}`,
+      eventName ? `Event: ${eventName}` : "",
+      selectedFiles ? `Files:\n${selectedFiles}` : "Files: No files selected.",
+    ].filter(Boolean).join("\n\n");
+    const subject = `JAZ Admin | Case ${caseNumber} documents`;
+    window.location.href = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
   }
 
   // Check Event host details
@@ -1750,6 +1877,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   }, [events, selectedEventId]);
 
   const phoneValidation = useMemo(() => getPhoneValidation(searchForm.phone, phoneCountry), [searchForm.phone, phoneCountry]);
+  const workPhoneValidation = useMemo(() => getPhoneValidation(searchForm.workPhone, workPhoneCountry), [searchForm.workPhone, workPhoneCountry]);
 
   const emailValidation = useMemo(() => getEmailValidation(searchForm.email), [searchForm.email]);
 
@@ -1757,9 +1885,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     () => ({
       ...searchForm,
       phone: phoneValidation.normalized || searchForm.phone,
+      workPhone: workPhoneValidation.normalized || searchForm.workPhone,
       email: emailValidation.normalized || searchForm.email,
+      companySpecialty: searchForm.companySpecialty === "Other" ? companySpecialtyOther.trim() : searchForm.companySpecialty,
     }),
-    [searchForm, phoneValidation.normalized, emailValidation.normalized],
+    [searchForm, phoneValidation.normalized, workPhoneValidation.normalized, emailValidation.normalized, companySpecialtyOther],
   );
 
   const registrationDocuments = useMemo(() => normalizeRegistrationDocuments(registration?.documents), [registration?.documents]);
@@ -1792,8 +1922,16 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       const expiry = searchForm.passportExpiryDate ? new Date(searchForm.passportExpiryDate) : null;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      if (!searchForm.passportIssueDate) {
+        toast.error("Add the passport issue date before continuing.");
+        return false;
+      }
+      if (!searchForm.passportExpiryDate) {
+        toast.error("Add the passport expiry date before continuing.");
+        return false;
+      }
       if (!issue || !expiry || Number.isNaN(issue.getTime()) || Number.isNaN(expiry.getTime())) {
-        toast.error("Add both passport issue and expiry dates before continuing.");
+        toast.error("Enter valid passport issue and expiry dates before continuing.");
         return false;
       }
       if (expiry <= issue) {
@@ -1803,6 +1941,23 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       if (expiry < today) {
         toast.error("This passport has expired. Update the passport details before continuing.");
         return false;
+      }
+      if (searchForm.dateOfBirth) {
+        const dob = new Date(searchForm.dateOfBirth);
+        if (Number.isNaN(dob.getTime()) || dob > today || !/^\d{4}-\d{2}-\d{2}$/.test(searchForm.dateOfBirth)) {
+          toast.error("Enter a valid date of birth. Check the year on the ID card.");
+          return false;
+        }
+      }
+      if (selectedEvent?.date) {
+        const eventDate = new Date(selectedEvent.date);
+        if (!Number.isNaN(eventDate.getTime())) {
+          eventDate.setMonth(eventDate.getMonth() + 3);
+          if (expiry < eventDate) {
+            toast.error("Passport expiry must be at least 3 months after the event date.");
+            return false;
+          }
+        }
       }
     }
     if (targetStep === 6 && !packageDocument) {
@@ -1817,16 +1972,17 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   }
 
   const inviterConfig = useMemo(() => {
-    return (
-      selectedEvent?.registration_config?.inviter || {
-        host_org: "Comexposium",
-        host_address: "70 Avenue du Général de Gaulle, Paris, France",
-        host_contact_name: "Jean Dupont",
-        host_contact_phone: "+33 1 76 77 11 11",
-        host_contact_email: "jean.dupont@comexposium.com",
-        host_contact_position: "International Relations Manager",
-      }
-    );
+    const registrationInviter = selectedEvent?.registration_config?.inviter;
+    const hostInfo = selectedEvent?.conference_config?.host_info;
+    const contactName = [hostInfo?.contact_first_name, hostInfo?.contact_last_name].filter(Boolean).join(" ");
+    return {
+      host_org: registrationInviter?.host_org || hostInfo?.org_name || "Not recorded",
+      host_address: registrationInviter?.host_address || hostInfo?.org_address || "Not recorded",
+      host_contact_name: registrationInviter?.host_contact_name || contactName || "Not recorded",
+      host_contact_phone: registrationInviter?.host_contact_phone || hostInfo?.contact_phone || hostInfo?.org_phone || "Not recorded",
+      host_contact_email: registrationInviter?.host_contact_email || hostInfo?.contact_email || hostInfo?.org_email || "Not recorded",
+      host_contact_position: registrationInviter?.host_contact_position || "Not recorded",
+    };
   }, [selectedEvent]);
 
   // --- Render Helpers ---
@@ -1891,6 +2047,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         IRAQI_GOVERNORATES,
         Input,
         Lock,
+        Mail,
         MessageCircle,
         PhoneNumberField,
         Plus,
@@ -1973,6 +2130,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         newReminderNote,
         onClose,
         openWhatsApp,
+        openDeliveryEmail,
         packageDocument,
         packageDocumentPaths,
         packageName,
@@ -1983,10 +2141,15 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         paymentMethod,
         paymentNotes,
         phoneCountry,
+        workPhoneCountry,
+        setWorkPhoneCountry,
         phoneValidation,
         placeOfBirthCitiesByCountry,
         placeOfBirthCountries,
         processImportedDocument,
+        populateCompanyInformationFromClient,
+        ocrHighlightedFields,
+        setOcrHighlightedFields,
         registration,
         registrationDocuments,
         registrationId,

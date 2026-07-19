@@ -5,6 +5,9 @@ import { useWizardView } from './wizard-view-context'
 export function ApplicationStep() {
   // prettier-ignore
   const { AlertTriangle, ApplicationSummary, Badge, Bell, Button, Card, CheckCircle2, ClientSummary, Clock, Download, EMPTY_SCHENGEN_VISA, EmailField, ExternalLink, Eye, EyeOff, FileCode, FileText, FolderKanban, IRAQI_GOVERNORATES, Input, Lock, MessageCircle, PhoneNumberField, Plus, Printer, REGISTRATION_STEPS, RefreshCw, RegistrationProgress, SCHENGEN_COUNTRIES, Search, SearchableChoice, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Trash2, Upload, User, VISA_DOCUMENTS, VISA_ROUTES, VISA_SUBMISSION_METHODS, VISA_TYPE_OPTIONS, Volume2, X, addVisaReminder, amountPaid, appNotes, applyChangeableUpdates, assignedEmployee, assignedTo, balanceDue, breadcrumbLabel, buildTravelPurpose, canEditFeeBreakdown, caseNumber, client, cn, companySpecialtyOther, currentUser, deliveryDocumentPaths, deliveryMessage, deliveryStatus, documentImportFile, documentImportText, documentImportType, emailValidation, employees, events, fees, findDocument, formatEventDate, fullNameIsValid, handleArchiveReceipt, handleContinueWithClient, handleCreateNewClient, handleDownloadReceipt, handleGenerateReceipt, handleMergeFiles, handlePrintReceipt, handleSaveDraftOnly, handleSaveEventDetails, handleSaveIntake, handleSavePaymentDraft, handleSaveVisaDetails, handleSearch, handleStep4FileUpload, handleVisaDestinationChange, hasSearched, includeClientInfoInPackage, inviterConfig, isImportingDocument, isPackageGenerating, isPending, jobTitleIsOther, jobTitleOther, latestActivity, mergeableDocuments, missingSummaryDocuments, nationalIdIsValid, newReminderAt, newReminderNote, onClose, openWhatsApp, packageDocument, packageDocumentPaths, packageName, participationType, passportNumberIsValid, paymentCategory, paymentDate, paymentMethod, paymentNotes, phoneCountry, phoneValidation, placeOfBirthCitiesByCountry, placeOfBirthCountries, processImportedDocument, registration, registrationDocuments, registrationId, requiredVisaDocuments, router, searchForm, searchResults, selectedEvent, selectedEventId, selectedPotentialMatch, setAmountPaid, setAppNotes, setAssignedTo, setCompanySpecialtyOther, setDeliveryDocumentPaths, setDeliveryMessage, setDocumentImportFile, setDocumentImportText, setDocumentImportType, setFees, setHasSearched, setIncludeClientInfoInPackage, setJobTitleIsOther, setJobTitleOther, setNewReminderAt, setNewReminderNote, setPackageDocumentPaths, setPackageName, setParticipationType, setPaymentCategory, setPaymentDate, setPaymentMethod, setPaymentNotes, setPhoneCountry, setSearchForm, setSearchResults, setSelectedEventId, setSelectedPotentialMatch, setShowDocumentImport, setShowPassword, setShowUpdatePrompt, setStep, setTravelPurpose, setVisaAccountStatus, setVisaAppRefNumber, setVisaAppointmentCenter, setVisaAppointmentChannel, setVisaAppointmentCity, setVisaAppointmentDate, setVisaAppointmentRefNumber, setVisaAppointmentStatus, setVisaAppointmentTime, setVisaEmbassy, setVisaEmbassyCity, setVisaPlatform, setVisaPortalAppStatus, setVisaPortalEmail, setVisaPortalPassword, setVisaReminders, setVisaSubmissionMethod, setVisaType, setWorkCityIsOther, setWorkCityOther, showDocumentImport, showPassword, showUpdatePrompt, step, stepStatus, summaryAppointment, summaryStatus, surnameIsValid, toast, totalAmount, travelPurpose, uploadError, uploadingDocumentType, validateStepBeforeAdvance, visaAccountStatus, visaAppRefNumber, visaAppointmentCenter, visaAppointmentChannel, visaAppointmentCity, visaAppointmentDate, visaAppointmentRefNumber, visaAppointmentStatus, visaAppointmentTime, visaDestination, visaEmbassyCity, visaPlatform, visaPortalAppStatus, visaPortalEmail, visaPortalPassword, visaReminders, visaSubmissionMethod, visaType, workCityIsOther, workCityOther } = useWizardView()
+  const createdByName = Array.isArray(registration?.registration_events)
+    ? [...registration.registration_events].sort((a: any, b: any) => String(a.created_at).localeCompare(String(b.created_at)))[0]?.performed_by_name
+    : "";
   return <>
     {/* Step 3: New Application / Intake Review */}
       {step === 3 && registration && (
@@ -23,10 +26,11 @@ export function ApplicationStep() {
                 <User className="size-4 text-[#8B0000]" />
                 <h2 className="text-base font-bold text-slate-800">Client information</h2>
               </div>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Editable client profile</span>
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Read-only client profile</span>
             </div>
 
-            {/* Read-Only and Changeable client fields */}
+            <fieldset disabled className="pointer-events-none space-y-4 select-none">
+            {/* Read-only client fields. Edit them from Client Search. */}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12">
               {/* Read-only / Locked fields */}
               <div className="space-y-1.5 relative lg:order-2 lg:col-span-3">
@@ -85,7 +89,8 @@ export function ApplicationStep() {
               </div>
               <div className="space-y-1.5 relative lg:order-6 lg:col-span-2">
                 <label className="text-xs font-bold text-slate-600">Date of Birth</label>
-                <Input type="date" value={searchForm.dateOfBirth} onChange={(e) => setSearchForm((prev) => ({ ...prev, dateOfBirth: e.target.value }))} className="border-slate-200" />
+                <Input type="date" value={searchForm.dateOfBirth} onChange={(e) => setSearchForm((prev) => ({ ...prev, dateOfBirth: e.target.value }))} className={cn("border-slate-200", searchForm.dateOfBirth && (new Date(searchForm.dateOfBirth) > new Date() || !/^\d{4}-\d{2}-\d{2}$/.test(searchForm.dateOfBirth)) && "border-red-500 bg-red-50 text-red-900 focus-visible:ring-red-500")} aria-invalid={Boolean(searchForm.dateOfBirth && (new Date(searchForm.dateOfBirth) > new Date() || !/^\d{4}-\d{2}-\d{2}$/.test(searchForm.dateOfBirth)))} />
+                {searchForm.dateOfBirth && (new Date(searchForm.dateOfBirth) > new Date() || !/^\d{4}-\d{2}-\d{2}$/.test(searchForm.dateOfBirth)) && <p className="text-[11px] font-medium text-red-600">Enter a valid date of birth. The year must match the ID card.</p>}
               </div>
               <div className="space-y-1.5 relative lg:order-7 lg:col-span-2">
                 <label className="text-xs font-bold text-slate-600">Place of Birth Country</label>
@@ -124,7 +129,7 @@ export function ApplicationStep() {
               </div>
               <div className="space-y-1.5 relative lg:order-10 lg:col-span-2">
                 <label className="text-xs font-bold text-slate-600">Passport Date of Expiry</label>
-                <Input type="date" value={searchForm.passportExpiryDate} onChange={(e) => setSearchForm((prev) => ({ ...prev, passportExpiryDate: e.target.value }))} className="border-slate-200" />
+                {(() => { const eventDate = selectedEvent?.date ? new Date(selectedEvent.date) : null; const minimumExpiry = eventDate && !Number.isNaN(eventDate.getTime()) ? new Date(eventDate) : null; if (minimumExpiry) minimumExpiry.setMonth(minimumExpiry.getMonth() + 3); const expiryInvalid = Boolean(searchForm.passportExpiryDate && minimumExpiry && new Date(searchForm.passportExpiryDate) < minimumExpiry); return <><Input type="date" value={searchForm.passportExpiryDate} onChange={(e) => setSearchForm((prev) => ({ ...prev, passportExpiryDate: e.target.value }))} className={cn("border-slate-200", expiryInvalid && "border-red-500 bg-red-50 text-red-900 focus-visible:ring-red-500")} aria-invalid={expiryInvalid} />{expiryInvalid && <p className="text-[11px] font-medium text-red-600">Passport expiry must be at least 3 months after the event date.</p>}</> })()}
               </div>
               <div className="space-y-1.5 md:col-span-2 lg:order-15 lg:col-span-3">
                 <label className="text-xs font-bold text-slate-600">Phone Number</label>
@@ -306,6 +311,8 @@ export function ApplicationStep() {
               </div>
             </div>
 
+            </fieldset>
+
             {/* Residency & Schengen Information */}
             <div className="space-y-3 border-t border-slate-100 pt-4">
               <h3 className="text-sm font-bold text-slate-800">Residency & Schengen Information</h3>
@@ -363,6 +370,26 @@ export function ApplicationStep() {
                     <label className="text-xs font-bold text-slate-600">Permit Expiry Date</label>
                     <Input type="date" value={searchForm.otherResidenceExpiryDate} onChange={(e) => setSearchForm((prev) => ({ ...prev, otherResidenceExpiryDate: e.target.value }))} className="border-slate-200 bg-white" />
                   </div>
+                  {(() => {
+                    const documentType = "residence_permit_document";
+                    const uploadedDocument = registrationDocuments.find((document) => document.type === documentType);
+                    const isUploading = uploadingDocumentType === documentType;
+                    return (
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-3 sm:col-span-2 lg:col-span-4">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-700">Residence permit file</p>
+                          <p className={cn("mt-0.5 truncate text-[11px]", uploadedDocument ? "text-emerald-700" : "text-slate-500")} title={uploadedDocument?.name}>
+                            {uploadedDocument ? `Saved: ${uploadedDocument.name}` : "Upload the residence permit document."}
+                          </p>
+                          {uploadError?.type === documentType && <p className="mt-1 text-[11px] text-red-600">{uploadError.message}</p>}
+                        </div>
+                        <label className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-[#8B0000]/25 bg-white px-3 text-xs font-semibold text-[#8B0000] hover:bg-[#8B0000]/5">
+                          <Upload className="size-3.5" /> {isUploading ? "Uploading…" : uploadedDocument ? "Replace file" : "Add File"}
+                          <input type="file" accept=".pdf,image/*" className="sr-only" disabled={isUploading} onChange={(event) => handleStep4FileUpload(event, "Residence permit file", documentType)} />
+                        </label>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
@@ -402,6 +429,26 @@ export function ApplicationStep() {
                       </div>
                     ))}
                   </div>
+                  {(() => {
+                    const documentType = "previous_schengen_visa_document";
+                    const uploadedDocument = registrationDocuments.find((document) => document.type === documentType);
+                    const isUploading = uploadingDocumentType === documentType;
+                    return (
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-700">Previous Schengen visa file</p>
+                          <p className={cn("mt-0.5 truncate text-[11px]", uploadedDocument ? "text-emerald-700" : "text-slate-500")} title={uploadedDocument?.name}>
+                            {uploadedDocument ? `Saved: ${uploadedDocument.name}` : "Upload a copy of a previous Schengen visa."}
+                          </p>
+                          {uploadError?.type === documentType && <p className="mt-1 text-[11px] text-red-600">{uploadError.message}</p>}
+                        </div>
+                        <label className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-[#8B0000]/25 bg-white px-3 text-xs font-semibold text-[#8B0000] hover:bg-[#8B0000]/5">
+                          <Upload className="size-3.5" /> {isUploading ? "Uploading…" : uploadedDocument ? "Replace file" : "Add File"}
+                          <input type="file" accept=".pdf,image/*" className="sr-only" disabled={isUploading} onChange={(event) => handleStep4FileUpload(event, "Previous Schengen visa file", documentType)} />
+                        </label>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
@@ -416,11 +463,11 @@ export function ApplicationStep() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-600">Application Date</label>
-                  <Input value={new Date(registration.created_at).toLocaleDateString("en-US")} disabled className="bg-slate-50 border-slate-200 text-slate-500" />
+                  <Input value={registration.created_at && !Number.isNaN(new Date(registration.created_at).getTime()) ? new Date(registration.created_at).toLocaleDateString("en-US") : "—"} disabled className="bg-slate-50 border-slate-200 text-slate-500" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-600">Created By</label>
-                  <Input value={registration.employee?.full_name || "Noor Al-Shakri"} disabled className="bg-slate-50 border-slate-200 text-slate-500" />
+                  <label className="text-xs font-bold text-slate-600">Order By</label>
+                  <Input value={createdByName || assignedEmployee?.full_name || currentUser?.full_name || "—"} disabled className="bg-slate-50 border-slate-200 text-slate-500" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-600">Assigned To</label>

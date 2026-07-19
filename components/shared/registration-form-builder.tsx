@@ -1,22 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Trash2, GripVertical, Settings2, ChevronDown, X, ListPlus } from 'lucide-react'
+import { Plus, Trash2, X, ListPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { FormField } from '@/lib/types'
+import { COUNTRIES, IRAQ_GOVERNORATES } from '@/lib/location-options'
 
 interface RegistrationFormBuilderProps {
     fields: FormField[]
     onChange: (fields: FormField[]) => void
 }
-
-const IRAQ_GOVERNORATES = [
-    'بغداد', 'البصرة', 'نينوى', 'أربيل', 'النجف', 'كربلاء', 'ذي قار',
-    'بابل', 'ديالى', 'الأنبار', 'كركوك', 'صلاح الدين', 'واسط', 'ميسان',
-    'المثنى', 'القادسية', 'دهوك', 'السليمانية'
-]
 
 export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBuilderProps) {
     const addField = () => {
@@ -41,17 +35,17 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-900 border-r-4 border-blue-600 pr-3">حقول نموذج التسجيل</h3>
+                <h3 className="text-lg font-bold text-gray-900">Registration Form Fields</h3>
                 <Button type="button" onClick={addField} size="sm" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-                    <Plus className="w-4 h-4 ml-2" />
-                    إضافة حقل جديد
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Field
                 </Button>
             </div>
 
             <div className="space-y-3">
                 {fields.length === 0 ? (
                     <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
-                        <p className="text-gray-500">لا توجد حقول مخصصة. سيتم استخدام الحقول الافتراضية (الاسم، البريد الإلكتروني).</p>
+                        <p className="text-gray-500">No custom fields. The default name and email fields will be used.</p>
                     </div>
                 ) : (
                     fields.map((field, index) => (
@@ -61,18 +55,8 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
                                     <span className="text-xs font-bold bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center">{index + 1}</span>
                                 </div>
 
-                                <div className="md:col-span-4 space-y-2">
-                                    <Label className="text-xs text-gray-500">اسم الحقل (عربي)</Label>
-                                    <Input
-                                        placeholder="مثلاً: الاسم الثلاثي"
-                                        value={field.label_ar}
-                                        onChange={e => updateField(field.id, { label_ar: e.target.value })}
-                                        dir="rtl"
-                                    />
-                                </div>
-
-                                <div className="md:col-span-4 space-y-2">
-                                    <Label className="text-xs text-gray-500">Label (English)</Label>
+                                <div className="md:col-span-7 space-y-2">
+                                    <Label className="text-xs text-gray-500">Field Label</Label>
                                     <Input
                                         placeholder="e.g. Full Name"
                                         value={field.label_en}
@@ -81,20 +65,20 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
                                     />
                                 </div>
 
-                                <div className="md:col-span-3 space-y-2">
-                                    <Label className="text-xs text-gray-500">النوع والخصائص</Label>
+                                <div className="md:col-span-4 space-y-2">
+                                    <Label className="text-xs text-gray-500">Type and Properties</Label>
                                     <div className="flex gap-2">
                                         <select
                                             value={field.type}
-                                            onChange={e => updateField(field.id, { type: e.target.value as any })}
+                                            onChange={e => updateField(field.id, { type: e.target.value as FormField['type'] })}
                                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
-                                            <option value="text">نص (Text)</option>
-                                            <option value="textarea">نص طويل (Textarea)</option>
-                                            <option value="number">رقم (Number)</option>
-                                            <option value="email">بريد (Email)</option>
-                                            <option value="date">تاريخ (Date)</option>
-                                            <option value="select">قائمة منسدلة (Dropdown)</option>
+                                            <option value="text">Text</option>
+                                            <option value="textarea">Long Text</option>
+                                            <option value="number">Number</option>
+                                            <option value="email">Email</option>
+                                            <option value="date">Date</option>
+                                            <option value="select">Dropdown</option>
                                         </select>
 
                                         <div className="flex items-center gap-1 px-2 border border-gray-300 rounded-lg">
@@ -105,7 +89,7 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
                                                 onChange={e => updateField(field.id, { required: e.target.checked })}
                                                 className="w-4 h-4 text-blue-600 rounded"
                                             />
-                                            <Label htmlFor={`req_${field.id}`} className="text-[10px] cursor-pointer">مطلوب</Label>
+                                            <Label htmlFor={`req_${field.id}`} className="text-[10px] cursor-pointer">Required</Label>
                                         </div>
 
                                         <Button
@@ -127,14 +111,17 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
                                     <div className="flex items-center justify-between mb-2">
                                         <Label className="text-xs text-gray-500 flex items-center gap-1">
                                             <ListPlus className="w-3.5 h-3.5" />
-                                            خيارات القائمة المنسدلة
+                                            Dropdown Options
                                         </Label>
                                         <button
                                             type="button"
                                             onClick={() => updateField(field.id, { options: [...IRAQ_GOVERNORATES] })}
                                             className="text-[10px] px-2 py-1 bg-emerald-50 text-emerald-600 rounded-md hover:bg-emerald-100 transition-colors font-medium"
                                         >
-                                            🇮🇶 محافظات العراق
+                                            Iraq Governorates
+                                        </button>
+                                        <button type="button" onClick={() => updateField(field.id, { options: [...COUNTRIES] })} className="text-[10px] px-2 py-1 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 transition-colors font-medium">
+                                            Countries
                                         </button>
                                     </div>
                                     <div className="flex flex-wrap gap-1.5 mb-2">
@@ -153,8 +140,8 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
                                     </div>
                                     <div className="flex gap-2">
                                         <Input
-                                            placeholder="أضف خيار جديد..."
-                                            dir="rtl"
+                                            placeholder="Add an option..."
+                                            dir="ltr"
                                             className="text-sm h-9"
                                             onKeyDown={e => {
                                                 if (e.key === 'Enter') {
@@ -175,8 +162,8 @@ export function RegistrationFormBuilder({ fields, onChange }: RegistrationFormBu
                                                 input.value = ''
                                             }
                                         }}>
-                                            <Plus className="w-3.5 h-3.5 ml-1" />
-                                            إضافة
+                                            <Plus className="w-3.5 h-3.5 mr-1" />
+                                            Add
                                         </Button>
                                     </div>
                                 </div>

@@ -61,6 +61,9 @@ export const VISA_DOCUMENTS: VisaDocumentDefinition[] = [
   { type: 'company_letter', aliases: ['company_letter', 'employment_letter'], label: 'Company letter' },
   { type: 'travel_booking', aliases: ['travel_booking', 'flight_booking'], label: 'Travel booking' },
   { type: 'hotel_booking', aliases: ['hotel_booking', 'accommodation'], label: 'Hotel booking' },
+  { type: 'badge', aliases: ['badge', 'event_badge', 'access_badge'], label: 'Badge' },
+  { type: 'residence_permit_document', aliases: ['residence_permit_document'], label: 'Residence permit file' },
+  { type: 'previous_schengen_visa_document', aliases: ['previous_schengen_visa_document'], label: 'Previous Schengen visa file' },
 ]
 
 export const countryNames = new Intl.DisplayNames(['en'], { type: 'region' })

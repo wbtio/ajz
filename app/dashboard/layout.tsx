@@ -38,7 +38,7 @@ export default async function DashboardLayout({
             <DashboardShell user={profile}>
                 {children}
             </DashboardShell>
-            <Toaster richColors position="top-center" dir="rtl" />
+            <Toaster richColors position="top-center" dir="ltr" />
         </TooltipProvider>
     )
 }

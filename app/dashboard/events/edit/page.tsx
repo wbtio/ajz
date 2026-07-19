@@ -20,6 +20,7 @@ import { ArrowRight, Save, Loader2, Upload, X, Globe, MapPin as MapPinIcon, Imag
 import type { Event, Sector } from '@/lib/database.types'
 import type { FormField } from '@/lib/types'
 import { AiHtmlGenerator } from './components/ai-html-generator'
+import { sanitizeEnglishText } from '@/lib/english-only'
 
 const RegistrationFormBuilder = dynamic(
     () => import('@/components/shared/registration-form-builder').then(mod => ({ default: mod.RegistrationFormBuilder })),
@@ -121,7 +122,7 @@ function EditEventContent() {
 
     useEffect(() => {
         if (!id) {
-            setError('معرف الفعالية مفقود')
+            setError('Event ID is missing.')
             setIsLoading(false)
             return
         }
@@ -131,7 +132,7 @@ function EditEventContent() {
             const { data, error } = await supabase.from('events').select('*').eq('id', id).single()
 
             if (error || !data) {
-                setError('الفعالية غير موجودة')
+                setError('Event not found.')
                 setIsLoading(false)
                 return
             }
@@ -139,13 +140,13 @@ function EditEventContent() {
             setEvent(data)
 
             const loadedFormData = {
-                title: data.title || '',
+                title: sanitizeEnglishText(data.title || '').trim(),
                 title_ar: data.title_ar || '',
-                description: data.description || '',
+                description: sanitizeEnglishText(data.description || '').trim(),
                 description_ar: data.description_ar || '',
                 date: data.date ? new Date(data.date).toISOString().slice(0, 16) : '',
                 end_date: data.end_date ? new Date(data.end_date).toISOString().slice(0, 16) : '',
-                location: data.location || '',
+                location: sanitizeEnglishText(data.location || '').trim(),
                 location_ar: data.location_ar || '',
                 capacity: data.capacity?.toString() || '',
                 price: data.price?.toString() || '',
@@ -156,11 +157,11 @@ function EditEventContent() {
                 status: data.status || 'draft',
                 featured: data.featured || false,
                 image_url: data.image_url || '',
-                mentorship: data.mentorship || '',
+                mentorship: sanitizeEnglishText(data.mentorship || '').trim(),
                 mentorship_ar: data.mentorship_ar || '',
-                country: data.country || '',
+                country: sanitizeEnglishText(data.country || '').trim(),
                 country_ar: data.country_ar || '',
-                sub_sector: data.sub_sector || '',
+                sub_sector: sanitizeEnglishText(data.sub_sector || '').trim(),
                 sub_sector_ar: data.sub_sector_ar || '',
                 html_content_url: data.html_content_url || '',
                 html_content: (data as any).html_content || '',
@@ -187,8 +188,43 @@ function EditEventContent() {
                 registration: { ...ccBase.registration, ...cc.registration },
                 program: { ...ccBase.program, ...cc.program, sessions: cc.program?.sessions || [] },
             } : ccBase
-            setConferenceConfig(loadedCC)
-            setSavedConferenceConfig(loadedCC)
+            const sanitizeTopic = (topic: TopicItem): TopicItem => ({
+                ...topic,
+                title_en: sanitizeEnglishText(topic.title_en || '').trim(),
+                description_en: sanitizeEnglishText(topic.description_en || '').trim(),
+            })
+            const sanitizeSection = (section: any) => ({
+                ...section,
+                content_en: sanitizeEnglishText(section.content_en || '').trim(),
+                topics: Array.isArray(section.topics) ? section.topics.map(sanitizeTopic) : [],
+                form_fields: Array.isArray(section.form_fields)
+                    ? section.form_fields.map((field: FormField) => ({
+                        ...field,
+                        label_en: sanitizeEnglishText(field.label_en || '').trim(),
+                        options: field.options?.map((option) => sanitizeEnglishText(option).trim()).filter(Boolean),
+                    }))
+                    : section.form_fields,
+            })
+            const englishLoadedCC = {
+                home: sanitizeSection(loadedCC.home),
+                theme: sanitizeSection(loadedCC.theme),
+                sponsors: sanitizeSection(loadedCC.sponsors),
+                exhibitors: sanitizeSection(loadedCC.exhibitors),
+                partners: sanitizeSection(loadedCC.partners),
+                registration: sanitizeSection(loadedCC.registration),
+                program: {
+                    ...loadedCC.program,
+                    sessions: loadedCC.program.sessions.map((session: typeof conferenceConfig.program.sessions[number]) => ({
+                        ...session,
+                        title_en: sanitizeEnglishText(session.title_en || '').trim(),
+                        speaker_en: sanitizeEnglishText(session.speaker_en || '').trim(),
+                        location_en: sanitizeEnglishText(session.location_en || '').trim(),
+                        description_en: sanitizeEnglishText(session.description_en || '').trim(),
+                    })),
+                },
+            }
+            setConferenceConfig(englishLoadedCC)
+            setSavedConferenceConfig(englishLoadedCC)
 
             setIsLoading(false)
         }
@@ -205,7 +241,7 @@ function EditEventContent() {
         const fileName = `events/${Date.now()}.${fileExt}`
         const { error: uploadError } = await supabase.storage.from('events-bucket').upload(fileName, file)
         if (uploadError) {
-            setError('فشل رفع الصورة: ' + uploadError.message)
+            setError('Image upload failed: ' + uploadError.message)
             setIsUploading(false)
             return
         }
@@ -218,7 +254,7 @@ function EditEventContent() {
         const file = e.target.files?.[0]
         if (!file) return
         if (!file.name.endsWith('.html') && !file.name.endsWith('.htm')) {
-            setError('يرجى رفع ملف HTML فقط')
+            setError('Upload an HTML file only.')
             return
         }
         setIsUploadingHtml(true)
@@ -227,7 +263,7 @@ function EditEventContent() {
             const htmlContent = await file.text()
             setFormData(prev => ({ ...prev, html_content_url: file.name, html_content: htmlContent }))
         } catch (err) {
-            setError('فشل قراءة ملف HTML')
+            setError('Could not read the HTML file.')
         }
         
         setIsUploadingHtml(false)
@@ -235,7 +271,12 @@ function EditEventContent() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target
-        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value }))
+        const nextValue = type === 'checkbox'
+            ? (e.target as HTMLInputElement).checked
+            : e.target instanceof HTMLTextAreaElement || ['text', 'search', 'email', 'url'].includes(type)
+                ? sanitizeEnglishText(value)
+                : value
+        setFormData(prev => ({ ...prev, [name]: nextValue }))
     }
 
     const handleSectorChange = useCallback((value: string) => {
@@ -285,13 +326,13 @@ function EditEventContent() {
             .select()
 
         if (error) {
-            setError('فشل حفظ التغييرات: ' + error.message)
+            setError('Could not save changes: ' + error.message)
             setIsSaving(false)
             return
         }
 
         if (!updated || updated.length === 0) {
-            setError('فشل حفظ التغييرات: لم يتم العثور على الفعالية أو لا توجد صلاحية للتعديل')
+            setError('Could not save changes. The event was not found or you do not have edit access.')
             setIsSaving(false)
             return
         }
@@ -318,28 +359,28 @@ function EditEventContent() {
     if (!event && !isLoading) {
         return (
             <div className="text-center py-12">
-                <p className="text-red-600 mb-4">{error || 'الفعالية غير موجودة'}</p>
+                <p className="text-red-600 mb-4">{error || 'Event not found.'}</p>
                 <Link href="/dashboard/events">
-                    <Button variant="outline">العودة للفعاليات</Button>
+                    <Button variant="outline">Back to Events</Button>
                 </Link>
             </div>
         )
     }
 
     return (
-        <div className="pb-20">
+        <div className="pb-20 text-left" dir="ltr" lang="en">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard/events" className="text-gray-500 hover:text-gray-700">
                         <ArrowRight className="w-5 h-5" />
                     </Link>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        تعديل: {event?.title_ar || event?.title}
+                        Edit: {event?.title || 'Untitled Event'}
                     </h1>
                 </div>
                 <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-2">
                     <label htmlFor="quickAdd" className="text-sm font-medium text-gray-700 cursor-pointer">
-                        إضافة سريعة
+                        Quick Edit
                     </label>
                     <input
                         type="checkbox"
@@ -358,12 +399,12 @@ function EditEventContent() {
             <form onSubmit={handleSubmit}>
                 <Tabs defaultValue="basic" className="space-y-6">
                     <TabsList className="w-full justify-start bg-white border rounded-xl p-1 h-auto flex-wrap">
-                        <TabsTrigger value="basic" className="rounded-lg px-4 py-2 text-sm">المعلومات الأساسية</TabsTrigger>
-                        <TabsTrigger value="details" className="rounded-lg px-4 py-2 text-sm">التفاصيل والتصنيف</TabsTrigger>
+                        <TabsTrigger value="basic" className="rounded-lg px-4 py-2 text-sm">Basic Information</TabsTrigger>
+                        <TabsTrigger value="details" className="rounded-lg px-4 py-2 text-sm">Details and Classification</TabsTrigger>
                         {!quickAdd && (
                             <TabsTrigger value="conference" className="rounded-lg px-4 py-2 text-sm flex items-center gap-1.5">
                                 <Presentation className="w-4 h-4" />
-                                أقسام المؤتمر
+                                Conference Sections
                             </TabsTrigger>
                         )}
                     </TabsList>
@@ -372,17 +413,12 @@ function EditEventContent() {
                     <TabsContent value="basic">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <Card>
-                                <CardHeader><h2 className="text-lg font-bold text-gray-900">المعلومات الأساسية</h2></CardHeader>
+                                <CardHeader><h2 className="text-lg font-bold text-gray-900">Basic Information</h2></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <Input label="العنوان (إنجليزي)" name="title" value={formData.title} onChange={handleChange} required />
-                                    <Input label="العنوان (عربي)" name="title_ar" value={formData.title_ar} onChange={handleChange} />
+                                    <Input label="Event Title" name="title" value={formData.title} onChange={handleChange} required />
                                     <div className="space-y-2">
-                                        <Label htmlFor="description">الوصف (إنجليزي)</Label>
-                                        <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={4} placeholder="أدخل وصف الفعالية بالإنجليزية" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description_ar">الوصف (عربي)</Label>
-                                        <Textarea id="description_ar" name="description_ar" value={formData.description_ar} onChange={handleChange} rows={4} placeholder="أدخل وصف الفعالية بالعربية" />
+                                        <Label htmlFor="description">Description</Label>
+                                        <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={4} placeholder="Enter the event description in English" />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -391,7 +427,7 @@ function EditEventContent() {
                                 <CardHeader>
                                     <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                         <ImageIcon className="w-5 h-5" />
-                                        صورة الفعالية
+                                        Event Image
                                     </h2>
                                 </CardHeader>
                                 <CardContent>
@@ -399,7 +435,7 @@ function EditEventContent() {
                                     {formData.image_url ? (
                                         <div className="relative rounded-xl overflow-hidden border border-gray-200">
                                             <div className="relative h-64">
-                                                <Image src={formData.image_url} alt="صورة الفعالية" fill className="object-cover" />
+                                                <Image src={formData.image_url} alt="Event cover" fill className="object-cover" />
                                             </div>
                                             <div className="absolute top-3 left-3 flex gap-2">
                                                 <button type="button" onClick={() => fileInputRef.current?.click()} className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors shadow-sm">
@@ -418,8 +454,8 @@ function EditEventContent() {
                                                 <>
                                                     <div className="p-3 bg-gray-100 rounded-xl"><Upload className="w-6 h-6 text-gray-500" /></div>
                                                     <div className="text-center">
-                                                        <p className="text-sm font-medium text-gray-700">اضغط لرفع صورة</p>
-                                                        <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP حتى 5MB</p>
+                                                        <p className="text-sm font-medium text-gray-700">Upload an image</p>
+                                                        <p className="text-xs text-gray-400 mt-1">PNG, JPG, or WEBP, up to 5 MB</p>
                                                     </div>
                                                 </>
                                             )}
@@ -428,20 +464,20 @@ function EditEventContent() {
                                     <Separator className="my-4" />
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label>الحالة</Label>
+                                            <Label>Status</Label>
                                             <Select value={formData.status} onValueChange={(v) => setFormData(prev => ({ ...prev, status: v }))}>
-                                                <SelectTrigger><SelectValue placeholder="اختر الحالة" /></SelectTrigger>
+                                                <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="draft">مسودة</SelectItem>
-                                                    <SelectItem value="published">منشور</SelectItem>
-                                                    <SelectItem value="cancelled">ملغي</SelectItem>
-                                                    <SelectItem value="completed">مكتمل</SelectItem>
+                                                    <SelectItem value="draft">Draft</SelectItem>
+                                                    <SelectItem value="published">Published</SelectItem>
+                                                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                                                    <SelectItem value="completed">Completed</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Checkbox id="featured" checked={formData.featured} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: !!checked }))} />
-                                            <Label htmlFor="featured" className="cursor-pointer">فعالية مميزة</Label>
+                                            <Label htmlFor="featured" className="cursor-pointer">Featured Event</Label>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -454,9 +490,9 @@ function EditEventContent() {
                                         <div>
                                             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                                 <Upload className="w-5 h-5" />
-                                                محتوى HTML للفعالية
+                                                Event HTML Content
                                             </h2>
-                                            <p className="text-sm text-gray-500 mt-1">يمكنك تعديل محتوى HTML مباشرة أو رفع ملف HTML</p>
+                                            <p className="text-sm text-gray-500 mt-1">Edit the HTML directly or upload an HTML file.</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <input ref={htmlFileInputRef} type="file" accept=".html,.htm" onChange={handleHtmlUpload} className="hidden" />
@@ -473,7 +509,7 @@ function EditEventContent() {
                                                 ) : (
                                                     <Upload className="w-3.5 h-3.5" />
                                                 )}
-                                                رفع ملف HTML
+                                                Upload HTML File
                                             </Button>
                                             {formData.html_content && (
                                                 <Button
@@ -484,7 +520,7 @@ function EditEventContent() {
                                                     className="flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
                                                 >
                                                     <X className="w-3.5 h-3.5" />
-                                                    مسح
+                                                    Clear
                                                 </Button>
                                             )}
                                         </div>
@@ -503,14 +539,14 @@ function EditEventContent() {
                                         {formData.html_content_url && (
                                             <p className="text-xs text-green-600 flex items-center gap-1">
                                                 <Upload className="w-3 h-3" />
-                                                تم تحميل: {formData.html_content_url.split('/').pop()}
+                                                Loaded: {formData.html_content_url.split('/').pop()}
                                             </p>
                                         )}
                                         <textarea
                                             value={formData.html_content}
                                             onChange={e => setFormData(prev => ({ ...prev, html_content: e.target.value }))}
                                             className="w-full h-80 px-3 py-3 border border-gray-200 rounded-xl text-sm font-mono bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y transition-colors"
-                                            placeholder="اكتب أو الصق محتوى HTML هنا..."
+                                            placeholder="Write or paste HTML content here..."
                                             dir="ltr"
                                             spellCheck={false}
                                         />
@@ -524,63 +560,60 @@ function EditEventContent() {
                     <TabsContent value="details">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <Card>
-                                <CardHeader><h2 className="text-lg font-bold text-gray-900">التاريخ والموقع</h2></CardHeader>
+                                <CardHeader><h2 className="text-lg font-bold text-gray-900">Date and Location</h2></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <Input label="تاريخ البدء" type="datetime-local" name="date" value={formData.date} onChange={handleChange} required />
-                                    <Input label="تاريخ الانتهاء" type="datetime-local" name="end_date" value={formData.end_date} onChange={handleChange} />
-                                    <Input label="الموقع (إنجليزي)" name="location" value={formData.location} onChange={handleChange} required />
-                                    <Input label="الموقع (عربي)" name="location_ar" value={formData.location_ar} onChange={handleChange} />
-                                    <Input label="الدولة (إنجليزي)" name="country" value={formData.country} onChange={handleChange} placeholder="e.g. France" />
-                                    <Input label="الدولة (عربي)" name="country_ar" value={formData.country_ar} onChange={handleChange} placeholder="مثال: فرنسا" />
+                                    <Input label="Start Date" type="datetime-local" name="date" value={formData.date} onChange={handleChange} required />
+                                    <Input label="End Date" type="datetime-local" name="end_date" value={formData.end_date} onChange={handleChange} />
+                                    <Input label="Location" name="location" value={formData.location} onChange={handleChange} required />
+                                    <Input label="Country" name="country" value={formData.country} onChange={handleChange} placeholder="e.g. France" />
                                 </CardContent>
                             </Card>
 
                             <Card>
-                                <CardHeader><h2 className="text-lg font-bold text-gray-900">التصنيف والسعر</h2></CardHeader>
+                                <CardHeader><h2 className="text-lg font-bold text-gray-900">Classification and Price</h2></CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label>نوع الفعالية</Label>
+                                        <Label>Event Type</Label>
                                         <Select value={formData.event_type} onValueChange={(v) => setFormData(prev => ({ ...prev, event_type: v }))}>
-                                            <SelectTrigger><SelectValue placeholder="اختر نوع الفعالية" /></SelectTrigger>
+                                            <SelectTrigger><SelectValue placeholder="Select event type" /></SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="local"><span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" />محلية</span></SelectItem>
-                                                <SelectItem value="international"><span className="flex items-center gap-2"><Globe className="w-4 h-4" />دولية</span></SelectItem>
+                                                <SelectItem value="local"><span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" />Local</span></SelectItem>
+                                                <SelectItem value="international"><span className="flex items-center gap-2"><Globe className="w-4 h-4" />International</span></SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>القطاع</Label>
+                                        <Label>Sector</Label>
                                         <Select value={formData.sector_id} onValueChange={handleSectorChange}>
-                                            <SelectTrigger><SelectValue placeholder="اختر القطاع" /></SelectTrigger>
+                                            <SelectTrigger><SelectValue placeholder="Select sector" /></SelectTrigger>
                                             <SelectContent>
                                                 {sectors.map(sector => (
-                                                    <SelectItem key={sector.id} value={sector.id}>{sector.name_ar}</SelectItem>
+                                                    <SelectItem key={sector.id} value={sector.id}>{sector.name_en || sector.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     {/* Sub-Sector */}
-                                    <Input label="القطاع الفرعي (إنجليزي)" name="sub_sector" value={formData.sub_sector} onChange={handleChange} placeholder="e.g. Medical/Dentistry" />
-                                    <Input label="القطاع الفرعي (عربي)" name="sub_sector_ar" value={formData.sub_sector_ar} onChange={handleChange} placeholder="مثال: طب أسنان/معدات طبية" />
+                                    <Input label="Sub-sector" name="sub_sector" value={formData.sub_sector} onChange={handleChange} placeholder="e.g. Medical / Dentistry" />
 
                                     <Separator />
 
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <Label>السعر</Label>
+                                            <Label>Price</Label>
                                             <div className="flex items-center gap-2">
-                                                <Label htmlFor="show_price" className="text-xs text-gray-500 cursor-pointer">إظهار السعر</Label>
+                                                <Label htmlFor="show_price" className="text-xs text-gray-500 cursor-pointer">Show Price</Label>
                                                 <Switch id="show_price" checked={formData.show_price} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_price: checked }))} />
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <Input label="السعة" type="number" name="capacity" value={formData.capacity} onChange={handleChange} />
-                                            <Input label="السعر (د.ع)" type="number" name="price" value={formData.price} onChange={handleChange} />
+                                            <Input label="Capacity" type="number" name="capacity" value={formData.capacity} onChange={handleChange} />
+                                            <Input label="Price (IQD)" type="number" name="price" value={formData.price} onChange={handleChange} />
                                         </div>
                                         {!formData.show_price && (
-                                            <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg">السعر مخفي عن الزوار</p>
+                                            <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg">Price is hidden from visitors.</p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -596,18 +629,18 @@ function EditEventContent() {
                             <CardHeader>
                                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <Presentation className="w-5 h-5" />
-                                    أقسام المؤتمر
+                                    Conference Sections
                                 </h2>
-                                <p className="text-sm text-gray-500">حدد الأقسام التي ستظهر في شريط التنقل الخاص بالفعالية. يمكنك إضافة محتوى ونموذج تسجيل لكل قسم.</p>
+                                <p className="text-sm text-gray-500">Choose the sections shown in the event navigation, then add English content and registration fields.</p>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 {([
-                                    { key: 'home', label: 'الصفحة الرئيسية', labelEn: 'Home', icon: Home, color: 'bg-blue-50 text-blue-600', hasForm: false },
-                                    { key: 'theme', label: 'موضوع المؤتمر', labelEn: 'Theme', icon: Palette, color: 'bg-purple-50 text-purple-600', hasForm: false },
-                                    { key: 'sponsors', label: 'الرعاة', labelEn: 'Sponsors', icon: Award, color: 'bg-yellow-50 text-yellow-600', hasForm: true },
-                                    { key: 'exhibitors', label: 'العارضون', labelEn: 'Exhibitors', icon: Store, color: 'bg-green-50 text-green-600', hasForm: true },
-                                    { key: 'partners', label: 'الشركاء', labelEn: 'Partners', icon: Handshake, color: 'bg-indigo-50 text-indigo-600', hasForm: true },
-                                    { key: 'registration', label: 'التسجيل', labelEn: 'Registration', icon: ClipboardList, color: 'bg-red-50 text-red-600', hasForm: true },
+                                    { key: 'home', labelEn: 'Home', icon: Home, color: 'bg-blue-50 text-blue-600', hasForm: false },
+                                    { key: 'theme', labelEn: 'Theme', icon: Palette, color: 'bg-purple-50 text-purple-600', hasForm: false },
+                                    { key: 'sponsors', labelEn: 'Sponsors', icon: Award, color: 'bg-yellow-50 text-yellow-600', hasForm: true },
+                                    { key: 'exhibitors', labelEn: 'Exhibitors', icon: Store, color: 'bg-green-50 text-green-600', hasForm: true },
+                                    { key: 'partners', labelEn: 'Partners', icon: Handshake, color: 'bg-indigo-50 text-indigo-600', hasForm: true },
+                                    { key: 'registration', labelEn: 'Registration', icon: ClipboardList, color: 'bg-red-50 text-red-600', hasForm: true },
                                 ] as const).map(section => {
                                     const SectionIcon = section.icon
                                     const sectionData = conferenceConfig[section.key as keyof typeof conferenceConfig] as { enabled: boolean; content_ar: string; content_en: string; form_fields?: FormField[] }
@@ -619,13 +652,12 @@ function EditEventContent() {
                                                     <SectionIcon className="w-4.5 h-4.5" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <h3 className="font-bold text-gray-900 text-sm">{section.label}</h3>
-                                                    <p className="text-xs text-gray-400">{section.labelEn}</p>
+                                                    <h3 className="font-bold text-gray-900 text-sm">{section.labelEn}</h3>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     {section.hasForm && (sectionData as any).form_fields?.length > 0 && (
                                                         <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                                                            {(sectionData as any).form_fields.length} حقل
+                                                            {(sectionData as any).form_fields.length} fields
                                                         </span>
                                                     )}
                                                     <div onClick={e => e.stopPropagation()}>
@@ -643,22 +675,9 @@ function EditEventContent() {
 
                                             {isExpanded && (
                                                 <div className="p-5 border-t border-gray-100 space-y-4">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
                                                         <div className="space-y-2">
-                                                            <Label className="text-xs text-gray-500">المحتوى / الكلام (عربي)</Label>
-                                                            <Textarea
-                                                                value={sectionData.content_ar}
-                                                                onChange={e => setConferenceConfig(prev => ({
-                                                                    ...prev,
-                                                                    [section.key]: { ...prev[section.key as keyof typeof prev], content_ar: e.target.value }
-                                                                }))}
-                                                                rows={4}
-                                                                dir="rtl"
-                                                                placeholder={`أدخل المحتوى الخاص بقسم ${section.label}...`}
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <Label className="text-xs text-gray-500">Content (English)</Label>
+                                                            <Label className="text-xs text-gray-500">Content</Label>
                                                             <Textarea
                                                                 value={sectionData.content_en}
                                                                 onChange={e => setConferenceConfig(prev => ({
@@ -676,7 +695,7 @@ function EditEventContent() {
                                                         <div className="border-t pt-4 mt-4">
                                                             <h4 className="font-bold text-sm text-gray-700 mb-3 flex items-center gap-2">
                                                                 <ClipboardList className="w-4 h-4" />
-                                                                نموذج التسجيل الخاص بـ {section.label}
+                                                                {section.labelEn} Registration Form
                                                             </h4>
                                                             <RegistrationFormBuilder
                                                                 fields={(sectionData as any).form_fields || []}
@@ -693,13 +712,13 @@ function EditEventContent() {
                                                         <div className="border-t pt-4 mt-4">
                                                             <h4 className="font-bold text-sm text-gray-700 mb-3 flex items-center gap-2">
                                                                 <ImagePlus className="w-4 h-4" />
-                                                                المواضيع / البطاقات - {section.label}
+                                                                Topics / Cards - {section.labelEn}
                                                             </h4>
                                                             <div className="space-y-3">
                                                                 {((sectionData as any).topics || []).map((topic: TopicItem, tIdx: number) => (
                                                                     <div key={topic.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50/50 space-y-3">
                                                                         <div className="flex items-center justify-between">
-                                                                            <span className="text-xs font-bold text-gray-500">موضوع {tIdx + 1}</span>
+                                                                            <span className="text-xs font-bold text-gray-500">Topic {tIdx + 1}</span>
                                                                             <button type="button" onClick={() => setConferenceConfig(prev => {
                                                                                 const sec = prev[section.key as keyof typeof prev] as any
                                                                                 return { ...prev, [section.key]: { ...sec, topics: sec.topics.filter((t: TopicItem) => t.id !== topic.id) } }
@@ -722,7 +741,7 @@ function EditEventContent() {
                                                                             ) : (
                                                                                 <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-colors">
                                                                                     <ImagePlus className="w-4 h-4" />
-                                                                                    رفع صورة
+                                                                                    Upload Image
                                                                                     <input type="file" accept="image/*" className="hidden" onChange={e => {
                                                                                         const f = e.target.files?.[0]
                                                                                         if (f) handleTopicImageUpload(f, section.key, topic.id)
@@ -730,25 +749,17 @@ function EditEventContent() {
                                                                                 </label>
                                                                             )}
                                                                         </div>
-                                                                        <div className="grid grid-cols-2 gap-2">
-                                                                            <Input label="العنوان (عربي)" value={topic.title_ar} onChange={e => setConferenceConfig(prev => {
-                                                                                const sec = prev[section.key as keyof typeof prev] as any
-                                                                                return { ...prev, [section.key]: { ...sec, topics: sec.topics.map((t: TopicItem) => t.id === topic.id ? { ...t, title_ar: e.target.value } : t) } }
-                                                                            })} dir="rtl" placeholder="عنوان الموضوع" />
-                                                                            <Input label="Title (English)" value={topic.title_en} onChange={e => setConferenceConfig(prev => {
+                                                                        <div>
+                                                                            <Input label="Title" value={topic.title_en} onChange={e => setConferenceConfig(prev => {
                                                                                 const sec = prev[section.key as keyof typeof prev] as any
                                                                                 return { ...prev, [section.key]: { ...sec, topics: sec.topics.map((t: TopicItem) => t.id === topic.id ? { ...t, title_en: e.target.value } : t) } }
                                                                             })} dir="ltr" placeholder="Topic title" />
                                                                         </div>
-                                                                        <div className="grid grid-cols-2 gap-2">
-                                                                            <Textarea value={topic.description_ar} onChange={e => setConferenceConfig(prev => {
-                                                                                const sec = prev[section.key as keyof typeof prev] as any
-                                                                                return { ...prev, [section.key]: { ...sec, topics: sec.topics.map((t: TopicItem) => t.id === topic.id ? { ...t, description_ar: e.target.value } : t) } }
-                                                                            })} rows={2} dir="rtl" placeholder="الوصف (عربي)" />
+                                                                        <div>
                                                                             <Textarea value={topic.description_en} onChange={e => setConferenceConfig(prev => {
                                                                                 const sec = prev[section.key as keyof typeof prev] as any
                                                                                 return { ...prev, [section.key]: { ...sec, topics: sec.topics.map((t: TopicItem) => t.id === topic.id ? { ...t, description_en: e.target.value } : t) } }
-                                                                            })} rows={2} dir="ltr" placeholder="Description (English)" />
+                                                                            })} rows={2} dir="ltr" placeholder="Description" />
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -758,7 +769,7 @@ function EditEventContent() {
                                                                     return { ...prev, [section.key]: { ...sec, topics: [...(sec.topics || []), newTopic] } }
                                                                 })} className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/50 transition-colors">
                                                                     <Plus className="w-3.5 h-3.5" />
-                                                                    إضافة موضوع جديد
+                                                                    Add Topic
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -776,13 +787,12 @@ function EditEventContent() {
                                             <CalendarDays className="w-4.5 h-4.5" />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="font-bold text-gray-900 text-sm">البرنامج</h3>
-                                            <p className="text-xs text-gray-400">Program</p>
+                                            <h3 className="font-bold text-gray-900 text-sm">Program</h3>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             {conferenceConfig.program.sessions.length > 0 && (
                                                 <span className="text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-medium">
-                                                    {conferenceConfig.program.sessions.length} جلسة
+                                                    {conferenceConfig.program.sessions.length} sessions
                                                 </span>
                                             )}
                                             <div onClick={e => e.stopPropagation()}>
@@ -805,9 +815,9 @@ function EditEventContent() {
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-2">
                                                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sess.category === 'workshop' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
-                                                                {sess.category === 'workshop' ? '🛠️ ورشة عمل' : '📋 محاضرة'}
+                                                                {sess.category === 'workshop' ? 'Workshop' : 'Session'}
                                                             </span>
-                                                            <span className="text-sm font-bold text-gray-700">جلسة {index + 1}</span>
+                                                            <span className="text-sm font-bold text-gray-700">Session {index + 1}</span>
                                                         </div>
                                                         <button
                                                             type="button"
@@ -824,25 +834,25 @@ function EditEventContent() {
                                                     {/* Date, Time, Category row */}
                                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs text-gray-500 flex items-center gap-1"><CalendarDays className="w-3 h-3" /> التاريخ</Label>
+                                                            <Label className="text-xs text-gray-500 flex items-center gap-1"><CalendarDays className="w-3 h-3" /> Date</Label>
                                                             <Input type="date" value={sess.date} onChange={e => setConferenceConfig(prev => ({
                                                                 ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, date: e.target.value } : s) }
                                                             }))} />
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3" /> وقت البدء</Label>
+                                                            <Label className="text-xs text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3" /> Start Time</Label>
                                                             <Input type="time" value={sess.start_time} onChange={e => setConferenceConfig(prev => ({
                                                                 ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, start_time: e.target.value } : s) }
                                                             }))} />
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3" /> وقت الانتهاء</Label>
+                                                            <Label className="text-xs text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3" /> End Time</Label>
                                                             <Input type="time" value={sess.end_time} onChange={e => setConferenceConfig(prev => ({
                                                                 ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, end_time: e.target.value } : s) }
                                                             }))} />
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs text-gray-500">نوع الجلسة</Label>
+                                                            <Label className="text-xs text-gray-500">Session Type</Label>
                                                             <select
                                                                 value={sess.category}
                                                                 onChange={e => setConferenceConfig(prev => ({
@@ -850,52 +860,37 @@ function EditEventContent() {
                                                                 }))}
                                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 h-10"
                                                             >
-                                                                <option value="session">📋 محاضرة (Session)</option>
-                                                                <option value="workshop">🛠️ ورشة عمل (Workshop)</option>
+                                                                <option value="session">Session</option>
+                                                                <option value="workshop">Workshop</option>
                                                             </select>
                                                         </div>
                                                     </div>
 
                                                     {/* Title row */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        <Input label="عنوان الجلسة (عربي)" value={sess.title_ar} onChange={e => setConferenceConfig(prev => ({
-                                                            ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, title_ar: e.target.value } : s) }
-                                                        }))} dir="rtl" placeholder="مثال: مستقبل الذكاء الاصطناعي" />
-                                                        <Input label="Session Title (English)" value={sess.title_en} onChange={e => setConferenceConfig(prev => ({
+                                                    <div>
+                                                        <Input label="Session Title" value={sess.title_en} onChange={e => setConferenceConfig(prev => ({
                                                             ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, title_en: e.target.value } : s) }
                                                         }))} dir="ltr" placeholder="e.g. Future of AI" />
                                                     </div>
 
                                                     {/* Speaker row */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        <Input label="المتحدث (عربي)" value={sess.speaker_ar} onChange={e => setConferenceConfig(prev => ({
-                                                            ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, speaker_ar: e.target.value } : s) }
-                                                        }))} dir="rtl" placeholder="مثال: د. أحمد محمد" />
-                                                        <Input label="Speaker (English)" value={sess.speaker_en} onChange={e => setConferenceConfig(prev => ({
+                                                    <div>
+                                                        <Input label="Speaker" value={sess.speaker_en} onChange={e => setConferenceConfig(prev => ({
                                                             ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, speaker_en: e.target.value } : s) }
                                                         }))} dir="ltr" placeholder="e.g. Dr. Ahmed Mohammed" />
                                                     </div>
 
                                                     {/* Location row */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        <Input label="المكان / القاعة (عربي)" value={sess.location_ar} onChange={e => setConferenceConfig(prev => ({
-                                                            ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, location_ar: e.target.value } : s) }
-                                                        }))} dir="rtl" placeholder="مثال: القاعة الرئيسية" />
-                                                        <Input label="Location (English)" value={sess.location_en} onChange={e => setConferenceConfig(prev => ({
+                                                    <div>
+                                                        <Input label="Location" value={sess.location_en} onChange={e => setConferenceConfig(prev => ({
                                                             ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, location_en: e.target.value } : s) }
                                                         }))} dir="ltr" placeholder="e.g. Main Hall" />
                                                     </div>
 
                                                     {/* Description row */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    <div>
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs text-gray-500">الوصف (عربي) - اختياري</Label>
-                                                            <Textarea value={sess.description_ar} onChange={e => setConferenceConfig(prev => ({
-                                                                ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, description_ar: e.target.value } : s) }
-                                                            }))} rows={2} dir="rtl" placeholder="نبذة عن الجلسة..." />
-                                                        </div>
-                                                        <div className="space-y-1.5">
-                                                            <Label className="text-xs text-gray-500">Description (English) - Optional</Label>
+                                                            <Label className="text-xs text-gray-500">Description (Optional)</Label>
                                                             <Textarea value={sess.description_en} onChange={e => setConferenceConfig(prev => ({
                                                                 ...prev, program: { ...prev.program, sessions: prev.program.sessions.map(s => s.id === sess.id ? { ...s, description_en: e.target.value } : s) }
                                                             }))} rows={2} dir="ltr" placeholder="Brief about the session..." />
@@ -921,7 +916,7 @@ function EditEventContent() {
                                                 className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-500 hover:border-teal-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors"
                                             >
                                                 <Plus className="w-4 h-4" />
-                                                إضافة جلسة جديدة
+                                                Add Session
                                             </button>
                                         </div>
                                     )}
@@ -936,7 +931,7 @@ function EditEventContent() {
                     <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between gap-4 bg-white border-t border-amber-200 shadow-lg px-6 py-3">
                         <div className="flex items-center gap-2 text-amber-700">
                             <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                            <span className="text-sm font-medium">يوجد تغييرات غير محفوظة</span>
+                            <span className="text-sm font-medium">You have unsaved changes.</span>
                         </div>
                         <div className="flex items-center gap-3">
                             <button
@@ -944,7 +939,7 @@ function EditEventContent() {
                                 onClick={handleDiscard}
                                 className="px-4 py-1.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                             >
-                                تجاهل التغييرات
+                                Discard Changes
                             </button>
                             <button
                                 type="submit"
@@ -956,7 +951,7 @@ function EditEventContent() {
                                 ) : (
                                     <Save className="w-4 h-4" />
                                 )}
-                                حفظ التغييرات
+                                Save Changes
                             </button>
                         </div>
                     </div>

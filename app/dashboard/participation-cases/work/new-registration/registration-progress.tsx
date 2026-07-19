@@ -30,7 +30,10 @@ export function RegistrationProgress({
                     const isActive = activeStep === item.id
                     const isAvailable = canOpenAll || isCompleted || isActive
                     const status = stepStatus?.[item.id] ?? (isCompleted ? 'complete' : 'warning')
-                    const isStatusComplete = status === 'complete'
+                    // The list and the wizard both use current_step as the
+                    // workflow source of truth. A previous step is complete
+                    // even when its detailed validation status is warning.
+                    const isStatusComplete = isCompleted || status === 'complete'
 
                     return (
                         <li key={item.id} className="border-r border-slate-200 last:border-r-0">

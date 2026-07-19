@@ -35,17 +35,6 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname.toLowerCase()
 
-  // This deployment is an internal dashboard. Public marketing pages are not
-  // exposed, while the dashboard, auth flow, and API remain available.
-  const isDashboardPath = pathname.startsWith('/dashboard')
-  const isAdminLoginPath = pathname === '/admin-login'
-  const isAuthPath = pathname.startsWith('/auth')
-  const isApiPath = pathname.startsWith('/api')
-
-  if (!isDashboardPath && !isAdminLoginPath && !isAuthPath && !isApiPath) {
-    return new NextResponse('Not Found', { status: 404 })
-  }
-
   // تحديد المسارات التي تتطلب التحقق من المستخدم
   const isProtectedPath = 
     pathname.startsWith('/dashboard') || 

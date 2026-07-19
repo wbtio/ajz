@@ -5,14 +5,15 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { ArrowRight, Save, Upload, X, Globe, MapPin, Calendar, ImageIcon, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Upload, X, ImageIcon, Loader2 } from 'lucide-react'
+import { sanitizeEnglishText } from '@/lib/english-only'
 
 export default function AddEventPage() {
     const router = useRouter()
@@ -23,13 +24,10 @@ export default function AddEventPage() {
 
     const [formData, setFormData] = useState({
         title: '',
-        title_ar: '',
         description: '',
-        description_ar: '',
         date: '',
         end_date: '',
         location: '',
-        location_ar: '',
         capacity: '',
         price: '',
         show_price: true,
@@ -37,7 +35,6 @@ export default function AddEventPage() {
         status: 'draft',
         image_url: '',
         country: '',
-        country_ar: '',
     })
 
     const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +52,7 @@ export default function AddEventPage() {
             .upload(fileName, file)
 
         if (uploadError) {
-            setError('فشل رفع الصورة: ' + uploadError.message)
+            setError('Image upload failed: ' + uploadError.message)
             setIsUploading(false)
             return
         }
@@ -66,8 +63,11 @@ export default function AddEventPage() {
     }, [])
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        const { name, value, type } = e.target
+        const nextValue = ['text', 'textarea', 'search', 'email', 'url'].includes(type)
+            ? sanitizeEnglishText(value)
+            : value
+        setFormData(prev => ({ ...prev, [name]: nextValue }))
     }, [])
 
     const handleSelectChange = useCallback((name: string, value: string) => {
@@ -90,13 +90,13 @@ export default function AddEventPage() {
                 .from('events')
                 .insert({
                     title: formData.title,
-                    title_ar: formData.title_ar || null,
+                    title_ar: null,
                     description: formData.description || null,
-                    description_ar: formData.description_ar || null,
+                    description_ar: null,
                     date: formData.date,
                     end_date: formData.end_date || null,
                     location: formData.location,
-                    location_ar: formData.location_ar || null,
+                    location_ar: null,
                     capacity: formData.capacity ? parseInt(formData.capacity, 10) : null,
                     price: formData.price ? parseFloat(formData.price) : null,
                     show_price: formData.show_price,
@@ -104,7 +104,7 @@ export default function AddEventPage() {
                     status: formData.status,
                     image_url: formData.image_url || null,
                     country: formData.country || null,
-                    country_ar: formData.country_ar || null,
+                    country_ar: null,
                     conference_config: {
                         workflow: {
                             step1: { status: 'completed' },
@@ -123,24 +123,24 @@ export default function AddEventPage() {
             router.refresh()
         } catch (err: any) {
             console.error('Error inserting event:', err)
-            setError(err.message || 'حدث خطأ غير متوقع أثناء إضافة الفعالية')
+            setError(err.message || 'An unexpected error occurred while creating the event.')
             setIsLoading(false)
         }
     }, [formData, router])
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6 pb-12" dir="rtl">
+        <div className="max-w-4xl mx-auto space-y-6 pb-12 text-left" dir="ltr" lang="en">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard/events">
                         <Button variant="outline" size="sm" className="w-9 h-9 p-0 rounded-xl border-slate-200">
-                            <ArrowRight className="w-5 h-5 text-slate-700" />
+                            <ArrowLeft className="w-5 h-5 text-slate-700" />
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">إضافة فعالية جديدة</h1>
-                        <p className="text-xs text-slate-500 mt-1">تعبئة البيانات الأساسية وتأكيد الخطوة الأولى للبدء في تفعيل مسار الخطوات</p>
+                        <h1 className="text-2xl font-bold text-slate-900">Add New Event</h1>
+                        <p className="text-xs text-slate-500 mt-1">Enter the event details to start its management workflow.</p>
                     </div>
                 </div>
             </div>
@@ -157,53 +157,28 @@ export default function AddEventPage() {
                     <div className="lg:col-span-2 space-y-6">
                         <Card className="border-slate-100 shadow-sm">
                             <CardHeader className="border-b border-slate-50 pb-4">
-                                <CardTitle className="text-base font-bold text-slate-800">1. البيانات الأساسية للفعالية</CardTitle>
+                                <CardTitle className="text-base font-bold text-slate-800">1. Basic Event Information</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input
-                                        label="اسم الفعالية (بالعربية)"
-                                        name="title_ar"
-                                        value={formData.title_ar}
-                                        onChange={handleChange}
-                                        placeholder="مثال: مؤتمر بغداد للذكاء الاصطناعي"
-                                        required
-                                        className="text-sm"
-                                    />
-                                    <div dir="ltr">
+                                <div className="space-y-4">
                                         <Input
-                                            label="Event Title (English)"
+                                            label="Event Title"
                                             name="title"
                                             value={formData.title}
                                             onChange={handleChange}
                                             placeholder="e.g. Baghdad AI Conference"
                                             required
-                                            className="text-sm text-right"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <Label className="text-sm text-slate-700">الوصف والتفاصيل (بالعربية)</Label>
-                                        <Textarea
-                                            name="description_ar"
-                                            value={formData.description_ar}
-                                            onChange={handleChange}
-                                            placeholder="أكتب وصفاً تفصيلياً بالعربية..."
-                                            rows={4}
                                             className="text-sm"
                                         />
-                                    </div>
-                                    <div className="space-y-1.5" dir="ltr">
-                                        <Label className="text-sm text-slate-705 block text-right">Description (English)</Label>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-sm text-slate-700">Description</Label>
                                         <Textarea
                                             name="description"
                                             value={formData.description}
                                             onChange={handleChange}
                                             placeholder="Write a detailed description in English..."
                                             rows={4}
-                                            className="text-sm text-right"
+                                            className="text-sm"
                                         />
                                     </div>
                                 </div>
@@ -212,12 +187,12 @@ export default function AddEventPage() {
 
                         <Card className="border-slate-100 shadow-sm">
                             <CardHeader className="border-b border-slate-50 pb-4">
-                                <CardTitle className="text-base font-bold text-slate-800">2. الزمان والمكان والتصنيف</CardTitle>
+                                <CardTitle className="text-base font-bold text-slate-800">2. Date, Venue, and Classification</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label className="text-sm text-slate-700">تاريخ بدء الفعالية</Label>
+                                        <Label className="text-sm text-slate-700">Start Date</Label>
                                         <Input
                                             type="date"
                                             name="date"
@@ -228,7 +203,7 @@ export default function AddEventPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-sm text-slate-700">تاريخ انتهاء الفعالية (اختياري)</Label>
+                                        <Label className="text-sm text-slate-700">End Date (Optional)</Label>
                                         <Input
                                             type="date"
                                             name="end_date"
@@ -240,47 +215,23 @@ export default function AddEventPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <Input
-                                        label="الموقع والقاعة (بالعربية)"
-                                        name="location_ar"
-                                        value={formData.location_ar}
-                                        onChange={handleChange}
-                                        placeholder="مثال: معرض بغداد، المنصور"
-                                        required
-                                        className="text-sm"
-                                    />
-                                    <div dir="ltr">
                                         <Input
-                                            label="Venue/Hall (English)"
+                                            label="Venue / Hall"
                                             name="location"
                                             value={formData.location}
                                             onChange={handleChange}
                                             placeholder="e.g. Baghdad Fairground"
                                             required
-                                            className="text-sm text-right"
+                                            className="text-sm"
                                         />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <Input
-                                        label="الدولة (بالعربية)"
-                                        name="country_ar"
-                                        value={formData.country_ar}
-                                        onChange={handleChange}
-                                        placeholder="العراق"
-                                        className="text-sm"
-                                    />
-                                    <div dir="ltr">
                                         <Input
-                                            label="Country (English)"
+                                            label="Country"
                                             name="country"
                                             value={formData.country}
                                             onChange={handleChange}
                                             placeholder="Iraq"
-                                            className="text-sm text-right"
+                                            className="text-sm"
                                         />
-                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -293,7 +244,7 @@ export default function AddEventPage() {
                             <CardHeader className="border-b border-slate-50 pb-4">
                                 <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
                                     <ImageIcon className="w-5 h-5 text-indigo-600" />
-                                    صورة الغلاف
+                                    Cover Image
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
@@ -308,7 +259,7 @@ export default function AddEventPage() {
                                 {formData.image_url ? (
                                     <div className="relative rounded-xl overflow-hidden border border-slate-100 bg-slate-50">
                                         <div className="relative h-44 w-full">
-                                            <Image src={formData.image_url} alt="صورة الفعالية" fill className="object-cover" />
+                                            <Image src={formData.image_url} alt="Event cover" fill className="object-cover" />
                                         </div>
                                         <div className="absolute top-2 left-2 flex gap-2">
                                             <button
@@ -340,8 +291,8 @@ export default function AddEventPage() {
                                             <>
                                                 <Upload className="w-6 h-6 text-slate-400" />
                                                 <div className="text-center">
-                                                    <p className="text-xs font-semibold text-slate-700">اضغط لرفع الغلاف</p>
-                                                    <p className="text-[10px] text-slate-400 mt-0.5">PNG, JPG حتى 5MB</p>
+                                                    <p className="text-xs font-semibold text-slate-700">Upload cover image</p>
+                                                    <p className="text-[10px] text-slate-400 mt-0.5">PNG or JPG, up to 5 MB</p>
                                                 </div>
                                             </>
                                         )}
@@ -353,11 +304,11 @@ export default function AddEventPage() {
                         {/* Setting values */}
                         <Card className="border-slate-100 shadow-sm">
                             <CardHeader className="border-b border-slate-50 pb-4">
-                                <CardTitle className="text-base font-bold text-slate-800">3. خيارات التشغيل</CardTitle>
+                                <CardTitle className="text-base font-bold text-slate-800">3. Event Settings</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
                                 <div className="space-y-1">
-                                    <Label className="text-xs text-slate-600">تصنيف الفعالية</Label>
+                                    <Label className="text-xs text-slate-600">Event Type</Label>
                                     <Select
                                         value={formData.event_type}
                                         onValueChange={(val) => handleSelectChange('event_type', val)}
@@ -366,15 +317,15 @@ export default function AddEventPage() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="local">محلية</SelectItem>
-                                            <SelectItem value="international">دولية (تتطلب تأشيرات TLS)</SelectItem>
+                                            <SelectItem value="local">Local</SelectItem>
+                                            <SelectItem value="international">International (TLS visa support)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label className="text-xs text-slate-600">السعة الاستيعابية</Label>
+                                        <Label className="text-xs text-slate-600">Capacity</Label>
                                         <Input
                                             type="number"
                                             name="capacity"
@@ -385,13 +336,13 @@ export default function AddEventPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-xs text-slate-600">سعر التذكرة ($)</Label>
+                                        <Label className="text-xs text-slate-600">Ticket Price ($)</Label>
                                         <Input
                                             type="number"
                                             name="price"
                                             value={formData.price}
                                             onChange={handleChange}
-                                            placeholder="مجانية"
+                                            placeholder="0"
                                             className="text-xs h-9"
                                         />
                                     </div>
@@ -399,7 +350,7 @@ export default function AddEventPage() {
 
                                 <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-100 bg-slate-50/50">
                                     <div className="space-y-0.5">
-                                        <Label className="text-xs text-slate-700 font-semibold">إظهار السعر</Label>
+                                        <Label className="text-xs text-slate-700 font-semibold">Show Price</Label>
                                     </div>
                                     <Switch
                                         checked={formData.show_price}
@@ -408,7 +359,7 @@ export default function AddEventPage() {
                                 </div>
 
                                 <div className="space-y-1 pt-2 border-t border-slate-100">
-                                    <Label className="text-xs text-slate-600">حالة الفعالية الأولية</Label>
+                                    <Label className="text-xs text-slate-600">Initial Status</Label>
                                     <Select
                                         value={formData.status}
                                         onValueChange={(val) => handleSelectChange('status', val)}
@@ -417,8 +368,8 @@ export default function AddEventPage() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="draft">مسودة (غير منشورة)</SelectItem>
-                                            <SelectItem value="published">منشورة مباشرة بالموقع</SelectItem>
+                                            <SelectItem value="draft">Draft (Unpublished)</SelectItem>
+                                            <SelectItem value="published">Published</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -434,12 +385,12 @@ export default function AddEventPage() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    جاري إنشاء الفعالية...
+                                    Creating event...
                                 </>
                             ) : (
                                 <>
                                     <Save className="w-4 h-4" />
-                                    حفظ وإنشاء الفعالية
+                                    Create Event
                                 </>
                             )}
                         </Button>

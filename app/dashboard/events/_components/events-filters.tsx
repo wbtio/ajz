@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { sanitizeEnglishText } from '@/lib/english-only'
 import {
   Select,
   SelectContent,
@@ -52,42 +53,42 @@ export function EventsFilters() {
   return (
     <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center">
       <form onSubmit={handleSearchSubmit} className="relative flex-1">
-        <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
         <Input
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="ابحث بعنوان الفعالية أو القطاع"
-          className="bg-white pr-9"
+          onChange={(e) => setSearch(sanitizeEnglishText(e.target.value))}
+          placeholder="Search by event title or sector"
+          className="bg-white pl-9"
         />
       </form>
 
       <div className="flex w-full gap-2 lg:w-auto">
         <Select value={status} onValueChange={(value) => updateParams({ status: value })}>
           <SelectTrigger className="w-full bg-white lg:w-[170px]">
-            <SelectValue placeholder="الحالة" />
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">كل الحالات</SelectItem>
-            <SelectItem value="published">منشور</SelectItem>
-            <SelectItem value="draft">مسودة</SelectItem>
-            <SelectItem value="completed">مكتمل</SelectItem>
-            <SelectItem value="cancelled">ملغي</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={type} onValueChange={(value) => updateParams({ type: value })}>
           <SelectTrigger className="w-full bg-white lg:w-[170px]">
-            <SelectValue placeholder="النوع" />
+            <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">كل الأنواع</SelectItem>
-            <SelectItem value="local">محلية</SelectItem>
-            <SelectItem value="international">دولية</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="local">Local</SelectItem>
+            <SelectItem value="international">International</SelectItem>
           </SelectContent>
         </Select>
 
         {hasFilters && (
-          <Button variant="outline" onClick={clearFilters} className="shrink-0" title="مسح الفلاتر">
+          <Button variant="outline" onClick={clearFilters} className="shrink-0" title="Clear filters">
             <X className="h-4 w-4" />
           </Button>
         )}

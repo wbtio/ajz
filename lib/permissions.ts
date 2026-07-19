@@ -32,6 +32,7 @@ export const DASHBOARD_PAGES: { path: string; label: string }[] = [
   { path: "/dashboard/event-discovery/sessions", label: "Event Discovery" },
   { path: "/dashboard/analytics", label: "Analytics" },
   { path: "/dashboard/team-tasks", label: "Daily Tasks" },
+  { path: "/dashboard/creative-prompts", label: "Creative Prompts" },
   { path: "/dashboard/passport-scanner", label: "Passport Scanner" },
   { path: "/dashboard/settings", label: "Settings" },
 ];

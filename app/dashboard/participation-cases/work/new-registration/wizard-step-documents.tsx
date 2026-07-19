@@ -1,19 +1,16 @@
 /* eslint-disable */
 // @ts-nocheck -- The controller owns the strongly typed model; step files only render it.
+import { useState } from 'react'
 import { useWizardView } from './wizard-view-context'
 
 export function DocumentsStep() {
+  const [otherDocumentName, setOtherDocumentName] = useState('')
   // prettier-ignore
   const { AlertTriangle, ApplicationSummary, Badge, Bell, Button, Card, CheckCircle2, ClientSummary, Clock, Download, EMPTY_SCHENGEN_VISA, EmailField, ExternalLink, Eye, EyeOff, FileCode, FileText, FolderKanban, IRAQI_GOVERNORATES, Input, Lock, MessageCircle, PhoneNumberField, Plus, Printer, REGISTRATION_STEPS, RefreshCw, RegistrationProgress, SCHENGEN_COUNTRIES, Search, SearchableChoice, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Trash2, Upload, User, VISA_DOCUMENTS, VISA_ROUTES, VISA_SUBMISSION_METHODS, VISA_TYPE_OPTIONS, Volume2, X, addVisaReminder, amountPaid, appNotes, applyChangeableUpdates, assignedEmployee, assignedTo, balanceDue, breadcrumbLabel, buildTravelPurpose, canEditFeeBreakdown, caseNumber, client, cn, companySpecialtyOther, currentUser, deliveryDocumentPaths, deliveryMessage, deliveryStatus, documentImportFile, documentImportText, documentImportType, emailValidation, employees, events, fees, findDocument, formatEventDate, fullNameIsValid, handleArchiveReceipt, handleContinueWithClient, handleCreateNewClient, handleDownloadReceipt, handleGenerateReceipt, handleMergeFiles, handlePrintReceipt, handleSaveDraftOnly, handleSaveEventDetails, handleSaveIntake, handleSavePaymentDraft, handleSaveVisaDetails, handleSearch, handleStep4FileUpload, handleVisaDestinationChange, hasSearched, includeClientInfoInPackage, inviterConfig, isImportingDocument, isPackageGenerating, isPending, jobTitleIsOther, jobTitleOther, latestActivity, mergeableDocuments, missingSummaryDocuments, nationalIdIsValid, newReminderAt, newReminderNote, onClose, openWhatsApp, packageDocument, packageDocumentPaths, packageName, participationType, passportNumberIsValid, paymentCategory, paymentDate, paymentMethod, paymentNotes, phoneCountry, phoneValidation, placeOfBirthCitiesByCountry, placeOfBirthCountries, processImportedDocument, registration, registrationDocuments, registrationId, requiredVisaDocuments, router, searchForm, searchResults, selectedEvent, selectedEventId, selectedPotentialMatch, setAmountPaid, setAppNotes, setAssignedTo, setCompanySpecialtyOther, setDeliveryDocumentPaths, setDeliveryMessage, setDocumentImportFile, setDocumentImportText, setDocumentImportType, setFees, setHasSearched, setIncludeClientInfoInPackage, setJobTitleIsOther, setJobTitleOther, setNewReminderAt, setNewReminderNote, setPackageDocumentPaths, setPackageName, setParticipationType, setPaymentCategory, setPaymentDate, setPaymentMethod, setPaymentNotes, setPhoneCountry, setSearchForm, setSearchResults, setSelectedEventId, setSelectedPotentialMatch, setShowDocumentImport, setShowPassword, setShowUpdatePrompt, setStep, setTravelPurpose, setVisaAccountStatus, setVisaAppRefNumber, setVisaAppointmentCenter, setVisaAppointmentChannel, setVisaAppointmentCity, setVisaAppointmentDate, setVisaAppointmentRefNumber, setVisaAppointmentStatus, setVisaAppointmentTime, setVisaEmbassy, setVisaEmbassyCity, setVisaPlatform, setVisaPortalAppStatus, setVisaPortalEmail, setVisaPortalPassword, setVisaReminders, setVisaSubmissionMethod, setVisaType, setWorkCityIsOther, setWorkCityOther, showDocumentImport, showPassword, showUpdatePrompt, step, stepStatus, summaryAppointment, summaryStatus, surnameIsValid, toast, totalAmount, travelPurpose, uploadError, uploadingDocumentType, validateStepBeforeAdvance, visaAccountStatus, visaAppRefNumber, visaAppointmentCenter, visaAppointmentChannel, visaAppointmentCity, visaAppointmentDate, visaAppointmentRefNumber, visaAppointmentStatus, visaAppointmentTime, visaDestination, visaEmbassyCity, visaPlatform, visaPortalAppStatus, visaPortalEmail, visaPortalPassword, visaReminders, visaSubmissionMethod, visaType, workCityIsOther, workCityOther } = useWizardView()
   return <>
     {/* Step 5: Document Assembly & Archiving */}
       {step === 5 && registration && (
         <div className="w-full space-y-2.5 animate-in fade-in duration-300">
-          <div role="status" className="flex items-center gap-2 rounded-md border border-emerald-200/80 bg-emerald-50/70 px-3 py-1.5 text-xs font-medium text-emerald-800">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Visa application and appointment details saved successfully. Review the real case documents before archiving.</span>
-          </div>
-
           <Card className="space-y-3 border-slate-200/80 bg-slate-50/40 p-3 shadow-sm sm:p-4">
             {/* Client Summary card */}
             <div className="rounded-lg border border-slate-200 bg-white px-3 py-2.5">
@@ -89,6 +86,43 @@ export function DocumentsStep() {
                       </div>
                     );
                   })}
+                </div>
+                <div className="space-y-2 rounded-md border border-dashed border-slate-300 bg-slate-50/70 p-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-bold text-slate-700">Other document</p>
+                      <p className="text-[10px] text-slate-500">Name it, upload it, then include it in the package or delivery.</p>
+                    </div>
+                    <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-[#8B0000]/25 bg-white px-2.5 text-[11px] font-semibold text-[#8B0000] hover:bg-[#8B0000]/5">
+                      <Upload className="size-3.5" /> Upload
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="sr-only"
+                        onChange={(event) => {
+                          const name = otherDocumentName.trim();
+                          if (!name) {
+                            toast.error("اكتب اسم المستند أولاً.");
+                            event.currentTarget.value = "";
+                            return;
+                          }
+                          const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "file";
+                          handleStep4FileUpload(event, name, `other_document_${Date.now()}_${slug}`);
+                          setOtherDocumentName("");
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <Input value={otherDocumentName} onChange={(event) => setOtherDocumentName(event.target.value)} placeholder="Document name, for example: Company badge" className="h-8 border-slate-200 bg-white text-xs" />
+                  {registrationDocuments.filter((document) => document.type.startsWith("other_document_")).map((document) => (
+                    <div key={document.path} className="flex min-w-0 items-center gap-2 border-t border-slate-200 pt-2 text-xs">
+                      <CheckCircle2 className="size-3.5 shrink-0 text-emerald-600" />
+                      <span className="min-w-0 flex-1 truncate font-semibold text-slate-700" title={document.name}>{document.name}</span>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => window.open(document.path, "_blank", "noopener,noreferrer")} className="h-7 px-2 text-[10px] text-slate-500">
+                        <Eye className="mr-1 size-3.5" /> View
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </section>
 

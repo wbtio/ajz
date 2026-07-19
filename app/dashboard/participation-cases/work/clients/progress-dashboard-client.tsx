@@ -185,6 +185,8 @@ function StageProgress({ mappedStep, onStepClick }: { mappedStep: number; onStep
                         title={`${step.id}. ${step.label}`}
                         className={cn(
                             'h-2 w-5 rounded-full transition-[background-color,transform] duration-150 hover:scale-y-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--jaz-sovereign)]/40 focus-visible:ring-offset-2',
+                            // Completed stages stay visibly red even when a later
+                            // stage is active; only future stages use the neutral tone.
                             step.id < mappedStep && 'bg-[var(--jaz-sovereign)]/55',
                             step.id === mappedStep && 'bg-[var(--jaz-sovereign)]',
                             step.id > mappedStep && 'bg-[var(--jaz-line-strong)]',

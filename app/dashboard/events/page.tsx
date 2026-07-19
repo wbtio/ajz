@@ -1,26 +1,14 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Plus, Edit, Trash2, Eye, Users, Globe, MapPin, Calendar, FileText, ChevronRight, ChevronLeft } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Plus } from 'lucide-react'
 import { EventsFilters } from './_components/events-filters'
 import { StatsCards } from './_components/stats-cards'
 
 import { EventsTable } from './_components/events-table'
 
 export const metadata = {
-  title: 'إدارة الفعاليات | JAZ Admin',
+  title: 'Event Management | JAZ Admin',
 }
 
 type SearchParams = {
@@ -51,7 +39,7 @@ export default async function EventsPage({
     .order('created_at', { ascending: false })
 
   if (search) {
-    query = query.or(`title.ilike.%${search}%,title_ar.ilike.%${search}%,sector.ilike.%${search}%,sub_sector_ar.ilike.%${search}%`)
+    query = query.or(`title.ilike.%${search}%,sector.ilike.%${search}%,sub_sector.ilike.%${search}%`)
   }
 
   if (status) {
@@ -88,11 +76,11 @@ export default async function EventsPage({
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">إدارة الفعاليات</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Event Management</h1>
         <Link href="/dashboard/events/new">
           <Button>
-            <Plus className="ml-2 h-4 w-4" />
-            إضافة فعالية
+            <Plus className="mr-2 h-4 w-4" />
+            Add Event
           </Button>
         </Link>
       </div>

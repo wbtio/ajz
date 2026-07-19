@@ -3,10 +3,14 @@
 import { useWizardView } from "./wizard-view-context"; export function ClientSearchStep() {
   // prettier-ignore
   const { AlertTriangle, ApplicationSummary, Badge, Bell, Button, Card, CheckCircle2, ClientSummary, Clock, Download, EMPTY_SCHENGEN_VISA, EmailField, ExternalLink, Eye, EyeOff, FileCode, FileText, FolderKanban, IRAQI_GOVERNORATES, Input, Lock, MessageCircle, PhoneNumberField, Plus, Printer, REGISTRATION_STEPS, RefreshCw, RegistrationProgress, SCHENGEN_COUNTRIES, Search, SearchableChoice, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Trash2, Upload, User, VISA_DOCUMENTS, VISA_ROUTES, VISA_SUBMISSION_METHODS, VISA_TYPE_OPTIONS, Volume2, X, addVisaReminder, amountPaid, appNotes, applyChangeableUpdates, assignedEmployee, assignedTo, balanceDue, breadcrumbLabel, buildTravelPurpose, canEditFeeBreakdown, caseNumber, client, cn, companySpecialtyOther, currentUser, deliveryDocumentPaths, deliveryMessage, deliveryStatus, documentImportFile, documentImportText, documentImportType, emailValidation, employees, events, fees, findDocument, formatEventDate, fullNameIsValid, handleArchiveReceipt, handleContinueWithClient, handleCreateNewClient, handleDownloadReceipt, handleGenerateReceipt, handleMergeFiles, handlePrintReceipt, handleSaveDraftOnly, handleSaveEventDetails, handleSaveIntake, handleSavePaymentDraft, handleSaveVisaDetails, handleSearch, handleStep4FileUpload, handleVisaDestinationChange, hasSearched, includeClientInfoInPackage, inviterConfig, isImportingDocument, isPackageGenerating, isPending, jobTitleIsOther, jobTitleOther, latestActivity, mergeableDocuments, missingSummaryDocuments, nationalIdIsValid, newReminderAt, newReminderNote, onClose, openWhatsApp, packageDocument, packageDocumentPaths, packageName, participationType, passportNumberIsValid, paymentCategory, paymentDate, paymentMethod, paymentNotes, phoneCountry, phoneValidation, placeOfBirthCitiesByCountry, placeOfBirthCountries, processImportedDocument, registration, registrationDocuments, registrationId, requiredVisaDocuments, router, searchForm, searchResults, selectedEvent, selectedEventId, selectedPotentialMatch, setAmountPaid, setAppNotes, setAssignedTo, setCompanySpecialtyOther, setDeliveryDocumentPaths, setDeliveryMessage, setDocumentImportFile, setDocumentImportText, setDocumentImportType, setFees, setHasSearched, setIncludeClientInfoInPackage, setJobTitleIsOther, setJobTitleOther, setNewReminderAt, setNewReminderNote, setPackageDocumentPaths, setPackageName, setParticipationType, setPaymentCategory, setPaymentDate, setPaymentMethod, setPaymentNotes, setPhoneCountry, setSearchForm, setSearchResults, setSelectedEventId, setSelectedPotentialMatch, setShowDocumentImport, setShowPassword, setShowUpdatePrompt, setStep, setTravelPurpose, setVisaAccountStatus, setVisaAppRefNumber, setVisaAppointmentCenter, setVisaAppointmentChannel, setVisaAppointmentCity, setVisaAppointmentDate, setVisaAppointmentRefNumber, setVisaAppointmentStatus, setVisaAppointmentTime, setVisaEmbassy, setVisaEmbassyCity, setVisaPlatform, setVisaPortalAppStatus, setVisaPortalEmail, setVisaPortalPassword, setVisaReminders, setVisaSubmissionMethod, setVisaType, setWorkCityIsOther, setWorkCityOther, showDocumentImport, showPassword, showUpdatePrompt, step, stepStatus, summaryAppointment, summaryStatus, surnameIsValid, toast, totalAmount, travelPurpose, uploadError, uploadingDocumentType, validateStepBeforeAdvance, visaAccountStatus, visaAppRefNumber, visaAppointmentCenter, visaAppointmentChannel, visaAppointmentCity, visaAppointmentDate, visaAppointmentRefNumber, visaAppointmentStatus, visaAppointmentTime, visaDestination, visaEmbassyCity, visaPlatform, visaPortalAppStatus, visaPortalEmail, visaPortalPassword, visaReminders, visaSubmissionMethod, visaType, workCityIsOther, workCityOther } = useWizardView();
+  const { ocrHighlightedFields, setOcrHighlightedFields, workPhoneCountry, setWorkPhoneCountry } = useWizardView();
+  const ocrFieldClass = (field) => ocrHighlightedFields.includes(field) ? "ocr-field-highlight" : "";
+  const markOcrFieldReviewed = (field) => setOcrHighlightedFields((current) => current.filter((item) => item !== field));
   return <>
       {step === 2 && (
         <div className="w-full animate-in fade-in duration-300">
           <Card className="space-y-4 border-slate-200/80 p-4 shadow-sm sm:p-5">
+            <style>{`.ocr-field-highlight input,.ocr-field-highlight button[role="combobox"]{border-color:#8B0000 !important;box-shadow:0 0 0 1px rgba(139,0,0,.12)}`}</style>
             <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
               <Search className="size-4 text-[#8B0000]" />
               <h2 className="text-base font-bold text-slate-800">Search for existing client</h2>
@@ -62,8 +66,8 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-x-3 gap-y-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-2 lg:grid-cols-12">
-              <div className="flex flex-col gap-1.5 lg:order-1 lg:col-span-1">
+            <div className="grid grid-cols-1 gap-x-3 gap-y-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-2 lg:grid-cols-12 xl:grid-cols-[70px_minmax(195px,2fr)_minmax(105px,1fr)_68px_minmax(110px,1.05fr)_minmax(125px,1.2fr)_minmax(100px,.9fr)_minmax(100px,.9fr)] xl:gap-x-2">
+              <div className="flex flex-col gap-1.5 lg:order-1 lg:col-span-1 lg:w-[70px]">
                 <label className="text-xs font-bold text-slate-600">Title</label>
                 <Select value={searchForm.salutation} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, salutation: value }))}>
                   <SelectTrigger aria-label="Title or salutation">
@@ -78,7 +82,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex flex-col gap-1.5 lg:order-2 lg:col-span-4">
+              <div onClick={() => markOcrFieldReviewed("fullName")} className={cn("flex flex-col gap-1.5 lg:order-2 lg:col-span-3 xl:col-span-1", ocrFieldClass("fullName"))}>
                 <label className="text-xs font-bold text-slate-600">Full Name</label>
                 <Input
                   value={searchForm.fullName}
@@ -96,7 +100,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   className={cn("border-slate-200", !fullNameIsValid && "border-red-300 focus:border-red-400 focus:ring-red-100")}
                 />
               </div>
-              <div className="flex flex-col gap-1.5 lg:order-3 lg:col-span-2">
+              <div onClick={() => markOcrFieldReviewed("surname")} className={cn("flex flex-col gap-1.5 lg:order-3 lg:col-span-2 xl:col-span-1", ocrFieldClass("surname"))}>
                 <label className="text-xs font-bold text-slate-600">Surname</label>
                 <Input
                   value={searchForm.surname}
@@ -114,7 +118,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   className={cn("max-w-[15ch] border-slate-200", !surnameIsValid && "border-red-300 focus:border-red-400 focus:ring-red-100")}
                 />
               </div>
-              <div className="flex flex-col gap-1.5 lg:order-4 lg:col-span-1">
+              <div onClick={() => markOcrFieldReviewed("gender")} className={cn("flex flex-col gap-1.5 lg:order-4 lg:col-span-1 lg:w-[68px]", ocrFieldClass("gender"))}>
                 <label className="text-xs font-bold text-slate-600">Gender</label>
                 <Select value={searchForm.gender} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, gender: value }))}>
                   <SelectTrigger aria-label="Gender">
@@ -126,7 +130,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5 lg:order-5 lg:col-span-2">
+              <div onClick={() => markOcrFieldReviewed("passportNumber")} className={cn("space-y-1.5 lg:order-5 lg:col-span-2 xl:col-span-1", ocrFieldClass("passportNumber"))}>
                 <label className="text-xs font-bold text-slate-600">Passport Number</label>
                 <Input
                   value={searchForm.passportNumber}
@@ -143,36 +147,11 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   className={cn("border-slate-200 font-mono", !passportNumberIsValid && "border-red-300 focus:border-red-400 focus:ring-red-100")}
                 />
               </div>
-              <div className="w-full max-w-[15ch] space-y-1.5 lg:order-11 lg:col-span-2">
-                <label className="text-xs font-bold text-slate-600">National ID</label>
-                <Input
-                  value={searchForm.nationalId}
-                  onChange={(e) => {
-                    const normalizedValue = e.target.value.replace(/\D/g, "").slice(0, 12);
-                    setSearchForm((prev) => ({ ...prev, nationalId: normalizedValue }));
-                  }}
-                  placeholder="Enter 12-digit national ID"
-                  aria-invalid={!nationalIdIsValid}
-                  inputMode="numeric"
-                  maxLength={12}
-                  pattern="[0-9]{12}"
-                  title="Enter exactly 12 digits"
-                  className={cn("border-slate-200 font-mono", !nationalIdIsValid && "border-red-300 focus:border-red-400 focus:ring-red-100")}
-                />
-              </div>
-              <div className="space-y-1.5 lg:order-15 lg:col-span-3">
-                <label className="text-xs font-bold text-slate-600">Phone Number</label>
-                <PhoneNumberField value={searchForm.phone} country={phoneCountry} error={phoneValidation.error} onCountryChange={setPhoneCountry} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, phone: value }))} />
-              </div>
-              <div className="space-y-1.5 lg:order-14 lg:col-span-3">
-                <label className="text-xs font-bold text-slate-600">Email Address</label>
-                <EmailField value={searchForm.email} error={emailValidation.error} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, email: value }))} placeholder="ahmed.ali@example.com" />
-              </div>
-              <div className="space-y-1.5 lg:order-13 lg:col-span-6">
+              <div className="space-y-1.5 lg:order-13 lg:col-span-7 xl:col-span-4">
                 <label className="text-xs font-bold text-slate-600">Company Name</label>
                 <Input value={searchForm.companyName} onChange={(e) => setSearchForm((prev) => ({ ...prev, companyName: e.target.value }))} placeholder="Enter company name" className="border-slate-200" />
               </div>
-              <div className="space-y-1.5 lg:order-13 lg:col-span-6">
+              <div className="space-y-1.5 lg:order-13 lg:col-span-5 xl:col-span-4">
                 <label className="text-xs font-bold text-slate-600">Company Specialty</label>
                 {searchForm.companySpecialty === "Other" ? (
                   <div className="flex gap-2">
@@ -210,25 +189,11 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   </Select>
                 )}
               </div>
-              <div className="min-w-[112px] space-y-1.5 lg:order-12 lg:col-span-1">
-                <label className="text-xs font-bold text-slate-600">Marital Status</label>
-                <Select value={searchForm.maritalStatus} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, maritalStatus: value }))}>
-                  <SelectTrigger aria-label="Marital status">
-                    <SelectValue placeholder="—" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="single">Single</SelectItem>
-                    <SelectItem value="married">Married</SelectItem>
-                    <SelectItem value="divorced">Divorced</SelectItem>
-                    <SelectItem value="widowed">Widowed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5 lg:order-6 lg:col-span-2">
+              <div onClick={() => markOcrFieldReviewed("dateOfBirth")} className={cn("space-y-1.5 lg:order-6 lg:col-span-2 lg:w-[174px] xl:col-span-1 xl:w-auto", ocrFieldClass("dateOfBirth"))}>
                 <label className="text-xs font-bold text-slate-600">Date of Birth</label>
-                <Input type="date" value={searchForm.dateOfBirth} onChange={(e) => setSearchForm((prev) => ({ ...prev, dateOfBirth: e.target.value }))} className="border-slate-200" />
+                <Input type="date" value={searchForm.dateOfBirth} onChange={(e) => { const value = e.currentTarget.value; setSearchForm((prev) => ({ ...prev, dateOfBirth: value })) }} onInput={(e) => { const value = e.currentTarget.value; setSearchForm((prev) => ({ ...prev, dateOfBirth: value })) }} className="border-slate-200" />
               </div>
-              <div className="w-full max-w-[20ch] space-y-1.5 lg:order-7 lg:col-span-2">
+              <div onClick={() => markOcrFieldReviewed("placeOfBirthCountry")} className={cn("w-full max-w-[20ch] space-y-1.5 lg:order-7 lg:col-span-2 lg:max-w-[147px] xl:col-span-1 xl:max-w-none", ocrFieldClass("placeOfBirthCountry"))}>
                 <label className="text-xs font-bold text-slate-600">Place of Birth Country</label>
                 <SearchableChoice
                   value={searchForm.placeOfBirthCountry}
@@ -244,7 +209,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   }
                 />
               </div>
-              <div className="w-full max-w-[19ch] space-y-1.5 lg:order-8 lg:col-span-2">
+              <div onClick={() => markOcrFieldReviewed("placeOfBirthCity")} className={cn("w-full max-w-[19ch] space-y-1.5 lg:order-8 lg:col-span-2 lg:max-w-[148px] xl:col-span-1 xl:max-w-none", ocrFieldClass("placeOfBirthCity"))}>
                 <label className="text-xs font-bold text-slate-600">Place of Birth City</label>
                 <SearchableChoice
                   value={searchForm.placeOfBirthCity}
@@ -260,13 +225,50 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                   }
                 />
               </div>
-              <div className="space-y-1.5 lg:order-9 lg:col-span-2">
-                <label className="text-xs font-bold text-slate-600">Passport Issue Date</label>
-                <Input type="date" value={searchForm.passportIssueDate} onChange={(e) => setSearchForm((prev) => ({ ...prev, passportIssueDate: e.target.value }))} className="border-slate-200" />
+              <div className="grid grid-cols-2 gap-x-3 gap-y-3 lg:order-9 lg:col-span-12 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-[155px_155px_155px_125px_minmax(344px,1fr)_238px] 2xl:gap-x-2 2xl:gap-y-0">
+                <div onClick={() => markOcrFieldReviewed("passportIssueDate")} className={cn("space-y-1.5", ocrFieldClass("passportIssueDate"))}>
+                  <label className="text-xs font-bold text-slate-600">Passport Issue Date</label>
+                  <Input type="date" value={searchForm.passportIssueDate} onChange={(e) => { const value = e.currentTarget.value; setSearchForm((prev) => ({ ...prev, passportIssueDate: value })) }} onInput={(e) => { const value = e.currentTarget.value; setSearchForm((prev) => ({ ...prev, passportIssueDate: value })) }} className="border-slate-200" />
+                </div>
+                <div onClick={() => markOcrFieldReviewed("passportExpiryDate")} className={cn("space-y-1.5", ocrFieldClass("passportExpiryDate"))}>
+                  <label className="text-xs font-bold text-slate-600">Passport Expiry Date</label>
+                  <Input type="date" value={searchForm.passportExpiryDate} onChange={(e) => { const value = e.currentTarget.value; setSearchForm((prev) => ({ ...prev, passportExpiryDate: value })) }} onInput={(e) => { const value = e.currentTarget.value; setSearchForm((prev) => ({ ...prev, passportExpiryDate: value })) }} className="border-slate-200" />
+                </div>
+                <div onClick={() => markOcrFieldReviewed("nationalId")} className={cn("space-y-1.5", ocrFieldClass("nationalId"))}>
+                  <label className="text-xs font-bold text-slate-600">National ID</label>
+                  <Input value={searchForm.nationalId} onChange={(e) => { const normalizedValue = e.target.value.replace(/\D/g, "").slice(0, 12); setSearchForm((prev) => ({ ...prev, nationalId: normalizedValue })); }} placeholder="Enter 12-digit national ID" aria-invalid={!nationalIdIsValid} inputMode="numeric" maxLength={12} pattern="[0-9]{12}" title="Enter exactly 12 digits" className={cn("border-slate-200 font-mono", !nationalIdIsValid && "border-red-300 focus:border-red-400 focus:ring-red-100")} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600">Marital Status</label>
+                  <Select value={searchForm.maritalStatus} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, maritalStatus: value }))}>
+                    <SelectTrigger aria-label="Marital status"><SelectValue placeholder="—" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="single">Single</SelectItem>
+                      <SelectItem value="married">Married</SelectItem>
+                      <SelectItem value="divorced">Divorced</SelectItem>
+                      <SelectItem value="widowed">Widowed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5 min-w-0 2xl:w-[344px]">
+                  <label className="text-xs font-bold text-slate-600">Email Address</label>
+                  <EmailField value={searchForm.email} error={emailValidation.error} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, email: value }))} placeholder="ahmed.ali@example.com" />
+                </div>
+                <div className="space-y-1.5 min-w-0 2xl:relative 2xl:-translate-x-[161px]">
+                  <label className="text-xs font-bold text-slate-600">Phone Number</label>
+                  <PhoneNumberField value={searchForm.phone} country={phoneCountry} error={phoneValidation.error} onCountryChange={setPhoneCountry} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, phone: value }))} />
+                </div>
               </div>
-              <div className="space-y-1.5 lg:order-10 lg:col-span-2">
-                <label className="text-xs font-bold text-slate-600">Passport Expiry Date</label>
-                <Input type="date" value={searchForm.passportExpiryDate} onChange={(e) => setSearchForm((prev) => ({ ...prev, passportExpiryDate: e.target.value }))} className="border-slate-200" />
+            </div>
+
+            <div className="space-y-3 border-t border-slate-100 pt-3">
+              <h3 className="text-sm font-bold text-slate-800">Company Information</h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="space-y-1.5 relative"><label className="text-xs font-bold text-slate-600">Job Title</label>{jobTitleIsOther ? <div className="flex gap-2"><Input autoFocus value={jobTitleOther} onChange={(e) => { setJobTitleOther(e.target.value); setSearchForm((prev) => ({ ...prev, jobTitle: e.target.value })); }} placeholder="Enter job title" className="border-slate-200" /><Button type="button" variant="outline" onClick={() => { setJobTitleIsOther(false); setJobTitleOther(""); setSearchForm((prev) => ({ ...prev, jobTitle: "" })); }} className="shrink-0 border-slate-200 px-3 text-xs">List</Button></div> : <Select value={searchForm.jobTitle} onValueChange={(value) => { if (value === "Other") { setJobTitleIsOther(true); setSearchForm((prev) => ({ ...prev, jobTitle: "" })); } else setSearchForm((prev) => ({ ...prev, jobTitle: value })); }}><SelectTrigger aria-label="Job title"><SelectValue placeholder="Select job title" /></SelectTrigger><SelectContent>{["Shareholder", "Owner", "Managing Director", "Authorized Manager", "General Manager", "Department Manager", "CEO", "CFO", "COO", "Engineer", "Accountant", "Sales Manager", "Other"].map((title) => <SelectItem key={title} value={title}>{title}</SelectItem>)}</SelectContent></Select>}</div>
+                <div className="space-y-1.5"><label className="text-xs font-bold text-slate-600">Department</label><Input value={searchForm.department} onChange={(e) => setSearchForm((prev) => ({ ...prev, department: e.target.value }))} className="border-slate-200" /></div>
+                <div className="space-y-1.5 relative"><label className="text-xs font-bold text-slate-600">Work City</label>{workCityIsOther ? <div className="flex gap-2"><Input autoFocus value={workCityOther} onChange={(e) => { setWorkCityOther(e.target.value); setSearchForm((prev) => ({ ...prev, workCity: e.target.value })); }} placeholder="Enter work city" className="border-slate-200" /><Button type="button" variant="outline" onClick={() => { setWorkCityIsOther(false); setWorkCityOther(""); setSearchForm((prev) => ({ ...prev, workCity: "" })); }} className="shrink-0 border-slate-200 px-3 text-xs">List</Button></div> : <Select value={searchForm.workCity} onValueChange={(value) => { if (value === "Other") { setWorkCityIsOther(true); setSearchForm((prev) => ({ ...prev, workCity: "" })); } else setSearchForm((prev) => ({ ...prev, workCity: value })); }}><SelectTrigger aria-label="Work city"><SelectValue placeholder="Select governorate" /></SelectTrigger><SelectContent>{IRAQI_GOVERNORATES.map((city) => <SelectItem key={city} value={city}>{city}</SelectItem>)}<SelectItem value="Other">Other</SelectItem></SelectContent></Select>}</div>
+                <div className="space-y-1.5"><label className="text-xs font-bold text-slate-600">Work Phone</label><PhoneNumberField value={searchForm.workPhone} country={workPhoneCountry} error="" onCountryChange={setWorkPhoneCountry} onValueChange={(value) => setSearchForm((prev) => ({ ...prev, workPhone: value }))} /></div>
+                <div className="space-y-1.5"><label className="text-xs font-bold text-slate-600">Work Email</label><Input value={searchForm.workEmail} onChange={(e) => setSearchForm((prev) => ({ ...prev, workEmail: e.target.value }))} dir="ltr" inputMode="email" className="border-slate-200" /></div>
               </div>
             </div>
 

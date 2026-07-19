@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
-import Image from 'next/image'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,11 +9,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { createClient } from '@/lib/supabase/client'
-import { Save, Loader2, Calendar, MapPin, Globe, CheckCircle2, ImageIcon, Upload, X } from 'lucide-react'
+import { Save, Loader2, Calendar, Globe, CheckCircle2 } from 'lucide-react'
+import { sanitizeEnglishText } from '@/lib/english-only'
+import type { Event } from '@/lib/database.types'
 
 interface StepRegistrationProps {
-    event: any
-    onUpdate: (updatedEvent: any) => void
+    event: Event
+    onUpdate: (updatedEvent: Event) => void
     isReadOnly: boolean
 }
 
@@ -29,15 +30,15 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
 
     const [formData, setFormData] = useState({
         title_ar: event.title_ar || '',
-        title: event.title || '',
+        title: sanitizeEnglishText(event.title || '').trim(),
         description_ar: event.description_ar || '',
-        description: event.description || '',
+        description: sanitizeEnglishText(event.description || '').trim(),
         date: event.date ? event.date.split('T')[0] : '',
         end_date: event.end_date ? event.end_date.split('T')[0] : '',
         location_ar: event.location_ar || '',
-        location: event.location || '',
+        location: sanitizeEnglishText(event.location || '').trim(),
         country_ar: event.country_ar || '',
-        country: event.country || '',
+        country: sanitizeEnglishText(event.country || '').trim(),
         capacity: event.capacity ? String(event.capacity) : '',
         price: event.price ? String(event.price) : '',
         show_price: event.show_price ?? true,
@@ -46,8 +47,11 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        const { name, value, type } = e.target
+        const nextValue = e.target instanceof HTMLTextAreaElement || ['text', 'search', 'email', 'url'].includes(type)
+            ? sanitizeEnglishText(value)
+            : value
+        setFormData(prev => ({ ...prev, [name]: nextValue }))
     }
 
     const handleSelectChange = (name: string, value: string) => {
@@ -74,7 +78,7 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                     title: formData.title,
                     description_ar: formData.description_ar,
                     description: formData.description,
-                    date: formData.date || null,
+                    date: formData.date,
                     end_date: formData.end_date || null,
                     location_ar: formData.location_ar,
                     location: formData.location,
@@ -92,18 +96,18 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
 
             if (error) throw error
 
-            setMessage({ type: 'success', text: 'تم حفظ وتحديث بيانات الفعالية بنجاح!' })
+            setMessage({ type: 'success', text: 'Event details saved.' })
             onUpdate(data)
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error saving event:', err)
-            setMessage({ type: 'error', text: err.message || 'حدث خطأ أثناء حفظ البيانات' })
+            setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Could not save the event details.' })
         } finally {
             setIsSaving(false)
         }
     }
 
     return (
-        <div className="space-y-6" dir="rtl">
+        <div className="space-y-6 text-left" dir="ltr" lang="en">
             {message && (
                 <div className={`p-4 rounded-xl text-sm ${
                     message.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'
@@ -121,50 +125,23 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                             <CardHeader className="border-b border-slate-50 pb-4">
                                 <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
                                     <CheckCircle2 className="w-5 h-5 text-indigo-600" />
-                                    1. البيانات الأساسية للفعالية
+                                    1. Basic Event Information
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input
-                                        label="اسم الفعالية (بالعربية)"
-                                        name="title_ar"
-                                        value={formData.title_ar}
-                                        onChange={handleChange}
-                                        disabled={isReadOnly}
-                                        placeholder="مثال: مؤتمر بغداد للذكاء الاصطناعي"
-                                        required
-                                        className="text-sm"
-                                    />
-                                    <div dir="ltr">
+                                <div className="space-y-4">
                                         <Input
-                                            label="Event Title (English)"
+                                            label="Event Title"
                                             name="title"
                                             value={formData.title}
                                             onChange={handleChange}
                                             disabled={isReadOnly}
                                             placeholder="e.g. Baghdad AI Conference"
                                             required
-                                            className="text-sm text-right"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <Label className="text-sm text-slate-700 font-medium">الوصف والتفاصيل (بالعربية)</Label>
-                                        <Textarea
-                                            name="description_ar"
-                                            value={formData.description_ar}
-                                            onChange={handleChange}
-                                            disabled={isReadOnly}
-                                            placeholder="أكتب وصفاً تفصيلياً بالعربية..."
-                                            rows={4}
                                             className="text-sm"
                                         />
-                                    </div>
-                                    <div className="space-y-1.5" dir="ltr">
-                                        <Label className="text-sm text-slate-750 block text-right font-medium">Description (English)</Label>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-sm text-slate-700 font-medium">Description</Label>
                                         <Textarea
                                             name="description"
                                             value={formData.description}
@@ -172,7 +149,7 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                             disabled={isReadOnly}
                                             placeholder="Write a detailed description in English..."
                                             rows={4}
-                                            className="text-sm text-right"
+                                            className="text-sm"
                                         />
                                     </div>
                                 </div>
@@ -184,13 +161,13 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                             <CardHeader className="border-b border-slate-50 pb-4">
                                 <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
                                     <Calendar className="w-5 h-5 text-indigo-600" />
-                                    2. الزمان والمكان والتصنيف
+                                    2. Date, Venue, and Classification
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label className="text-sm text-slate-700 font-medium">تاريخ بدء الفعالية</Label>
+                                        <Label className="text-sm text-slate-700 font-medium">Start Date</Label>
                                         <Input
                                             type="date"
                                             name="date"
@@ -202,7 +179,7 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-sm text-slate-700 font-medium">تاريخ انتهاء الفعالية (اختياري)</Label>
+                                        <Label className="text-sm text-slate-700 font-medium">End Date (Optional)</Label>
                                         <Input
                                             type="date"
                                             name="end_date"
@@ -215,51 +192,25 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <Input
-                                        label="الموقع والقاعة (بالعربية)"
-                                        name="location_ar"
-                                        value={formData.location_ar}
-                                        onChange={handleChange}
-                                        disabled={isReadOnly}
-                                        placeholder="مثال: معرض بغداد، المنصور"
-                                        required
-                                        className="text-sm"
-                                    />
-                                    <div dir="ltr">
                                         <Input
-                                            label="Venue/Hall (English)"
+                                            label="Venue / Hall"
                                             name="location"
                                             value={formData.location}
                                             onChange={handleChange}
                                             disabled={isReadOnly}
                                             placeholder="e.g. Baghdad Fairground"
                                             required
-                                            className="text-sm text-right"
+                                            className="text-sm"
                                         />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <Input
-                                        label="الدولة (بالعربية)"
-                                        name="country_ar"
-                                        value={formData.country_ar}
-                                        onChange={handleChange}
-                                        disabled={isReadOnly}
-                                        placeholder="العراق"
-                                        className="text-sm"
-                                    />
-                                    <div dir="ltr">
                                         <Input
-                                            label="Country (English)"
+                                            label="Country"
                                             name="country"
                                             value={formData.country}
                                             onChange={handleChange}
                                             disabled={isReadOnly}
                                             placeholder="Iraq"
-                                            className="text-sm text-right"
+                                            className="text-sm"
                                         />
-                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -272,12 +223,12 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                             <CardHeader className="border-b border-slate-50 pb-4">
                                 <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
                                     <Globe className="w-5 h-5 text-indigo-600" />
-                                    3. خيارات التشغيل
+                                    3. Event Settings
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
                                 <div className="space-y-1">
-                                    <Label className="text-xs text-slate-600 font-medium">تصنيف الفعالية</Label>
+                                    <Label className="text-xs text-slate-600 font-medium">Event Type</Label>
                                     {mounted ? (
                                         <Select
                                             value={formData.event_type}
@@ -288,8 +239,8 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="local">محلية</SelectItem>
-                                                <SelectItem value="international">دولية (تتطلب تأشيرات TLS)</SelectItem>
+                                                <SelectItem value="local">Local</SelectItem>
+                                                <SelectItem value="international">International (TLS visa support)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     ) : (
@@ -299,7 +250,7 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label className="text-xs text-slate-600 font-medium">السعة الاستيعابية</Label>
+                                        <Label className="text-xs text-slate-600 font-medium">Capacity</Label>
                                         <Input
                                             type="number"
                                             name="capacity"
@@ -311,21 +262,21 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-xs text-slate-600 font-medium">سعر التذكرة ($)</Label>
+                                        <Label className="text-xs text-slate-600 font-medium">Ticket Price ($)</Label>
                                         <Input
                                             type="number"
                                             name="price"
                                             value={formData.price}
                                             onChange={handleChange}
                                             disabled={isReadOnly}
-                                            placeholder="مجانية"
+                                            placeholder="0"
                                             className="text-xs h-9"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-100 bg-slate-50/50">
-                                    <Label className="text-xs text-slate-700 font-semibold">إظهار السعر للمستخدمين</Label>
+                                    <Label className="text-xs text-slate-700 font-semibold">Show Price to Visitors</Label>
                                     <Switch
                                         checked={formData.show_price}
                                         onCheckedChange={(checked) => handleSwitchChange('show_price', checked)}
@@ -334,10 +285,10 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                 </div>
 
                                 <div className="space-y-1.5 pt-3 border-t border-slate-100 flex flex-col gap-1">
-                                    <Label className="text-xs text-slate-600 font-medium">حالة النشر والتشغيل</Label>
+                                    <Label className="text-xs text-slate-600 font-medium">Publishing Status</Label>
                                     <div className="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold rounded-lg">
                                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                        مسودة تفاصيل (يتم رفع الفعالية كمسودة فقط)
+                                        Draft details (the event remains unpublished)
                                     </div>
                                 </div>
                             </CardContent>
@@ -353,12 +304,12 @@ export function StepRegistration({ event, onUpdate, isReadOnly }: StepRegistrati
                                 {isSaving ? (
                                     <>
                                         <Loader2 className="w-4 h-4 animate-spin" />
-                                        جاري حفظ التحديثات...
+                                        Saving changes...
                                     </>
                                 ) : (
                                     <>
                                         <Save className="w-4 h-4" />
-                                        حفظ التحديثات
+                                        Save Changes
                                     </>
                                 )}
                             </Button>

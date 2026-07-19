@@ -28,7 +28,7 @@ export default async function ClientsProgressPage() {
     const [{ data: events }, { data: employees }] = await Promise.all([
         supabase
             .from('events')
-            .select('id, title, title_ar, date, end_date, country, country_ar, location, location_ar, sector, status, registration_config')
+            .select('id, title, title_ar, date, end_date, country, country_ar, location, location_ar, sector, event_type, status, registration_config, conference_config')
             .eq('status', 'draft')
             .order('date', { ascending: false })
             .limit(100),

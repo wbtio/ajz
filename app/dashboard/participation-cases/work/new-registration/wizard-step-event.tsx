@@ -9,13 +9,6 @@ export function EventStep() {
     {/* Step 1: Event Registration */}
       {step === 1 && (
         <div className="w-full space-y-2.5 animate-in fade-in duration-300">
-          {client && registration && (
-            <div role="status" className="flex items-center gap-2 rounded-md border border-emerald-200/80 bg-emerald-50/70 px-3 py-1.5 text-xs font-medium text-emerald-800">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Client profile created successfully. Continue by registering the client for an event.</span>
-            </div>
-          )}
-
           <Card className="space-y-4 border-slate-200/80 p-4 shadow-sm sm:p-5">
             {client && registration && <ClientSummary client={client} caseNumber={caseNumber} />}
 
@@ -76,60 +69,60 @@ export function EventStep() {
                     Read-only
                   </Badge>
                 </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg border border-slate-200/60 bg-slate-50/60 px-3 py-2.5 text-xs sm:grid-cols-3 lg:grid-cols-5">
-                  <div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-lg border border-slate-200/60 bg-slate-50/60 px-3 py-2.5 text-xs sm:grid-cols-3 lg:grid-cols-[minmax(0,3.5fr)_minmax(0,1.16fr)_minmax(0,1.19fr)_minmax(0,1.04fr)_minmax(0,1fr)]">
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">Event Name</span>
-                    <span className="font-semibold text-slate-700">{selectedEvent.title || selectedEvent.title_ar}</span>
+                    <span className="block break-words font-semibold leading-4 text-slate-700">{selectedEvent.title || selectedEvent.title_ar}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">Event Type</span>
-                    <span className="font-semibold text-slate-700">International Trade Exhibition</span>
+                    <span className="block break-words font-semibold leading-4 text-slate-700">{selectedEvent.event_type || "Not recorded"}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">Sector</span>
-                    <span className="font-semibold text-slate-700">{selectedEvent.sector || "Food & Beverage"}</span>
+                    <span className="block break-words font-semibold leading-4 text-slate-700">{selectedEvent.sector || "Not recorded"}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">Country</span>
-                    <span className="font-semibold text-slate-700">{selectedEvent.country || selectedEvent.country_ar}</span>
+                    <span className="block break-words font-semibold leading-4 text-slate-700">{selectedEvent.country || selectedEvent.country_ar}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">City</span>
-                    <span className="font-semibold text-slate-700">{selectedEvent.location || selectedEvent.location_ar}</span>
+                    <span className="block break-words font-semibold leading-4 text-slate-700">{selectedEvent.location || selectedEvent.location_ar}</span>
                   </div>
                 </div>
 
                 {/* Inviting Organization Host information */}
-                <div className="space-y-2.5 rounded-lg border border-[#8B0000]/30 bg-[#8B0000]/[0.025] p-3">
-                  <h4 className="font-bold text-sm text-[#8B0000]">Inviting Organization / Host Information (Auto-Filled - Event Master Data)</h4>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3 lg:grid-cols-5">
-                    <div>
-                      <span className="text-slate-400 block">Organization Name</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_org}</span>
+                <div className="rounded-lg border border-[#8B0000]/30 bg-[#8B0000]/[0.025] px-2.5 py-2">
+                  <h4 className="mb-0.5 text-[10px] font-bold leading-4 text-[#8B0000]">Inviting Organization / Host Information (Auto-Filled)</h4>
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs sm:grid-cols-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1.6fr)_minmax(0,.8fr)_minmax(0,.8fr)_minmax(0,.7fr)_minmax(0,1.2fr)_minmax(0,.85fr)] xl:gap-y-0">
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">Organization Name</span>
+                      <span className="block break-words font-semibold leading-4 text-slate-700">{inviterConfig.host_org}</span>
                     </div>
-                    <div className="md:col-span-2">
-                      <span className="text-slate-400 block">Address</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_address}</span>
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">Address</span>
+                      <span className="block break-words font-semibold leading-4 text-slate-700">{inviterConfig.host_address}</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Inviting Person - First Name</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_contact_name.split(" ")[0]}</span>
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">First Name</span>
+                      <span className="block break-words font-semibold leading-4 text-slate-700">{inviterConfig.host_contact_name.split(" ")[0]}</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Inviting Person - Last Name</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_contact_name.split(" ").slice(1).join(" ") || "Dupont"}</span>
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">Last Name</span>
+                      <span className="block break-words font-semibold leading-4 text-slate-700">{inviterConfig.host_contact_name.split(" ").slice(1).join(" ") || "Dupont"}</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Position</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_contact_position || "Manager"}</span>
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">Position</span>
+                      <span className="block break-words font-semibold leading-4 text-slate-700">{inviterConfig.host_contact_position || "Manager"}</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Email</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_contact_email}</span>
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">Email</span>
+                      <span className="block break-all font-semibold leading-4 text-slate-700">{inviterConfig.host_contact_email}</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Phone Number</span>
-                      <span className="font-semibold text-slate-700">{inviterConfig.host_contact_phone}</span>
+                    <div className="min-w-0">
+                      <span className="block text-slate-400">Phone Number</span>
+                      <span className="block break-words font-semibold leading-4 text-slate-700">{inviterConfig.host_contact_phone}</span>
                     </div>
                   </div>
                 </div>

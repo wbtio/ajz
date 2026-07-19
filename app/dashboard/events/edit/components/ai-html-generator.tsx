@@ -5,17 +5,18 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Sparkles, Loader2, Wand2 } from 'lucide-react'
+import { sanitizeEnglishText } from '@/lib/english-only'
 
 type SectionKey = 'hero' | 'agenda' | 'speakers' | 'cta' | 'faq' | 'contact' | 'gallery'
 
 const SECTION_OPTIONS: { key: SectionKey; label: string }[] = [
-    { key: 'hero', label: 'قسم رئيسي (Hero)' },
-    { key: 'cta', label: 'زر التسجيل' },
-    { key: 'agenda', label: 'الأجندة / الجدول' },
-    { key: 'speakers', label: 'المتحدثون / المشاركون' },
-    { key: 'gallery', label: 'معرض صور' },
-    { key: 'faq', label: 'الأسئلة الشائعة' },
-    { key: 'contact', label: 'التواصل والموقع' },
+    { key: 'hero', label: 'Hero' },
+    { key: 'cta', label: 'Registration CTA' },
+    { key: 'agenda', label: 'Agenda / Schedule' },
+    { key: 'speakers', label: 'Speakers / Participants' },
+    { key: 'gallery', label: 'Image Gallery' },
+    { key: 'faq', label: 'FAQ' },
+    { key: 'contact', label: 'Contact and Location' },
 ]
 
 interface AiHtmlGeneratorProps {
@@ -44,7 +45,7 @@ export function AiHtmlGenerator({ eventTitle, onGenerated }: AiHtmlGeneratorProp
 
     const handleGenerate = async () => {
         if (!content.trim()) {
-            setError('يرجى إدخال النص/المحتوى أولاً')
+            setError('Enter the event content first.')
             return
         }
         setError('')
@@ -57,16 +58,16 @@ export function AiHtmlGenerator({ eventTitle, onGenerated }: AiHtmlGeneratorProp
             })
             const data = await res.json()
             if (!res.ok) {
-                setError(data.error || 'فشل توليد المحتوى')
+                setError(data.error || 'Could not generate the content.')
                 return
             }
             if (data.html) {
-                onGenerated(data.html)
+                onGenerated(sanitizeEnglishText(data.html))
             } else {
-                setError('لم يتم توليد أي محتوى. حاول مرة أخرى.')
+                setError('No content was generated. Try again.')
             }
         } catch {
-            setError('تعذّر الاتصال بالخادم. حاول مرة أخرى.')
+            setError('Could not connect to the server. Try again.')
         } finally {
             setIsGenerating(false)
         }
@@ -79,9 +80,9 @@ export function AiHtmlGenerator({ eventTitle, onGenerated }: AiHtmlGeneratorProp
                     <Sparkles className="h-4 w-4" />
                 </div>
                 <div>
-                    <h3 className="text-sm font-bold text-gray-900">مساعد الذكاء الاصطناعي</h3>
+                    <h3 className="text-sm font-bold text-gray-900">AI Content Assistant</h3>
                     <p className="text-xs text-gray-500">
-                        يكتب محتوى HTML للفعالية بهوية الموقع — مع الحفاظ على نصّك كما هو حرفيًا.
+                        Generates English HTML content for the event using the site design system.
                     </p>
                 </div>
             </div>
@@ -89,21 +90,21 @@ export function AiHtmlGenerator({ eventTitle, onGenerated }: AiHtmlGeneratorProp
             {/* The verbatim content */}
             <div className="space-y-1.5">
                 <Label htmlFor="ai-content" className="text-xs font-medium text-gray-700">
-                    النص / المحتوى <span className="text-gray-400">(سيظهر كما هو دون أي تغيير)</span>
+                    Content <span className="text-gray-400">(English only)</span>
                 </Label>
                 <textarea
                     id="ai-content"
                     value={content}
-                    onChange={e => setContent(e.target.value)}
+                    onChange={e => setContent(sanitizeEnglishText(e.target.value))}
                     className="w-full h-32 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-                    placeholder="اكتب أو الصق نص الفعالية هنا (عربي أو إنجليزي)..."
+                    placeholder="Write or paste the event content in English..."
                 />
             </div>
 
             {/* Optional sections */}
             <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-gray-700">
-                    أقسام اختيارية <span className="text-gray-400">(اختر ما تريد إضافته)</span>
+                    Optional Sections <span className="text-gray-400">(select what to include)</span>
                 </Label>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {SECTION_OPTIONS.map(opt => (
@@ -124,14 +125,14 @@ export function AiHtmlGenerator({ eventTitle, onGenerated }: AiHtmlGeneratorProp
             {/* Additional free-text instructions */}
             <div className="space-y-1.5">
                 <Label htmlFor="ai-instructions" className="text-xs font-medium text-gray-700">
-                    شروط / تعليمات إضافية <span className="text-gray-400">(اختياري)</span>
+                    Additional Instructions <span className="text-gray-400">(optional)</span>
                 </Label>
                 <textarea
                     id="ai-instructions"
                     value={instructions}
-                    onChange={e => setInstructions(e.target.value)}
+                    onChange={e => setInstructions(sanitizeEnglishText(e.target.value))}
                     className="w-full h-20 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-                    placeholder="مثال: استخدم خلفية داكنة للقسم الرئيسي، أضف عدّاد تنازلي، رابط التسجيل هو..."
+                    placeholder="e.g. Use a dark hero, add a countdown, and include the registration URL..."
                 />
             </div>
 
@@ -148,17 +149,17 @@ export function AiHtmlGenerator({ eventTitle, onGenerated }: AiHtmlGeneratorProp
                 {isGenerating ? (
                     <>
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        جارٍ التوليد...
+                        Generating...
                     </>
                 ) : (
                     <>
                         <Wand2 className="h-4 w-4" />
-                        توليد المحتوى
+                        Generate Content
                     </>
                 )}
             </Button>
             <p className="text-[11px] text-gray-400 text-center">
-                سيُكتب المحتوى المُولَّد في محرّر HTML بالأسفل، ويمكنك تعديله قبل الحفظ.
+                Generated content is placed in the HTML editor below for review before saving.
             </p>
         </div>
     )

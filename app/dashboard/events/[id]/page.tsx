@@ -9,7 +9,7 @@ interface EventDetailsPageProps {
 }
 
 export const metadata = {
-    title: 'تفاصيل وإدارة الفعالية | لوحة التحكم',
+    title: 'Event Details and Management | JAZ Admin',
 }
 
 export default async function EventDetailsPage({ params }: EventDetailsPageProps) {

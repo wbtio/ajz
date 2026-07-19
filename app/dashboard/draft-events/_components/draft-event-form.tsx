@@ -13,6 +13,7 @@ import { ChevronRight, ChevronLeft, Save, Plus, Trash2, Upload, Image as ImageIc
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Event } from '@/lib/database.types'
+import { sanitizeEnglishText } from '@/lib/english-only'
 
 const steps = [
   { id: 1, name: 'Basic Details' },
@@ -21,6 +22,15 @@ const steps = [
   { id: 4, name: 'Accommodation / Host' },
   { id: 5, name: 'Promotion' }
 ]
+
+function toDateInputValue(value: string | null | undefined) {
+  if (!value) return ''
+  return value.slice(0, 10)
+}
+
+function englishValue(value: unknown) {
+  return sanitizeEnglishText(String(value || '')).trim()
+}
 
 interface DraftEventFormProps {
   eventId?: string
@@ -99,10 +109,21 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
       ? initialConferenceConfig.host_info as HostInfo
       : {}
   const initialExpectedReplies = Array.isArray(initialConferenceConfig.expected_replies)
-    ? initialConferenceConfig.expected_replies as ExpectedReply[]
+    ? (initialConferenceConfig.expected_replies as ExpectedReply[]).map((item) => ({
+        ...item,
+        question: englishValue(item.question),
+        answer: englishValue(item.answer),
+      }))
     : []
   const initialPromotion = initialConferenceConfig.promotion && typeof initialConferenceConfig.promotion === 'object' && !Array.isArray(initialConferenceConfig.promotion)
-    ? { ...defaultPromotion, ...(initialConferenceConfig.promotion as Partial<PromotionPlan>), channels: Array.isArray((initialConferenceConfig.promotion as Partial<PromotionPlan>).channels) ? (initialConferenceConfig.promotion as PromotionPlan).channels : defaultPromotion.channels }
+    ? {
+        ...defaultPromotion,
+        ...(initialConferenceConfig.promotion as Partial<PromotionPlan>),
+        objective: englishValue((initialConferenceConfig.promotion as Partial<PromotionPlan>).objective),
+        channels: Array.isArray((initialConferenceConfig.promotion as Partial<PromotionPlan>).channels)
+          ? (initialConferenceConfig.promotion as PromotionPlan).channels.map((channel) => ({ ...channel, notes: englishValue(channel.notes) }))
+          : defaultPromotion.channels,
+      }
     : defaultPromotion
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -110,41 +131,45 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
   const [promotion, setPromotion] = useState<PromotionPlan>(initialPromotion)
   
   const [formData, setFormData] = useState({
-    title: initialData?.title || '',
-    description: initialData?.description || '',
-    date: initialData?.date || '',
-    end_date: initialData?.end_date || '',
-    country: initialData?.country || '',
-    location: initialData?.location || '',
+    title: englishValue(initialData?.title),
+    description: englishValue(initialData?.description),
+    date: toDateInputValue(initialData?.date),
+    end_date: toDateInputValue(initialData?.end_date),
+    country: englishValue(initialData?.country),
+    location: englishValue(initialData?.location),
     event_type: initialData?.event_type || 'offline',
     capacity: initialData?.capacity?.toString() || '',
     price: initialData?.price?.toString() || '',
     host_has_accommodation: initialHostInfo.has_accommodation || false,
-    host_org_name: initialHostInfo.org_name || '',
-    host_org_address: initialHostInfo.org_address || '',
-    host_org_postal: initialHostInfo.org_postal || '',
-    host_org_city: initialHostInfo.org_city || '',
-    host_org_country: initialHostInfo.org_country || '',
-    host_org_phone: initialHostInfo.org_phone || '',
-    host_org_email: initialHostInfo.org_email || '',
-    host_contact_last_name: initialHostInfo.contact_last_name || '',
-    host_contact_first_name: initialHostInfo.contact_first_name || '',
+    host_org_name: englishValue(initialHostInfo.org_name),
+    host_org_address: englishValue(initialHostInfo.org_address),
+    host_org_postal: englishValue(initialHostInfo.org_postal),
+    host_org_city: englishValue(initialHostInfo.org_city),
+    host_org_country: englishValue(initialHostInfo.org_country),
+    host_org_phone: englishValue(initialHostInfo.org_phone),
+    host_org_email: englishValue(initialHostInfo.org_email),
+    host_contact_last_name: englishValue(initialHostInfo.contact_last_name),
+    host_contact_first_name: englishValue(initialHostInfo.contact_first_name),
     host_contact_same_address: initialHostInfo.contact_same_address || false,
-    host_contact_address: initialHostInfo.contact_address || '',
-    host_contact_postal: initialHostInfo.contact_postal || '',
-    host_contact_city: initialHostInfo.contact_city || '',
-    host_contact_country: initialHostInfo.contact_country || '',
-    host_contact_phone: initialHostInfo.contact_phone || '',
-    host_contact_email: initialHostInfo.contact_email || ''
+    host_contact_address: englishValue(initialHostInfo.contact_address),
+    host_contact_postal: englishValue(initialHostInfo.contact_postal),
+    host_contact_city: englishValue(initialHostInfo.contact_city),
+    host_contact_country: englishValue(initialHostInfo.contact_country),
+    host_contact_phone: englishValue(initialHostInfo.contact_phone),
+    host_contact_email: englishValue(initialHostInfo.contact_email)
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | React.FormEvent<HTMLInputElement>) => {
+    const target = e.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    const { name, value, type } = target
     if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked
+      const checked = (target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
+      const nextValue = target instanceof HTMLTextAreaElement || ['text', 'search', 'email', 'url'].includes(type)
+        ? sanitizeEnglishText(value)
+        : value
+      setFormData(prev => ({ ...prev, [name]: nextValue }))
     }
   }
 
@@ -160,7 +185,8 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
   const addExpectedReply = () => setExpectedReplies((items) => [...items, { question: '', answer: '', image_url: '' }])
 
   const updateExpectedReply = (index: number, field: keyof ExpectedReply, value: string) => {
-    setExpectedReplies((items) => items.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item))
+    const nextValue = field === 'image_url' ? value : sanitizeEnglishText(value)
+    setExpectedReplies((items) => items.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: nextValue } : item))
   }
 
   const removeExpectedReply = (index: number) => setExpectedReplies((items) => items.filter((_, itemIndex) => itemIndex !== index))
@@ -187,17 +213,16 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
     setPromotion((current) => ({ ...current, channels: current.channels.map((channel, channelIndex) => channelIndex === index ? { ...channel, [field]: data.publicUrl } : channel) }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    try {
+  const buildPayload = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      const payload = {
+      if (!formData.date) {
+        throw new Error('Start date is required.')
+      }
+      return {
         updated_by: user?.id ?? null,
         title: formData.title,
         description: formData.description,
-        date: formData.date || new Date().toISOString().split('T')[0],
+        date: formData.date,
         end_date: formData.end_date || null,
         country: formData.country,
         location: formData.location,
@@ -229,6 +254,12 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
           }
         }
       }
+  }
+
+  const persistDraft = async (finish: boolean) => {
+    setIsSubmitting(true)
+    try {
+      const payload = await buildPayload()
 
       if (eventId) {
         // Update existing draft
@@ -240,7 +271,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
         if (error) throw error
 
         // Keep editors in the draft after saving so they can continue reviewing it.
-        toast.success('Draft event saved successfully.')
+        toast.success(finish ? 'Draft event saved successfully.' : 'Progress saved successfully.')
         router.refresh()
       } else {
         // Insert new draft
@@ -256,8 +287,8 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
         if (error) throw error
 
 
-        toast.success('Draft event created successfully.')
-        router.replace(`/dashboard/draft-events/${createdEvent.id}/edit`)
+        toast.success(finish ? 'Draft event created successfully.' : 'Draft created. Your progress is saved.')
+        router.replace(`/dashboard/draft-events/${createdEvent.id}/edit${finish ? '' : `?step=${currentStep}`}`)
       }
     } catch (error) {
       console.error('Error saving draft event:', error)
@@ -265,6 +296,16 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleSaveProgress = async () => {
+    if (!formRef.current?.reportValidity()) return
+    await persistDraft(false)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await persistDraft(true)
   }
 
   return (
@@ -395,6 +436,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
                       type="date"
                       value={formData.date}
                       onChange={handleInputChange}
+                      onInput={handleInputChange}
                       required
                     />
                   </div>
@@ -406,6 +448,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
                       type="date"
                       value={formData.end_date}
                       onChange={handleInputChange}
+                      onInput={handleInputChange}
                     />
                   </div>
                 </div>
@@ -632,8 +675,13 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
             Previous
           </Button>
 
-          {currentStep < 5 ? (
-            <Button type="button" onClick={nextStep}>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" onClick={handleSaveProgress} disabled={isSubmitting}>
+              {isSubmitting ? 'Saving…' : 'Save progress'}
+              <Save className="ml-2 h-4 w-4" />
+            </Button>
+            {currentStep < 5 ? (
+            <Button type="button" onClick={nextStep} disabled={isSubmitting}>
               Next
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
@@ -643,6 +691,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
               <Save className="ml-2 h-4 w-4" />
             </Button>
           )}
+          </div>
         </div>
       </form>
     </div>

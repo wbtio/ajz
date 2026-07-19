@@ -13,7 +13,7 @@ export function StatsCards({ total, published, completed, upcoming }: StatsCards
     <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">إجمالي الفعاليات</CardTitle>
+          <CardTitle className="text-sm font-medium">Total Events</CardTitle>
           <Calendar className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -23,7 +23,7 @@ export function StatsCards({ total, published, completed, upcoming }: StatsCards
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">الفعاليات المنشورة</CardTitle>
+          <CardTitle className="text-sm font-medium">Published Events</CardTitle>
           <CheckCircle2 className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -33,7 +33,7 @@ export function StatsCards({ total, published, completed, upcoming }: StatsCards
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">الفعاليات المكتملة</CardTitle>
+          <CardTitle className="text-sm font-medium">Completed Events</CardTitle>
           <CircleCheckBig className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -43,7 +43,7 @@ export function StatsCards({ total, published, completed, upcoming }: StatsCards
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">الفعاليات القادمة</CardTitle>
+          <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
           <Clock3 className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>

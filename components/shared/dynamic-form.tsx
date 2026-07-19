@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Loader2, CheckCircle, Building2, UserRound, Sparkles, FileText, ChevronDown, ChevronUp, ArrowLeft, ArrowRight } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { FormField } from '@/lib/types'
+import { COUNTRIES, IRAQ_GOVERNORATES, isLocationField } from '@/lib/location-options'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
@@ -1257,6 +1258,25 @@ export function DynamicForm({
                                 <option key={i} value={opt}>{opt}</option>
                             ))}
                         </select>
+                    ) : isLocationField(field) ? (
+                        <>
+                            <Input
+                                list={`location-options-${field.id}`}
+                                type="text"
+                                required={field.required}
+                                value={formData[field.id] || ''}
+                                onChange={(e) => setFormData({ ...formData, [field.id]: e.target.value })}
+                                className={controlClassName}
+                                placeholder={getFieldPlaceholder(field) || (isArabic ? 'اكتب أول حرف للاختيار' : 'Type to search')}
+                                aria-label={`${label}، ${isArabic ? 'اكتب للبحث' : 'type to search'}`}
+                                aria-invalid={Boolean(errorMessage)}
+                            />
+                            <datalist id={`location-options-${field.id}`}>
+                                {( /country|countries|الدول|الدولة/.test(`${field.id} ${field.label_ar} ${field.label_en}`.toLowerCase()) ? COUNTRIES : IRAQ_GOVERNORATES).map((option) => (
+                                    <option key={option} value={option} />
+                                ))}
+                            </datalist>
+                        </>
                     ) : (
                         <Input
                             type={field.type}
