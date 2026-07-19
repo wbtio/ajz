@@ -73,12 +73,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url)
       }
 
-      // صفحة "الفريق" الإدارية للمدير فقط، بغض النظر عن أي صلاحيات مُسندة
-      // (مطابقة دقيقة كي لا يتصادم المسار مع "/dashboard/team-tasks")
-      if ((pathname === '/dashboard/team' || pathname.startsWith('/dashboard/team/')) && role !== 'admin') {
-        return NextResponse.redirect(new URL(defaultRouteForRole(role, permissions), request.url))
-      }
-
       // دور معروف لكن المسار غير مسموح له → صفحته الافتراضية
       if (!canAccessPath(role, pathname, permissions)) {
         console.log(`Middleware: Role "${role}" cannot access ${pathname}`)

@@ -1,10 +1,25 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { canAccessPath } from "@/lib/permissions";
+
+async function canManageTeam(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role, permissions")
+    .eq("id", user.id)
+    .single();
+  return profile?.role === "admin" || canAccessPath(profile?.role, "/dashboard/team", profile?.permissions);
+}
 
 // قائمة أعضاء لوحة التحكم (مدير/فريق) لاختيار المسؤول عن المهمة، ولصفحة إدارة الفريق
 export async function GET() {
   const supabase = await createClient();
+  if (!(await canManageTeam(supabase))) {
+    return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
+  }
   const { data, error } = await supabase
     .from("users")
     .select("id, full_name, email, phone, role, avatar_url, permissions, created_at, is_active")
@@ -26,10 +41,10 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
 
   const { data: requesterProfile } = requester
-    ? await supabase.from("users").select("role").eq("id", requester.id).single()
+    ? await supabase.from("users").select("role, permissions").eq("id", requester.id).single()
     : { data: null };
 
-  if (requesterProfile?.role !== "admin") {
+  if (!requesterProfile || (requesterProfile.role !== "admin" && !canAccessPath(requesterProfile.role, "/dashboard/team", requesterProfile.permissions))) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
   }
 

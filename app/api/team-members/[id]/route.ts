@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { canAccessPath } from "@/lib/permissions";
 
-async function requireAdmin() {
+async function requireTeamManager() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -10,14 +11,17 @@ async function requireAdmin() {
 
   if (!user) return { ok: false as const, userId: null };
 
-  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
-  return { ok: profile?.role === "admin", userId: user.id };
+  const { data: profile } = await supabase.from("users").select("role, permissions").eq("id", user.id).single();
+  return {
+    ok: profile?.role === "admin" || canAccessPath(profile?.role, "/dashboard/team", profile?.permissions),
+    userId: user.id,
+  };
 }
 
 // بيانات عضو فريق واحد لصفحة الملف الشخصي
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { ok } = await requireAdmin();
+  const { ok } = await requireTeamManager();
   if (!ok) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
   }
@@ -39,7 +43,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 // تعديل بيانات/دور/صلاحيات عضو فريق
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { ok, userId } = await requireAdmin();
+  const { ok, userId } = await requireTeamManager();
   if (!ok) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
   }
@@ -83,7 +87,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 // إزالة عضو من الفريق: يفقد صلاحية دخول لوحة التحكم بإرجاعه إلى دور عميل عادي
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { ok, userId } = await requireAdmin();
+  const { ok, userId } = await requireTeamManager();
   if (!ok) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
   }

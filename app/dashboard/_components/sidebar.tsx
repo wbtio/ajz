@@ -138,7 +138,7 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
             ...section,
             items: section.items.filter((item) =>
                 item.adminOnly
-                    ? user.role === 'admin'
+                    ? user.role === 'admin' || canAccessPath(user.role, item.href, user.permissions)
                     : canAccessPath(user.role, item.href, user.permissions)
             ),
         }))
