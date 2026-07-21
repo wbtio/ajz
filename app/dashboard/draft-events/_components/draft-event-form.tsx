@@ -299,6 +299,7 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
         toast.success(finish ? 'Draft event saved successfully.' : 'Progress saved successfully.')
         if (finish) {
           router.push('/dashboard/draft-events')
+          router.refresh()
         } else {
           if (targetStepOnSave) {
             setCurrentStep(targetStepOnSave)
@@ -322,6 +323,7 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
         toast.success(finish ? 'Draft event created successfully.' : 'Draft created. Your progress is saved.')
         if (finish) {
           router.push('/dashboard/draft-events')
+          router.refresh()
         } else {
           const nextStepNum = targetStepOnSave || currentStep
           router.replace(`/dashboard/draft-events/${createdEvent.id}/edit?step=${nextStepNum}`)

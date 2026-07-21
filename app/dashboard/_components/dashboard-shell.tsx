@@ -59,6 +59,18 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         const target = event.target
         if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return
         if (target instanceof HTMLInputElement && ['file', 'date', 'datetime-local', 'time', 'number', 'checkbox', 'radio', 'range', 'color'].includes(target.type)) return
+        
+        // Skip check if the input element explicitly allows Arabic or is designated for Arabic fields
+        if (
+            target.getAttribute('data-arabic-allowed') === 'true' ||
+            target.name?.endsWith('_ar') ||
+            target.name?.includes('_ar_') ||
+            target.id?.endsWith('_ar') ||
+            target.id?.includes('_ar_')
+        ) {
+            return
+        }
+
         if (!containsArabicScript(target.value)) return
 
         const selectionStart = target.selectionStart ?? target.value.length

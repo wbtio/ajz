@@ -9,6 +9,8 @@ import { formatDate } from '@/lib/utils'
 import { englishDisplayText } from '@/lib/english-only'
 import type { Event } from '@/lib/database.types'
 import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import { DashboardCalendarGrid } from '@/components/shared/dashboard-calendar-grid'
 import {
   Table,
   TableBody,
@@ -35,6 +37,7 @@ export function EventsTable({
 }: EventsTableProps) {
   const events = initialEvents
   const searchParams = useSearchParams()
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
 
   const buildPageHref = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -49,11 +52,35 @@ export function EventsTable({
 
   return (
     <Card className="border-slate-100 shadow-sm">
-      <CardHeader className="border-b border-slate-55 pb-4">
-        <h2 className="text-lg font-bold text-gray-900">All Events</h2>
+      <CardHeader className="border-b border-slate-50 pb-4 flex flex-row items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">All Events</h2>
+        </div>
+        <div className="flex bg-slate-105 p-1 rounded-xl border border-slate-100">
+          <button
+            type="button"
+            onClick={() => setViewMode('list')}
+            className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+              viewMode === 'list' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            List View
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('calendar')}
+            className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+              viewMode === 'calendar' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Calendar View
+          </button>
+        </div>
       </CardHeader>
       <CardContent className="pt-6">
-        {events.length > 0 ? (
+        {viewMode === 'calendar' ? (
+          <DashboardCalendarGrid events={events} />
+        ) : events.length > 0 ? (
           <>
             <div className="rounded-xl border border-slate-100 overflow-hidden">
               <Table>

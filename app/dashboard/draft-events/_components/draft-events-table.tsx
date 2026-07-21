@@ -171,8 +171,8 @@ export function DraftEventsTable({ events: initialEvents, registrations }: Draft
       .sort((a, b) => {
         if (sort === 'title-asc') return (a.title ?? '').localeCompare(b.title ?? '')
         if (sort === 'title-desc') return (b.title ?? '').localeCompare(a.title ?? '')
-        const aTime = a.created_at ? new Date(a.created_at).getTime() : 0
-        const bTime = b.created_at ? new Date(b.created_at).getTime() : 0
+        const aTime = (a.updated_at ? new Date(a.updated_at).getTime() : 0) || (a.created_at ? new Date(a.created_at).getTime() : 0)
+        const bTime = (b.updated_at ? new Date(b.updated_at).getTime() : 0) || (b.created_at ? new Date(b.created_at).getTime() : 0)
         return sort === 'oldest' ? aTime - bTime : bTime - aTime
       })
   }, [detailsFilter, events, query, sort])

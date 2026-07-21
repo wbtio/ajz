@@ -47,6 +47,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
+import { VISA_ROUTES } from '@/app/dashboard/participation-cases/work/new-registration/wizard-constants'
 
 interface VisaCenter {
     id: string
@@ -58,7 +59,7 @@ interface VisaCenter {
     service: string
     website_url: string | null
     last_updated: string
-    updated_by_name: string
+    updated_by_name: string | null
     editor?: { full_name: string | null; email: string; avatar_url: string | null } | null
 }
 
@@ -138,6 +139,19 @@ export default function VisaAvailabilityDashboard() {
 
     const supabase = createClient() as any
     const defaultDateRange = useMemo(getDefaultDateRange, [])
+
+    // Dynamic country options from VISA_ROUTES
+    const countryOptions = useMemo(() => {
+        const unique = new Map<string, string>()
+        VISA_ROUTES.forEach(r => {
+            if (!unique.has(r.country.toLowerCase())) {
+                unique.set(r.country.toLowerCase(), r.label)
+            }
+        })
+        return Array.from(unique.entries())
+            .map(([value, label]) => ({ value, label }))
+            .sort((a, b) => a.label.localeCompare(b.label))
+    }, [])
 
     // Filter states
     const [selectedCountry, setSelectedCountry] = useState<string>('france')
@@ -589,11 +603,14 @@ export default function VisaAvailabilityDashboard() {
                 <div className="flex flex-col gap-1">
                     <label className="text-[10px] font-semibold text-stone-500">Country</label>
                     <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                        <SelectTrigger className="h-8 bg-white text-xs"><SelectValue placeholder="France" /></SelectTrigger>
+                        <SelectTrigger className="h-8 bg-white text-xs"><SelectValue placeholder="Select country..." /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="france">France</SelectItem>
-                            <SelectItem value="italy">Italy</SelectItem>
-                            <SelectItem value="spain">Spain</SelectItem>
+                            <SelectItem value="all">All Countries / كل الدول</SelectItem>
+                            {countryOptions.map(opt => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -1095,17 +1112,17 @@ export default function VisaAvailabilityDashboard() {
                                                     <span>|</span>
                                                     <Avatar
                                                         size="sm"
-                                                        title={`Updated by ${center.updated_by_name}`}
-                                                        aria-label={`Updated by ${center.updated_by_name}`}
+                                                        title={`Updated by ${center.updated_by_name || 'System'}`}
+                                                        aria-label={`Updated by ${center.updated_by_name || 'System'}`}
                                                     >
-                                                        <AvatarImage src={center.editor?.avatar_url || undefined} alt={center.updated_by_name} />
+                                                        <AvatarImage src={center.editor?.avatar_url || undefined} alt={center.updated_by_name || 'System'} />
                                                         <AvatarFallback className="bg-stone-100 font-bold uppercase text-stone-600">
-                                                            {center.updated_by_name
+                                                            {(center.updated_by_name || 'System')
                                                                 .split(/[\s@._-]+/)
                                                                 .filter(Boolean)
                                                                 .slice(0, 2)
                                                                 .map(part => part[0])
-                                                                .join('') || 'U'}
+                                                                .join('') || 'S'}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                 </div>

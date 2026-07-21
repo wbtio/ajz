@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { DashboardCalendarGrid } from '@/components/shared/dashboard-calendar-grid'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -14,6 +16,8 @@ import { Button } from '@/components/ui/button'
 import { ExternalLink, Eye } from 'lucide-react'
 
 export function ResultsTable({ events }: { events: any[] }) {
+    const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
+
     function getReviewBadge(status: string) {
         switch (status) {
             case 'approved_for_outreach':
@@ -29,71 +33,94 @@ export function ResultsTable({ events }: { events: any[] }) {
         }
     }
 
-    if (events.length === 0) {
-        return (
-            <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-stone-200">
-                <p className="text-sm text-stone-500">No events match your criteria.</p>
-            </div>
-        )
-    }
-
     return (
-        <div className="rounded-md border">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Event Title</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Review</TableHead>
-                        <TableHead>Organizer</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {events.map((event) => (
-                        <TableRow key={event.id}>
-                            <TableCell className="font-medium max-w-xs truncate" title={event.title || 'Untitled'}>
-                                {event.title || 'Untitled'}
-                            </TableCell>
-                            <TableCell>
-                                <span className={
-                                    (event.ai_relevance_score ?? 0) >= 80 ? 'text-green-600 font-bold' : 
-                                    (event.ai_relevance_score ?? 0) >= 50 ? 'text-yellow-600' : 'text-red-500'
-                                }>
-                                    {event.ai_relevance_score ?? 'N/A'}
-                                </span>
-                            </TableCell>
-                            <TableCell>
-                                {event.duplicate_of ? (
-                                    <Badge variant="destructive">Duplicate</Badge>
-                                ) : (
-                                    <Badge variant="secondary">{event.status}</Badge>
-                                )}
-                            </TableCell>
-                            <TableCell>{getReviewBadge(event.review_status)}</TableCell>
-                            <TableCell className="max-w-[150px] truncate" title={event.organizer_name || ''}>
-                                {event.organizer_name || '-'}
-                            </TableCell>
-                            <TableCell className="text-right space-x-2">
-                                {event.official_url && (
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                                        <a href={event.official_url} target="_blank" rel="noopener noreferrer">
-                                            <ExternalLink className="h-4 w-4" />
-                                        </a>
-                                    </Button>
-                                )}
-                                <Button variant="outline" size="sm" asChild>
-                                    <Link href={`/dashboard/event-discovery/results/${event.id}`}>
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        Review
-                                    </Link>
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+        <div className="space-y-4">
+            <div className="flex justify-end bg-stone-100 p-1 rounded-xl border border-stone-200 w-fit ml-auto">
+                <button
+                    type="button"
+                    onClick={() => setViewMode('list')}
+                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                        viewMode === 'list' ? 'bg-white shadow-sm text-stone-850' : 'text-stone-500 hover:text-stone-800'
+                    }`}
+                >
+                    List View
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setViewMode('calendar')}
+                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                        viewMode === 'calendar' ? 'bg-white shadow-sm text-stone-850' : 'text-stone-500 hover:text-stone-800'
+                    }`}
+                >
+                    Calendar View
+                </button>
+            </div>
+
+            {viewMode === 'calendar' ? (
+                <DashboardCalendarGrid events={events} linkPrefix="/dashboard/event-discovery/results" />
+            ) : events.length === 0 ? (
+                <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-stone-200 bg-white">
+                    <p className="text-sm text-stone-500">No events match your criteria.</p>
+                </div>
+            ) : (
+                <div className="rounded-md border bg-white overflow-hidden">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Event Title</TableHead>
+                                <TableHead>Score</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Review</TableHead>
+                                <TableHead>Organizer</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {events.map((event) => (
+                                <TableRow key={event.id}>
+                                    <TableCell className="font-medium max-w-xs truncate" title={event.title || 'Untitled'}>
+                                        {event.title || 'Untitled'}
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className={
+                                            (event.ai_relevance_score ?? 0) >= 80 ? 'text-green-600 font-bold' : 
+                                            (event.ai_relevance_score ?? 0) >= 50 ? 'text-yellow-600' : 'text-red-500'
+                                        }>
+                                            {event.ai_relevance_score ?? 'N/A'}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        {event.duplicate_of ? (
+                                            <Badge variant="destructive">Duplicate</Badge>
+                                        ) : (
+                                            <Badge variant="secondary">{event.status}</Badge>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>{getReviewBadge(event.review_status)}</TableCell>
+                                    <TableCell className="max-w-[150px] truncate" title={event.organizer_name || ''}>
+                                        {event.organizer_name || '-'}
+                                    </TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        {event.official_url && (
+                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+                                                <a href={event.official_url} target="_blank" rel="noopener noreferrer">
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </a>
+                                            </Button>
+                                        )}
+                                        <Button variant="outline" size="sm" asChild>
+                                            <Link href={`/dashboard/event-discovery/results/${event.id}`}>
+                                                <Eye className="mr-2 h-4 w-4" />
+                                                Review
+                                            </Link>
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
         </div>
     )
 }
