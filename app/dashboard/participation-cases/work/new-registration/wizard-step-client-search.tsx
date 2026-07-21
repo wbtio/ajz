@@ -374,7 +374,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
 
                     return (
                       <Card key={c.id} className={`border transition-all duration-300 cursor-pointer ${isSelected ? "border-[#8B0000] ring-2 ring-[#8B0000]/10 shadow-md" : "border-slate-200 hover:border-slate-300 shadow-sm"}`} onClick={() => setSelectedPotentialMatch(match)}>
-                        <div className="p-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                        <div className="p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
                             <div>
                               <div className="flex items-center gap-2">
@@ -383,20 +383,71 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                                   {match.matchType} — {match.score}%
                                 </Badge>
                               </div>
-                              {/* Registered events compact row */}
-                              <div className="mt-1 flex flex-wrap gap-1">
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 md:grid-cols-7 gap-3 text-xs md:text-center">
+                            <div>
+                              <span className="text-slate-400 block font-medium">Passport</span>
+                              <div className="mt-1">
+                                <Badge variant="outline" className={pMatch ? "border-amber-200 text-amber-700 bg-amber-50" : "border-emerald-200 text-emerald-700 bg-emerald-50"}>
+                                  {pMatch ? "Different" : "Match"}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block font-medium">National ID</span>
+                              <div className="mt-1">
+                                <Badge variant="outline" className={nIdMatch ? "border-emerald-200 text-emerald-700 bg-emerald-50" : "border-slate-200 text-slate-400 bg-slate-50"}>
+                                  {nIdMatch ? "Match" : "—"}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block font-medium">Date of Birth</span>
+                              <div className="mt-1">
+                                <Badge variant="outline" className={dobMatch ? "border-emerald-200 text-emerald-700 bg-emerald-50" : "border-slate-200 text-slate-400 bg-slate-50"}>
+                                  {dobMatch ? "Match" : "—"}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block font-medium">Company</span>
+                              <div className="mt-1">
+                                <Badge variant="outline" className={companyMatch ? "border-emerald-200 text-emerald-700 bg-emerald-50" : "border-slate-200 text-slate-400 bg-slate-50"}>
+                                  {companyMatch ? "Match" : "—"}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block font-medium">Phone</span>
+                              <div className="mt-1">
+                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">
+                                  Match
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block font-medium">Marital Status</span>
+                              <div className="mt-1">
+                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">
+                                  Match
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block font-medium">Registered event</span>
+                              <div className="mt-1 flex flex-wrap gap-1 justify-center">
                                 {Array.isArray(c.registrations) && c.registrations.length > 0 ? (
                                   <>
-                                    {c.registrations.slice(0, 2).map((registration) => (
-                                      <span key={registration.id} className="inline-block truncate rounded-md bg-sky-50 px-1.5 py-0.5 text-xs font-semibold text-sky-800 max-w-[160px]" title={registration.events?.title_ar || registration.events?.title || "Event"}>
-                                        {registration.events?.title_ar || registration.events?.title || "Event"}{registration.case_number ? <span className="ml-1 font-mono text-[10px] text-sky-600">· {registration.case_number}</span> : null}
+                                    {c.registrations.slice(0, 1).map((registration) => (
+                                      <span key={registration.id} className="inline-block truncate rounded-md bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-800 max-w-[120px]" title={registration.events?.title_ar || registration.events?.title || "Event"}>
+                                        {registration.events?.title_ar || registration.events?.title || "Event"}
                                       </span>
                                     ))}
-                                    {c.registrations.length > 2 && <span className="text-[10px] text-slate-500">+{c.registrations.length - 2} more</span>}
+                                    {c.registrations.length > 1 && <span className="text-[10px] text-slate-500">+{c.registrations.length - 1} more</span>}
                                   </>
-                                ) : (
-                                  <span className="text-xs text-slate-400">Not registered</span>
-                                )}
+                                ) : <span className="text-[10px] text-slate-400">None</span>}
                               </div>
                             </div>
                           </div>
