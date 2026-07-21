@@ -60,7 +60,7 @@ interface Event {
     id: string
     title: string
     title_ar: string | null
-    date: string
+    date: string | null
     end_date: string | null
     country: string | null
     country_ar: string | null
