@@ -376,7 +376,6 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                       <Card key={c.id} className={`border transition-all duration-300 cursor-pointer ${isSelected ? "border-[#8B0000] ring-2 ring-[#8B0000]/10 shadow-md" : "border-slate-200 hover:border-slate-300 shadow-sm"}`} onClick={() => setSelectedPotentialMatch(match)}>
                         <div className="p-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
                           <div className="flex items-center gap-3">
-                            <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm">{(c.full_name_as_passport || "C").slice(0, 2).toUpperCase()}</div>
                             <div>
                               <div className="flex items-center gap-2">
                                 <h4 className="font-bold text-slate-800">{c.full_name_as_passport}</h4>
@@ -384,92 +383,21 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                                   {match.matchType} — {match.score}%
                                 </Badge>
                               </div>
-                              <div className="text-xs text-slate-500 mt-1 space-x-2">
-                                <span>{c.title_salutation || "Mr."}</span>
-                                <span>•</span>
-                                <span>{c.employer_name || "Al Noor Trading Co."}</span>
-                                <span>•</span>
-                                <span>{c.email || "ahmed.ali@example.com"}</span>
+                              {/* Registered events compact row */}
+                              <div className="mt-1 flex flex-wrap gap-1">
+                                {Array.isArray(c.registrations) && c.registrations.length > 0 ? (
+                                  <>
+                                    {c.registrations.slice(0, 2).map((registration) => (
+                                      <span key={registration.id} className="inline-block truncate rounded-md bg-sky-50 px-1.5 py-0.5 text-xs font-semibold text-sky-800 max-w-[160px]" title={registration.events?.title_ar || registration.events?.title || "Event"}>
+                                        {registration.events?.title_ar || registration.events?.title || "Event"}{registration.case_number ? <span className="ml-1 font-mono text-[10px] text-sky-600">· {registration.case_number}</span> : null}
+                                      </span>
+                                    ))}
+                                    {c.registrations.length > 2 && <span className="text-[10px] text-slate-500">+{c.registrations.length - 2} more</span>}
+                                  </>
+                                ) : (
+                                  <span className="text-xs text-slate-400">Not registered</span>
+                                )}
                               </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 md:grid-cols-8 gap-3 text-xs md:text-center">
-                            <div>
-                              <span className="text-slate-400 block font-medium">Passport</span>
-                              <span className="font-semibold font-mono text-slate-700">{c.passport_number || "—"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className={pMatch ? "border-amber-200 text-amber-700 bg-amber-50" : "border-emerald-200 text-emerald-700 bg-emerald-50"}>
-                                  {pMatch ? "Different" : "Match"}
-                                </Badge>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-slate-400 block font-medium">National ID</span>
-                              <span className="font-semibold font-mono text-slate-700">{c.national_id || "—"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className={nIdMatch ? "border-emerald-200 text-emerald-700 bg-emerald-50" : "border-slate-200 text-slate-400 bg-slate-50"}>
-                                  {nIdMatch ? "Match" : "—"}
-                                </Badge>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-slate-400 block font-medium">Date of Birth</span>
-                              <span className="font-semibold text-slate-700">{c.date_of_birth || "—"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className={dobMatch ? "border-emerald-200 text-emerald-700 bg-emerald-50" : "border-slate-200 text-slate-400 bg-slate-50"}>
-                                  {dobMatch ? "Match" : "—"}
-                                </Badge>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-slate-400 block font-medium">Company</span>
-                              <span className="font-semibold text-slate-700 truncate block max-w-[110px]">{c.employer_name || "—"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className={companyMatch ? "border-emerald-200 text-emerald-700 bg-emerald-50" : "border-slate-200 text-slate-400 bg-slate-50"}>
-                                  {companyMatch ? "Match" : "—"}
-                                </Badge>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-slate-400 block font-medium">Phone</span>
-                              <span className="font-semibold text-slate-700 truncate block max-w-[100px]">{c.phone || "—"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">
-                                  Match
-                                </Badge>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-slate-400 block font-medium">Gender</span>
-                              <span className="font-semibold text-slate-700">{c.sex || "Male"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">
-                                  Match
-                                </Badge>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-slate-400 block font-medium">Marital Status</span>
-                              <span className="font-semibold text-slate-700">{c.marital_status || "Married"}</span>
-                              <div className="mt-1">
-                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">
-                                  Match
-                                </Badge>
-                              </div>
-                            </div>
-                            <div className="min-w-[150px]">
-                              <span className="text-slate-400 block font-medium">Registered event</span>
-                              {Array.isArray(c.registrations) && c.registrations.length > 0 ? (
-                                <div className="mt-1 space-y-1 text-left">
-                                  {c.registrations.slice(0, 2).map((registration) => (
-                                    <span key={registration.id} className="block truncate rounded-md bg-sky-50 px-1.5 py-0.5 font-semibold text-sky-800" title={registration.events?.title_ar || registration.events?.title || "Event"}>
-                                      {registration.events?.title_ar || registration.events?.title || "Event"}{registration.case_number ? <span className="ml-1 font-mono text-[10px] text-sky-600">· {registration.case_number}</span> : null}
-                                    </span>
-                                  ))}
-                                  {c.registrations.length > 2 && <span className="text-[10px] text-slate-500">+{c.registrations.length - 2} more</span>}
-                                </div>
-                              ) : <span className="font-semibold text-slate-400">Not registered</span>}
                             </div>
                           </div>
 
