@@ -29,12 +29,16 @@ import { getPosts, deletePost } from './actions'
 import { BlogForm } from './components/blog-form-enhanced'
 import type { Tables } from '@/lib/database.types'
 import { formatDate } from '@/lib/utils'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 type Post = Tables<'posts'> & {
   author?: { full_name: string | null; email: string }
 }
 
 export default function BlogDashboardPage() {
+  // Check permissions for this page
+  useDashboardPermission('/dashboard/blog')
+
   const [posts, setPosts] = useState<Post[]>([])
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)

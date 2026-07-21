@@ -7,12 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ChevronLeft, ExternalLink, Calendar, Mail, MapPin, Building, Fingerprint } from 'lucide-react'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const dynamic = 'force-dynamic'
 
 export default async function EventDetailsPage({ params }: { params: { id: string } }) {
-    const { id } = await params // Next 15 awaits params
-    
+    await requireDashboardAccess('/dashboard/event-discovery/results')
+
+    const { id } = await params
+
     let event
     try {
         event = await getEventDetails(id)

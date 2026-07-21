@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { Check, Copy, FileText, Loader2, Save, Sparkles, Wand2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 type Option = { value: string; label: string }
 type Config = Record<string, string[] | string>
@@ -33,6 +34,9 @@ function ChoiceField({ field, config, setConfig }: { field: string; config: Conf
 }
 
 export default function CreativePromptsPage() {
+  // Check permissions for this page
+  useDashboardPermission('/dashboard/creative-prompts')
+
   const [tab, setTab] = useState<'settings' | 'create'>('settings')
   const [config, setConfig] = useState<Config>(defaultConfig)
   const [events, setEvents] = useState<EventItem[]>([])

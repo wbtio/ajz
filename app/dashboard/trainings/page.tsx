@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { GraduationCap } from 'lucide-react'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
     title: 'إدارة التدريب | JAZ Admin',
 }
 
-export default function TrainingsPage() {
+export default async function TrainingsPage() {
+  await requireDashboardAccess('/dashboard/trainings')
+
     return (
         <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-6">إدارة التدريب</h1>

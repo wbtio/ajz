@@ -1,9 +1,11 @@
 /* eslint-disable */
 // @ts-nocheck -- The controller owns the strongly typed model; step files only render it.
+import { useState } from "react";
 import { useWizardView } from "./wizard-view-context"; export function ClientSearchStep() {
   // prettier-ignore
   const { AlertTriangle, ApplicationSummary, Badge, Bell, Button, Card, CheckCircle2, ClientSummary, Clock, Download, EMPTY_SCHENGEN_VISA, EmailField, ExternalLink, Eye, EyeOff, FileCode, FileText, FolderKanban, IRAQI_GOVERNORATES, Input, Lock, MessageCircle, PhoneNumberField, Plus, Printer, REGISTRATION_STEPS, RefreshCw, RegistrationProgress, SCHENGEN_COUNTRIES, Search, SearchableChoice, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Trash2, Upload, User, VISA_DOCUMENTS, VISA_ROUTES, VISA_SUBMISSION_METHODS, VISA_TYPE_OPTIONS, Volume2, X, addVisaReminder, amountPaid, appNotes, applyChangeableUpdates, assignedEmployee, assignedTo, balanceDue, breadcrumbLabel, buildTravelPurpose, canEditFeeBreakdown, caseNumber, client, cn, companySpecialtyOther, currentUser, deliveryDocumentPaths, deliveryMessage, deliveryStatus, documentImportFile, documentImportText, documentImportType, emailValidation, employees, events, fees, findDocument, formatEventDate, fullNameIsValid, handleArchiveReceipt, handleContinueWithClient, handleCreateNewClient, handleDownloadReceipt, handleGenerateReceipt, handleMergeFiles, handlePrintReceipt, handleSaveDraftOnly, handleSaveEventDetails, handleSaveIntake, handleSavePaymentDraft, handleSaveVisaDetails, handleSearch, handleStep4FileUpload, handleVisaDestinationChange, hasSearched, includeClientInfoInPackage, inviterConfig, isImportingDocument, isPackageGenerating, isPending, jobTitleIsOther, jobTitleOther, latestActivity, mergeableDocuments, missingSummaryDocuments, nationalIdIsValid, newReminderAt, newReminderNote, onClose, openWhatsApp, packageDocument, packageDocumentPaths, packageName, participationType, passportNumberIsValid, paymentCategory, paymentDate, paymentMethod, paymentNotes, phoneCountry, phoneValidation, placeOfBirthCitiesByCountry, placeOfBirthCountries, processImportedDocument, registration, registrationDocuments, registrationId, requiredVisaDocuments, router, searchForm, searchResults, selectedEvent, selectedEventId, selectedPotentialMatch, setAmountPaid, setAppNotes, setAssignedTo, setCompanySpecialtyOther, setDeliveryDocumentPaths, setDeliveryMessage, setDocumentImportFile, setDocumentImportText, setDocumentImportType, setFees, setHasSearched, setIncludeClientInfoInPackage, setJobTitleIsOther, setJobTitleOther, setNewReminderAt, setNewReminderNote, setPackageDocumentPaths, setPackageName, setParticipationType, setPaymentCategory, setPaymentDate, setPaymentMethod, setPaymentNotes, setPhoneCountry, setSearchForm, setSearchResults, setSelectedEventId, setSelectedPotentialMatch, setShowDocumentImport, setShowPassword, setShowUpdatePrompt, setStep, setTravelPurpose, setVisaAccountStatus, setVisaAppRefNumber, setVisaAppointmentCenter, setVisaAppointmentChannel, setVisaAppointmentCity, setVisaAppointmentDate, setVisaAppointmentRefNumber, setVisaAppointmentStatus, setVisaAppointmentTime, setVisaEmbassy, setVisaEmbassyCity, setVisaPlatform, setVisaPortalAppStatus, setVisaPortalEmail, setVisaPortalPassword, setVisaReminders, setVisaSubmissionMethod, setVisaType, setWorkCityIsOther, setWorkCityOther, showDocumentImport, showPassword, showUpdatePrompt, step, stepStatus, summaryAppointment, summaryStatus, surnameIsValid, toast, totalAmount, travelPurpose, uploadError, uploadingDocumentType, validateStepBeforeAdvance, visaAccountStatus, visaAppRefNumber, visaAppointmentCenter, visaAppointmentChannel, visaAppointmentCity, visaAppointmentDate, visaAppointmentRefNumber, visaAppointmentStatus, visaAppointmentTime, visaDestination, visaEmbassyCity, visaPlatform, visaPortalAppStatus, visaPortalEmail, visaPortalPassword, visaReminders, visaSubmissionMethod, visaType, workCityIsOther, workCityOther } = useWizardView();
-  const { ocrHighlightedFields, setOcrHighlightedFields, workPhoneCountry, setWorkPhoneCountry } = useWizardView();
+  const { ocrHighlightedFields, setOcrHighlightedFields, workPhoneCountry, setWorkPhoneCountry, clientSaveState } = useWizardView();
+  const [profileClient, setProfileClient] = useState(null);
   const ocrFieldClass = (field) => ocrHighlightedFields.includes(field) ? "ocr-field-highlight" : "";
   const markOcrFieldReviewed = (field) => setOcrHighlightedFields((current) => current.filter((item) => item !== field));
   return <>
@@ -14,6 +16,13 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
             <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
               <Search className="size-4 text-[#8B0000]" />
               <h2 className="text-base font-bold text-slate-800">Search for existing client</h2>
+              {clientSaveState && clientSaveState !== "saved" && (
+                <span className="ml-auto flex items-center gap-1.5 text-xs text-slate-500">
+                  {clientSaveState === "saving" && <span className="animate-spin size-3 border-1.5 border-current border-t-transparent rounded-full" />}
+                  {clientSaveState === "dirty" && "Unsaved changes"}
+                  {clientSaveState === "error" && "Save failed"}
+                </span>
+              )}
               <Button type="button" variant="outline" size="sm" className="ml-auto gap-1.5 border-[#8B0000]/30 text-[#8B0000] hover:bg-red-50" onClick={() => setShowDocumentImport(true)}>
                 <Upload className="size-3.5" /> Import document
               </Button>
@@ -385,7 +394,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 md:grid-cols-7 gap-3 text-xs md:text-center">
+                          <div className="grid grid-cols-2 md:grid-cols-8 gap-3 text-xs md:text-center">
                             <div>
                               <span className="text-slate-400 block font-medium">Passport</span>
                               <span className="font-semibold font-mono text-slate-700">{c.passport_number || "—"}</span>
@@ -449,6 +458,19 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                                 </Badge>
                               </div>
                             </div>
+                            <div className="min-w-[150px]">
+                              <span className="text-slate-400 block font-medium">Registered event</span>
+                              {Array.isArray(c.registrations) && c.registrations.length > 0 ? (
+                                <div className="mt-1 space-y-1 text-left">
+                                  {c.registrations.slice(0, 2).map((registration) => (
+                                    <span key={registration.id} className="block truncate rounded-md bg-sky-50 px-1.5 py-0.5 font-semibold text-sky-800" title={registration.events?.title_ar || registration.events?.title || "Event"}>
+                                      {registration.events?.title_ar || registration.events?.title || "Event"}{registration.case_number ? <span className="ml-1 font-mono text-[10px] text-sky-600">· {registration.case_number}</span> : null}
+                                    </span>
+                                  ))}
+                                  {c.registrations.length > 2 && <span className="text-[10px] text-slate-500">+{c.registrations.length - 2} more</span>}
+                                </div>
+                              ) : <span className="font-semibold text-slate-400">Not registered</span>}
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-2 justify-end">
@@ -457,7 +479,7 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                toast.info("جاري فتح ملف العميل للمعاينة...");
+                                setProfileClient(c);
                               }}
                               className="border-slate-200 text-slate-600 gap-1 text-xs"
                             >
@@ -468,6 +490,61 @@ import { useWizardView } from "./wizard-view-context"; export function ClientSea
                       </Card>
                     );
                   })}
+                </div>
+              )}
+
+              {profileClient && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/40 p-4" role="dialog" aria-modal="true" aria-labelledby="client-profile-title" onMouseDown={(e) => e.target === e.currentTarget && setProfileClient(null)}>
+                  <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-2xl">
+                    <div className="flex items-start justify-between border-b border-slate-100 px-5 py-4">
+                      <div>
+                        <h3 id="client-profile-title" className="text-lg font-bold text-slate-900">Client profile</h3>
+                        <p className="mt-1 text-xs text-slate-500">Review the client information and previous event registrations.</p>
+                      </div>
+                      <button type="button" onClick={() => setProfileClient(null)} className="rounded-md px-2 py-1 text-xl leading-none text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Close client profile">×</button>
+                    </div>
+                    <div className="grid gap-4 p-5 sm:grid-cols-2">
+                      {[
+                        ["Full name", profileClient.full_name_as_passport],
+                        ["Title", profileClient.title_salutation],
+                        ["Passport number", profileClient.passport_number],
+                        ["Date of birth", profileClient.date_of_birth],
+                        ["National ID", profileClient.national_id],
+                        ["Phone", profileClient.phone],
+                        ["Email", profileClient.email],
+                        ["Company", profileClient.employer_name],
+                        ["Job title", profileClient.job_title],
+                        ["Work city", profileClient.work_city || profileClient.work_governorate],
+                      ].map(([label, value]) => (
+                        <div key={label} className="rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2">
+                          <div className="text-[11px] font-semibold text-slate-400">{label}</div>
+                          <div className="mt-1 text-sm font-semibold text-slate-800">{value || "—"}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="border-t border-slate-100 px-5 py-4">
+                      <h4 className="text-sm font-bold text-slate-800">Previous event registrations</h4>
+                      {Array.isArray(profileClient.registrations) && profileClient.registrations.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {profileClient.registrations.map((registration) => {
+                            const event = registration.events;
+                            return (
+                              <div key={registration.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-sky-100 bg-sky-50/60 px-3 py-2">
+                                <div>
+                                  <div className="text-sm font-semibold text-sky-900">{event?.title_ar || event?.title || "Event"}</div>
+                                  <div className="text-xs text-sky-700">{event?.location_ar || event?.location || "Location not specified"}{event?.date ? ` • ${new Date(event.date).toLocaleDateString("en-GB")}` : ""}</div>
+                                </div>
+                                {registration.case_number && <span className="font-mono text-xs font-semibold text-sky-700">{registration.case_number}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : <p className="mt-2 text-xs text-slate-500">No previous event registrations found.</p>}
+                    </div>
+                    <div className="flex justify-end border-t border-slate-100 px-5 py-3">
+                      <Button type="button" variant="outline" onClick={() => setProfileClient(null)}>Close</Button>
+                    </div>
+                  </div>
                 </div>
               )}
 

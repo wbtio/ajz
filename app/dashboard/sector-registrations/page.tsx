@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { SectorRegistrationsView } from './components/sector-registrations-view'
 import type { Tables } from '@/lib/database.types'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
   title: 'تسجيلات القطاعات | JAZ Admin',
@@ -12,8 +13,9 @@ type RegistrationRecord = Tables<'sector_registrations'> & {
 }
 
 export default async function SectorRegistrationsPage() {
-  const supabase = await createClient()
+  await requireDashboardAccess('/dashboard/sector-registrations')
 
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('sector_registrations' as any)
     .select(`

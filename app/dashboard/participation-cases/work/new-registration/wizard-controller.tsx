@@ -41,7 +41,7 @@ const VISA_SUBMISSION_METHODS = [
   "Other",
 ];
 import { hasExactPermission } from "@/lib/permissions";
-import { searchClientsWithMatchingScore, continueWithClientAction, createNewClientAndApplication, recordRegistrationActivity } from "../../actions";
+import { searchClientsWithMatchingScore, continueWithClientAction, createNewClientAndApplication, recordRegistrationActivity, updateClientData } from "../../actions";
 import { uploadRegistrationDocumentDirect } from "../../registration-document-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +54,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, User, FileText, CheckCircle2, AlertTriangle, Eye, EyeOff, X, Plus, Printer, Download, FolderKanban, Lock, Clock, FileCode, RefreshCw, ExternalLink, MessageCircle, Mail, Bell, Volume2, Trash2, Upload } from "lucide-react";
 
 // --- Types ---
+// Shape of rows coming from the drift_events table (filtered by the parent
+// page to `is_active = true` AND `status = 'active'`). Keep this in sync with
+// progress-dashboard-client.tsx and supabase/migrations/015.
 interface Event {
   id: string;
   title: string;
@@ -62,7 +65,7 @@ interface Event {
   end_date: string | null;
   country: string | null;
   country_ar: string | null;
-  location: string;
+  location: string | null;
   location_ar: string | null;
   sector: string | null;
   event_type?: string | null;
@@ -264,12 +267,24 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     if (uploads.length === 0) return;
 
     for (const upload of uploads) {
-      const result = await uploadRegistrationDocumentDirect(regId, upload.file, upload.type, upload.label);
-      if (result.error) throw new Error(result.error);
+      try {
+        const result = await uploadRegistrationDocumentDirect(regId, upload.file, upload.type, upload.label);
+        if (result.error) {
+          console.error("Document upload failed:", result.error);
+          toast.warning(`Client created, but failed to upload ${upload.label}: ${result.error}. You can re-upload it manually.`);
+        }
+      } catch (err) {
+        console.error("Document upload error:", err);
+        toast.warning(`Client created, but error uploading ${upload.label}.`);
+      }
     }
 
     setImportedClientDocuments({});
-    await loadRegistration(regId);
+    try {
+      await loadRegistration(regId);
+    } catch (e) {
+      console.error("Failed to load registration details:", e);
+    }
   }
   const fullNameIsValid = !searchForm.fullName || /^[A-Za-z\s'.-]+$/.test(searchForm.fullName.trim());
   const surnameIsValid = !searchForm.surname || /^[A-Za-z\s'.-]+$/.test(searchForm.surname.trim());
@@ -317,6 +332,10 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const visaAutosaveBaseline = useRef<string | null>(null);
   const visaAutosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [clientSaveState, setClientSaveState] = useState<"saved" | "dirty" | "saving" | "error">("saved");
+  const clientAutosaveBaseline = useRef<string | null>(null);
+  const clientAutosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Step 5 Document assembly fields
   const [packageName, setPackageName] = useState("");
   const [includeClientInfoInPackage, setIncludeClientInfoInPackage] = useState(true);
@@ -330,6 +349,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const [paymentMethod, setPaymentMethod] = useState("Bank Transfer");
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split("T")[0]);
   const [paymentNotes, setPaymentNotes] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const [fees, setFees] = useState({
     service: 150,
     event: 300,
@@ -377,7 +397,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
                         place_of_birth, passport_issue_date, passport_expiry_date,
                         job_title, department, work_city, work_governorate, work_phone, work_email,
                         residence_country, previous_schengen_visa,
-                        schengen_visas_last_5y, other_residence_permit
+                        schengen_visas_last_5y, other_residence_permit,
+                        professional_specialty
                     )
                 `,
         )
@@ -518,9 +539,13 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       if (ad.payment_method) setPaymentMethod(ad.payment_method);
       if (ad.payment_date) setPaymentDate(ad.payment_date);
       if (typeof ad.payment_notes === "string") setPaymentNotes(ad.payment_notes);
+      if (ad.payment_currency === "USD" || ad.payment_currency === "IQD") setCurrency(ad.payment_currency);
       if (ad.fee_breakdown) setFees(ad.fee_breakdown);
       if (typeof ad.amount_paid === "number") setAmountPaid(ad.amount_paid);
-    } catch (e) {
+
+    // Reset client autosave baseline so loading doesn't trigger an immediate save
+    clientAutosaveBaseline.current = null;
+  } catch (e) {
       console.error(e);
       toast.error("Could not load the application.");
     }
@@ -655,6 +680,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     const highMatch = searchResults.find((r) => r.score >= 80);
     if (highMatch && !showWarningDialog) {
       setShowWarningDialog(true);
+      toast.warning("تنبيه: يوجد عميل مسجل بنسبة تطابق عالية في النظام. إذا كنت متأكداً وتريد إنشاء عميل جديد، اضغط مرة أخرى على زر الحفظ.");
       return;
     }
 
@@ -751,6 +777,20 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         timestamp: new Date().toISOString(),
       };
 
+      const clientUpdateData = {
+        residence_country: searchForm.residenceCountry || null,
+        previous_schengen_visa: searchForm.previousSchengenVisa,
+        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
+        other_residence_permit: {
+          has_permit: searchForm.hasOtherResidencePermit,
+          country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
+          number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
+          expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
+          issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
+        }
+      };
+      await updateClientData(registrationId, clientUpdateData);
+
       const { error } = await (supabase as any)
         .from("registrations")
         .update({
@@ -808,6 +848,20 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           timestamp: new Date().toISOString(),
       };
 
+      const clientUpdateData = {
+        residence_country: searchForm.residenceCountry || null,
+        previous_schengen_visa: searchForm.previousSchengenVisa,
+        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
+        other_residence_permit: {
+          has_permit: searchForm.hasOtherResidencePermit,
+          country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
+          number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
+          expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
+          issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
+        }
+      };
+      await updateClientData(registrationId, clientUpdateData);
+
       const { error: snapshotError } = await (supabase as any)
         .from("registrations")
         .update({ client_snapshot: snapshot })
@@ -832,6 +886,83 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       loadRegistration(registrationId);
     } catch (e: any) {
       toast.error(e.message || "Could not save the application details.");
+    }
+  }
+
+  async function handleSaveClientDraft(): Promise<boolean> {
+    if (!registrationId || !client?.id) return false;
+    try {
+      const snapshot = {
+        full_name: searchForm.fullName || null,
+        surname: searchForm.surname || null,
+        salutation: searchForm.salutation || null,
+        gender: searchForm.gender || null,
+        marital_status: searchForm.maritalStatus || null,
+        passport_number: searchForm.passportNumber || null,
+        passport_issue_date: searchForm.passportIssueDate || null,
+        passport_expiry_date: searchForm.passportExpiryDate || null,
+        national_id: searchForm.nationalId || null,
+        date_of_birth: searchForm.dateOfBirth || null,
+        place_of_birth: searchForm.placeOfBirth || null,
+        phone: normalizedSearchForm.phone || null,
+        email: searchForm.email || null,
+        company_name: searchForm.companyName || null,
+        company_specialty: normalizedSearchForm.companySpecialty || null,
+        job_title: searchForm.jobTitle || null,
+        department: searchForm.department || null,
+        work_city: searchForm.workCity || null,
+        work_phone: workPhoneValidation.normalized || null,
+        work_email: searchForm.workEmail || null,
+        residence_country: searchForm.residenceCountry || null,
+        previous_schengen_visa: searchForm.previousSchengenVisa,
+        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
+        other_residence_permit: normalizedSearchForm.otherResidencePermit,
+        timestamp: new Date().toISOString(),
+      };
+
+      const emptyToNull = (v: string) => (v === "" ? null : v);
+      const clientPatch: Record<string, unknown> = {
+        full_name_as_passport: emptyToNull(searchForm.fullName),
+        last_name: emptyToNull(searchForm.surname),
+        title_salutation: emptyToNull(searchForm.salutation),
+        sex: emptyToNull(searchForm.gender),
+        marital_status: emptyToNull(searchForm.maritalStatus),
+        passport_number: emptyToNull(searchForm.passportNumber),
+        national_id: emptyToNull(searchForm.nationalId),
+        phone: emptyToNull(normalizedSearchForm.phone),
+        email: emptyToNull(searchForm.email),
+        employer_name: emptyToNull(searchForm.companyName),
+        professional_specialty: emptyToNull(normalizedSearchForm.companySpecialty),
+        date_of_birth: emptyToNull(searchForm.dateOfBirth),
+        place_of_birth: emptyToNull(searchForm.placeOfBirth),
+        passport_issue_date: emptyToNull(searchForm.passportIssueDate),
+        passport_expiry_date: emptyToNull(searchForm.passportExpiryDate),
+        job_title: emptyToNull(searchForm.jobTitle),
+        department: emptyToNull(searchForm.department),
+        work_city: emptyToNull(searchForm.workCity),
+        work_phone: emptyToNull(workPhoneValidation.normalized),
+        work_email: emptyToNull(searchForm.workEmail),
+        residence_country: emptyToNull(searchForm.residenceCountry),
+        previous_schengen_visa: searchForm.previousSchengenVisa,
+        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
+        other_residence_permit: normalizedSearchForm.otherResidencePermit,
+        updated_at: new Date().toISOString(),
+      };
+
+      const clientId = client.id;
+      const { error: clientErr } = await supabase.from("clients").update(clientPatch).eq("id", clientId);
+      if (clientErr) throw clientErr;
+
+      const { error: regErr } = await (supabase as any)
+        .from("registrations")
+        .update({ client_snapshot: snapshot, updated_at: new Date().toISOString() })
+        .eq("id", registrationId);
+      if (regErr) throw regErr;
+
+      return true;
+    } catch (e: any) {
+      console.error("Client draft autosave failed:", e);
+      return false;
     }
   }
 
@@ -994,7 +1125,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
             type: "visa_appointment_reminder",
             title,
             body,
-            link_url: `/dashboard/participation-cases/work/new-registration?id=${registrationId}&step=4`,
+            // Reopen this exact application in the Visa step.
+            link_url: `/dashboard/participation-cases/work/clients?registrationId=${registrationId}&step=4`,
           });
         }
       }
@@ -1174,7 +1306,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     setUploadingDocumentType(docType);
     toast.loading(`Uploading ${label}...`);
     try {
-      const res = await uploadRegistrationDocumentDirect(registrationId, file, docType, label);
+      const res = (await uploadRegistrationDocumentDirect(registrationId, file, docType, label)) as any;
       toast.dismiss();
       if (res.error) {
         setUploadError({ type: docType, message: res.error });
@@ -1256,7 +1388,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       toast.error("Save the client application before creating the package.");
       return;
     }
-    const selectedDocuments = mergeableDocuments.filter((document) => packageDocumentPaths.includes(document.path));
+    // packageDocumentPaths is intentionally ordered by the user's drag/drop
+    // arrangement, so the merged PDF follows the visible package order.
+    const selectedDocuments = packageDocumentPaths
+      .map((path) => mergeableDocuments.find((document) => document.path === path))
+      .filter((document): document is (typeof mergeableDocuments)[number] => Boolean(document));
     if (selectedDocuments.length === 0 && !includeClientInfoInPackage) {
       toast.error("Select at least one file or include the client information page.");
       return;
@@ -1394,7 +1530,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       const requestedName = packageName.trim() || `${(client?.full_name_as_passport || "Client").replace(/\s+/g, "_")}_Visa_Package.pdf`;
       const fileName = requestedName.toLowerCase().endsWith(".pdf") ? requestedName : `${requestedName}.pdf`;
       const mergedFile = new File([new Blob([mergedBytes as BlobPart], { type: "application/pdf" })], fileName, { type: "application/pdf" });
-      const upload = await uploadRegistrationDocumentDirect(registrationId, mergedFile, "merged_package", fileName);
+      const upload = (await uploadRegistrationDocumentDirect(registrationId, mergedFile, "merged_package", fileName)) as any;
       if (upload.error) throw new Error(upload.error);
 
       const ad = (registration?.additional_data as any) || {};
@@ -1451,7 +1587,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       const right = pageWidth - 18;
       const clientName = client?.full_name_as_passport || searchForm.fullName || "Client";
       const eventName = selectedEvent?.title || selectedEvent?.title_ar || "Event not set";
-      const money = (value: number) => `€ ${value.toFixed(2)}`;
+      const money = (value: number) => `${currency === "IQD" ? "د.ع" : "$"} ${value.toFixed(2)}`;
       const drawLabelValue = (label: string, value: string, x: number, y: number, width: number) => {
         pdf.setFontSize(7.5);
         pdf.setTextColor(112, 128, 144);
@@ -1559,7 +1695,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
 
       const fileName = `Payment_Receipt_${caseNumber || registrationId}.pdf`;
       const receiptFile = new File([pdf.output("blob")], fileName, { type: "application/pdf" });
-      const upload = await uploadRegistrationDocumentDirect(registrationId, receiptFile, "receipt", fileName);
+      const upload = (await uploadRegistrationDocumentDirect(registrationId, receiptFile, "receipt", fileName)) as any;
       if (upload.error) throw new Error(upload.error);
       const receiptUrl = upload.url || "";
 
@@ -1648,7 +1784,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       clientPdf.text("info@jaz.iq  •  +964 771 900 0600  •  www.jaz.iq", left, 284);
       clientPdf.text(receiptId, right, 287, { align: "right" });
       const clientReceiptFile = new File([clientPdf.output("blob")], clientFileName, { type: "application/pdf" });
-      const clientUpload = await uploadRegistrationDocumentDirect(registrationId, clientReceiptFile, "client_receipt", clientFileName);
+      const clientUpload = (await uploadRegistrationDocumentDirect(registrationId, clientReceiptFile, "client_receipt", clientFileName)) as any;
       if (clientUpload.error) throw new Error(clientUpload.error);
       const clientReceiptUrl = clientUpload.url || "";
 
@@ -1659,6 +1795,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         payment_method: paymentMethod,
         payment_date: paymentDate,
         payment_notes: paymentNotes,
+        payment_currency: currency,
         ...(canEditFeeBreakdown ? { fee_breakdown: fees } : {}),
         amount_paid: amountPaid,
         balance_due: balanceDue,
@@ -1764,6 +1901,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
             payment_method: paymentMethod,
             payment_date: paymentDate,
             payment_notes: paymentNotes,
+            payment_currency: currency,
             ...(canEditFeeBreakdown ? { fee_breakdown: fees } : {}),
             amount_paid: amountPaid,
             balance_due: balanceDue,
@@ -1778,7 +1916,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         action: "payment_updated",
         description: "Payment draft saved.",
         step: 6,
-        metadata: { payment_status: registration?.payment_status, amount_paid: amountPaid },
+        metadata: { payment_status: registration?.payment_status, amount_paid: amountPaid, payment_currency: currency },
       });
       toast.success("Payment draft saved.");
       await loadRegistration(registrationId);
@@ -1881,9 +2019,55 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       workPhone: workPhoneValidation.normalized || searchForm.workPhone,
       email: emailValidation.normalized || searchForm.email,
       companySpecialty: searchForm.companySpecialty === "Other" ? companySpecialtyOther.trim() : searchForm.companySpecialty,
+      otherResidencePermit: {
+        has_permit: searchForm.hasOtherResidencePermit,
+        country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
+        number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
+        expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
+        issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
+      }
     }),
     [searchForm, phoneValidation.normalized, workPhoneValidation.normalized, emailValidation.normalized, companySpecialtyOther],
   );
+
+  const clientDraftSnapshot = useMemo(
+    () =>
+      JSON.stringify({
+        ...searchForm,
+        companySpecialtyOther,
+        phoneCountry,
+        workPhoneCountry,
+        jobTitleOther,
+        workCityOther,
+      }),
+    [searchForm, companySpecialtyOther, phoneCountry, workPhoneCountry, jobTitleOther, workCityOther],
+  );
+
+  // Client/Intake autosave (debounced, silent, works whenever registration exists)
+  useEffect(() => {
+    if (!registrationId || !client?.id) return;
+    if (clientAutosaveBaseline.current === null) {
+      clientAutosaveBaseline.current = clientDraftSnapshot;
+      setClientSaveState("saved");
+      return;
+    }
+    if (clientAutosaveBaseline.current === clientDraftSnapshot) return;
+    setClientSaveState("dirty");
+    if (clientAutosaveTimer.current) clearTimeout(clientAutosaveTimer.current);
+    clientAutosaveTimer.current = setTimeout(async () => {
+      setClientSaveState("saving");
+      const saved = await handleSaveClientDraft();
+      if (saved) {
+        clientAutosaveBaseline.current = clientDraftSnapshot;
+        setClientSaveState("saved");
+      } else {
+        setClientSaveState("error");
+      }
+    }, 2000);
+    return () => {
+      if (clientAutosaveTimer.current) clearTimeout(clientAutosaveTimer.current);
+    };
+  }, [registrationId, client?.id, clientDraftSnapshot]);
 
   const registrationDocuments = useMemo(() => normalizeRegistrationDocuments(registration?.documents), [registration?.documents]);
 
@@ -2076,6 +2260,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         canEditFeeBreakdown,
         caseNumber,
         client,
+        clientSaveState,
         cn,
         companySpecialtyOther,
         currentUser,
@@ -2130,6 +2315,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         participationType,
         passportNumberIsValid,
         paymentCategory,
+        currency,
         paymentDate,
         paymentMethod,
         paymentNotes,
@@ -2154,6 +2340,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         selectedEventId,
         selectedPotentialMatch,
         setAmountPaid,
+        setCurrency,
         setAppNotes,
         setAssignedTo,
         setCompanySpecialtyOther,

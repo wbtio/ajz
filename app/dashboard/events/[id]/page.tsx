@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { EventDetailsClient } from './components/event-details-client'
+import { canAccessPath, isDashboardRole } from '@/lib/permissions'
 
 interface EventDetailsPageProps {
     params: Promise<{
@@ -15,6 +16,20 @@ export const metadata = {
 export default async function EventDetailsPage({ params }: EventDetailsPageProps) {
     const { id } = await params
     const supabase = await createClient()
+
+    // Check permissions
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) redirect('/admin-login')
+
+    const { data: profile } = await supabase
+        .from('users')
+        .select('role, permissions')
+        .eq('id', authUser.id)
+        .single()
+
+    if (!profile || !isDashboardRole(profile.role) || !canAccessPath(profile.role, '/dashboard/events', profile.permissions)) {
+        redirect('/dashboard/home')
+    }
 
     // Fetch Event Details
     const { data: event, error: eventError } = await supabase
@@ -38,23 +53,9 @@ export default async function EventDetailsPage({ params }: EventDetailsPageProps
         console.error('Error fetching registrations:', regsError)
     }
 
-    // Fetch Current User Role and Permissions to set initial UI lock state
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    let userRole = 'team'
-    let userPermissions: string[] = []
-
-    if (authUser) {
-        const { data: profile } = await supabase
-            .from('users')
-            .select('role, permissions')
-            .eq('id', authUser.id)
-            .single()
-        
-        if (profile) {
-            userRole = profile.role || 'team'
-            userPermissions = profile.permissions || []
-        }
-    }
+    // Use the already fetched profile for UI state
+    const userRole = profile.role || 'team'
+    const userPermissions = profile.permissions || []
 
     return (
         <div className="p-4 sm:p-6 bg-slate-50/50 min-h-screen">

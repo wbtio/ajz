@@ -16,6 +16,8 @@ import {
   updateLink,
   deleteLink,
 } from './actions'
+import { useTranslation } from '@/lib/i18n/context'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 type Tab = 'links' | 'categories' | 'countries'
 
@@ -64,9 +66,10 @@ interface Link {
 const iconOptions = ['Globe', 'Building2', 'FileText', 'Shield', 'Users']
 const iconMap: Record<string, any> = { Globe, Building2, FileText, Shield, Users }
 
-import { useTranslation } from '@/lib/i18n/context'
-
 export default function LinksManagementPage() {
+  // Check permissions for this page
+  useDashboardPermission('/dashboard/links')
+
   const { t, locale, dir } = useTranslation()
   const [activeTab, setActiveTab] = useState<Tab>('links')
   const [categories, setCategories] = useState<LinkCategory[]>([])

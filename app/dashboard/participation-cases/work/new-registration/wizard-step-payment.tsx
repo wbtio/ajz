@@ -5,6 +5,8 @@ import { useWizardView } from './wizard-view-context'
 export function PaymentStep() {
   // prettier-ignore
   const { AlertTriangle, ApplicationSummary, Badge, Bell, Button, Card, CheckCircle2, ClientSummary, Clock, Download, EMPTY_SCHENGEN_VISA, EmailField, ExternalLink, Eye, EyeOff, FileCode, FileText, FolderKanban, IRAQI_GOVERNORATES, Input, Lock, MessageCircle, PhoneNumberField, Plus, Printer, REGISTRATION_STEPS, RefreshCw, RegistrationProgress, SCHENGEN_COUNTRIES, Search, SearchableChoice, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Trash2, Upload, User, VISA_DOCUMENTS, VISA_ROUTES, VISA_SUBMISSION_METHODS, VISA_TYPE_OPTIONS, Volume2, X, addVisaReminder, amountPaid, appNotes, applyChangeableUpdates, assignedEmployee, assignedTo, balanceDue, breadcrumbLabel, buildTravelPurpose, canEditFeeBreakdown, caseNumber, client, cn, companySpecialtyOther, currentUser, deliveryDocumentPaths, deliveryMessage, deliveryStatus, documentImportFile, documentImportText, documentImportType, emailValidation, employees, events, fees, findDocument, formatEventDate, fullNameIsValid, handleArchiveReceipt, handleContinueWithClient, handleCreateNewClient, handleDownloadReceipt, handleGenerateReceipt, handleMergeFiles, handlePrintReceipt, handleSaveDraftOnly, handleSaveEventDetails, handleSaveIntake, handleSavePaymentDraft, handleSaveVisaDetails, handleSearch, handleStep4FileUpload, handleVisaDestinationChange, hasSearched, includeClientInfoInPackage, inviterConfig, isImportingDocument, isPackageGenerating, isPending, jobTitleIsOther, jobTitleOther, latestActivity, mergeableDocuments, missingSummaryDocuments, nationalIdIsValid, newReminderAt, newReminderNote, onClose, openWhatsApp, packageDocument, packageDocumentPaths, packageName, participationType, passportNumberIsValid, paymentCategory, paymentDate, paymentMethod, paymentNotes, phoneCountry, phoneValidation, placeOfBirthCitiesByCountry, placeOfBirthCountries, processImportedDocument, registration, registrationDocuments, registrationId, requiredVisaDocuments, router, searchForm, searchResults, selectedEvent, selectedEventId, selectedPotentialMatch, setAmountPaid, setAppNotes, setAssignedTo, setCompanySpecialtyOther, setDeliveryDocumentPaths, setDeliveryMessage, setDocumentImportFile, setDocumentImportText, setDocumentImportType, setFees, setHasSearched, setIncludeClientInfoInPackage, setJobTitleIsOther, setJobTitleOther, setNewReminderAt, setNewReminderNote, setPackageDocumentPaths, setPackageName, setParticipationType, setPaymentCategory, setPaymentDate, setPaymentMethod, setPaymentNotes, setPhoneCountry, setSearchForm, setSearchResults, setSelectedEventId, setSelectedPotentialMatch, setShowDocumentImport, setShowPassword, setShowUpdatePrompt, setStep, setTravelPurpose, setVisaAccountStatus, setVisaAppRefNumber, setVisaAppointmentCenter, setVisaAppointmentChannel, setVisaAppointmentCity, setVisaAppointmentDate, setVisaAppointmentRefNumber, setVisaAppointmentStatus, setVisaAppointmentTime, setVisaEmbassy, setVisaEmbassyCity, setVisaPlatform, setVisaPortalAppStatus, setVisaPortalEmail, setVisaPortalPassword, setVisaReminders, setVisaSubmissionMethod, setVisaType, setWorkCityIsOther, setWorkCityOther, showDocumentImport, showPassword, showUpdatePrompt, step, stepStatus, summaryAppointment, summaryStatus, surnameIsValid, toast, totalAmount, travelPurpose, uploadError, uploadingDocumentType, validateStepBeforeAdvance, visaAccountStatus, visaAppRefNumber, visaAppointmentCenter, visaAppointmentChannel, visaAppointmentCity, visaAppointmentDate, visaAppointmentRefNumber, visaAppointmentStatus, visaAppointmentTime, visaDestination, visaEmbassyCity, visaPlatform, visaPortalAppStatus, visaPortalEmail, visaPortalPassword, visaReminders, visaSubmissionMethod, visaType, workCityIsOther, workCityOther } = useWizardView()
+  const { currency, setCurrency } = useWizardView()
+  const currencySymbol = currency === "IQD" ? "د.ع" : "$"
   return <>
     {/* Step 6: Payment & Receipt */}
       {step === 6 && registration && (
@@ -88,9 +90,9 @@ export function PaymentStep() {
                   </div>
                   <div className="space-y-1">
                     <label className="text-slate-500 font-medium">Currency</label>
-                    <select className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white focus:outline-none">
-                      <option>EUR - Euro (€)</option>
-                      <option>IQD - Iraqi Dinar (د.ع)</option>
+                    <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white focus:outline-none">
+                      <option value="USD">USD - US Dollar ($)</option>
+                      <option value="IQD">IQD - Iraqi Dinar (د.ع)</option>
                     </select>
                   </div>
                   <div className="space-y-1">
@@ -141,7 +143,7 @@ export function PaymentStep() {
                               }}
                               className={`w-16 h-7 text-right p-1 border-slate-200 text-xs font-semibold ${!canEditFeeBreakdown ? "cursor-default bg-slate-100 focus-visible:ring-0" : "bg-white"} ${fee.isDiscount ? "text-rose-600" : "text-slate-800"}`}
                             />
-                            <span className="text-slate-400">€</span>
+                            <span className="text-slate-400">{currencySymbol}</span>
                           </div>
                         </div>
                       ))}
@@ -150,18 +152,18 @@ export function PaymentStep() {
                     <div className="bg-slate-100/80 p-3 border-t border-slate-200 font-bold text-slate-800 flex flex-col gap-2">
                       <div className="flex justify-between items-center text-sm">
                         <span>Total Amount</span>
-                        <span>€ {totalAmount}</span>
+                        <span>{currencySymbol} {totalAmount}</span>
                       </div>
                       <div className="flex justify-between items-center text-xs text-emerald-700">
                         <span>Amount Paid</span>
                         <div className="flex items-center gap-1">
                           <Input type="number" value={amountPaid} onChange={(e) => setAmountPaid(parseFloat(e.target.value) || 0)} className="w-20 h-7 text-right p-1 border-slate-300 text-xs font-bold text-emerald-700" />
-                          <span>€</span>
+                          <span>{currencySymbol}</span>
                         </div>
                       </div>
                       <div className={`flex justify-between items-center text-xs border-t border-slate-200/80 pt-1.5 ${balanceDue > 0 ? "text-amber-700" : "text-slate-500"}`}>
                         <span>Balance Due</span>
-                        <span>€ {balanceDue}</span>
+                        <span>{currencySymbol} {balanceDue}</span>
                       </div>
                     </div>
                   </div>
@@ -169,7 +171,7 @@ export function PaymentStep() {
                   <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 px-3 py-4 text-xs">
                     <div className="flex items-center justify-between text-sm font-bold text-slate-800">
                       <span>Total Amount</span>
-                      <span>€ {totalAmount}</span>
+                      <span>{currencySymbol} {totalAmount}</span>
                     </div>
                     <p className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
                       <Lock className="h-3.5 w-3.5" /> Detailed fee values are restricted to payment-authorized users.
@@ -209,7 +211,7 @@ export function PaymentStep() {
                     </div>
                     <div className="flex justify-between font-bold text-slate-800 pt-1 border-t border-dashed border-slate-100">
                       <span>Total Paid</span>
-                      <span>€ {amountPaid}</span>
+                      <span>{currencySymbol} {amountPaid}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Issue Date</span>
@@ -244,9 +246,6 @@ export function PaymentStep() {
                 <Button variant="outline" size="sm" onClick={handleGenerateReceipt} className="border-slate-200 text-slate-600 gap-1.5 text-xs">
                   <Printer className="w-4 h-4" /> Generate Both Receipts
                 </Button>
-                <Button variant="outline" size="sm" onClick={handlePrintReceipt} className="border-slate-200 text-slate-600 gap-1.5 text-xs">
-                  <Printer className="w-4 h-4" /> Print Receipt
-                </Button>
                 <Button variant="outline" size="sm" onClick={handleDownloadReceipt} className="border-slate-200 text-slate-600 gap-1.5 text-xs">
                   <Download className="w-4 h-4" /> Download Company Receipt
                 </Button>
@@ -261,12 +260,6 @@ export function PaymentStep() {
                   className="border-emerald-200 text-emerald-700 gap-1.5 text-xs"
                 >
                   <Download className="w-4 h-4" /> Download Client Receipt
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleArchiveReceipt} className="border-slate-200 text-slate-600 gap-1.5 text-xs">
-                  <FolderKanban className="w-4 h-4" /> Archive Receipt
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleSavePaymentDraft} className="border-slate-200 text-slate-600 gap-1.5 text-xs">
-                  <FileText className="w-4 h-4" /> Save Draft
                 </Button>
               </div>
             </div>

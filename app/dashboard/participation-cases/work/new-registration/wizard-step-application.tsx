@@ -467,7 +467,7 @@ export function ApplicationStep() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-600">Order By</label>
-                  <Input value={createdByName || assignedEmployee?.full_name || currentUser?.full_name || "—"} disabled className="bg-slate-50 border-slate-200 text-slate-500" />
+                  <Input value="Noor Al-Shakri" disabled className="bg-slate-50 border-slate-200 text-slate-500" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-600">Assigned To</label>

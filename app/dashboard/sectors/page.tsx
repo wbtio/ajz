@@ -9,11 +9,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Building2, Plus, Edit, Trash2, Heart, Cpu, GraduationCap, X, Loader2, Upload, ImageIcon, FileText, CheckCircle, Clock, XCircle, Eye } from 'lucide-react'
 import { createSector, updateSector, deleteSector, getSectors, uploadImage, getSectorRegistrations } from './actions'
-import type { Sector } from '@/lib/database.types'
 import { RegistrationFormBuilder } from '@/components/shared/registration-form-builder'
 import type { FormField } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
+import type { Sector } from '@/lib/database.types'
 import { getSectorRegistrationFallback } from '@/app/departments/department-content'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 const iconMap: Record<string, any> = {
     Building2,
@@ -42,6 +43,9 @@ interface SectorRegistration {
 }
 
 export default function SectorsPage() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/sectors')
+
     const [sectors, setSectors] = useState<Sector[]>([])
     const [registrations, setRegistrations] = useState<SectorRegistration[]>([])
     const [selectedRegistration, setSelectedRegistration] = useState<SectorRegistration | null>(null)

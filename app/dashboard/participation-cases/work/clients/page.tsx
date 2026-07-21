@@ -25,13 +25,27 @@ export default async function ClientsProgressPage() {
     }
 
     // Load independent lookups together so navigation does not create a waterfall.
+    //
+    // The events catalog is intentionally split into two tables — see
+    // supabase/migrations/015_split_events_into_website_and_drift.sql:
+    //
+    //   • public.events        — the website catalog, surfaced on
+    //                            /dashboard/events (full management surface:
+    //                            image, capacity, price, lifecycle, etc.).
+    //   • public.drift_events  — used **only** by this new-registration
+    //                            wizard. It is the dropdown attendees see,
+    //                            decoupled from the website catalog so
+    //                            drafts / hidden events cannot leak into the
+    //                            applicant flow. Visibility is governed by
+    //                            both `is_active = true` and
+    //                            `status = 'active'`.
     const [{ data: events }, { data: employees }] = await Promise.all([
         supabase
-            .from('events')
+            .from('drift_events')
             .select('id, title, title_ar, date, end_date, country, country_ar, location, location_ar, sector, event_type, status, registration_config, conference_config')
-            .eq('status', 'draft')
-            .order('date', { ascending: false })
-            .limit(100),
+            .eq('is_active', true)
+            .eq('status', 'active')
+            .order('date', { ascending: false }),
         supabase
             .from('users')
             .select('id, full_name, email, role')

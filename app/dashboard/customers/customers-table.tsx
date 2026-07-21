@@ -36,9 +36,7 @@ export function CustomersTable({ clients }: { clients: Customer[] }) {
     <div dir="ltr" lang="en" className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="jaz-meta mb-2">Relationship management · Customer directory</p>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--jaz-ink)]">Customers</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--jaz-muted)]">A single record for every customer, independent from applications, with contact, professional, and JAZ relationship details.</p>
         </div>
         <Link href="/dashboard/customers/new" className="inline-flex h-10 items-center gap-2 rounded-md bg-[#8B0000] px-4 text-sm font-semibold text-white transition hover:bg-[#6B0000]"><Plus className="size-4" /> Add customer</Link>
       </header>
@@ -56,7 +54,7 @@ export function CustomersTable({ clients }: { clients: Customer[] }) {
       {filtersOpen && <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/20 p-4 pt-24" role="dialog" aria-modal="true" onMouseDown={(e) => e.target === e.currentTarget && setFiltersOpen(false)}><div className="w-full max-w-sm rounded-lg border border-[var(--jaz-line)] bg-white p-5 shadow-lg"><div className="flex items-center justify-between"><h2 className="font-semibold">Customer filters</h2><button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close"><X className="size-4" /></button></div><label className="mt-5 block text-xs font-semibold text-[var(--jaz-muted)]">Data status<select value={filter} onChange={(e) => setFilter(e.target.value)} className="mt-2 h-10 w-full rounded-md border border-[var(--jaz-line)] bg-white px-3 text-sm font-normal text-[var(--jaz-ink)]">{statusFilters.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><button type="button" onClick={() => setFiltersOpen(false)} className="mt-5 h-10 w-full rounded-md bg-[var(--jaz-sovereign)] text-sm font-semibold text-white">Apply filters</button></div></div>}
 
       <div className="overflow-hidden rounded-lg border border-slate-200/80 bg-white">
-        <div className="flex items-center justify-between border-b border-slate-200/80 bg-slate-50/70 px-4 py-4"><div><h2 className="text-sm font-semibold text-[var(--jaz-ink)]">Customer directory</h2><p className="mt-1 text-xs text-[var(--jaz-muted)]">Linked applications appear inside the customer profile and do not define this directory.</p></div><span className="text-xs text-[var(--jaz-muted)]">Automatically updated</span></div>
+        <div className="flex items-center justify-between border-b border-slate-200/80 bg-slate-50/70 px-4 py-4"><div><h2 className="text-sm font-semibold text-[var(--jaz-ink)]">Customer directory</h2></div><span className="text-xs text-[var(--jaz-muted)]">Automatically updated</span></div>
         <div className="divide-y divide-slate-200/70">
           {rows.map((client) => <Link key={client.id} href={`/dashboard/customers/${client.id}`} className="group grid gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[minmax(220px,1.5fr)_minmax(170px,1fr)_minmax(170px,1fr)_auto] md:items-center">
             <div className="flex items-center gap-3"><Avatar size="sm" title={client.full_name_as_passport}><AvatarImage src={client.avatar_url || undefined} alt="" /><AvatarFallback className="bg-[var(--jaz-surface-2)] text-xs text-[var(--jaz-ink)]">{getInitials(client.full_name_as_passport)}</AvatarFallback></Avatar><div><p className="font-semibold text-[var(--jaz-ink)]">{client.full_name_as_passport}</p><p className="mt-1 text-xs text-[var(--jaz-muted)]">Client ID · {client.id.slice(0, 8).toUpperCase()}</p></div></div>

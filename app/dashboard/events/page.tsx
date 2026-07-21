@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { EventsFilters } from './_components/events-filters'
@@ -25,6 +26,8 @@ export default async function EventsPage({
 }: {
   searchParams?: Promise<SearchParams>
 }) {
+  await requireDashboardAccess('/dashboard/events')
+
   const supabase = await createClient()
   const params = (await searchParams) ?? {}
 

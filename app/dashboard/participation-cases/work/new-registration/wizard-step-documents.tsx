@@ -159,18 +159,33 @@ export function DocumentsStep() {
                     </span>
                   </label>
                   <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
-                    {mergeableDocuments.map((document, index) => (
-                      <label key={document.path} className="flex cursor-pointer items-center gap-2 border-b border-slate-100 px-1 py-2 hover:bg-white">
-                        <input type="checkbox" checked={packageDocumentPaths.includes(document.path)} onChange={(event) => setPackageDocumentPaths((current) => (event.target.checked ? [...current, document.path] : current.filter((path) => path !== document.path)))} className="h-4 w-4 accent-[#8B0000]" />
-                        <span className="w-4 shrink-0 text-center text-[10px] font-bold text-slate-400">{index + 1}</span>
+                    {mergeableDocuments.map((document) => {
+                      const selected = packageDocumentPaths.includes(document.path);
+                      const order = packageDocumentPaths.indexOf(document.path);
+                      return (
+                      <label key={document.path} draggable={selected} onDragStart={(event) => event.dataTransfer.setData("text/plain", document.path)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
+                        event.preventDefault();
+                        const draggedPath = event.dataTransfer.getData("text/plain");
+                        if (!draggedPath || draggedPath === document.path) return;
+                        setPackageDocumentPaths((current) => {
+                          if (!current.includes(draggedPath) || !current.includes(document.path)) return current;
+                          const next = current.filter((path) => path !== draggedPath);
+                          next.splice(next.indexOf(document.path), 0, draggedPath);
+                          return next;
+                        });
+                      }} className={`flex items-center gap-2 border-b border-slate-100 px-1 py-2 hover:bg-white ${selected ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"}`}>
+                        <input type="checkbox" checked={selected} onChange={(event) => setPackageDocumentPaths((current) => (event.target.checked ? [...current, document.path] : current.filter((path) => path !== document.path)))} className="h-4 w-4 accent-[#8B0000]" />
+                        <span className="w-4 shrink-0 text-center text-[10px] font-bold text-slate-400">{selected ? order + 1 : "—"}</span>
                         <span className="min-w-0">
                           <span className="block truncate text-xs font-semibold text-slate-700" title={document.name}>
                             {document.name}
                           </span>
                         </span>
                       </label>
-                    ))}
+                      );
+                    })}
                   </div>
+                  <p className="mt-2 text-[11px] text-slate-500">Select the files, then drag the numbered files into the order you want in the merged PDF.</p>
                 </div>
                 <div className="mt-auto space-y-2 border-t border-slate-200 pt-3">
                   <label className="block text-[11px] font-semibold text-slate-500">Final PDF name</label>

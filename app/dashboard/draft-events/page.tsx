@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 import Link from 'next/link'
 import { CalendarPlus, CheckCircle2, FileText, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -9,13 +10,13 @@ export const metadata = {
 }
 
 export default async function DraftEventsPage() {
+  await requireDashboardAccess('/dashboard/draft-events')
+
   const supabase = await createClient()
 
-  // Fetch only events with status 'draft'
   const { data: events, error } = await supabase
-    .from('events')
-    .select('id, title, date, location, status, created_at, updated_at, updated_by, editor:users!events_updated_by_fkey(id, full_name, email, avatar_url)')
-    .eq('status', 'draft')
+    .from('drift_events')
+    .select('id, title, date, location, status, created_at, updated_at, updated_by')
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -37,7 +38,7 @@ export default async function DraftEventsPage() {
 
   const draftEvents = (events ?? []).map((event) => ({
     ...event,
-    editor: Array.isArray(event.editor) ? event.editor[0] ?? null : event.editor,
+    editor: null,
   }))
   const draftRegistrations = registrations ?? []
   const completeEvents = draftEvents.filter((event) => Boolean(event.title && event.date && event.location)).length
@@ -47,7 +48,6 @@ export default async function DraftEventsPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-48 flex-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Draft Events</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Prepare event details before publishing to the calendar.</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <div className="flex h-10 min-w-28 items-center gap-2 rounded-lg border bg-background px-3">

@@ -21,16 +21,25 @@ import {
 import { RegistrationFormBuilder } from '@/components/shared/registration-form-builder'
 import type { FormField } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 // Icon picker mapping
 const iconMap: Record<string, any> = {
-    Building2, Heart, Cpu, GraduationCap, Briefcase, Lightbulb, Users, 
+    Building2,
+    Heart,
+    Cpu,
+    GraduationCap,
+    Briefcase,
+    Lightbulb, Users, 
     Share2, Megaphone, Monitor, Palette, Kanban, Code, Mail
 }
 
 const ICONS = Object.keys(iconMap).map(key => ({ value: key, icon: iconMap[key] }))
 
 export default function PartnersDashboard() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/partners')
+
     const [activeTab, setActiveTab] = useState<'content' | 'submissions'>('content')
     const [categories, setCategories] = useState<any[]>([])
     const [opportunities, setOpportunities] = useState<any[]>([])

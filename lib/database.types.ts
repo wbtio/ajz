@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_application_reviews: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          file_names: Json
+          id: string
+          registration_id: string
+          review: Json
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          file_names?: Json
+          id?: string
+          registration_id: string
+          review: Json
+          score?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          file_names?: Json
+          id?: string
+          registration_id?: string
+          review?: Json
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_application_reviews_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_application_reviews_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           created_at: string | null
@@ -474,9 +519,14 @@ export type Database = {
           email: string | null
           employer_name: string | null
           first_name: string | null
+          follow_up_date: string | null
           full_address: string | null
           full_name_as_passport: string
           id: string
+          imported_employee_name: string | null
+          imported_source_date: string | null
+          inquiry_reason: string | null
+          jaz_sector: string | null
           job_title: string | null
           last_name: string | null
           linked_user_id: string | null
@@ -494,11 +544,15 @@ export type Database = {
           passport_type: string | null
           phone: string | null
           place_of_birth: string | null
+          preferred_contact_method: string | null
           previous_schengen_visa: boolean | null
           professional_specialty: string | null
+          referred_by: string | null
           residence_country: string | null
           schengen_visas_last_5y: Json | null
           sex: string | null
+          source_event_name: string | null
+          source_note: string | null
           title_salutation: string | null
           updated_at: string
           whatsapp_number: string | null
@@ -520,9 +574,14 @@ export type Database = {
           email?: string | null
           employer_name?: string | null
           first_name?: string | null
+          follow_up_date?: string | null
           full_address?: string | null
           full_name_as_passport: string
           id?: string
+          imported_employee_name?: string | null
+          imported_source_date?: string | null
+          inquiry_reason?: string | null
+          jaz_sector?: string | null
           job_title?: string | null
           last_name?: string | null
           linked_user_id?: string | null
@@ -540,11 +599,15 @@ export type Database = {
           passport_type?: string | null
           phone?: string | null
           place_of_birth?: string | null
+          preferred_contact_method?: string | null
           previous_schengen_visa?: boolean | null
           professional_specialty?: string | null
+          referred_by?: string | null
           residence_country?: string | null
           schengen_visas_last_5y?: Json | null
           sex?: string | null
+          source_event_name?: string | null
+          source_note?: string | null
           title_salutation?: string | null
           updated_at?: string
           whatsapp_number?: string | null
@@ -566,9 +629,14 @@ export type Database = {
           email?: string | null
           employer_name?: string | null
           first_name?: string | null
+          follow_up_date?: string | null
           full_address?: string | null
           full_name_as_passport?: string
           id?: string
+          imported_employee_name?: string | null
+          imported_source_date?: string | null
+          inquiry_reason?: string | null
+          jaz_sector?: string | null
           job_title?: string | null
           last_name?: string | null
           linked_user_id?: string | null
@@ -586,11 +654,15 @@ export type Database = {
           passport_type?: string | null
           phone?: string | null
           place_of_birth?: string | null
+          preferred_contact_method?: string | null
           previous_schengen_visa?: boolean | null
           professional_specialty?: string | null
+          referred_by?: string | null
           residence_country?: string | null
           schengen_visas_last_5y?: Json | null
           sex?: string | null
+          source_event_name?: string | null
+          source_note?: string | null
           title_salutation?: string | null
           updated_at?: string
           whatsapp_number?: string | null
@@ -634,7 +706,6 @@ export type Database = {
           title_ar: string
           title_en: string
           updated_at: string | null
-          updated_by: string | null
         }
         Insert: {
           color?: string | null
@@ -651,7 +722,6 @@ export type Database = {
           title_ar: string
           title_en: string
           updated_at?: string | null
-          updated_by?: string | null
         }
         Update: {
           color?: string | null
@@ -668,7 +738,6 @@ export type Database = {
           title_ar?: string
           title_en?: string
           updated_at?: string | null
-          updated_by?: string | null
         }
         Relationships: [
           {
@@ -850,6 +919,106 @@ export type Database = {
             columns: ["goal_id"]
             isOneToOne: false
             referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      drift_events: {
+        Row: {
+          conference_config: Json | null
+          country: string | null
+          country_ar: string | null
+          created_at: string | null
+          date: string
+          end_date: string | null
+          event_type: string | null
+          events_id: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          location_ar: string | null
+          registration_config: Json | null
+          sector: string | null
+          sector_id: string | null
+          sort_order: number | null
+          status: string | null
+          sub_sector: string | null
+          sub_sector_ar: string | null
+          title: string
+          title_ar: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          conference_config?: Json | null
+          country?: string | null
+          country_ar?: string | null
+          created_at?: string | null
+          date: string
+          end_date?: string | null
+          event_type?: string | null
+          events_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          location_ar?: string | null
+          registration_config?: Json | null
+          sector?: string | null
+          sector_id?: string | null
+          sort_order?: number | null
+          status?: string | null
+          sub_sector?: string | null
+          sub_sector_ar?: string | null
+          title: string
+          title_ar?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          conference_config?: Json | null
+          country?: string | null
+          country_ar?: string | null
+          created_at?: string | null
+          date?: string
+          end_date?: string | null
+          event_type?: string | null
+          events_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          location_ar?: string | null
+          registration_config?: Json | null
+          sector?: string | null
+          sector_id?: string | null
+          sort_order?: number | null
+          status?: string | null
+          sub_sector?: string | null
+          sub_sector_ar?: string | null
+          title?: string
+          title_ar?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drift_events_events_id_fkey"
+            columns: ["events_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drift_events_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drift_events_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -1068,6 +1237,13 @@ export type Database = {
             columns: ["sector_id"]
             isOneToOne: false
             referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -2196,7 +2372,6 @@ export type Database = {
       team_tasks: {
         Row: {
           assignee: string | null
-          attachments: Json | null
           category: string
           completed_at: string | null
           completed_by: string | null
@@ -2212,7 +2387,6 @@ export type Database = {
         }
         Insert: {
           assignee?: string | null
-          attachments?: Json | null
           category?: string
           completed_at?: string | null
           completed_by?: string | null
@@ -2228,7 +2402,6 @@ export type Database = {
         }
         Update: {
           assignee?: string | null
-          attachments?: Json | null
           category?: string
           completed_at?: string | null
           completed_by?: string | null

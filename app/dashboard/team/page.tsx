@@ -13,6 +13,7 @@ import { Plus, Edit, Trash2, Loader2, Shield, UserCog, UserPlus, Mail, Phone, Tr
 import { DASHBOARD_PAGES, DEFAULT_TEAM_PATHS } from '@/lib/permissions'
 import { formatDate, cn, timeAgo } from '@/lib/utils'
 import { TeamStatsCards } from './components/team-stats-cards'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 interface TeamMember {
     id: string
@@ -78,6 +79,9 @@ function accessBadgeColor(path: string) {
 }
 
 export default function TeamPage() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/team')
+
     const [members, setMembers] = useState<TeamMember[]>([])
     const [tasks, setTasks] = useState<TeamTask[]>([])
     const [loading, setLoading] = useState(true)

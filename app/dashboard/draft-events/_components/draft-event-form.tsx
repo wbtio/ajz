@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,19 +9,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ChevronRight, ChevronLeft, Save, Plus, Trash2, Upload, Image as ImageIcon } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Plus, Trash2, Upload, Image as ImageIcon, Save } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import type { Event } from '@/lib/database.types'
 import { sanitizeEnglishText } from '@/lib/english-only'
-
-const steps = [
-  { id: 1, name: 'Basic Details' },
-  { id: 2, name: 'Time & Location' },
-  { id: 3, name: 'Logistics' },
-  { id: 4, name: 'Accommodation / Host' },
-  { id: 5, name: 'Promotion' }
-]
+import { Tables } from '@/lib/database.types'
 
 function toDateInputValue(value: string | null | undefined) {
   if (!value) return ''
@@ -34,7 +26,8 @@ function englishValue(value: unknown) {
 
 interface DraftEventFormProps {
   eventId?: string
-  initialData?: Event
+  initialData?: Partial<Tables<'drift_events'>>
+  initialStep?: number
 }
 
 type HostInfo = Partial<{
@@ -94,7 +87,7 @@ const defaultPromotion: PromotionPlan = {
   ],
 }
 
-export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
+export function DraftEventForm({ eventId, initialData, initialStep }: DraftEventFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const formRef = useRef<HTMLFormElement>(null)
@@ -125,21 +118,21 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
           : defaultPromotion.channels,
       }
     : defaultPromotion
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(initialStep || 1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [expectedReplies, setExpectedReplies] = useState<ExpectedReply[]>(initialExpectedReplies)
   const [promotion, setPromotion] = useState<PromotionPlan>(initialPromotion)
   
   const [formData, setFormData] = useState({
     title: englishValue(initialData?.title),
-    description: englishValue(initialData?.description),
+    description: englishValue((initialData as any)?.description),
     date: toDateInputValue(initialData?.date),
     end_date: toDateInputValue(initialData?.end_date),
     country: englishValue(initialData?.country),
     location: englishValue(initialData?.location),
     event_type: initialData?.event_type || 'offline',
-    capacity: initialData?.capacity?.toString() || '',
-    price: initialData?.price?.toString() || '',
+    capacity: (initialData as any)?.capacity?.toString() || '',
+    price: (initialData as any)?.price?.toString() || '',
     host_has_accommodation: initialHostInfo.has_accommodation || false,
     host_org_name: englishValue(initialHostInfo.org_name),
     host_org_address: englishValue(initialHostInfo.org_address),
@@ -159,6 +152,37 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
     host_contact_email: englishValue(initialHostInfo.contact_email)
   })
 
+  const activeSteps = useMemo(() => {
+    const list = [
+      { key: 'basic', name: 'Basic Details' },
+      { key: 'time_location', name: 'Time & Location' },
+      { key: 'logistics', name: 'Logistics' }
+    ]
+    if (formData.event_type !== 'online') {
+      list.push({ key: 'accommodation', name: 'Accommodation / Host' })
+    }
+    list.push({ key: 'promotion', name: 'Promotion' })
+    return list.map((step, index) => ({
+      id: index + 1,
+      key: step.key,
+      name: step.name
+    }))
+  }, [formData.event_type])
+
+  const activeStepKey = activeSteps[currentStep - 1]?.key
+
+  useEffect(() => {
+    if (currentStep > activeSteps.length) {
+      setCurrentStep(activeSteps.length)
+    }
+  }, [activeSteps, currentStep])
+
+  useEffect(() => {
+    if (initialStep) {
+      setCurrentStep(initialStep)
+    }
+  }, [initialStep])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     const { name, value, type } = target
@@ -173,9 +197,11 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
     }
   }
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (!formRef.current?.reportValidity()) return
-    if (currentStep < 5) setCurrentStep(prev => prev + 1)
+    if (currentStep < activeSteps.length) {
+      await persistDraft(false, currentStep + 1)
+    }
   }
 
   const prevStep = () => {
@@ -221,14 +247,14 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
       return {
         updated_by: user?.id ?? null,
         title: formData.title,
-        description: formData.description,
         date: formData.date,
         end_date: formData.end_date || null,
         country: formData.country,
         location: formData.location,
         event_type: formData.event_type,
-        capacity: formData.capacity ? parseInt(formData.capacity) : null,
-        price: formData.price ? parseFloat(formData.price) : null,
+        is_active: true,
+        status: 'active',
+        registration_config: initialData?.registration_config ?? null,
           conference_config: {
           ...initialConferenceConfig,
           expected_replies: expectedReplies.filter((item) => item.question.trim() || item.answer.trim()),
@@ -253,10 +279,10 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
             contact_email: formData.host_contact_email
           }
         }
-      }
+      } as any
   }
 
-  const persistDraft = async (finish: boolean) => {
+  const persistDraft = async (finish: boolean, targetStepOnSave?: number) => {
     setIsSubmitting(true)
     try {
       const payload = await buildPayload()
@@ -264,31 +290,42 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
       if (eventId) {
         // Update existing draft
         const { error } = await supabase
-          .from('events')
+          .from('drift_events')
           .update(payload)
           .eq('id', eventId)
 
         if (error) throw error
 
-        // Keep editors in the draft after saving so they can continue reviewing it.
         toast.success(finish ? 'Draft event saved successfully.' : 'Progress saved successfully.')
-        router.refresh()
+        if (finish) {
+          router.push('/dashboard/draft-events')
+        } else {
+          if (targetStepOnSave) {
+            setCurrentStep(targetStepOnSave)
+          }
+          router.refresh()
+        }
       } else {
         // Insert new draft
         const { data: createdEvent, error } = await supabase
-          .from('events')
+          .from('drift_events')
           .insert([{
             ...payload,
-            status: 'draft' // Hardcoded to draft
+            status: 'active',
+            is_active: true,
           }])
           .select('id')
           .single()
 
         if (error) throw error
 
-
         toast.success(finish ? 'Draft event created successfully.' : 'Draft created. Your progress is saved.')
-        router.replace(`/dashboard/draft-events/${createdEvent.id}/edit${finish ? '' : `?step=${currentStep}`}`)
+        if (finish) {
+          router.push('/dashboard/draft-events')
+        } else {
+          const nextStepNum = targetStepOnSave || currentStep
+          router.replace(`/dashboard/draft-events/${createdEvent.id}/edit?step=${nextStepNum}`)
+        }
       }
     } catch (error) {
       console.error('Error saving draft event:', error)
@@ -296,11 +333,6 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const handleSaveProgress = async () => {
-    if (!formRef.current?.reportValidity()) return
-    await persistDraft(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -312,8 +344,8 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
     <div className="mx-auto max-w-6xl space-y-6 text-left" dir="ltr" lang="en">
       {/* Stepper Navigation */}
       <nav aria-label="Progress">
-        <ol role="list" className="grid grid-cols-4 gap-2 sm:gap-4">
-          {steps.map((step) => (
+        <ol role="list" className={`grid gap-2 sm:gap-4 ${activeSteps.length === 4 ? 'grid-cols-4' : 'grid-cols-5'}`}>
+          {activeSteps.map((step) => (
             <li key={step.name} className="flex min-w-0 items-center">
               <span
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
@@ -329,7 +361,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
               <span className="ml-2 hidden min-w-0 truncate text-xs font-medium text-muted-foreground lg:block">
                 {step.name}
               </span>
-              {step.id !== steps.length && (
+              {step.id !== activeSteps.length && (
                 <div className="ml-2 hidden h-px flex-1 bg-border sm:block" />
               )}
             </li>
@@ -343,7 +375,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
             e.preventDefault()
-            if (currentStep < 5) {
+            if (currentStep < activeSteps.length) {
               nextStep()
             }
           }
@@ -351,21 +383,34 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
       >
         <Card>
           <CardHeader>
-            <CardTitle>{steps.find(s => s.id === currentStep)?.name}</CardTitle>
+            <CardTitle>{activeSteps.find(s => s.id === currentStep)?.name}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {currentStep === 1 && (
+            {activeStepKey === 'basic' && (
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Event Title</Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    placeholder="Enter event title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Event Title</Label>
+                    <Input
+                      id="title"
+                      name="title"
+                      placeholder="Enter event title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="event_type">Event Type</Label>
+                    <Select dir="ltr" value={formData.event_type} onValueChange={(value) => setFormData((current) => ({ ...current, event_type: value }))}>
+                      <SelectTrigger id="event_type" aria-label="Event type"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectGroup>
+                        <SelectItem value="offline">In Person</SelectItem>
+                        <SelectItem value="online">Online</SelectItem>
+                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                      </SelectGroup></SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
@@ -378,54 +423,10 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
                     onChange={handleInputChange}
                   />
                 </div>
-                <div className="space-y-4 border-t border-slate-100 pt-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-900">Expected questions and replies</h3>
-                      <p className="mt-1 text-xs leading-5 text-slate-500">Prepare answers employees can quickly use when replying to visitors on WhatsApp.</p>
-                    </div>
-                    <Button type="button" variant="outline" size="sm" onClick={addExpectedReply}>
-                      <Plus className="mr-1.5 h-4 w-4" /> Add reply
-                    </Button>
-                  </div>
-                  {expectedReplies.length === 0 ? (
-                    <button type="button" onClick={addExpectedReply} className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 transition hover:border-primary hover:text-primary">
-                      <Plus className="h-4 w-4" /> Add the first expected reply
-                    </button>
-                  ) : (
-                    <div className="space-y-4">
-                      {expectedReplies.map((reply, index) => (
-                        <div key={index} className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/60 p-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-slate-500">Reply {index + 1}</span>
-                            <Button type="button" variant="ghost" size="sm" aria-label={`Remove reply ${index + 1}`} onClick={() => removeExpectedReply(index)}>
-                              <Trash2 className="h-4 w-4 text-slate-500" />
-                            </Button>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`reply-question-${index}`}>Expected question</Label>
-                            <Input id={`reply-question-${index}`} value={reply.question} onChange={(e) => updateExpectedReply(index, 'question', e.target.value)} placeholder="e.g. When does the exhibition start?" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`reply-answer-${index}`}>Suggested reply</Label>
-                            <Textarea id={`reply-answer-${index}`} value={reply.answer} onChange={(e) => updateExpectedReply(index, 'answer', e.target.value)} placeholder="Write the answer the employee can send on WhatsApp" rows={3} />
-                          </div>
-                          <div className="flex flex-wrap items-center gap-3">
-                            <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:border-primary hover:text-primary">
-                              <Upload className="h-4 w-4" /> {reply.image_url ? 'Change image' : 'Attach image'}
-                              <input type="file" accept="image/*" className="sr-only" onChange={(e) => e.target.files?.[0] && uploadReplyImage(index, e.target.files[0])} />
-                            </label>
-                            {reply.image_url && <span className="flex items-center gap-1 text-xs text-emerald-700"><ImageIcon className="h-3.5 w-3.5" /> Image attached</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
             )}
 
-            {currentStep === 2 && (
+            {activeStepKey === 'time_location' && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -464,33 +465,22 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="location">City / Venue</Label>
+                    <Label htmlFor="location">City / Venue {formData.event_type !== 'online' && '*'}</Label>
                     <Input
                       id="location"
                       name="location"
-                      placeholder="e.g. Riyadh, Exhibition Center"
+                      placeholder={formData.event_type === 'online' ? 'Online platform/link (Optional)' : 'e.g. Riyadh, Exhibition Center'}
                       value={formData.location}
                       onChange={handleInputChange}
-                      required
+                      required={formData.event_type !== 'online'}
                     />
                   </div>
                 </div>
               </div>
             )}
 
-            {currentStep === 3 && (
+            {activeStepKey === 'logistics' && (
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="event_type">Event Type</Label>
-                  <Select dir="ltr" value={formData.event_type} onValueChange={(value) => setFormData((current) => ({ ...current, event_type: value }))}>
-                    <SelectTrigger id="event_type" aria-label="Event type"><SelectValue /></SelectTrigger>
-                    <SelectContent><SelectGroup>
-                      <SelectItem value="offline">In Person</SelectItem>
-                      <SelectItem value="online">Online</SelectItem>
-                      <SelectItem value="hybrid">Hybrid</SelectItem>
-                    </SelectGroup></SelectContent>
-                  </Select>
-                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="capacity">Capacity (Optional)</Label>
@@ -519,7 +509,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
               </div>
             )}
 
-            {currentStep === 4 && (
+            {activeStepKey === 'accommodation' && (
               <div className="space-y-6">
                 <div className="flex items-center space-x-2 bg-blue-50/50 p-4 rounded-md border border-blue-100">
                   <Checkbox
@@ -639,7 +629,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
               </div>
             )}
 
-            {currentStep === 5 && (
+            {activeStepKey === 'promotion' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2"><Label htmlFor="promotion_budget">Total promotion budget (USD)</Label><Input id="promotion_budget" type="number" min="0" step="0.01" value={promotion.budget} onChange={(e) => setPromotion((p) => ({ ...p, budget: e.target.value }))} placeholder="e.g. 500" /></div>
@@ -659,6 +649,51 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
                     </div>
                   ))}
                 </div>
+
+                <div className="space-y-4 border-t border-slate-100 pt-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900">Expected questions and replies</h3>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">Prepare answers employees can quickly use when replying to visitors on WhatsApp.</p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={addExpectedReply}>
+                      <Plus className="mr-1.5 h-4 w-4" /> Add reply
+                    </Button>
+                  </div>
+                  {expectedReplies.length === 0 ? (
+                    <button type="button" onClick={addExpectedReply} className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 transition hover:border-primary hover:text-primary">
+                      <Plus className="h-4 w-4" /> Add the first expected reply
+                    </button>
+                  ) : (
+                    <div className="space-y-4">
+                      {expectedReplies.map((reply, index) => (
+                        <div key={index} className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-500">Reply {index + 1}</span>
+                            <Button type="button" variant="ghost" size="sm" aria-label={`Remove reply ${index + 1}`} onClick={() => removeExpectedReply(index)}>
+                              <Trash2 className="h-4 w-4 text-slate-500" />
+                            </Button>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`reply-question-${index}`}>Expected question</Label>
+                            <Input id={`reply-question-${index}`} value={reply.question} onChange={(e) => updateExpectedReply(index, 'question', e.target.value)} placeholder="e.g. When does the exhibition start?" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`reply-answer-${index}`}>Suggested reply</Label>
+                            <Textarea id={`reply-answer-${index}`} value={reply.answer} onChange={(e) => updateExpectedReply(index, 'answer', e.target.value)} placeholder="Write the answer the employee can send on WhatsApp" rows={3} />
+                          </div>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:border-primary hover:text-primary">
+                              <Upload className="h-4 w-4" /> {reply.image_url ? 'Change image' : 'Attach image'}
+                              <input type="file" accept="image/*" className="sr-only" onChange={(e) => e.target.files?.[0] && uploadReplyImage(index, e.target.files[0])} />
+                            </label>
+                            {reply.image_url && <span className="flex items-center gap-1 text-xs text-emerald-700"><ImageIcon className="h-3.5 w-3.5" /> Image attached</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </CardContent>
@@ -676,11 +711,7 @@ export function DraftEventForm({ eventId, initialData }: DraftEventFormProps) {
           </Button>
 
           <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" onClick={handleSaveProgress} disabled={isSubmitting}>
-              {isSubmitting ? 'Saving…' : 'Save progress'}
-              <Save className="ml-2 h-4 w-4" />
-            </Button>
-            {currentStep < 5 ? (
+            {currentStep < activeSteps.length ? (
             <Button type="button" onClick={nextStep} disabled={isSubmitting}>
               Next
               <ChevronRight className="ml-2 h-4 w-4" />

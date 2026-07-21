@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 interface Task {
   id: string;
@@ -62,6 +63,9 @@ const columns: Column[] = [
 ];
 
 export default function TasksDashboardPage() {
+  // Check permissions for this page
+  useDashboardPermission('/tasks')
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

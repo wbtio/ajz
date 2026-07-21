@@ -1,10 +1,13 @@
 import { getSearchSessions } from '@/lib/actions/event-discovery.actions'
 import { SessionsList } from './components/sessions-list'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 // Allow dynamic rendering so status updates (processing -> completed) are fresh
 export const dynamic = 'force-dynamic'
 
 export default async function SessionsPage() {
+    await requireDashboardAccess('/dashboard/event-discovery/sessions')
+
     const { data: sessions } = await getSearchSessions(1, 20)
 
     return (

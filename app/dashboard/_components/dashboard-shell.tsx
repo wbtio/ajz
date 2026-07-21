@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { DashboardSidebar } from '@/app/dashboard/_components/sidebar'
 import { DashboardHeader } from '@/app/dashboard/_components/dashboard-header'
 import { containsArabicScript, sanitizeEnglishText } from '@/lib/english-only'
+import { DashboardUserProvider } from '@/components/auth/use-dashboard-user'
 
 interface DashboardUser {
     id: string
@@ -74,17 +75,19 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     }
 
     return (
-        <div
-            className="flex min-h-screen bg-slate-100 [font-family:var(--font-plus-jakarta-sans),sans-serif]"
-            dir="ltr"
-            lang="en"
-            onInputCapture={enforceEnglishOnly}
-        >
-            <DashboardSidebar user={user} collapsed={collapsed || !mounted} />
-            <div className="flex min-w-0 flex-1 flex-col">
-                <DashboardHeader user={user} collapsed={collapsed} onToggleSidebar={toggleSidebar} />
-                <main id="main-content" className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <DashboardUserProvider>
+            <div
+                className="flex min-h-screen bg-slate-100 [font-family:var(--font-plus-jakarta-sans),sans-serif]"
+                dir="ltr"
+                lang="en"
+                onInputCapture={enforceEnglishOnly}
+            >
+                <DashboardSidebar user={user} collapsed={collapsed || !mounted} />
+                <div className="flex min-w-0 flex-1 flex-col">
+                    <DashboardHeader user={user} collapsed={collapsed} onToggleSidebar={toggleSidebar} />
+                    <main id="main-content" className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+                </div>
             </div>
-        </div>
+        </DashboardUserProvider>
     )
 }

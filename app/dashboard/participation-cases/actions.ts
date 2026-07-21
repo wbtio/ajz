@@ -989,6 +989,24 @@ export async function searchClientsWithMatchingScore(input: {
         return { data: [], error: error.message }
     }
 
+    const clientIds = (candidates || []).map((client) => client.id)
+    const { data: registrations, error: registrationsError } = clientIds.length > 0
+        ? await supabase
+            .from('registrations')
+            .select('id, client_id, case_number, event_id, events(title, title_ar, date, location, location_ar)')
+            .in('client_id', clientIds)
+            .order('created_at', { ascending: false })
+        : { data: [], error: null }
+
+    if (registrationsError) console.error('searchClientsWithMatchingScore registrations failed:', registrationsError)
+    const registrationsByClient = new Map<string, any[]>()
+    for (const registration of registrations || []) {
+        if (!registration.client_id) continue
+        const current = registrationsByClient.get(registration.client_id) || []
+        current.push(registration)
+        registrationsByClient.set(registration.client_id, current)
+    }
+
     const results = (candidates || []).map((client) => {
         const score = calculateClientMatchScore(client, input)
         let matchType: 'Exact Match' | 'Strong Match' | 'Potential Match' | 'Low Confidence Match' | 'No Match' = 'No Match'
@@ -999,7 +1017,7 @@ export async function searchClientsWithMatchingScore(input: {
         else if (score >= 50) matchType = 'Low Confidence Match'
 
         return {
-            client,
+            client: { ...client, registrations: registrationsByClient.get(client.id) || [] },
             score,
             matchType
         }
@@ -1040,6 +1058,10 @@ export async function continueWithClientAction(input: {
         workCity?: string
         workPhone?: string
         workEmail?: string
+        residenceCountry?: string
+        previousSchengenVisa?: boolean
+        previousSchengenVisas?: any[]
+        otherResidencePermit?: any
     }
 }) {
     const { supabase, user, profile } = await getCurrentUser()
@@ -1095,6 +1117,10 @@ export async function continueWithClientAction(input: {
         if (input.newData.dateOfBirth) updates.date_of_birth = input.newData.dateOfBirth
         if (input.newData.placeOfBirth) updates.place_of_birth = input.newData.placeOfBirth
         if (input.newData.nationalId) updates.national_id = input.newData.nationalId
+        if (input.newData.residenceCountry) updates.residence_country = input.newData.residenceCountry
+        if (input.newData.previousSchengenVisa !== undefined) updates.previous_schengen_visa = input.newData.previousSchengenVisa
+        if (input.newData.previousSchengenVisas !== undefined) updates.schengen_visas_last_5y = input.newData.previousSchengenVisas
+        if (input.newData.otherResidencePermit !== undefined) updates.other_residence_permit = input.newData.otherResidencePermit
     }
 
     // Employment information is captured on the client-search step and must
@@ -1189,6 +1215,10 @@ export async function continueWithClientAction(input: {
             phone: latestClient.phone,
             email: latestClient.email,
             company_name: latestClient.employer_name,
+            residence_country: latestClient.residence_country,
+            previous_schengen_visa: latestClient.previous_schengen_visa,
+            schengen_visas_last_5y: latestClient.schengen_visas_last_5y,
+            other_residence_permit: latestClient.other_residence_permit,
             timestamp: new Date().toISOString()
         }
 
@@ -1238,6 +1268,10 @@ export async function createNewClientAndApplication(input: {
         workCity?: string
         workPhone?: string
         workEmail?: string
+        residenceCountry?: string
+        previousSchengenVisa?: boolean
+        previousSchengenVisas?: any[]
+        otherResidencePermit?: any
     }
 }) {
     const { supabase, user, profile } = await getCurrentUser()
@@ -1280,6 +1314,10 @@ export async function createNewClientAndApplication(input: {
             work_governorate: input.clientData.workCity || null,
             work_phone: input.clientData.workPhone || null,
             work_email: input.clientData.workEmail || null,
+            residence_country: input.clientData.residenceCountry || null,
+            previous_schengen_visa: input.clientData.previousSchengenVisa || false,
+            schengen_visas_last_5y: input.clientData.previousSchengenVisas || [],
+            other_residence_permit: input.clientData.otherResidencePermit || null,
             passport_history: []
         })
         .select('*')
@@ -1332,6 +1370,10 @@ export async function createNewClientAndApplication(input: {
         phone: newClient.phone,
         email: newClient.email,
         company_name: newClient.employer_name,
+        residence_country: newClient.residence_country,
+        previous_schengen_visa: newClient.previous_schengen_visa,
+        schengen_visas_last_5y: newClient.schengen_visas_last_5y,
+        other_residence_permit: newClient.other_residence_permit,
         timestamp: new Date().toISOString()
     }
 

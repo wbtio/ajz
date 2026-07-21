@@ -28,6 +28,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
@@ -90,6 +91,9 @@ interface Officer {
 }
 
 export default function VisaCenterDetails() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/visa-availability')
+
     const shouldReduceMotion = useReducedMotion()
     const today = useMemo(() => new Date(), [])
     const params = useParams()

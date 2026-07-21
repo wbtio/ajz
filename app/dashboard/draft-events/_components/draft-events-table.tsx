@@ -191,7 +191,7 @@ export function DraftEventsTable({ events: initialEvents, registrations }: Draft
   const deleteEvents = async (ids: string[]) => {
     setIsDeleting(true)
     try {
-      const { error } = await supabase.from('events').delete().in('id', ids)
+      const { error } = await supabase.from('drift_events').delete().in('id', ids)
       if (error) throw error
       setEvents((current) => current.filter((event) => !ids.includes(event.id)))
       setPendingDelete(null)

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
     title: 'Analytics | JAZ Dashboard',
@@ -16,7 +17,9 @@ interface AnalyticsPageProps {
 }
 
 export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps) {
-    const params = await searchParams
+  await requireDashboardAccess('/dashboard/analytics')
+  
+  const params = await searchParams
     const range = (params.range as AnalyticsRange) || '7d'
 
     const summary = await getAnalyticsSummary(range)

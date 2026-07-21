@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { DraftEventForm } from '../../_components/draft-event-form'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
   title: 'Edit Draft Event | JAZ Admin',
@@ -11,14 +12,20 @@ export const metadata = {
 
 export default async function EditDraftEventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ step?: string }>
 }) {
+  await requireDashboardAccess('/dashboard/draft-events')
+
   const { id } = await params
+  const { step } = await searchParams
+  const initialStep = step ? parseInt(step, 10) : 1
   const supabase = await createClient()
 
   const { data: event, error } = await supabase
-    .from('events')
+    .from('drift_events')
     .select('*')
     .eq('id', id)
     .single()
@@ -44,7 +51,7 @@ export default async function EditDraftEventPage({
         </Button>
       </div>
 
-      <DraftEventForm eventId={id} initialData={event} />
+      <DraftEventForm eventId={id} initialData={event} initialStep={initialStep} />
     </div>
   )
 }

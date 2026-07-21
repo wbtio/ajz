@@ -37,6 +37,7 @@ const typeMeta: Record<string, { icon: typeof Bell; className: string; fallbackH
     sector_registration: { icon: Building2, className: 'bg-indigo-100 text-indigo-600', fallbackHref: '/dashboard/sector-registrations' },
     contact_message: { icon: Mail, className: 'bg-rose-100 text-rose-600', fallbackHref: '/dashboard/messages' },
     partner_submission: { icon: Handshake, className: 'bg-fuchsia-100 text-fuchsia-600', fallbackHref: '/dashboard/partners' },
+    visa_appointment_reminder: { icon: CalendarCheck, className: 'bg-rose-100 text-rose-600', fallbackHref: '/dashboard/participation-cases/work/clients' },
 }
 
 const metaFor = (type: string) => typeMeta[type] ?? { icon: ClipboardList, className: 'bg-blue-100 text-blue-600', fallbackHref: '/dashboard/team-tasks' }

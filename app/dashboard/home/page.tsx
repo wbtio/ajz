@@ -3,6 +3,7 @@ import { AlertTriangle, CalendarDays, CheckCircle2, ClipboardList, FileText, Use
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
 import { OperationsDashboardCharts } from '@/app/dashboard/_components/operations-dashboard-charts'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = { title: 'Dashboard | JAZ Admin' }
 
@@ -16,6 +17,8 @@ type OverviewCard = {
 }
 
 export default async function DashboardHomePage() {
+  await requireDashboardAccess('/dashboard/home')
+
   const supabase = await createClient()
   const [applications, visaSlots, draftEvents, teamMembers, tasks, overdueTasks, applicationRows, teamMemberRows, taskRows] = await Promise.all([
     supabase.from('registrations').select('*', { count: 'exact', head: true }),

@@ -29,6 +29,7 @@ import {
 import { DASHBOARD_PAGES, DEFAULT_TEAM_PATHS } from '@/lib/permissions'
 import { describeActivity } from '@/lib/activity-labels'
 import { formatDate, cn, timeAgo } from '@/lib/utils'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 interface TeamMember {
     id: string
@@ -85,6 +86,9 @@ const priorityMeta: Record<TeamTask['priority'], { label: string; className: str
 }
 
 export default function TeamMemberProfilePage() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/team')
+
     const { id } = useParams<{ id: string }>()
     const router = useRouter()
     const [member, setMember] = useState<TeamMember | null>(null)

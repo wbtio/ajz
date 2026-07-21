@@ -24,6 +24,8 @@ import {
     SelectItem,
 } from '@/components/ui/select'
 import { WizardClient } from '../new-registration/wizard-client'
+import type { Employee, RegistrationEvent } from '../new-registration/wizard-types'
+import type { Json } from '@/lib/database.types'
 import {
     Search,
     Download,
@@ -50,6 +52,10 @@ const STEPS = [
     { id: 7, label: 'Delivery', code: 'DLV' },
 ] as const
 
+// Shape of rows coming from the drift_events table (filtered by the parent
+// page to `is_active = true` AND `status = 'active'`). Do not accept events
+// objects sourced from public.events here — that table is for the website
+// catalog and is intentionally NOT used by this wizard.
 interface Event {
     id: string
     title: string
@@ -58,24 +64,57 @@ interface Event {
     end_date: string | null
     country: string | null
     country_ar: string | null
-    location: string
+    location: string | null
     location_ar: string | null
     sector: string | null
     status?: string | null
-    registration_config?: any
+    registration_config?: Json
+}
+
+/** Shape of a registration returned by `loadEventCases` (with joined relations). */
+interface ApplicationCase {
+    id: string
+    event_id: string
+    full_name: string | null
+    email: string | null
+    case_number: string | null
+    case_status: string | null
+    current_step: number
+    created_at: string | null
+    updated_at: string | null
+    payment_status: string
+    documents: Json
+    assigned_employee_id: string | null
+    additional_data: Json | null
+    form_data?: Json | null
+    clients: { employer_name: string | null } | { employer_name: string | null }[] | null
+    assigned_employee: { full_name: string | null; email: string | null } | null
+    registration_events: Array<{
+        performed_by: string | null
+        performed_by_name: string | null
+        created_at: string | null
+        users: { full_name: string | null; email: string | null; avatar_url: string | null } | { full_name: string | null; email: string | null; avatar_url: string | null }[]
+    }>
+    clients_sex?: string | null
+}
+
+interface CurrentUser {
+    id: string
+    role: string | null
+    permissions: string[] | null
 }
 
 interface ProgressDashboardClientProps {
     events: Event[]
-    employees: any[]
-    currentUser: any
+    employees: Employee[]
+    currentUser: CurrentUser
 }
 
 /* ------------------------------------------------------------------ */
 /*  Mapping helpers                                                   */
 /* ------------------------------------------------------------------ */
 
-function getMappedStep(c: any): number {
+function getMappedStep(c: ApplicationCase): number {
     const storedStep = Number(c.current_step)
     if (!Number.isInteger(storedStep)) return 1
     return Math.max(1, Math.min(storedStep, STEPS.length))
@@ -94,7 +133,7 @@ function eventLabel(event: Event) {
     ].filter(Boolean).join(' • ')
 }
 
-function getOverallStatusLabel(c: any): string {
+function getOverallStatusLabel(c: ApplicationCase): string {
     switch (c.case_status) {
         case 'completed': return 'Closed'
         case 'ready_for_next_stage': return 'Ready to Send'
@@ -111,14 +150,20 @@ const REQUIRED_DOCUMENT_TYPES = [
     ['insurance', 'travel_insurance'],
 ]
 
-function hasMissingDocuments(c: any) {
-    const documents = Array.isArray(c.documents) ? c.documents : []
-    return REQUIRED_DOCUMENT_TYPES.some((aliases) => !documents.some((doc: any) => aliases.includes(String(doc?.type || ''))))
+function hasMissingDocuments(c: ApplicationCase) {
+    const documents = Array.isArray(c.documents) ? (c.documents as any[]) : []
+    return REQUIRED_DOCUMENT_TYPES.some((aliases) => !documents.some((doc) => aliases.includes(String(doc?.type || ''))))
 }
 
-function appointmentDate(c: any) {
-    const value = (c.additional_data as any)?.visa_appointment_date
-    return value ? new Date(`${value}T${(c.additional_data as any)?.visa_appointment_time || '23:59'}`) : null
+function appointmentDate(c: ApplicationCase) {
+    const additional = (c.additional_data ?? {}) as Record<string, unknown>
+    const value = additional.visa_appointment_date
+    const time = additional.visa_appointment_time
+    return value ? new Date(`${value}T${(time as string) || '23:59'}`) : null
+}
+
+function getAppointmentStatus(c: ApplicationCase): string {
+    return String((c.additional_data as Record<string, unknown> | null)?.visa_appointment_status ?? '')
 }
 
 /* ------------------------------------------------------------------ */
@@ -218,7 +263,7 @@ function renderGenderIcon(sex?: string | null) {
     return <CircleUserRound className="size-4" />
 }
 
-function ApplicationEditors({ events }: { events?: any[] }) {
+function ApplicationEditors({ events }: { events?: ApplicationCase['registration_events'] }) {
     const editors = useMemo(() => {
         const uniqueEditors = new Map<string, { id: string; name: string; avatarUrl: string | null }>()
 
@@ -268,9 +313,9 @@ function ApplicationEditors({ events }: { events?: any[] }) {
 /* ------------------------------------------------------------------ */
 
 function CaseRow({ c, onStepClick, onOpenFile }: {
-    c: any
+    c: ApplicationCase
     onStepClick: (regId: string, step: number) => void
-    onOpenFile: (c: any) => void
+    onOpenFile: (c: ApplicationCase) => void
 }) {
     const mappedStep = getMappedStep(c)
     const overallStatus = getOverallStatusLabel(c)
@@ -282,7 +327,7 @@ function CaseRow({ c, onStepClick, onOpenFile }: {
                         aria-hidden
                         className="size-9 shrink-0 rounded-md bg-[var(--jaz-surface-2)] border border-[var(--jaz-line)] flex items-center justify-center text-[var(--jaz-ink-soft)]"
                     >
-                        {renderGenderIcon(c.form_data?.sex || c.clients?.sex)}
+                        {renderGenderIcon((c.form_data as Record<string, unknown> | null)?.sex as string | undefined)}
                     </div>
                     <div className="min-w-0">
                         <div className="flex min-w-0 items-baseline gap-2">
@@ -376,6 +421,33 @@ function KpiSecondary({ value, label, accent }: { value: number; label: string; 
 
 const ALL_EVENTS_VALUE = 'all-events'
 
+/** Number of registration rows fetched per page (initial + "Load more"). */
+const PAGE_SIZE = 50
+
+/** Safely reads employer_name regardless of whether the join returns an object or array. */
+function getEmployerName(c: ApplicationCase): string | null {
+    const clients = c.clients as unknown
+    if (!clients) return null
+    if (Array.isArray(clients)) return clients[0]?.employer_name ?? null
+    return (clients as { employer_name: string | null }).employer_name
+}
+
+/**
+ * Prevents CSV formula injection. Excel/LibreOffice will execute a cell as a
+ * formula if it starts with =, +, -, @, a tab, or a carriage return. Prefixing
+ * with a single quote neutralises the attack while keeping the value readable.
+ */
+function sanitizeCsvCell(value: string): string {
+    const escaped = value.replace(/"/g, '""')
+    if (/^[=+\-@\t\r]/.test(escaped)) return `'${escaped}`
+    return escaped
+}
+
+/** Strips characters that are invalid in filenames on Windows / macOS / Linux. */
+function sanitizeFileName(name: string): string {
+    return name.replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, ' ').trim() || 'event'
+}
+
 /* ------------------------------------------------------------------ */
 /*  Skeleton rows — match real layout, not generic placeholders       */
 /* ------------------------------------------------------------------ */
@@ -422,8 +494,16 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
     const activeCasesRequest = useRef<AbortController | null>(null)
 
     const [selectedEventId, setSelectedEventId] = useState(ALL_EVENTS_VALUE)
-    const [cases, setCases] = useState<any[]>([])
+    // Tracks the event id for the currently active/loaded list, so an in-flight
+    // "Load more" can bail out if the user switches events mid-request.
+    const activeEventIdRef = useRef<string>(selectedEventId)
+    const [cases, setCases] = useState<ApplicationCase[]>([])
+    // Total matching rows on the server (independent of how many are loaded).
+    const [totalCount, setTotalCount] = useState(0)
+    // Whether more pages remain to be loaded via "Load more".
+    const [hasMore, setHasMore] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [smartFilter, setSmartFilter] = useState('all')
     const [assignedFilter, setAssignedFilter] = useState('all')
@@ -434,55 +514,73 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search)
-            if (params.get('action') === 'new') {
+            const registrationId = params.get('registrationId')
+            const requestedStep = Number(params.get('step'))
+            if (registrationId) {
+                setShowWizard(true)
+                setWizardRegId(registrationId)
+                setWizardStep(Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= 7 ? requestedStep : 4)
+            } else if (params.get('action') === 'new') {
                 setShowWizard(true); setWizardStep(1); setWizardRegId(undefined)
             }
         }
     }, [])
 
+    /** Builds the base registrations query (event-scoped) without any range. */
+    const buildCasesQuery = useCallback((eventId: string) => {
+        let query = supabase
+            .from('registrations')
+            .select(`
+                id,
+                event_id,
+                full_name,
+                email,
+                case_number,
+                case_status,
+                current_step,
+                created_at,
+                updated_at,
+                payment_status,
+                documents,
+                assigned_employee_id,
+                additional_data,
+                form_data,
+                clients (employer_name),
+                assigned_employee:users!registrations_assigned_employee_id_fkey (full_name, email),
+                registration_events (
+                    performed_by,
+                    performed_by_name,
+                    created_at,
+                    users (full_name, email, avatar_url)
+                )
+            `, { count: 'exact' })
+            .not('case_number', 'is', null)
+            .order('created_at', { ascending: false })
+            .order('created_at', { referencedTable: 'registration_events', ascending: false })
+
+        if (eventId !== ALL_EVENTS_VALUE) {
+            query = query.eq('event_id', eventId)
+        }
+        return query
+    }, [supabase])
+
     const loadEventCases = useCallback(async (eventId: string) => {
         activeCasesRequest.current?.abort()
         const controller = new AbortController()
         activeCasesRequest.current = controller
+        activeEventIdRef.current = eventId
         setLoading(true)
         try {
-            let query = supabase
-                .from('registrations')
-                .select(`
-                    id,
-                    event_id,
-                    full_name,
-                    email,
-                    case_number,
-                    case_status,
-                    current_step,
-                    created_at,
-                    updated_at,
-                    payment_status,
-                    documents,
-                    assigned_employee_id,
-                    additional_data,
-                    clients (employer_name),
-                    assigned_employee:users!registrations_assigned_employee_id_fkey (full_name, email),
-                    registration_events (
-                        performed_by,
-                        performed_by_name,
-                        created_at,
-                        users (full_name, email, avatar_url)
-                    )
-                `)
-                .not('case_number', 'is', null)
-                .order('created_at', { ascending: false })
-                .order('created_at', { referencedTable: 'registration_events', ascending: false })
-
-            if (eventId !== ALL_EVENTS_VALUE) {
-                query = query.eq('event_id', eventId)
-            }
-
-            const { data, error } = await query.abortSignal(controller.signal)
+            const { data, count, error } = await buildCasesQuery(eventId)
+                .range(0, PAGE_SIZE - 1)
+                .abortSignal(controller.signal)
             if (error) throw error
-            setCases(data || [])
-        } catch (e: any) {
+            // Ignore the response if the user already switched to another event.
+            if (activeEventIdRef.current !== eventId) return
+            setCases((data as ApplicationCase[]) || [])
+            setTotalCount(count ?? (data?.length ?? 0))
+            setHasMore((data?.length ?? 0) === PAGE_SIZE)
+        } catch (e) {
             if (controller.signal.aborted) return
             console.error(e); toast.error('Failed to load cases')
         } finally {
@@ -491,7 +589,29 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
                 setLoading(false)
             }
         }
-    }, [supabase])
+    }, [buildCasesQuery])
+
+    /** Loads the next page and appends to the existing list. */
+    const loadMore = useCallback(async () => {
+        if (loadingMore || !hasMore) return
+        const eventId = selectedEventId
+        setLoadingMore(true)
+        try {
+            const from = cases.length
+            const to = from + PAGE_SIZE - 1
+            const { data, error } = await buildCasesQuery(eventId).range(from, to)
+            if (error) throw error
+            // Bail if the user switched events while this request was in flight.
+            if (activeEventIdRef.current !== eventId) return
+            const next = (data as ApplicationCase[]) || []
+            setCases((prev) => [...prev, ...next])
+            setHasMore(next.length === PAGE_SIZE)
+        } catch (e) {
+            console.error(e); toast.error('Failed to load more cases')
+        } finally {
+            setLoadingMore(false)
+        }
+    }, [buildCasesQuery, cases.length, hasMore, loadingMore, selectedEventId])
 
     useEffect(() => {
         if (selectedEventId) void loadEventCases(selectedEventId)
@@ -504,16 +624,25 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
     )
 
     const filteredCases = useMemo(() => {
-        let result = cases
+        let result: ApplicationCase[] = cases
         if (searchQuery.trim()) {
             const q = searchQuery.trim().toLowerCase()
             result = result.filter((c) =>
-                [c.case_number, c.full_name, c.email, c.clients?.employer_name]
+                [c.case_number, c.full_name, c.email, getEmployerName(c)]
                     .filter(Boolean).join(' ').toLowerCase().includes(q))
         }
         if (assignedFilter !== 'all') result = result.filter((c) => c.assigned_employee_id === assignedFilter)
         if (smartFilter === 'missing_documents') result = result.filter(hasMissingDocuments)
-        if (smartFilter === 'awaiting_appointment') result = result.filter((c) => !['Booked', 'Completed'].includes((c.additional_data as any)?.visa_appointment_status) || !appointmentDate(c))
+        if (smartFilter === 'awaiting_appointment') {
+            // Only meaningful once the case has reached the Visa stage; otherwise
+            // every early-stage record would be flagged as "awaiting appointment".
+            result = result.filter((c) => {
+                if (getMappedStep(c) < 4) return false
+                const status = getAppointmentStatus(c)
+                const hasDate = !!appointmentDate(c)
+                return !['Booked', 'Completed'].includes(status) || !hasDate
+            })
+        }
         if (smartFilter === 'appointment_soon') result = result.filter((c) => {
             const date = appointmentDate(c)
             if (!date || Number.isNaN(date.getTime())) return false
@@ -527,34 +656,38 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
     }, [cases, searchQuery, smartFilter, assignedFilter])
 
     const kpis = useMemo(() => {
-        const total = cases.length
-        const completed = cases.filter((c) => ['completed', 'closed'].includes(c.case_status)).length
-        const inProgress = cases.filter((c) => !['completed', 'closed', 'cancelled'].includes(c.case_status)).length
-        const filesSent = cases.filter((c) => (c.additional_data as any)?.archive_status === 'Archived').length
-        return { total, completed, inProgress, filesSent }
-    }, [cases])
+        // `total` reflects the server-side count (accurate regardless of paging);
+        // the status breakdowns are computed from the currently loaded subset.
+        const completed = cases.filter((c) => ['completed', 'closed'].includes(c.case_status ?? '')).length
+        const inProgress = cases.filter((c) => !['completed', 'closed', 'cancelled'].includes(c.case_status ?? '')).length
+        const filesSent = cases.filter((c) => (c.additional_data as Record<string, unknown> | null)?.archive_status === 'Archived').length
+        return { total: totalCount, completed, inProgress, filesSent }
+    }, [cases, totalCount])
 
     function exportToCSV() {
         if (filteredCases.length === 0) { toast.error('No data to export'); return }
         const headers = ['Full Name', 'Application ID', 'Company', 'Overall Status', 'Created At']
         const rows = filteredCases.map((c) => [
-            `"${(c.full_name || '').replace(/"/g, '""')}"`,
-            `"${c.case_number || ''}"`,
-            `"${(c.clients?.employer_name || '').replace(/"/g, '""')}"`,
-            `"${getOverallStatusLabel(c)}"`,
-            `"${c.created_at ? new Date(c.created_at).toLocaleDateString() : ''}"`,
+            `"${sanitizeCsvCell(c.full_name || '')}"`,
+            `"${sanitizeCsvCell(c.case_number || '')}"`,
+            `"${sanitizeCsvCell(getEmployerName(c) || '')}"`,
+            `"${sanitizeCsvCell(getOverallStatusLabel(c))}"`,
+            `"${sanitizeCsvCell(c.created_at ? new Date(c.created_at).toLocaleDateString() : '')}"`,
         ].join(','))
         const csv = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows].join('\n')
         const link = document.createElement('a')
         link.href = encodeURI(csv)
-        link.download = `jaz_applications_${selectedEventId === ALL_EVENTS_VALUE ? 'all_events' : selectedEvent?.title || 'event'}.csv`
+        const eventPart = selectedEventId === ALL_EVENTS_VALUE
+            ? 'all_events'
+            : sanitizeFileName(selectedEvent?.title || 'event')
+        link.download = `jaz_applications_${eventPart}.csv`
         document.body.appendChild(link); link.click(); document.body.removeChild(link)
         toast.success('Exported as CSV')
     }
 
     function openNewRegistration() { setShowWizard(true); setWizardStep(1); setWizardRegId(undefined) }
     function openStep(regId: string, step: number) { setWizardRegId(regId); setWizardStep(step); setShowWizard(true) }
-    function openFile(c: any) { setWizardRegId(c.id); setWizardStep(getMappedStep(c)); setShowWizard(true) }
+    function openFile(c: ApplicationCase) { setWizardRegId(c.id); setWizardStep(getMappedStep(c)); setShowWizard(true) }
 
     /* Filter-active chip strip: collapses into a row above the list */
     const hasActiveFilters = smartFilter !== 'all' || assignedFilter !== 'all' || searchQuery.trim().length > 0
@@ -562,7 +695,7 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
     if (showWizard) {
         return (
             <WizardClient
-                events={events as any} employees={employees} currentUser={currentUser}
+                events={events as unknown as RegistrationEvent[]} employees={employees} currentUser={currentUser}
                 initialRegistrationId={wizardRegId} initialStep={wizardStep}
                 onClose={() => { setShowWizard(false); if (selectedEventId) loadEventCases(selectedEventId) }}
             />
@@ -682,18 +815,22 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
                 </div>
 
                 {/* ====== Filter summary chip strip ============================ */}
-                {hasActiveFilters && !loading && (
-                    <div className="flex items-center gap-2 pt-4 no-print">
+                {(hasActiveFilters || hasMore) && !loading && (
+                    <div className="flex flex-wrap items-center gap-2 pt-4 no-print">
                         <span className="text-[11px] text-[var(--jaz-muted)]">
-                            {filteredCases.length} of {cases.length} match
+                            {hasActiveFilters
+                                ? `${filteredCases.length} of ${cases.length} loaded match`
+                                : `Showing ${cases.length}${totalCount > cases.length ? ` of ${totalCount}` : ''}`}
                         </span>
-                        <button
-                            onClick={() => { setSearchQuery(''); setSmartFilter('all'); setAssignedFilter('all') }}
-                            className="inline-flex items-center gap-1 h-6 px-2 rounded-full border border-[var(--jaz-line)] text-[10.5px] font-medium text-[var(--jaz-ink-soft)] hover:text-[var(--jaz-sovereign)] hover:border-[var(--jaz-sovereign)]/30 transition-colors duration-150"
-                        >
-                            Clear filters
-                            <X className="size-3" aria-hidden />
-                        </button>
+                        {hasActiveFilters && (
+                            <button
+                                onClick={() => { setSearchQuery(''); setSmartFilter('all'); setAssignedFilter('all') }}
+                                className="inline-flex items-center gap-1 h-6 px-2 rounded-full border border-[var(--jaz-line)] text-[10.5px] font-medium text-[var(--jaz-ink-soft)] hover:text-[var(--jaz-sovereign)] hover:border-[var(--jaz-sovereign)]/30 transition-colors duration-150"
+                            >
+                                Clear filters
+                                <X className="size-3" aria-hidden />
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -727,6 +864,22 @@ export function ProgressDashboardClient({ events, employees, currentUser }: Prog
                                     </li>
                                 ))}
                             </ol>
+                            {hasMore && (
+                                <div className="flex items-center justify-center gap-3 border-t border-[var(--jaz-line)] px-5 py-3 no-print">
+                                    <span className="text-[11px] text-[var(--jaz-muted)]">
+                                        {cases.length} loaded of {totalCount}
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={loadMore}
+                                        disabled={loadingMore}
+                                        className="h-8 gap-1.5"
+                                    >
+                                        {loadingMore ? 'Loading…' : 'Load more'}
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </section>

@@ -2,8 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+    await requireDashboardAccess('/dashboard/event-discovery/settings')
     return (
         <div className="max-w-2xl space-y-6">
             <div>

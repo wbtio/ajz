@@ -1,13 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { UnifiedRegistrationsView } from './components/unified-registrations-view'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
     title: 'تسجيلات الفعاليات | JAZ Admin',
 }
 
 export default async function RegistrationsPage() {
-    const supabase = await createClient()
+    await requireDashboardAccess('/dashboard/registrations')
 
+    const supabase = await createClient()
     const { data: registrations } = await supabase
         .from('registrations')
         .select(`

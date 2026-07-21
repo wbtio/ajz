@@ -1,6 +1,7 @@
 import { getEventsByFilters, EventFilters } from '@/lib/actions/event-discovery.actions'
 import { ResultsFilters } from './components/results-filters'
 import { ResultsTable } from './components/results-table'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,7 +10,7 @@ export default async function ResultsPage({
 }: {
     searchParams: { [key: string]: string | string[] | undefined }
 }) {
-    // Parse searchParams safely
+    await requireDashboardAccess('/dashboard/event-discovery/results')
     const sp = await searchParams // Next 15 awaits searchParams conceptually or we just use it
 
     const filters: EventFilters = {

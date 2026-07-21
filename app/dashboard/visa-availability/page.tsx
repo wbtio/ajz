@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/pagination'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 interface VisaCenter {
     id: string
@@ -132,6 +133,9 @@ const getPaginationItems = (currentPage: number, totalPages: number) => {
 }
 
 export default function VisaAvailabilityDashboard() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/visa-availability')
+
     const supabase = createClient() as any
     const defaultDateRange = useMemo(getDefaultDateRange, [])
 

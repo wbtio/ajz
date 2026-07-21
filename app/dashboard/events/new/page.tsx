@@ -14,8 +14,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft, Save, Upload, X, ImageIcon, Loader2 } from 'lucide-react'
 import { sanitizeEnglishText } from '@/lib/english-only'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 export default function AddEventPage() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/events/new')
     const router = useRouter()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [isLoading, setIsLoading] = useState(false)

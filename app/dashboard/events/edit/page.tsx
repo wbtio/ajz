@@ -21,6 +21,7 @@ import type { Event, Sector } from '@/lib/database.types'
 import type { FormField } from '@/lib/types'
 import { AiHtmlGenerator } from './components/ai-html-generator'
 import { sanitizeEnglishText } from '@/lib/english-only'
+import { useDashboardPermission } from '@/components/auth/use-dashboard-permission'
 
 const RegistrationFormBuilder = dynamic(
     () => import('@/components/shared/registration-form-builder').then(mod => ({ default: mod.RegistrationFormBuilder })),
@@ -28,6 +29,9 @@ const RegistrationFormBuilder = dynamic(
 )
 
 function EditEventContent() {
+    // Check permissions for this page
+    useDashboardPermission('/dashboard/events/edit')
+
     const router = useRouter()
     const searchParams = useSearchParams()
     const id = searchParams.get('id')

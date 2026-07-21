@@ -1,16 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 import { UsersView } from './components/users-view'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
     title: 'إدارة العملاء | JAZ Admin',
 }
 
 export default async function UsersPage() {
-    const supabase = await createClient()
+    await requireDashboardAccess('/dashboard/users')
 
     // هذه الصفحة تعرض عملاء الموقع فقط (من سجّلوا حساب من الموقع)
     // عمود role له قيمة افتراضية 'user' عند التسجيل العادي، وأعضاء لوحة التحكم (مدير/فريق)
     // لهم صفحة "الفريق" المنفصلة
+    const supabase = await createClient()
     const { data: users } = await supabase
         .from('users')
         .select('*')

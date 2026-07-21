@@ -1,6 +1,9 @@
 import { SearchForm } from './components/search-form'
+import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
-export default function SearchPage() {
+export default async function SearchPage() {
+    await requireDashboardAccess('/dashboard/event-discovery/search')
+
     return (
         <div className="space-y-6">
             <div>
