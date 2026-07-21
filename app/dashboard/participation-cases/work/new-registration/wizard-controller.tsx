@@ -1078,6 +1078,21 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     setNewReminderNote("");
   }
 
+  // Refs to hold the latest state values for the interval check, preventing dependency loops
+  const remindersRef = useRef(visaReminders);
+  const appointmentDateRef = useRef(visaAppointmentDate);
+  const appointmentTimeRef = useRef(visaAppointmentTime);
+  const appointmentCenterRef = useRef(visaAppointmentCenter);
+  const embassyRef = useRef(visaEmbassy);
+  const registrationRef = useRef(registration);
+
+  useEffect(() => { remindersRef.current = visaReminders; }, [visaReminders]);
+  useEffect(() => { appointmentDateRef.current = visaAppointmentDate; }, [visaAppointmentDate]);
+  useEffect(() => { appointmentTimeRef.current = visaAppointmentTime; }, [visaAppointmentTime]);
+  useEffect(() => { appointmentCenterRef.current = visaAppointmentCenter; }, [visaAppointmentCenter]);
+  useEffect(() => { embassyRef.current = visaEmbassy; }, [visaEmbassy]);
+  useEffect(() => { registrationRef.current = registration; }, [registration]);
+
   // Appointment reminders are generated from the appointment itself:
   // four daily 08:00 reminders (D-5 through D-2), followed by a final
   // reminder one hour before the appointment.
@@ -1086,56 +1101,101 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     const appointment = new Date(`${visaAppointmentDate}T${visaAppointmentTime}`);
     if (Number.isNaN(appointment.getTime())) return;
 
-    const reminders: VisaAppointmentReminder[] = [5, 4, 3, 2].map((daysBefore) => {
-      const reminderDate = new Date(`${visaAppointmentDate}T08:00`);
-      reminderDate.setDate(reminderDate.getDate() - daysBefore);
-      return {
-        id: `appointment-${visaAppointmentDate}-${visaAppointmentTime}-d${daysBefore}`,
-        remindAt: reminderDate.toISOString(),
-        note: `Appointment reminder: ${daysBefore} days remaining`,
-        sound: true,
-      };
+    setVisaReminders((current) => {
+      // 1. Keep manual reminders (they don't start with "appointment-")
+      const manualReminders = current.filter((r) => !r.id.startsWith("appointment-"));
+
+      // 2. See which generated reminders already exist in current state, preserving their notifiedAt status
+      const existingGeneratedMap = new Map(
+        current.filter((r) => r.id.startsWith("appointment-")).map((r) => [r.id, r])
+      );
+
+      // 3. Re-generate default reminders, but pull from existingGeneratedMap if they exist to preserve notifiedAt
+      const generatedReminders: VisaAppointmentReminder[] = [5, 4, 3, 2].map((daysBefore) => {
+        const id = `appointment-${visaAppointmentDate}-${visaAppointmentTime}-d${daysBefore}`;
+        const existing = existingGeneratedMap.get(id);
+        if (existing) return existing;
+
+        const reminderDate = new Date(`${visaAppointmentDate}T08:00`);
+        reminderDate.setDate(reminderDate.getDate() - daysBefore);
+        return {
+          id,
+          remindAt: reminderDate.toISOString(),
+          note: `Appointment reminder: ${daysBefore} days remaining`,
+          sound: true,
+        };
+      });
+
+      const finalReminderId = `appointment-${visaAppointmentDate}-${visaAppointmentTime}-one-hour`;
+      const existingFinal = existingGeneratedMap.get(finalReminderId);
+      const finalReminder: VisaAppointmentReminder = existingFinal || (() => {
+        const finalRemindAt = new Date(appointment.getTime() - 60 * 60 * 1000);
+        return {
+          id: finalReminderId,
+          remindAt: finalRemindAt.toISOString(),
+          note: "Appointment reminder: 1 hour remaining",
+          sound: true,
+        };
+      })();
+
+      // 4. Combine manual, existing preserved, and new generated ones
+      const combined = [...manualReminders, ...generatedReminders, finalReminder];
+
+      // 5. Sort them by remindAt
+      return combined.sort((a, b) => a.remindAt.localeCompare(b.remindAt));
     });
-    const finalReminder = new Date(appointment.getTime() - 60 * 60 * 1000);
-    reminders.push({
-      id: `appointment-${visaAppointmentDate}-${visaAppointmentTime}-one-hour`,
-      remindAt: finalReminder.toISOString(),
-      note: "Appointment reminder: 1 hour remaining",
-      sound: true,
-    });
-    setVisaReminders(reminders.sort((a, b) => a.remindAt.localeCompare(b.remindAt)));
   }, [visaAppointmentDate, visaAppointmentTime]);
 
   useEffect(() => {
-    if (!registrationId || visaReminders.length === 0) return;
+    if (!registrationId || !currentUser?.id) return;
 
     const checkReminders = async () => {
-      const dueReminders = visaReminders.filter((reminder) => !reminder.notifiedAt && new Date(reminder.remindAt).getTime() <= Date.now());
+      const currentReminders = remindersRef.current;
+      if (currentReminders.length === 0) return;
+
+      const dueReminders = currentReminders.filter((reminder) => !reminder.notifiedAt && new Date(reminder.remindAt).getTime() <= Date.now());
       if (dueReminders.length === 0) return;
 
       for (const reminder of dueReminders) {
         const title = "Visa appointment reminder";
-        const appointmentLabel = [visaAppointmentDate, visaAppointmentTime].filter(Boolean).join(" ") || "the scheduled time";
-        const body = `${reminder.note}. Appointment: ${appointmentLabel} at ${visaAppointmentCenter || visaEmbassy}.`;
+        const appointmentLabel = [appointmentDateRef.current, appointmentTimeRef.current].filter(Boolean).join(" ") || "the scheduled time";
+        const body = `${reminder.note}. Appointment: ${appointmentLabel} at ${appointmentCenterRef.current || embassyRef.current}.`;
+        
         toast.warning(title, { description: body, duration: 15000 });
         if (reminder.sound) playReminderSound();
-        if (currentUser?.id) {
-          await supabase.from("notifications").insert({
-            user_id: currentUser.id,
-            type: "visa_appointment_reminder",
-            title,
-            body,
-            // Reopen this exact application in the Visa step.
-            link_url: `/dashboard/participation-cases/work/clients?registrationId=${registrationId}&step=4`,
-          });
-        }
+        
+        await supabase.from("notifications").insert({
+          user_id: currentUser.id,
+          type: "visa_appointment_reminder",
+          title,
+          body,
+          link_url: `/dashboard/participation-cases/work/clients?registrationId=${registrationId}&step=4`,
+        });
       }
 
       const notifiedIds = new Set(dueReminders.map((reminder) => reminder.id));
       const notifiedAt = new Date().toISOString();
-      const updatedReminders = visaReminders.map((reminder) => (notifiedIds.has(reminder.id) ? { ...reminder, notifiedAt } : reminder));
+      const updatedReminders = currentReminders.map((reminder) => (notifiedIds.has(reminder.id) ? { ...reminder, notifiedAt } : reminder));
+      
       setVisaReminders(updatedReminders);
-      const ad = (registration?.additional_data as Record<string, unknown>) || {};
+      remindersRef.current = updatedReminders;
+
+      setRegistration((prev: any) => {
+        if (!prev) return prev;
+        const updatedReg = {
+          ...prev,
+          additional_data: {
+            ...(prev.additional_data as Record<string, unknown> || {}),
+            visa_appointment_reminders: updatedReminders,
+          },
+          updated_at: notifiedAt,
+        };
+        registrationRef.current = updatedReg;
+        return updatedReg;
+      });
+
+      const currentReg = registrationRef.current;
+      const ad = (currentReg?.additional_data as Record<string, unknown>) || {};
       await supabase
         .from("registrations")
         .update({
@@ -1146,12 +1206,9 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     };
 
     void checkReminders();
-    // Reminders are intentionally checked every two minutes. The immediate
-    // check keeps the UI responsive when the step opens without polling
-    // Supabase aggressively while the wizard is idle.
     const intervalId = window.setInterval(() => void checkReminders(), 120000);
     return () => window.clearInterval(intervalId);
-  }, [registrationId, visaReminders, visaAppointmentDate, visaAppointmentTime, visaAppointmentCenter, visaEmbassy, currentUser?.id, registration?.additional_data, supabase]);
+  }, [registrationId, currentUser?.id, supabase]);
 
   // --- Step 4: Save Visa Platforms & Appointments ---
   async function handleSaveVisaDetails(advance = true, options?: { silent?: boolean }) {
