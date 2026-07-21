@@ -239,15 +239,15 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
     setPromotion((current) => ({ ...current, channels: current.channels.map((channel, channelIndex) => channelIndex === index ? { ...channel, [field]: data.publicUrl } : channel) }))
   }
 
-  const buildPayload = async () => {
+  const buildPayload = async (finish: boolean) => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!formData.date) {
+      if (finish && !formData.date) {
         throw new Error('Start date is required.')
       }
       return {
         updated_by: user?.id ?? null,
         title: formData.title,
-        date: formData.date,
+        date: formData.date || null,
         end_date: formData.end_date || null,
         country: formData.country,
         location: formData.location,
@@ -285,7 +285,7 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
   const persistDraft = async (finish: boolean, targetStepOnSave?: number) => {
     setIsSubmitting(true)
     try {
-      const payload = await buildPayload()
+      const payload = await buildPayload(finish)
 
       if (eventId) {
         // Update existing draft

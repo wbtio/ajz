@@ -929,7 +929,7 @@ export type Database = {
           country: string | null
           country_ar: string | null
           created_at: string | null
-          date: string
+          date: string | null
           end_date: string | null
           event_type: string | null
           events_id: string | null
@@ -954,7 +954,7 @@ export type Database = {
           country?: string | null
           country_ar?: string | null
           created_at?: string | null
-          date: string
+          date?: string | null
           end_date?: string | null
           event_type?: string | null
           events_id?: string | null
@@ -979,7 +979,7 @@ export type Database = {
           country?: string | null
           country_ar?: string | null
           created_at?: string | null
-          date?: string
+          date?: string | null
           end_date?: string | null
           event_type?: string | null
           events_id?: string | null
