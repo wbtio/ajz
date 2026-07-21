@@ -1,0 +1,43 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - React 19
+  - Next.js 16 (App Router)
+  - Supabase Auth & DB Client
+  - Tailwind CSS
+  - Radix UI
+routes:
+  - path: /
+    file: app/page.tsx
+    auth_required: false
+    description: Landing Page showing services and focus domains.
+  - path: /admin-login
+    file: app/admin-login/page.tsx
+    auth_required: false
+    description: Administrator Sign In page to operations hub.
+features:
+  - name: Landing Page Viewer
+    description: View hero section, services, and active focus sectors.
+    files:
+      - app/page.tsx
+    entry_route: /
+    user_interactions:
+      - Scroll through services
+      - Check focus domains
+    api_calls: []
+    auth_required: false
+  - name: Administrator Login
+    description: Sign in with email and password credentials to access dashboard
+    files:
+      - app/admin-login/page.tsx
+      - lib/supabase/client.ts
+    entry_route: /admin-login
+    user_interactions:
+      - Fill email input field
+      - Fill password input field
+      - Click Sign in button to submit
+      - View dashboard or error message
+    api_calls: []
+    auth_required: false
+known_limitations: []

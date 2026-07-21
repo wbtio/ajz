@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "TestSprite": {
+      "command": "/Users/hasanainalmazrai/.local/bin/npx",
+      "args": [
+        "-y",
+        "@testsprite/testsprite-mcp@latest"
+      ],
+      "env": {
+        "TESTSPRITE_API_KEY": "sk-user-PKLIY0_Qw56Ocv2-IRyZcnAVJZmBeYX-tqJfWB2DtffgrjhfFxPUB1tnTCaLpKvk6URJ6vOxwxTUsH1nO3m5WqIRmcvF4NluV3AOMMnyjNmBtYARuiz_cHu5xmurS-_2hUw",
+        "API_KEY": "sk-user-PKLIY0_Qw56Ocv2-IRyZcnAVJZmBeYX-tqJfWB2DtffgrjhfFxPUB1tnTCaLpKvk6URJ6vOxwxTUsH1nO3m5WqIRmcvF4NluV3AOMMnyjNmBtYARuiz_cHu5xmurS-_2hUw"
+      }
+    }
+  }
+}

@@ -43,3 +43,5 @@ next-env.d.ts
 # credentials / secrets
 config/google-service-account.json
 .kilo/kilo.json
+
+testsprite_tests/tmp/config.json

@@ -1,0 +1,234 @@
+[
+  {
+    "id": "TC001",
+    "title": "Administrator signs in successfully",
+    "description": "An administrator can submit valid credentials on the sign-in page and reach the dashboard.",
+    "category": "Administrator Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the operations dashboard is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Homepage renders key visitor content",
+    "description": "A visitor can open the homepage and see the hero section, services, and active focus domains.",
+    "category": "Landing Page Viewer",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll through the homepage content"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the hero section is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify services are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active focus domains are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Homepage loads as the public entry point",
+    "description": "A visitor can open the public homepage and view the main landing content without needing to sign in.",
+    "category": "Landing Page Viewer",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the hero section is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the public landing content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Homepage content remains accessible through full scroll",
+    "description": "A visitor can scroll through the full homepage and still find the key marketing content in the page layout.",
+    "category": "Landing Page Viewer",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the bottom of the homepage"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify services are still present on the page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active focus domains are still present on the page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Administrator can review the sign-in form before submitting",
+    "description": "An administrator can open the sign-in page and confirm the email and password controls are available for use.",
+    "category": "Administrator Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the email field is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the password field is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sign-in button is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Administrator can retry sign-in after a failed attempt",
+    "description": "An administrator can correct a failed sign-in attempt and successfully reach the dashboard on a subsequent submission.",
+    "category": "Administrator Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with invalid@example.com"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with invalid-password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the operations dashboard is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC007",
+    "title": "Administrator login is usable from a fresh visit",
+    "description": "An administrator can return to the sign-in page and still use the form to access the dashboard.",
+    "category": "Administrator Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the operations dashboard is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC008",
+    "title": "Administrator sees feedback for invalid credentials",
+    "description": "An administrator who submits invalid credentials sees a clear sign-in error and does not reach the dashboard.",
+    "category": "Administrator Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with invalid@example.com"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with invalid-password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sign-in error message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the operations dashboard is not displayed"
+      }
+    ],
+    "priority": "Low"
+  }
+]
