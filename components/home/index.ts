@@ -13,5 +13,7 @@ export { FeaturedEvents } from './featured-events'
 export { PartnershipProcess } from './partnership-process'
 export { TrustedPartners } from './trusted-partners'
 export { NewsInsights } from './news-insights'
+export { TrainingDevelopmentSection } from './training-development-section'
+export { CompanyOverviewSections } from './company-overview-sections'
 
 

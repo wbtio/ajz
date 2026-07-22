@@ -14,7 +14,7 @@ const translationsContent = {
   en: {
     heroTitle: "Our Departments",
     heroSubtitle:
-      "JAZ operates through four integrated departments that work synergistically to connect Iraq with global opportunities, drive innovation, and deliver measurable impact across key sectors and stakeholder communities.",
+      "Our Company operates through specialized departments that reflect the nature of the exhibitions, conferences, and professional events it organizes and coordinates participation in. These departments aim to direct each participation according to the appropriate professional and institutional field, helping institutions, businesses, and professionals’ access specialized events relevant to their areas of work.",
     heroBadges: ["Integrated Expertise", "Shared Resources", "Unified Impact"],
     exploreBtn: "Explore Department",
     cards: [
@@ -22,7 +22,7 @@ const translationsContent = {
         key: "medical",
         title: "Healthcare & Life Sciences",
         description:
-          "Advancing healthcare systems, medical innovation, and life sciences through global partnerships, exhibitions, and knowledge exchange.",
+          "This department covers specialized events in the healthcare and medical sectors, including medical equipment, laboratories, pharmaceutical industries, and health technologies.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtsY4UUmC9TD6oSqkKphpcJbWL8sZmm4jJ34FcysFP9gSNO5Vp9el_GAKlQ8MhRxnxWXKJH9dTXmkuJkVHWYUQSLyzissZgJ2s_Kk2TZMySbTjivMNlfGnLiHyAMQUMi0uY9kPDUPVoPxfWJQzFlGtb3v5bEooiuHLcmj8b5gXtOy_rIHaYRv8QigSVLErSfL-NCKAtLcMGFn-kKD_W1zamVJa4Vlw0CNGKHps-7NdNsDDTYz45TPx4Ck0",
         icon: "solar:heart-bold-duotone",
@@ -31,7 +31,7 @@ const translationsContent = {
         key: "technology",
         title: "Digital Transformation & Technology",
         description:
-          "Empowering Iraq's digital future by connecting technology leaders, enabling innovation, and accelerating digital transformation.",
+          "This department focuses on events related to technology, digital solutions, artificial intelligence, cybersecurity, and technological innovation.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLvGTBekZcvHqm7N_vXxKbBpia_f_jNhqevl_O75wQ4TK9g5gQqYDecKFlXamJVxxVCEHzU7tWBVxoc57zsdplCP1Hj4eqT88Ig2HIwStwyKdNlMChnGMg93Ldt3-7iR52_OBkNslMINODDlNcgAKnbsSrvLZppP0-NemhzjwjCVffvLnBOQ9i-lAtJbGxYlCULVBB0uYRHXqrPOXaZ8bdJztkmlFUSSz7Vg9y49h9TyhWPapW9QgIlSFrE",
         icon: "solar:cpu-bold-duotone",
@@ -40,7 +40,7 @@ const translationsContent = {
         key: "industrie",
         title: "Industrial & Commercial Development",
         description:
-          "Driving industrial growth, trade, and sustainable development by connecting businesses, investors, and global markets.",
+          "This department focuses on exhibitions and conferences related to industrial and commercial sectors, including industry, trade, investment, construction, energy, and logistics.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLuk7UztS2hVIu9xIkG9xXbWkEcW8suoCErbbKKlOLvfvpk8zBp17krsepaxcXmiplSGIwPn43awogB_vPtx2J2j_v3nZ-4ep8EvSmKsjmQ2xPHt2dlOcaKsclJ397FaQ0Qqa0CoNs9SK8xFOa2FLy_fl5VFfKf_jKIdK1XlWWOzG_MFDPllZLw-IGU8o2Oj2ChLe0liENqpxPyhmaOSyAKSAOrIQn8zJEW1BuBZlFe6wU7w5a-9ivYYxpw",
         icon: "solar:city-bold-duotone",
@@ -49,23 +49,23 @@ const translationsContent = {
         key: "academia",
         title: "Professional & Academic Affairs",
         description:
-          "Strengthening academic institutions, professional networks, and research collaboration to build knowledge-driven communities.",
+          "This department covers scientific conferences, professional programs, academic events, and opportunities for knowledge and expertise exchange.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtyF7fetE60NNg0VrvyIJMQ1O3imIeX6iMzqDOLUytKFVuDJqgvcmFHsDcD8J8A6oVLqQ02CFyan17hYa5VdhwEozN_WUNAsv_nFHUzckC5fxOh52snVzFz44mhaeIFr6wQo2Sf_kGsepJq5V0DlOOenjYL4dWuwErLLrxQIgyZCXaKPtxzPqK_OEoC1H00p8TBKl8Py2paHTWPcOoHo0zZXA8wKLyKsQJFNhw6tSt3VNPXnNHgsfc07Dk",
         icon: "solar:square-academic-cap-bold-duotone",
       },
     ],
     ctaBar: {
-      title: "Let's Build the Future Together",
+      title: "Choose the Department Relevant to Your Field",
       description:
-        "Partner with JAZ to unlock opportunities, drive innovation, and create lasting impact for Iraq and beyond.",
-      cooperation: "Request Cooperation",
+        "The professional departments help guide institutions, businesses, and professionals toward exhibitions and conferences that are most relevant to their fields of work and professional interests.",
+      cooperation: "Explore Events",
       contact: "Contact Us",
     },
   },
   ar: {    heroTitle: "أقسامنا",
     heroSubtitle:
-      "تعمل جاز من خلال أربعة أقسام متكاملة تتعاون معاً لربط العراق بالفرص العالمية، ودفع عجلة الابتكار، وتحقيق أثر ملموس عبر القطاعات الرئيسية وفئات الشركاء المعنيين.",
+      "تعمل الجاز من خلال أقسام متخصصة تعكس طبيعة المعارض والمؤتمرات والفعاليات المهنية التي تنظمها وتنسق المشاركة فيها. تهدف هذه الأقسام إلى توجيه كل مشاركة وفق المجال المهني والمؤسسي المناسب، بما يساعد المؤسسات والشركات والمهنيين على الوصول إلى الفعاليات المتخصصة ذات الصلة بطبيعة أعمالهم.",
     heroBadges: ["خبرات متكاملة", "موارد مشتركة", "أثر موحد"],
     exploreBtn: "استكشاف القسم",
     cards: [
@@ -73,7 +73,7 @@ const translationsContent = {
         key: "medical",
         title: "الرعاية الصحية وعلوم الحياة",
         description:
-          "الارتقاء بأنظمة الرعاية الصحية، والابتكار الطبي، وعلوم الحياة من خلال الشراكات العالمية، والمعارض، وتبادل المعرفة.",
+          "يعنى هذا القسم بالفعاليات المتخصصة في القطاع الصحي والطبي، بما يشمل الأجهزة الطبية، المختبرات، الصناعات الدوائية، والتقنيات الصحية.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtsY4UUmC9TD6oSqkKphpcJbWL8sZmm4jJ34FcysFP9gSNO5Vp9el_GAKlQ8MhRxnxWXKJH9dTXmkuJkVHWYUQSLyzissZgJ2s_Kk2TZMySbTjivMNlfGnLiHyAMQUMi0uY9kPDUPVoPxfWJQzFlGtb3v5bEooiuHLcmj8b5gXtOy_rIHaYRv8QigSVLErSfL-NCKAtLcMGFn-kKD_W1zamVJa4Vlw0CNGKHps-7NdNsDDTYz45TPx4Ck0",
         icon: "solar:heart-bold-duotone",
@@ -82,7 +82,7 @@ const translationsContent = {
         key: "technology",
         title: "التحول الرقمي والتكنولوجيا",
         description:
-          "تمكين المستقبل الرقمي للعراق من خلال ربط قادة التكنولوجيا، وتمكين الابتكار، وتسريع التحول الرقمي.",
+          "يركز هذا القسم على الفعاليات المرتبطة بالتكنولوجيا، الحلول الرقمية، الذكاء الاصطناعي، الأمن السيبراني، والابتكار التقني.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLvGTBekZcvHqm7N_vXxKbBpia_f_jNhqevl_O75wQ4TK9g5gQqYDecKFlXamJVxxVCEHzU7tWBVxoc57zsdplCP1Hj4eqT88Ig2HIwStwyKdNlMChnGMg93Ldt3-7iR52_OBkNslMINODDlNcgAKnbsSrvLZppP0-NemhzjwjCVffvLnBOQ9i-lAtJbGxYlCULVBB0uYRHXqrPOXaZ8bdJztkmlFUSSz7Vg9y49h9TyhWPapW9QgIlSFrE",
         icon: "solar:cpu-bold-duotone",
@@ -91,7 +91,7 @@ const translationsContent = {
         key: "industrie",
         title: "التطوير الصناعي والتجاري",
         description:
-          "دفع عجلة النمو الصناعي والتجارة والتنمية المستدامة من خلال ربط الشركات والمستثمرين والأسواق العالمية.",
+          "يركز هذا القسم على المعارض والمؤتمرات المرتبطة بالقطاعات الصناعية والتجارية، بما يشمل الصناعة، التجارة، الاستثمار، البناء، الطاقة، والخدمات اللوجستية.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLuk7UztS2hVIu9xIkG9xXbWkEcW8suoCErbbKKlOLvfvpk8zBp17krsepaxcXmiplSGIwPn43awogB_vPtx2J2j_v3nZ-4ep8EvSmKsjmQ2xPHt2dlOcaKsclJ397FaQ0Qqa0CoNs9SK8xFOa2FLy_fl5VFfKf_jKIdK1XlWWOzG_MFDPllZLw-IGU8o2Oj2ChLe0liENqpxPyhmaOSyAKSAOrIQn8zJEW1BuBZlFe6wU7w5a-9ivYYxpw",
         icon: "solar:city-bold-duotone",
@@ -100,17 +100,17 @@ const translationsContent = {
         key: "academia",
         title: "الشؤون المهنية والأكاديمية",
         description:
-          "تعزيز المؤسسات الأكاديمية والشبكات المهنية والتعاون البحثي لبناء مجتمعات قائمة على المعرفة.",
+          "يعنى هذا القسم بالمؤتمرات العلمية، البرامج المهنية، الفعاليات الأكاديمية، وفرص تبادل المعرفة والخبرات.",
         image:
           "https://lh3.googleusercontent.com/aida/AP1WRLtyF7fetE60NNg0VrvyIJMQ1O3imIeX6iMzqDOLUytKFVuDJqgvcmFHsDcD8J8A6oVLqQ02CFyan17hYa5VdhwEozN_WUNAsv_nFHUzckC5fxOh52snVzFz44mhaeIFr6wQo2Sf_kGsepJq5V0DlOOenjYL4dWuwErLLrxQIgyZCXaKPtxzPqK_OEoC1H00p8TBKl8Py2paHTWPcOoHo0zZXA8wKLyKsQJFNhw6tSt3VNPXnNHgsfc07Dk",
         icon: "solar:square-academic-cap-bold-duotone",
       },
     ],
     ctaBar: {
-      title: "لنصنع المستقبل معاً",
+      title: "اختر القسم المناسب لمجال عملك",
       description:
-        "شارك مع جاز لفتح الآفاق، ودفع عجلة الابتكار، وصنع أثر مستدام للعراق وخارجه.",
-      cooperation: "طلب التعاون",
+        "تساعد الأقسام المهنية في توجيه المؤسسات والشركات والمهنيين نحو المعارض والمؤتمرات الأقرب إلى طبيعة أعمالهم واهتماماتهم المهنية.",
+      cooperation: "استعرض الفعاليات",
       contact: "اتصل بنا",
     },
   },
@@ -211,23 +211,15 @@ export function DepartmentsClient({
   return (
     <div className="min-h-screen bg-white flex flex-col" dir={dir} lang={locale}>
       {/* BEGIN: Hero Section */}
-      <section className="relative bg-[#001a33] text-white py-10 xs:py-12 sm:py-16 md:py-20 lg:py-24 px-4 xs:px-5 sm:px-6 md:px-16">
+      <section className="relative bg-[#001a33] text-white py-10 xs:py-12 sm:py-16 md:py-20 lg:py-[19px] px-4 xs:px-5 sm:px-6 md:px-16">
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="max-w-3xl mt-6 xs:mt-8 sm:mt-10 lg:mt-12">
+          <div className="max-w-3xl mt-6 xs:mt-8 sm:mt-10 lg:mt-[57px] lg:ms-[23px] lg:mb-px lg:pt-[37px]">
             <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 xs:mb-5 tracking-tight text-white">
               {content.heroTitle}
             </h1>
-            <p className="text-gray-300 text-sm xs:text-base sm:text-lg mb-6 xs:mb-8 sm:mb-10 leading-relaxed max-w-2xl">
+            <p className="text-gray-300 text-sm xs:text-base sm:text-lg mb-6 xs:mb-8 sm:mb-10 leading-relaxed max-w-2xl lg:max-w-[819px]">
               {content.heroSubtitle}
             </p>
-            <div className="flex flex-wrap gap-4 xs:gap-5 sm:gap-6 md:gap-10 text-[10px] xs:text-xs sm:text-sm font-semibold text-gray-400">
-              {content.heroBadges.map((badge, idx) => (
-                <span key={idx} className="flex items-center gap-1.5 xs:gap-2">
-                  <span className="w-1 h-1.5 xs:w-1.5 xs:h-1.5 bg-[#dcc18b] rounded-full" />
-                  {badge}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -269,7 +261,7 @@ export function DepartmentsClient({
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
               <Link
-                href="/contact?type=cooperation"
+                href="/events"
                 className="group inline-flex items-center justify-center gap-2 rounded-md bg-[#8b0000] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#6b0000] active:scale-95"
               >
                 <span>{content.ctaBar.cooperation}</span>

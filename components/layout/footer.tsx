@@ -32,15 +32,13 @@ const socialLinks = [
 ]
 
 const navLinks = [
-  { href: '/about', en: 'About JAZ', ar: 'عن JAZ' },
-  { href: '/departments', en: 'Departments', ar: 'الأقسام' },
-  { href: '/services', en: 'Our Services', ar: 'خدماتنا' },
-  { href: '/events', en: 'Events Calendar', ar: 'تقويم الفعاليات' },
-  { href: '/invitation-support', en: 'Invitation Support', ar: 'دعم الدعوة' },
-  { href: '/partnership', en: 'Partnerships', ar: 'الشراكات' },
-  { href: '/blog', en: 'News & Insights', ar: 'الأخبار والأفكار' },
-  { href: '/contact', en: 'Contact Us', ar: 'اتصل بنا' },
-  { href: '/تشيك-ليست-تطبيق-JAZ.html', en: 'App Checklist (Doctor)', ar: 'تشيك ليست التطبيق (للطبيب)' },
+  { href: '/', en: 'Home', ar: 'الرئيسية' },
+  { href: '/about', en: 'About Us', ar: 'من نحن' },
+  { href: '/departments', en: 'Our Departments', ar: 'أقسامنا' },
+  { href: '/events', en: 'Events', ar: 'الفعاليات' },
+  { href: '/training', en: 'Training & Development', ar: 'التدريب والتطوير' },
+  { href: '/blog', en: 'News & Insights', ar: 'الأخبار والرؤى' },
+  { href: '/contact', en: 'Contact Us', ar: 'تواصل معنا' },
 ]
 
 const navLinkClass =
@@ -101,7 +99,7 @@ export function Footer() {
             <div className="space-y-2.5">
               <p className="text-xs leading-relaxed text-[#9fb0c7]">
                 {locale === 'ar'
-                  ? 'بوابة العراق للمعارض الدولية والشراكات المؤسسية.'
+                  ? 'بوابة العراق إلى المعارض والمؤتمرات الدولية.'
                   : "Iraq's Gateway to International Exhibitions & Institutional Partnerships."}
               </p>
               <p className="text-xs leading-relaxed text-[#9fb0c7]">

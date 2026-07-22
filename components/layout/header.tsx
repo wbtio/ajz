@@ -169,14 +169,13 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
   // ── navigation items ──
   const navigation = [
     { name: t.nav.home,     href: '/',         icon: 'solar:home-smile-angle-bold-duotone'    },
-    { name: t.nav.partners, href: '/partnership',  icon: 'solar:handshake-bold-duotone'            },
+    { name: t.nav.about,    href: '/about',     icon: 'solar:info-circle-bold-duotone'          },
     { name: t.nav.sectors,  href: '/departments',   icon: 'solar:widget-3-bold-duotone'             },
+    { name: t.nav.services, href: '/services',  icon: 'solar:settings-bold-duotone'             },
     { name: t.nav.events,   href: '/events',    icon: 'solar:calendar-date-bold-duotone'        },
+    { name: t.nav.partners, href: '/partnership',  icon: 'solar:handshake-bold-duotone'            },
     { name: t.nav.training, href: '/training',  icon: 'solar:square-academic-cap-bold-duotone'  },
     { name: t.nav.blog,     href: '/blog',      icon: 'solar:notes-bold-duotone'                },
-    { name: t.nav.services, href: '/services',  icon: 'solar:settings-bold-duotone'             },
-    { name: t.nav.invitationSupport, href: '/invitation-support', icon: 'solar:letter-bold-duotone' },
-    { name: t.nav.about,    href: '/about',     icon: 'solar:info-circle-bold-duotone'          },
     { name: t.nav.contact,  href: '/contact',   icon: 'solar:letter-bold-duotone'               },
     { name: t.nav.links,    href: '/links',     icon: 'solar:link-round-bold-duotone'           },
   ]
@@ -275,9 +274,9 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
             {/* ── Navigation (desktop only: lg+) ── */}
             <nav
               aria-label={isRtl ? 'القائمة الرئيسية' : 'Main navigation'}
-              className="hidden lg:flex flex-1 items-center justify-start py-1 mx-2"
+              className="hidden lg:flex min-w-0 flex-1 items-center justify-center py-1 mx-1"
             >
-              <div className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5 2xl:gap-3 mx-auto min-w-max">
+              <div className="flex min-w-0 items-center justify-center gap-0 mx-auto">
                 {navigation.map((item) => {
                   const isActive =
                     item.href === '/'
@@ -295,7 +294,7 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                         'group relative isolate flex items-center justify-center rounded-full transition-all duration-200 shrink-0',
                         isLinks
                           ? 'p-2 w-9 h-9'
-                          : 'px-1.5 lg:px-2 xl:px-3 py-1.5 text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-sm font-bold whitespace-nowrap',
+                          : 'px-1 lg:px-1.5 xl:px-2 py-1.5 text-[10px] lg:text-[11px] xl:text-[12px] 2xl:text-sm font-bold whitespace-nowrap',
                         isActive ? activeTabText : inactiveTabText
                       )}
                     >
@@ -418,19 +417,13 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                 </div>
                 </>
               ) : (
-                /* Logged out → login / sign-up (desktop / tablet) */
+                /* Logged out → one clear entry point */
                 <div className="hidden sm:flex items-center gap-2">
-                  <Link
-                    href="/auth/login"
-                    className="flex h-10 items-center rounded-2xl px-3 text-sm font-bold text-slate-700 transition-all duration-200 hover:bg-slate-100/70 hover:text-slate-900"
-                  >
-                    {locale === 'ar' ? 'دخول' : 'Login'}
-                  </Link>
                   <Link
                     href="/auth/register"
                     className="flex h-10 items-center rounded-2xl bg-[#8b0000] px-4 text-sm font-bold text-white shadow-sm shadow-[#8b0000]/20 transition-all duration-200 hover:scale-[1.02] hover:bg-[#a8201a]"
                   >
-                    {locale === 'ar' ? 'تسجيل' : 'Sign up'}
+                    {locale === 'ar' ? 'انضم إلى جاز' : 'Join JAZ'}
                   </Link>
                 </div>
               )}
@@ -654,20 +647,13 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                       </button>
                     </>
                   ) : (
-                    <div className="flex gap-2">
-                      <Link
-                        href="/auth/login"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex-1 rounded-2xl border border-slate-200 py-3 text-center text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
-                      >
-                        {isRtl ? 'دخول' : 'Login'}
-                      </Link>
+                    <div className="flex">
                       <Link
                         href="/auth/register"
                         onClick={() => setMobileOpen(false)}
                         className="flex-1 rounded-2xl bg-[#8b0000] py-3 text-center text-[15px] font-semibold text-white transition-colors hover:bg-[#a8201a]"
                       >
-                        {isRtl ? 'تسجيل' : 'Sign up'}
+                        {isRtl ? 'انضم إلى جاز' : 'Join JAZ'}
                       </Link>
                     </div>
                   )}

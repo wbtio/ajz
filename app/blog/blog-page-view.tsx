@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Calendar, ArrowRight, ArrowLeft, Mail, Check, Handshake, Newspaper } from 'lucide-react'
+import { Calendar, ArrowRight, ArrowLeft, Mail, Check, Newspaper } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import type { Database } from '@/lib/database.types'
 
@@ -36,10 +36,14 @@ export function BlogPageView({ posts, stats }: BlogPageViewProps) {
 
   const labels = isRTL
     ? {
-        heroTitle: 'الأخبار والآراء',
-        heroDesc: 'ابق على اطلاع بآخر التحديثات، وإعلانات الشراكة، والتقارير الحية، والرؤى المهنية من جاز وشبكة شركائنا الدوليين.',
-        btnExplore: 'استكشاف الشراكات والعلاقات',
-        btnEvents: 'عرض الفعاليات القادمة',
+        heroTitle: 'الأخبار والرؤى',
+        heroDesc: 'يعرض هذا القسم الأخبار والتحديثات المرتبطة بالمعارض والمؤتمرات والفعاليات المهنية التي تنظمها أو تنسق المشاركة فيها الجاز. كما يقدّم محتوى معرفياً مرتبطاً بالقطاعات المهنية، والفعاليات الدولية، وفرص المشاركة والتطوير.',
+        sectionContentTitle: 'محتوى القسم',
+        sectionContent: [
+          ['الأخبار', 'تتضمن الأخبار آخر التحديثات المرتبطة بالمعارض والمؤتمرات والفعاليات التي تعمل عليها الجاز.'],
+          ['الرؤى', 'تتناول الرؤى موضوعات مهنية ومعرفية مرتبطة بالقطاعات المختلفة، وأهمية المشاركة في الفعاليات الدولية المتخصصة.'],
+          ['التحديثات', 'تشمل التحديثات الإعلانات والمستجدات المتعلقة بالفعاليات، البرامج، والمشاركات المهنية.'],
+        ],
         categoryAll: 'كل الأخبار',
         categoryNews: 'أخبار',
         categoryEvents: 'فعاليات',
@@ -50,10 +54,11 @@ export function BlogPageView({ posts, stats }: BlogPageViewProps) {
         readMore: 'اقرأ المزيد',
         recentTitle: 'آخر الإعلانات',
         recentViewAll: 'عرض الكل',
-        newsletterTitle: 'ابقَ على اطلاع',
-        newsletterDesc: 'اشترك في نشرتنا الإخبارية لتلقي آخر الأخبار والتحديثات.',
-        newsletterPlaceholder: 'أدخل بريدك الإلكتروني',
-        newsletterBtn: 'اشتراك',
+        newsletterTitle: 'اشترك في النشرة الإخبارية',
+        newsletterDesc: 'تابع آخر الأخبار والتحديثات المرتبطة بالمعارض والمؤتمرات والفعاليات المهنية.',
+        newsletterField: 'البريد الإلكتروني',
+        newsletterPlaceholder: 'البريد الإلكتروني',
+        newsletterBtn: 'اشترك الآن',
         newsletterSuccess: 'تم الاشتراك بنجاح! شكراً لك.',
         newsletterFooter: 'نحترم خصوصيتك. يمكنك إلغاء الاشتراك في أي وقت.',
         emptyTitle: 'لا توجد مقالات بعد',
@@ -65,9 +70,13 @@ export function BlogPageView({ posts, stats }: BlogPageViewProps) {
       }
     : {
         heroTitle: 'News & Insights',
-        heroDesc: 'Stay informed with the latest updates, partnership announcements, event highlights, and expert insights from JAZ and our global network.',
-        btnExplore: 'Explore Partnerships',
-        btnEvents: 'View Upcoming Events',
+        heroDesc: 'This section presents news and updates related to exhibitions, conferences, and professional events organized or coordinated by Our Company. It also provides knowledge-based content related to professional sectors, international events, and opportunities for participation and development.',
+        sectionContentTitle: 'Section Content',
+        sectionContent: [
+          ['News', 'News includes the latest updates related to exhibitions, conferences, and events managed by Our Company.'],
+          ['Insights', 'Insights cover professional and knowledge-based topics related to different sectors and the importance of participation in specialized international events.'],
+          ['Updates', 'Updates include announcements and developments related to events, programs, and professional participation.'],
+        ],
         categoryAll: 'All News',
         categoryNews: 'News',
         categoryEvents: 'Events',
@@ -78,10 +87,11 @@ export function BlogPageView({ posts, stats }: BlogPageViewProps) {
         readMore: 'Read More',
         recentTitle: 'Recent Announcements',
         recentViewAll: 'View all',
-        newsletterTitle: 'Stay Informed',
-        newsletterDesc: 'Subscribe to our newsletter to receive the latest news and updates.',
-        newsletterPlaceholder: 'Enter your email',
-        newsletterBtn: 'Subscribe',
+        newsletterTitle: 'Subscribe to Our Newsletter',
+        newsletterDesc: 'Stay updated with the latest news and updates related to exhibitions, conferences, and professional events.',
+        newsletterField: 'Email Address',
+        newsletterPlaceholder: 'Email Address',
+        newsletterBtn: 'Subscribe Now',
         newsletterSuccess: 'Subscribed successfully! Thank you.',
         newsletterFooter: 'We respect your privacy. Unsubscribe anytime.',
         emptyTitle: 'No articles yet',
@@ -163,31 +173,19 @@ export function BlogPageView({ posts, stats }: BlogPageViewProps) {
             {labels.heroDesc}
           </p>
 
-          <div className="flex flex-wrap gap-4">
-            <Link
-              href="/partnership"
-              className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
-            >
-              <div className="flex items-center gap-3 text-start">
-                <div className="bg-white/10 p-2 rounded-jaz shrink-0">
-                  <Handshake className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-bold text-base">{labels.btnExplore}</h3>
-              </div>
-              <ArrowRight className={`w-5 h-5 text-white shrink-0 ms-4 ${isRTL ? 'rotate-180' : ''}`} />
-            </Link>
-            <Link
-              href="/events"
-              className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
-            >
-              <div className="flex items-center gap-3 text-start">
-                <div className="bg-white/10 p-2 rounded-jaz shrink-0">
-                  <Calendar className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-bold text-base">{labels.btnEvents}</h3>
-              </div>
-              <ArrowRight className={`w-5 h-5 text-white shrink-0 ms-4 ${isRTL ? 'rotate-180' : ''}`} />
-            </Link>
+        </div>
+      </section>
+
+      <section className="bg-white py-10 sm:py-12" aria-labelledby="blog-section-content">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <h2 id="blog-section-content" className="text-2xl sm:text-3xl font-extrabold text-[#001a33]">{labels.sectionContentTitle}</h2>
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {labels.sectionContent.map(([title, description]) => (
+              <article key={title} className="border-t border-slate-200 pt-4 text-start">
+                <h3 className="text-lg font-extrabold text-[#001a33]">{title}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-600">{description}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -448,7 +446,9 @@ export function BlogPageView({ posts, stats }: BlogPageViewProps) {
                 ) : (
                   <form onSubmit={handleSubscribe} className="space-y-3">
                     <div className="flex border border-gray-300 rounded overflow-hidden">
+                      <label htmlFor="newsletter-email" className="sr-only">{labels.newsletterField}</label>
                       <input
+                        id="newsletter-email"
                         type="email"
                         required
                         placeholder={labels.newsletterPlaceholder}

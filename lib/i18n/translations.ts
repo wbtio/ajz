@@ -3,12 +3,12 @@ export const translations = {
     // Navigation
     nav: {
       home: "الرئيسية",
-      services: "الخدمات",
+      services: "خدماتنا",
       about: "من نحن",
       events: "الفعاليات",
-      sectors: "الأقسام",
-      blog: "المدونة",
-      training: "التدريب",
+      sectors: "أقسامنا",
+      blog: "الأخبار والرؤى",
+      training: "التدريب والتطوير",
       contact: "تواصل معنا",
       partners: "الشراكات",
       links: "الروابط",
@@ -146,17 +146,17 @@ export const translations = {
         statYouthBeneficiariesLabel: "شاب مستفيد",
       },
       sectors: {
-        title: "قطاعات تركيزنا",
+        title: "أقسامنا",
         subtitle: "تعمل الجاز من خلال أقسام متخصصة تعكس طبيعة الفعاليات والمعارض والمؤتمرات التي تنظمها وتنسق المشاركة فيها، بما يتيح توجيه كل مشاركة وفق المجال المهني والمؤسسي المناسب.",
         viewAll: "استعرض كل الأقسام",
         medicalTitle: "الرعاية الصحية وعلوم الحياة",
-        medicalDesc: "ربط المؤسسات الصحية بالابتكار العالمي والتطورات الطبية.",
+        medicalDesc: "يعنى بالفعاليات الطبية والصحية، والأجهزة الطبية، والمختبرات، والصناعات الدوائية، والتقنيات الصحية.",
         techTitle: "التحول الرقمي والتكنولوجيا",
-        techDesc: "تمكين المستقبل الرقمي للعراق من خلال معارض التكنولوجيا والشراكات العالمية.",
+        techDesc: "يتابع فعاليات التكنولوجيا والذكاء الاصطناعي والأمن السيبراني والحلول الرقمية والابتكار التقني.",
         indTitle: "التطوير الصناعي والتجاري",
-        indDesc: "تعزيز النمو الصناعي، فرص التجارة، والتعاون الاستثماري.",
+        indDesc: "يركز على معارض ومؤتمرات الصناعة والتجارة والاستثمار والطاقة والبناء والخدمات اللوجستية.",
         acadTitle: "الشؤون المهنية والأكاديمية",
-        acadDesc: "دعم التعاون الأكاديمي، التدريب، والتطوير المهني."
+        acadDesc: "يركز على المؤتمرات العلمية والبرامج المهنية والفعاليات الأكاديمية وتبادل المعرفة والخبرات."
       },
       services: {
         title: "خدماتنا",
@@ -372,16 +372,16 @@ export const translations = {
       subtitle:
         "نحن نثمن التعاون ومستعدون لدعم أهدافك. سواء كنت مهتماً بفرص التعاون، أو مناقشات الشراكة، أو المشاركة في فعالياتنا الدولية، أو بحاجة لدعم للحصول على دعوة رسمية، فإن فريقنا مستعد لمساعدتك.",
       address: "العنوان",
-      phone: "الهاتف",
+      phone: "رقم الهاتف",
       email: "البريد الإلكتروني",
       workingHours: "ساعات العمل",
       workingDays: "الأحد - الخميس",
       workingTime: "8:30 ص - 4:30 م",
       fullName: "الاسم الكامل",
-      subject: "الموضوع",
+      subject: "موضوع الاستفسار",
       message: "الرسالة",
       messagePlaceholder: "اكتب رسالتك هنا...",
-      send: "إرسال الرسالة",
+      send: "إرسال الطلب",
       success: "تم إرسال رسالتك بنجاح!",
       successMessage: "سنتواصل معك في أقرب وقت ممكن.",
       sendAnother: "إرسال رسالة أخرى",
@@ -396,17 +396,17 @@ export const translations = {
       selectEvent: "اختر الفعالية",
       selectSector: "اختر القسم الاستراتيجي",
       selectBlog: "اختر المقال",
-      heroDescription: "نحن نثمن التعاون ومستعدون لدعم أهدافك. سواء كنت مهتماً بفرص التعاون، أو مناقشات الشراكة، أو المشاركة في فعالياتنا الدولية، أو بحاجة لدعم للحصول على دعوة رسمية، فإن فريقنا مستعد لمساعدتك.",
+      heroDescription: "نرحّب بتواصلكم مع الجاز للاستفسار عن المعارض والمؤتمرات، أو لبحث فرص المشاركة، أو طلب المعلومات المتعلقة بخدماتنا وبرامجنا المهنية.",
       cooperationTitle: "طلب التعاون",
       cooperationDesc: "استكشف فرص التعاون المشترك مع JAZ للمشاريع والمبادرات.",
       invitationTitle: "طلب دعم الدعوات",
       invitationDesc: "طلب خطابات دعوة رسمية للحصول على تأشيرة الدخول، والفعاليات، والمعارض، والاجتماعات المؤسسية.",
       partnerTitle: "كن شريكاً في العراق",
       partnerDesc: "انضم إلى شبكتنا من المؤسسات والمنظمات لتعزيز شراكات مؤثرة.",
-      sendUsMessage: "أرسل لنا رسالة",
-      formSubtitle: "املأ النموذج أدناه وسيقوم فريقنا بالرد عليك في أقرب وقت ممكن.",
+      sendUsMessage: "نموذج التواصل",
+      formSubtitle: "يرجى تعبئة البيانات أدناه، وسيقوم فريق الجاز بمراجعة الطلب والتواصل معكم بحسب طبيعة الاستفسار.",
       officesSubtitle: "ثلاث مكاتب تغطي العراق من الشمال إلى الجنوب.",
-      organization: "المؤسسة / الشركة",
+      organization: "اسم المؤسسة / الشركة",
       organizationPlaceholder: "أدخل اسم مؤسستك أو شركتك",
       agreeTerms: "أوافق على سياسة الخصوصية والشروط والأحكام.",
       ourOffices: "مكاتبنا في العراق",
@@ -502,8 +502,8 @@ export const translations = {
         experience: "سنوات خبرة",
       },
       whoWeAreTitle: "من نحن",
-      whoWeAreSubtitle: "بوابتكم إلى المعارض والمؤتمرات الدولية",
-      whoWeAreText: "جاز شركة متخصصة في تنظيم المعارض والمؤتمرات، وتنسيق المشاركات المهنية والمؤسسية في الفعاليات الدولية المتخصصة. تعمل الشركة على دعم حضور المؤسسات والشركات والمهنيين في المنصات الدولية، من خلال تنظيم الفعاليات، وتنسيق المشاركات، وتوفير مسارات مهنية واضحة للتواصل والتبادل المعرفي.",
+      whoWeAreSubtitle: "",
+      whoWeAreText: "جاز شركة متخصصة في تنظيم المعارض والمؤتمرات، وتنسيق المشاركات المهنية والمؤسسية في الفعاليات الدولية المتخصصة.\nتعمل الشركة على دعم حضور المؤسسات والشركات والمهنيين في المنصات الدولية، من خلال تنظيم الفعاليات، وتنسيق المشاركات، وتوفير مسارات مهنية واضحة للتواصل والتبادل المعرفي.",
       whereWeOperate: "أين نعمل",
       whereWeOperateSubtitle: "البصرة، بغداد، أربيل",
       erbilTitle: "أربيل",
@@ -513,14 +513,14 @@ export const translations = {
       basraTitle: "البصرة",
       basraDesc: "بوابتنا إلى الخليج والتجارة الدولية.",
       whyJaz: "لماذا جاز",
-      whyJazSubtitle: "نعتمد آليات عمل واضحة في تنظيم وإدارة الفعاليات.",
+      whyJazSubtitle: "نفدم نموذجاً تنظيمياً متكاملاً يربط بين إدارة المعارض والمؤتمرات، وتنسيق المشاركات الدولية، ودعم الجهات في الوصول إلى الفعاليات المتخصصة بطريقة مهنية ومنظمة.",
       whyJazItems: [
-        "نعتمد آليات عمل واضحة في تنظيم وإدارة الفعاليات.",
-        "ننسق مشاركة الجهات في المعارض والمؤتمرات الدولية.",
-        "نساعد المؤسسات والشركات والمهنيين في الوصول إلى الفعاليات المناسبة لطبيعة أعمالهم."
+        "تنظيم مهني\nنعتمد آليات عمل واضحة في تنظيم وإدارة الفعاليات.",
+        "تنسيق دولي\nننسق مشاركة الجهات في المعارض والمؤتمرات الدولية.",
+        "دعم مؤسسي\nنساعد المؤسسات والشركات والمهنيين في الوصول إلى الفعاليات المناسبة لطبيعة أعمالهم."
       ],
       ourValues: "قيمنا",
-      ourValuesSubtitle: "مبادئنا في إدارة الفعاليات وتنسيق المشاركات.",
+      ourValuesSubtitle: "",
       valuesItems: [
         { title: "المهنية", desc: "نعتمد أسلوب عمل منظم وواضح في إدارة الفعاليات وتنسيق المشاركات." },
         { title: "الدقة", desc: "نحرص على متابعة التفاصيل الإدارية والتنظيمية المرتبطة بكل فعالية." },
@@ -593,35 +593,30 @@ export const translations = {
           {
             title: "التدريب والتطوير",
             desc: "تعمل الجاز على تنظيم برامج تدريبية ومهنية مرتبطة بمتطلبات سوق العمل والقطاعات المتخصصة."
-          },
-          {
-            title: "اللوجستيات القنصلية والتغطية الإعلامية",
-            desc: "إدارة خدمات البروتوكول اللوجستي لكبار الشخصيات، وتأشيرات السفر، والتغطية الإعلامية واسعة الانتشار لتعزيز أثر المشاركات."
           }
         ]
       },
-      info: {
-        howWeWork: {
-          title: "كيف نعمل",
-          desc: "من خلال استراتيجيات مخصصة للتمثيل الدولي."
-        },
-        industries: {
-          title: "قطاعات ندعمها",
-          desc: "الرعاية الصحية، التكنولوجيا، التطوير التجاري والأكاديمي."
-        },
-        whyJaz: {
-          title: "لماذا جاز؟",
-          items: [
-            "علاقات دولية ومحلية موثوقة.",
-            "سجل حافل من المشاركات الناجحة."
-          ]
-        }
+      workProcess: {
+        title: "آلية العمل",
+        items: [
+          { title: "تحديد طبيعة المشاركة", desc: "تبدأ الجاز بدراسة طبيعة الجهة المشاركة ومجال عملها، لتحديد نوع الفعالية المناسبة لها." },
+          { title: "اختيار الفعالية المناسبة", desc: "يتم توجيه المؤسسات والشركات والمهنيين نحو المعارض والمؤتمرات الأقرب إلى اختصاصهم وأهدافهم المهنية." },
+          { title: "تنظيم المتطلبات", desc: "تعمل الجاز على متابعة المتطلبات الإدارية والتنظيمية المرتبطة بالمشاركة." },
+          { title: "تنسيق المشاركة", desc: "يتم تنسيق إجراءات المشاركة بما يضمن وضوح المسار وتنظيمه من البداية حتى موعد الفعالية." }
+        ]
+      },
+      beneficiaries: {
+        title: "الفئات المستفيدة",
+        description: "توجّه الجاز خدماتها إلى الجهات والأفراد المهتمين بالمشاركة في المعارض والمؤتمرات والفعاليات المهنية المتخصصة.",
+        items: [
+          { title: "المؤسسات", desc: "الجهات الحكومية، والهيئات، والاتحادات، والمنظمات ذات العلاقة بالقطاعات المهنية المختلفة." },
+          { title: "الشركات", desc: "الشركات التجارية والصناعية والخدمية." },
+          { title: "المهنيون", desc: "الأفراد المتخصصون والكوادر المهنية." }
+        ]
       },
       cta: {
-        title: "لنصنع فرصاً عالمية معاً",
-        description: "سواء كنت تمثل مؤسسة أو شركة تجارية، جاز هي شريكك للتواصل الدولي والأثر الملموس.",
-        cooperation: "تواصل معنا للتعاون",
-        contact: "اتصل بنا"
+        title: "اختر نوع الدعم المناسب",
+        supportButton: "حدد متطلباتك"
       }
     },
     // Auth
@@ -705,7 +700,14 @@ export const translations = {
     trainingPage: {
       badge: "مركز التدريب والتطوير",
       title: "التدريب والتطوير",
-      subtitle: "برامج تدريبية متخصصة قريباً",
+      description: "تعمل الجاز على تنظيم برامج تدريبية ومهنية مرتبطة بمتطلبات سوق العمل والقطاعات المتخصصة. يركز هذا القسم على تطوير المهارات المهنية، وتعزيز المعرفة العملية، ودعم الأفراد والمؤسسات من خلال برامج تدريبية معتمدة.",
+      closedMessage: "تم إغلاق التسجيل على برامج 2026، يرجى الانتظار لبرامج 2027.",
+      areasTitle: "مجالات التدريب",
+      areas: [
+        { title: "البرامج المهنية", description: "برامج تهدف إلى تطوير المهارات العملية والمهنية للأفراد والكوادر العاملة." },
+        { title: "البرامج القطاعية", description: "برامج مرتبطة بمتطلبات القطاعات المختلفة، مثل القطاع الصناعي، الصحي، التقني، والأكاديمي." },
+        { title: "ورش العمل", description: "ورش تدريبية قصيرة تركز على موضوعات محددة وتطبيقات عملية مباشرة." }
+      ],
       features: {
         experts: {
           title: "خبراء معتمدون دولياً",
@@ -750,11 +752,11 @@ export const translations = {
       services: "Services",
       about: "About Us",
       events: "Events",
-      sectors: "Departments",
-      blog: "Blog",
-      training: "Training",
+      sectors: "Our Departments",
+      blog: "News & Insights",
+      training: "Training & Development",
       contact: "Contact Us",
-      partners: "Partnership",
+      partners: "Partnerships",
       links: "Links",
       calendar: "Calendar",
       invitationSupport: "Invitation Support",
@@ -898,17 +900,17 @@ export const translations = {
         statYouthBeneficiariesLabel: "Youth Beneficiaries"
       },
       sectors: {
-        title: "Our Focus Sectors",
+        title: "Our Departments",
         subtitle: "Our Company operates through specialized departments that reflect the nature of the exhibitions, conferences, and events it organizes and coordinates participation in.",
         viewAll: "Browse all sectors",
         medicalTitle: "Healthcare & Life Sciences",
-        medicalDesc: "Connecting health institutions with global innovation and medical advancements.",
+        medicalDesc: "This department covers medical and healthcare events, medical equipment, laboratories, pharmaceuticals, and health technologies.",
         techTitle: "Digital Transformation & Technology",
-        techDesc: "Empowering Iraq's digital future through global tech exhibitions and partnerships.",
+        techDesc: "This department follows events in technology, artificial intelligence, cybersecurity, digital solutions, and technological innovation.",
         indTitle: "Industrial & Commercial Development",
-        indDesc: "Advancing industrial growth, trade opportunities, and investment cooperation.",
+        indDesc: "This department focuses on exhibitions and conferences related to industry, trade, investment, energy, construction, and logistics.",
         acadTitle: "Professional & Academic Affairs",
-        acadDesc: "Supporting academic collaboration, training, and professional development."
+        acadDesc: "This department focuses on scientific conferences, professional programs, academic events, and knowledge exchange."
       },
       services: {
         title: "Our Services",
@@ -1126,16 +1128,16 @@ export const translations = {
       subtitle:
         "We value collaboration and are here to support your goals. Whether you are interested in cooperation opportunities, partnership discussions, participating in our international events, or need support with official invitations, our team is ready to assist you.",
       address: "Address",
-      phone: "Phone",
+      phone: "Phone Number",
       email: "Email",
       workingHours: "Working Hours",
       workingDays: "Sunday - Thursday",
       workingTime: "8:30 AM - 4:30 PM",
       fullName: "Full Name",
-      subject: "Subject",
+      subject: "Inquiry Subject",
       message: "Message",
       messagePlaceholder: "Write your message here...",
-      send: "Send Message",
+      send: "Submit Request",
       success: "Your message has been sent successfully!",
       successMessage: "We will contact you as soon as possible.",
       sendAnother: "Send Another Message",
@@ -1150,17 +1152,17 @@ export const translations = {
       selectEvent: "Select Event",
       selectSector: "Select Strategic Division",
       selectBlog: "Select Blog Post",
-      heroDescription: "We value collaboration and are here to support your goals. Whether you are interested in cooperation opportunities, partnership discussions, participating in our international events, or need support with official invitations, our team is ready to assist you.",
+      heroDescription: "We welcome your communication with Our Company for inquiries about exhibitions and conferences, exploring participation opportunities, or requesting information related to our services and professional programs.",
       cooperationTitle: "Request Cooperation",
       cooperationDesc: "Explore cooperation opportunities with JAZ for projects and initiatives.",
       invitationTitle: "Request Invitation Support",
       invitationDesc: "Request official invitation letters for visa, events, exhibitions, and institutional meetings.",
       partnerTitle: "Become a Partner in Iraq",
       partnerDesc: "Join our network of institutions and organizations advancing impactful partnerships.",
-      sendUsMessage: "Send Us a Message",
-      formSubtitle: "Fill out the form below and our team will get back to you as soon as possible.",
+      sendUsMessage: "Contact Form",
+      formSubtitle: "Please complete the information below, and the Joint Annual Zone team will review your request and contact you according to the nature of the inquiry.",
       officesSubtitle: "Three offices covering Iraq from north to south.",
-      organization: "Organization / Company",
+      organization: "Institution / Company Name",
       organizationPlaceholder: "Enter your organization or company",
       agreeTerms: "I agree to the Privacy Policy and Terms & Conditions.",
       ourOffices: "Our Offices in Iraq",
@@ -1256,9 +1258,9 @@ export const translations = {
         partners: "Partners",
         experience: "Years of Experience",
       },
-      whoWeAreTitle: "Who We Are",
-      whoWeAreSubtitle: "Iraq's platform connecting government, business, and academia with international exhibitions and partners.",
-      whoWeAreText: "JAZ (Joint Annual Zone) is Iraq's dedicated platform that connects government, businesses, academia, and professionals with international exhibitions, conferences, and institutional partners. We facilitate participation, organize delegations, and build long-term cooperation that drives sustainable growth and global impact.",
+      whoWeAreTitle: "About Us",
+      whoWeAreSubtitle: "",
+      whoWeAreText: "Joint Annual Zone is a company specialized in organizing exhibitions and conferences and coordinating professional and institutional participation in specialized international events.\nOur Company supports the presence of institutions, businesses, and professionals on international platforms through event organization, participation coordination, and structured professional pathways for communication and knowledge exchange.",
       whereWeOperate: "Where We Operate",
       whereWeOperateSubtitle: "Three strategic offices covering Iraq from north to south.",
       erbilTitle: "Erbil",
@@ -1268,22 +1270,19 @@ export const translations = {
       basraTitle: "Basra",
       basraDesc: "Our gateway to the Gulf and international trade.",
       whyJaz: "Why JAZ",
-      whyJazSubtitle: "Five advantages that make partnering with JAZ a trusted choice.",
+      whyJazSubtitle: "Our Company operates through an organizational model focused on exhibition and conference management and the coordination of professional and institutional participation, supporting the presence of Iraqi institutions, businesses, and professionals in specialized international events.",
       whyJazItems: [
-        "Official coordination with government agencies.",
-        "Direct access to global exhibitions.",
-        "Dedicated delegation and participation support.",
-        "Facilitation of strategic partnerships.",
-        "End-to-end comprehensive coordination."
+        "Professional Organization\nWe follow clear working mechanisms in organizing and managing events.",
+        "International Coordination\nWe coordinate the participation of entities in international exhibitions and conferences.",
+        "Institutional Support\nWe assist institutions, businesses, and professionals in accessing events that are relevant to their fields of work."
       ],
       ourValues: "Our Values",
-      ourValuesSubtitle: "Five principles that guide every partnership and participation we undertake.",
+      ourValuesSubtitle: "",
       valuesItems: [
-        { title: "Integrity", desc: "We act with honesty and transparency." },
-        { title: "Excellence", desc: "We always strive for quality." },
-        { title: "Collaboration", desc: "Partnerships create greater impact." },
-        { title: "Innovation", desc: "We embrace new solutions." },
-        { title: "Impact", desc: "Driven by tangible results." }
+        { title: "Professionalism", desc: "We follow a structured and clear approach in managing events and coordinating participation." },
+        { title: "Accuracy", desc: "We pay close attention to the administrative and organizational details related to each event." },
+        { title: "Communication", desc: "We believe in the importance of building effective communication network between Iraqi entities and relevant international parties." },
+        { title: "Knowledge", desc: "We seek to support the exchange of expertise and knowledge through participation in specialized exhibitions and conferences." }
       ],
       leadership: "Leadership & Presence",
       leadershipText: "Our headquarters is located in Basra, with offices in Baghdad and Erbil. We work closely with ministries, universities, and private sector leaders.",
@@ -1351,35 +1350,30 @@ export const translations = {
           {
             title: "Training & Development",
             desc: "Our Company organizes training and professional development programs aligned with labor market requirements and specialized sectors."
-          },
-          {
-            title: "Consular Logistics & Media Integration",
-            desc: "We manage on-the-ground VIP protocol, travel logistics, and high-visibility media coverage across JAZ platforms to amplify delegation impact."
           }
         ]
       },
-      info: {
-        howWeWork: {
-          title: "How We Work",
-          desc: "Through tailored strategies for international representation."
-        },
-        industries: {
-          title: "Industries We Support",
-          desc: "Healthcare, Technology, Commercial and Academic sectors."
-        },
-        whyJaz: {
-          title: "Why JAZ?",
-          items: [
-            "Trusted global and local networks.",
-            "Proven track record of successful outcomes."
-          ]
-        }
+      workProcess: {
+        title: "Work Process",
+        items: [
+          { title: "Identifying the Nature of Participation", desc: "Our Company begins by reviewing the participating entity and its field of work to identify the most suitable type of event." },
+          { title: "Selecting the Appropriate Event", desc: "Institutions, businesses, and professionals are guided toward exhibitions and conferences that are most relevant to their specialization and professional objectives." },
+          { title: "Organizing Requirements", desc: "Our Company follows up on the administrative and organizational requirements related to participation." },
+          { title: "Coordinating Participation", desc: "Participation procedures are coordinated to ensure a clear and organized process from the beginning until the event date." }
+        ]
+      },
+      beneficiaries: {
+        title: "Beneficiaries",
+        description: "Our Company provides its services to entities and individuals interested in participating in specialized exhibitions, conferences, and professional events.",
+        items: [
+          { title: "Institutions", desc: "Government entities, authorities, unions, and organizations related to different professional sectors." },
+          { title: "Businesses", desc: "Commercial, industrial, and service companies." },
+          { title: "Professionals", desc: "Specialized individuals and professional personnel." }
+        ]
       },
       cta: {
-        title: "Let's Build Global Opportunities Together",
-        description: "Whether representing an institution or enterprise, JAZ is your partner for global engagement and verified impact.",
-        cooperation: "Request Cooperation",
-        contact: "Contact Us"
+        title: "Identify the Support You Need",
+        supportButton: "Define Your Need"
       }
     },
     // Auth
@@ -1465,7 +1459,14 @@ export const translations = {
     trainingPage: {
       badge: "Training and Development Center",
       title: "Training and Development",
-      subtitle: "Specialized training programs coming soon",
+      description: "Our Company organizes training and professional development programs aligned with labor market requirements and specialized sectors. This section focuses on developing professional skills, enhancing practical knowledge, and supporting individuals and institutions through accredited training programs.",
+      closedMessage: "Registration for the 2026 programs is closed. Please wait for the 2027 programs.",
+      areasTitle: "Training Areas",
+      areas: [
+        { title: "Professional Programs", description: "Programs designed to develop practical and professional skills for individuals and working personnel." },
+        { title: "Sector-Based Programs", description: "Programs aligned with the requirements of different sectors, including industrial, healthcare, technology, and academic fields." },
+        { title: "Workshops", description: "Short training workshops focused on specific topics and direct practical applications." }
+      ],
       features: {
         experts: {
           title: "Globally Certified Experts",

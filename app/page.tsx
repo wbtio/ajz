@@ -2,7 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import {
   HeroSection,
   FocusSectors,
-  OurServices
+  CompanyOverviewSections,
+  TrainingDevelopmentSection
 } from '@/components/home'
 
 export default async function Home() {
@@ -22,11 +23,14 @@ export default async function Home() {
       <HeroSection />
 
       <div data-purpose="main-content">
-        {/* Navy — capabilities catalog (rhythmic contrast) */}
-        <OurServices />
+        {/* Compact company overview sections */}
+        <CompanyOverviewSections />
 
         {/* White — focus domains */}
         <FocusSectors sectors={sectors || []} />
+
+        {/* Final homepage section — training and professional development */}
+        <TrainingDevelopmentSection />
       </div>
     </>
   )

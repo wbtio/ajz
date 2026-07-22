@@ -66,7 +66,7 @@ const STRINGS = {
   },
 }
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '9647719000600'
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -226,14 +226,16 @@ export function ChatWidget() {
         </div>
       )}
 
-      {/* Floating toggle button */}
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-600/40 transition-all hover:scale-105 hover:shadow-xl hover:shadow-blue-600/50 active:scale-95"
-        aria-label={t.open}
+      {/* Floating WhatsApp button */}
+      <a
+        href={`https://wa.me/${WHATSAPP_NUMBER}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/35 transition-all hover:scale-105 hover:bg-[#20bd5a] hover:shadow-xl hover:shadow-[#25D366]/45 active:scale-95"
+        aria-label={locale === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us on WhatsApp'}
       >
-        {open ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
-      </button>
+        <WhatsAppIcon className="h-7 w-7" />
+      </a>
     </div>
   )
 }

@@ -234,26 +234,26 @@ function SectorCard({ sector, index }: SectorCardProps) {
         />
       )}
 
-      {/* Icon */}
-      <motion.div
-        className="relative z-10 w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors duration-300"
-        style={{
-          backgroundColor: `${sector.meta.accent}0d`,
-          color: sector.meta.accent,
-          x: shouldReduceMotion ? 0 : iconX,
-          y: shouldReduceMotion ? 0 : iconY,
-        }}
-      >
-        <Icon icon={sector.meta.icon} className="w-5 h-5" />
-      </motion.div>
-
-      {/* Title */}
-      <h3
-        className="relative z-10 font-extrabold text-slate-900 text-sm lg:text-base leading-snug mb-1.5 transition-colors duration-300"
-        style={{ color: isHovered ? sector.meta.accent : undefined }}
-      >
-        {sector.title}
-      </h3>
+      {/* Icon and title */}
+      <div className="relative z-10 mb-1.5 flex items-center gap-3">
+        <motion.div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-300"
+          style={{
+            backgroundColor: `${sector.meta.accent}0d`,
+            color: sector.meta.accent,
+            x: shouldReduceMotion ? 0 : iconX,
+            y: shouldReduceMotion ? 0 : iconY,
+          }}
+        >
+          <Icon icon={sector.meta.icon} className="h-5 w-5" />
+        </motion.div>
+        <h3
+          className="font-extrabold text-sm leading-snug text-slate-900 transition-colors duration-300 lg:text-base"
+          style={{ color: isHovered ? sector.meta.accent : undefined }}
+        >
+          {sector.title}
+        </h3>
+      </div>
 
       {/* Description */}
       <p className="relative z-10 text-xs text-slate-600 leading-relaxed mt-auto text-pretty">
@@ -304,16 +304,13 @@ export function FocusSectors({ sectors = [] }: FocusSectorsProps) {
       return {
         ...s,
         title: isRTL ? dbSector.name_ar || dbSector.name : dbSector.name || dbSector.name_ar,
-        description: isRTL
-          ? dbSector.description_ar || dbSector.description
-          : dbSector.description || dbSector.description_ar,
       }
     }
     return s
   })
 
   return (
-    <section className="bg-white py-4 lg:py-6" data-purpose="focus-sectors">
+    <section className="bg-[#f5f5f5] py-4 lg:py-6" data-purpose="focus-sectors">
       <Container>
         <SectionHeader
           title={t.homepage.sectors.title}

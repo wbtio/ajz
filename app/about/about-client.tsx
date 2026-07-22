@@ -71,14 +71,20 @@ export function AboutClient() {
 
       <main>
         {/* ============ IDENTITY — white band ============ */}
-        <section className="bg-white py-8 lg:py-12">
+        <section className="relative overflow-hidden bg-white py-8 lg:py-12">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden text-[#001a33]" aria-hidden="true">
+            <Icon icon="solar:earth-bold-duotone" className="absolute -end-8 top-8 h-64 w-64 opacity-[0.035]" />
+            <Icon icon="solar:buildings-3-bold-duotone" className="absolute start-[46%] bottom-[-3rem] h-48 w-48 opacity-[0.025]" />
+            <Icon icon="solar:hand-shake-bold-duotone" className="absolute end-[28%] top-16 h-28 w-28 opacity-[0.03]" />
+          </div>
           <Container>
-            <SectionHeader
-              title={t.about.whoWeAreTitle}
-              subtitle={t.about.whoWeAreSubtitle}
-            />
+            <div className="relative z-10">
+              <SectionHeader
+                title={t.about.whoWeAreTitle}
+                subtitle={t.about.whoWeAreSubtitle}
+              />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 mt-6">
               {/* Who We Are text */}
               <motion.div
                 initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
@@ -87,51 +93,47 @@ export function AboutClient() {
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="lg:col-span-7"
               >
-                <p className="text-sm lg:text-base leading-relaxed text-slate-700 font-medium max-w-prose">
+                <p className="whitespace-pre-line text-sm lg:text-base leading-relaxed text-slate-700 font-medium max-w-prose">
                   {t.about.whoWeAreText}
                 </p>
               </motion.div>
 
-              {/* Mission & Vision */}
-              <motion.div
-                initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-5 lg:border-s lg:border-slate-200/70 lg:ps-6"
-              >
-                <div className="space-y-3">
-                  {/* Mission */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Icon icon="solar:target-bold-duotone" className="h-4 w-4 text-[#8B0000] shrink-0" />
-                      <h4 className="text-xs font-extrabold text-slate-900">{t.about.mission}</h4>
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {t.about.missionText}
-                    </p>
-                  </div>
-                  {/* Vision */}
-                  <div className="pt-3 border-t border-slate-200/70">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Icon icon="solar:eye-bold-duotone" className="h-4 w-4 text-[#16a34a] shrink-0" />
-                      <h4 className="text-xs font-extrabold text-slate-900">{t.about.vision}</h4>
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {t.about.visionText}
-                    </p>
-                  </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* ============ MISSION & VISION ============ */}
+        <section className="bg-[#f5f7fa] py-7 lg:py-9">
+          <Container>
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                {
+                  title: locale === 'ar' ? 'رسالتنا' : 'Our Mission',
+                  text: locale === 'ar'
+                    ? 'تسعى الجاز إلى تنظيم المعارض والمؤتمرات وتنسيق المشاركات المهنية والمؤسسية، بما يتيح للمؤسسات والشركات الوصول إلى الفعاليات الدولية المتخصصة بطريقة منظمة وفعالة.'
+                    : 'Our Company seeks to organize exhibitions and conferences and coordinate professional and institutional participation, enabling institutions, businesses to access specialized international events in a structured and effective manner.',
+                },
+                {
+                  title: locale === 'ar' ? 'رؤيتنا' : 'Our Vision',
+                  text: locale === 'ar'
+                    ? 'أن تكون جاز جهة فاعلة في تنظيم المعارض والمؤتمرات، وتمثيل الحضور والمؤسسي في المنصات الدولية المتخصصة.'
+                    : 'To be an active entity in organizing exhibitions and conferences and institutional presence on specialized international platforms.',
+                },
+              ].map((item) => (
+                <div key={item.title} className="rounded-xl border border-slate-200 bg-white p-5">
+                  <h2 className="text-lg font-extrabold text-[#101a33]">{item.title}</h2>
+                  <p className="mt-2 text-sm leading-7 text-slate-600">{item.text}</p>
                 </div>
-              </motion.div>
+              ))}
             </div>
           </Container>
         </section>
 
         {/* ============ VALUES — navy band ============ */}
-        <section className="bg-[#0b1426] text-white py-6 lg:py-8">
+        <section className="bg-[#f0f0f0] text-[#0b1426] py-6 lg:py-8">
           <Container>
             <SectionHeader
-              dark
               title={t.about.ourValues}
               subtitle={t.about.ourValuesSubtitle}
             />
@@ -151,21 +153,21 @@ export function AboutClient() {
                     transition={{ duration: 0.4, delay: (index % 2) * 0.05 }}
                     className={[
                       'group flex items-center gap-3 px-2 py-3 lg:px-4 lg:py-4',
-                      'border-b border-white/10',
-                      isOdd ? 'md:border-e md:border-white/10' : '',
+                      'border-b border-slate-500/20',
+                      isOdd ? 'md:border-e md:border-slate-500/20' : '',
                       isLast && !isOdd ? 'md:border-b-0' : '',
                       isLastRow ? 'md:border-b-0' : '',
                     ].join(' ')}
                   >
                     <span
-                      className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border border-white/10 bg-white/[0.04] transition-colors duration-300"
+                      className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border border-slate-500/20 bg-white/40 transition-colors duration-300"
                       style={{ color: ic.color }}
                     >
                       <Icon icon={ic.icon} className="w-4 h-4" />
                     </span>
                     <div>
-                      <span className="block font-extrabold text-sm text-white mb-0.5">{val.title}</span>
-                      <span className="block text-xs text-slate-300 leading-relaxed">{val.desc}</span>
+                      <span className="block font-extrabold text-sm text-[#0b1426] mb-0.5">{val.title}</span>
+                      <span className="block text-xs text-slate-700 leading-relaxed">{val.desc}</span>
                     </div>
                   </motion.li>
                 )
@@ -180,10 +182,9 @@ export function AboutClient() {
           <Container>
             <SectionHeader
               title={t.about.whereWeOperate}
-              subtitle={t.about.whereWeOperateSubtitle}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5 mt-5 lg:mt-6">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 mt-4">
               {offices.map((office, index) => (
                 <motion.div
                   key={index}
@@ -192,20 +193,17 @@ export function AboutClient() {
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                  className="group relative flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 lg:p-6 min-h-[140px] transition-colors duration-300 hover:border-slate-300"
+                  className="group flex items-center rounded-xl border border-slate-200/70 bg-white px-4 py-3 transition-colors duration-300 hover:border-slate-300"
                 >
-                  <div className="flex items-center gap-2.5 mb-3">
+                  <div className="flex items-center gap-2.5">
                     <span
                       className="w-3 h-3 rounded-full shrink-0"
                       style={{ backgroundColor: office.dot }}
                     />
-                    <h3 className="font-extrabold text-slate-900 text-base leading-snug">
+                    <h3 className="font-extrabold text-slate-900 text-sm leading-snug">
                       {office.title}
                     </h3>
                   </div>
-                  <p className="text-sm text-slate-600 leading-relaxed mt-auto">
-                    {office.desc}
-                  </p>
                 </motion.div>
               ))}
             </div>
@@ -215,16 +213,16 @@ export function AboutClient() {
         {/* ============ WHY JAZ + REACH — white band ============ */}
         <section className="bg-white py-8 lg:py-12">
           <Container>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            <div className="grid grid-cols-1">
               {/* Why JAZ — ruled checklist */}
-              <div className="lg:col-span-7">
+              <div className="max-w-4xl">
                 <SectionHeader
                   title={t.about.whyJaz}
                   subtitle={t.about.whyJazSubtitle}
                 />
 
                 <ul className="mt-6 lg:mt-8 divide-y divide-slate-200/70">
-                  {(t.about.whyJazItems || []).map((item: string, index: number) => (
+                  {(t.about.whyJazItems || []).slice(0, 3).map((item: string, index: number) => (
                     <motion.li
                       key={index}
                       initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
@@ -236,7 +234,7 @@ export function AboutClient() {
                       <span className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-[#8b0000]/[0.06] text-[#8b0000] transition-colors duration-300 group-hover:bg-[#8b0000]/[0.1]">
                         <Icon icon="solar:check-circle-bold-duotone" className="w-5 h-5" />
                       </span>
-                      <span className="text-sm lg:text-base font-semibold text-slate-800 leading-snug">
+                      <span className="whitespace-pre-line text-sm lg:text-base font-semibold text-slate-800 leading-snug">
                         {item}
                       </span>
                     </motion.li>
@@ -244,47 +242,73 @@ export function AboutClient() {
                 </ul>
               </div>
 
-              {/* Nationwide Reach — stat list */}
-              <div className="lg:col-span-5 lg:border-s lg:border-slate-200/70 lg:ps-8">
-                <SectionHeader
-                  title={t.about.nationwideReach}
-                />
+            </div>
+          </Container>
+        </section>
 
-                <div className="mt-6 lg:mt-8 space-y-5 lg:space-y-6">
-                  {reachItems.map((item: { count: string; label: string }, idx: number) => {
-                    const ic = reachIcons[idx] || { icon: 'solar:star-bold-duotone', color: '#001a33' }
-                    return (
-                      <motion.div
-                        key={idx}
-                        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: '-40px' }}
-                        transition={{ duration: 0.4, delay: idx * 0.06 }}
-                        className="flex items-start gap-4"
-                      >
-                        <span
-                          className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-200/70"
-                          style={{ color: ic.color }}
-                        >
-                          <Icon icon={ic.icon} className="w-5 h-5" />
-                        </span>
-                        <div className="leading-tight pt-0.5">
-                          <div className="text-lg lg:text-xl font-black leading-tight mb-0.5" style={{ color: ic.color }}>
-                            {item.count}
-                          </div>
-                          <p className="text-xs lg:text-sm text-slate-500 font-semibold">{item.label}</p>
-                        </div>
-                      </motion.div>
-                    )
-                  })}
+        {/* ============ TEAM — directly before the existing final CTA ============ */}
+        <section className="bg-[#f5f7fa] py-8 lg:py-10" dir={dir}>
+          <Container>
+            <div className="max-w-3xl text-start">
+              <SectionHeader
+                title={locale === 'ar' ? 'فريقنا' : 'Meet Our Team'}
+                subtitle={locale === 'ar' ? 'الفريق المتخصص الذي يقف وراء نجاحنا.' : 'The dedicated team behind our success.'}
+              />
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-2">
+              {(locale === 'ar'
+                ? [
+                    ['نور الشكرجي', 'الرئيس التنفيذي', 'قيادة الرؤية الاستراتيجية والنمو المؤسسي.'],
+                    ['نيكولاس نيكلتس', 'المدير التنفيذي', 'إدارة العمليات والتطوير التنظيمي.'],
+                    ['مينا سالم', 'مديرة المبيعات', 'تطوير العلاقات مع العملاء والشركاء.'],
+                    ['رامي العزاوي', 'مدير العمليات', 'الإشراف على كفاءة وفعالية عمل الشركة.'],
+                    ['muntazar ahmed', 'مدير تقنية المعلومات', 'ضمان أمن وموثوقية حلولنا التقنية.'],
+                    ['علاء عبد الكريم', 'منسق الفعاليات', 'تنظيم وتنسيق فعاليات مميزة لعملائنا.'],
+                    ['ماريا جورج', 'منسقة العملاء', 'ضمان رضا العملاء والدعم الاستثنائي.'],
+                    ['ميركل', 'مديرة العلاقات العامة', 'إدارة الاتصالات العامة والإعلامية للشركة.'],
+                    ['كوزمينا', 'مديرة تطوير الأعمال', 'تحديد فرص النمو والشراكات الجديدة.'],
+                  ]
+                : [
+                    ['Noor Al-Shakargji', 'Chief Executive Officer', 'Leading the strategic vision and institutional growth.'],
+                    ['Nicholas Nicklets', 'Executive Director', 'Managing daily operations and organizational development.'],
+                    ['Mina Salem', 'Sales Manager', 'Building strong client relationships and new partnerships.'],
+                    ['Rami Al-Azzawi', 'Operations Manager', 'Overseeing the efficiency and effectiveness of the company.'],
+                    ['muntazar ahmed', 'IT Manager', 'Ensuring the security and reliability of our technology.'],
+                    ['Alaa Abdul-Karim', 'Events Coordinator', 'Organizing and coordinating memorable events for our clients.'],
+                    ['Maria George', 'Client Coordinator', 'Ensuring client satisfaction and exceptional support.'],
+                    ['Merkel', 'Public Relations Manager', 'Managing the company’s public image and media communications.'],
+                    ['Kuzmina', 'Business Development Manager', 'Identifying new growth opportunities and partnerships.'],
+                  ]
+              ).map(([name, role]) => (
+                <div
+                  key={name}
+                  className={`flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-5 text-start shadow-sm lg:h-[65px] lg:px-3 lg:py-1 ${
+                    name === 'Kuzmina' || name === 'كوزمينا' ? 'lg:col-span-2' : ''
+                  }`}
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#001a33] text-sm font-extrabold text-white lg:h-7 lg:w-7">
+                    {name.charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="truncate text-sm font-extrabold text-[#101a33]">{name}</h3>
+                    <p className="truncate text-xs font-semibold text-[#8b0000]">{role}</p>
+                  </div>
+                  {(name === 'Kuzmina' || name === 'كوزمينا') && (
+                    <a
+                      href="mailto:contact@jaz.iq"
+                      className="ms-auto shrink-0 whitespace-nowrap ps-4 text-xs font-semibold text-[#8b0000] underline-offset-2 hover:underline"
+                    >
+                      contact@jaz.iq
+                    </a>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
           </Container>
         </section>
 
         {/* ============ CTA — navy band ============ */}
-        <section className="bg-[#0b1426] text-white py-5 lg:py-8" data-purpose="cta-bar">
+        <section className="bg-[#0b1426] text-white py-5 lg:py-[26px]" data-purpose="cta-bar">
           <Container>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="flex items-start gap-5">
