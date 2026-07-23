@@ -89,6 +89,8 @@ export function ChatWidget() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const normalizedPathname = pathname?.toLowerCase() ?? ''
+  const assistantLabel = locale === 'ar' ? 'مساعد JAZ' : 'JAZ Assistant'
+  const closeAssistantLabel = locale === 'ar' ? 'إغلاق المساعد' : 'Close assistant'
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -119,6 +121,7 @@ export function ChatWidget() {
       {/* Chat panel */}
       {open && (
         <div
+          id="jaz-chat-dialog"
           className="flex h-[min(75vh,620px)] w-[min(calc(100vw-2rem),400px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/20 ring-1 ring-black/8 animate-in fade-in slide-in-from-bottom-4 duration-200"
           role="dialog"
           aria-label={t.title}
@@ -226,16 +229,41 @@ export function ChatWidget() {
         </div>
       )}
 
-      {/* Floating WhatsApp button */}
-      <a
-        href={`https://wa.me/${WHATSAPP_NUMBER}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/35 transition-all hover:scale-105 hover:bg-[#20bd5a] hover:shadow-xl hover:shadow-[#25D366]/45 active:scale-95"
-        aria-label={locale === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us on WhatsApp'}
+      {/* Floating contact actions */}
+      <div
+        className="flex flex-col items-end gap-3"
+        role="group"
+        aria-label={locale === 'ar' ? 'خيارات التواصل' : 'Contact options'}
       >
-        <WhatsAppIcon className="h-7 w-7" />
-      </a>
+        <button
+          type="button"
+          onClick={() => setOpen((current) => !current)}
+          className={cn(
+            'group relative flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B0000] focus-visible:ring-offset-2',
+            open
+              ? 'bg-[#8B0000] shadow-[#8B0000]/25 hover:bg-[#6B0000]'
+              : 'bg-[#000000] shadow-black/25 hover:bg-[#151515]'
+          )}
+          aria-label={open ? closeAssistantLabel : assistantLabel}
+          aria-expanded={open}
+          aria-controls="jaz-chat-dialog"
+        >
+          <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
+            {open ? <X className="h-5 w-5" aria-hidden /> : <Bot className="h-5 w-5" aria-hidden />}
+            {!open && <span className="absolute -end-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#000000] bg-emerald-400" />}
+          </span>
+        </button>
+
+        <a
+          href={`https://wa.me/${WHATSAPP_NUMBER}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/35 transition-all hover:-translate-y-0.5 hover:bg-[#20bd5a] hover:shadow-xl hover:shadow-[#25D366]/45 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+          aria-label={locale === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us on WhatsApp'}
+        >
+          <WhatsAppIcon className="h-7 w-7" />
+        </a>
+      </div>
     </div>
   )
 }

@@ -335,7 +335,7 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                     aria-label={isRtl ? 'حساب المستخدم' : 'User account'}
                     aria-expanded={userMenuOpen}
                     aria-haspopup="menu"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:scale-[1.03] hover:shadow-md"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#001a33] bg-[#001a33] p-1 shadow-sm shadow-[#001a33]/15 transition-all duration-300 hover:scale-[1.03] hover:shadow-md"
                   >
                     <AvatarCircle
                       avatarUrl={currentUser.avatarUrl}

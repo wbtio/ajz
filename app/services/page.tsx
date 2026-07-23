@@ -83,7 +83,7 @@ export default function ServicesPage() {
           <Container className="-mt-[71px] -mb-[71px]">
             <h2 className="text-2xl font-extrabold sm:text-3xl">{t.servicesPage.beneficiaries.title}</h2>
             <p className="mt-3 max-w-2xl text-base leading-8 text-slate-600">{t.servicesPage.beneficiaries.description}</p>
-            <div className="mt-10 grid gap-8 md:grid-cols-3">
+            <div className="mt-[5px] grid gap-8 md:grid-cols-3">
               {t.servicesPage.beneficiaries.items.map((item, index) => {
                 const Icon = beneficiaryIcons[index]
                 return <article key={item.title} className="border-t border-slate-200 pt-6"><Icon className="h-6 w-6 text-[#8b0000]" aria-hidden="true" /><h3 className="mt-5 font-extrabold">{item.title}</h3><p className="mt-2 text-sm leading-7 text-slate-600">{item.desc}</p></article>
