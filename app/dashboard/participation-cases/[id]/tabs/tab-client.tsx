@@ -18,33 +18,33 @@ import {
 } from './shared'
 
 const SCHENGEN_COUNTRIES = [
-    { code: 'AT', name: 'Austria (AT) — النمسا' },
-    { code: 'BE', name: 'Belgium (BE) — بلجيكا' },
-    { code: 'CH', name: 'Switzerland (CH) — سويسرا' },
-    { code: 'CZ', name: 'Czech Republic (CZ) — التشيك' },
-    { code: 'DE', name: 'Germany (DE) — ألمانيا' },
-    { code: 'DK', name: 'Denmark (DK) — الدنمارك' },
-    { code: 'EE', name: 'Estonia (EE) — إستونيا' },
-    { code: 'ES', name: 'Spain (ES) — إسبانيا' },
-    { code: 'FI', name: 'Finland (FI) — فنلندا' },
-    { code: 'FR', name: 'France (FR) — فرنسا' },
-    { code: 'GR', name: 'Greece (GR) — اليون' },
-    { code: 'HR', name: 'Croatia (HR) — كرواتيا' },
-    { code: 'HU', name: 'Hungary (HU) — المجر' },
-    { code: 'IS', name: 'Iceland (IS) — آيسلندا' },
-    { code: 'IT', name: 'Italy (IT) — إيطاليا' },
-    { code: 'LI', name: 'Liechtenstein (LI) — ليختنشتاين' },
-    { code: 'LT', name: 'Lithuania (LT) — ليتوانيا' },
-    { code: 'LU', name: 'Luxembourg (LU) — لوكسمبورغ' },
-    { code: 'LV', name: 'Latvia (LV) — لاتفيا' },
-    { code: 'MT', name: 'Malta (MT) — مالطا' },
-    { code: 'NL', name: 'Netherlands (NL) — هولندا' },
-    { code: 'NO', name: 'Norway (NO) — النرويج' },
-    { code: 'PL', name: 'Poland (PL) — بولندا' },
-    { code: 'PT', name: 'Portugal (PT) — البرتغال' },
-    { code: 'SE', name: 'Sweden (SE) — السويد' },
-    { code: 'SI', name: 'Slovenia (SI) — سلوفينيا' },
-    { code: 'SK', name: 'Slovakia (SK) — سلوفاكيا' },
+    { code: 'AT', name: 'Austria (AT)' },
+    { code: 'BE', name: 'Belgium (BE)' },
+    { code: 'CH', name: 'Switzerland (CH)' },
+    { code: 'CZ', name: 'Czech Republic (CZ)' },
+    { code: 'DE', name: 'Germany (DE)' },
+    { code: 'DK', name: 'Denmark (DK)' },
+    { code: 'EE', name: 'Estonia (EE)' },
+    { code: 'ES', name: 'Spain (ES)' },
+    { code: 'FI', name: 'Finland (FI)' },
+    { code: 'FR', name: 'France (FR)' },
+    { code: 'GR', name: 'Greece (GR)' },
+    { code: 'HR', name: 'Croatia (HR)' },
+    { code: 'HU', name: 'Hungary (HU)' },
+    { code: 'IS', name: 'Iceland (IS)' },
+    { code: 'IT', name: 'Italy (IT)' },
+    { code: 'LI', name: 'Liechtenstein (LI)' },
+    { code: 'LT', name: 'Lithuania (LT)' },
+    { code: 'LU', name: 'Luxembourg (LU)' },
+    { code: 'LV', name: 'Latvia (LV)' },
+    { code: 'MT', name: 'Malta (MT)' },
+    { code: 'NL', name: 'Netherlands (NL)' },
+    { code: 'NO', name: 'Norway (NO)' },
+    { code: 'PL', name: 'Poland (PL)' },
+    { code: 'PT', name: 'Portugal (PT)' },
+    { code: 'SE', name: 'Sweden (SE)' },
+    { code: 'SI', name: 'Slovenia (SI)' },
+    { code: 'SK', name: 'Slovakia (SK)' },
 ]
 
 interface TabClientProps {
@@ -151,9 +151,9 @@ export function TabClient({ registration }: TabClientProps) {
                 other_residence_permit: permitJson,
             })
             if (error) toast.error(error)
-            else toast.success('تم حفظ بيانات العميل')
+            else toast.success('Client record saved')
         } catch {
-            toast.error('فشل الحفظ')
+            toast.error('Failed to save')
         } finally {
             setSaving(false)
         }
@@ -164,7 +164,7 @@ export function TabClient({ registration }: TabClientProps) {
             <InlineAlert variant="warn">
                 <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
                 <span>
-                    يجب أن تكون البيانات <strong>كما في الجواز (AS PER PASSPORT)</strong>.
+                    Data must match the passport exactly <strong>(AS PER PASSPORT)</strong>.
                 </span>
             </InlineAlert>
 
@@ -185,17 +185,17 @@ export function TabClient({ registration }: TabClientProps) {
                     <FormField label="Gender">
                         <select value={form.sex} onChange={(e) => set('sex', e.target.value)} className={selectClass}>
                             <option value=""> </option>
-                            <option value="male">ذكر</option>
-                            <option value="female">أنثى</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
                         </select>
                     </FormField>
                     <FormField label="Marital status">
                         <select value={form.marital_status} onChange={(e) => set('marital_status', e.target.value)} className={selectClass}>
                             <option value="">—</option>
-                            <option value="single">أعزب/عزباء</option>
-                            <option value="married">متزوج/ة</option>
-                            <option value="divorced">مطلق/ة</option>
-                            <option value="widowed">أرمل/ة</option>
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                            <option value="divorced">Divorced</option>
+                            <option value="widowed">Widowed</option>
                         </select>
                     </FormField>
                     <FormField label="Country of residence">
@@ -294,8 +294,8 @@ export function TabClient({ registration }: TabClientProps) {
                             onChange={(e) => set('previous_schengen_visa', e.target.value === 'true')}
                             className={selectClass}
                         >
-                            <option value="false">لا</option>
-                            <option value="true">نعم</option>
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
                         </select>
                     </FormField>
                     <FormField label="Other residence permit?">
@@ -304,8 +304,8 @@ export function TabClient({ registration }: TabClientProps) {
                             onChange={(e) => set('has_other_residence', e.target.value === 'true')}
                             className={selectClass}
                         >
-                            <option value="false">لا</option>
-                            <option value="true">نعم</option>
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
                         </select>
                     </FormField>
 
@@ -359,7 +359,7 @@ export function TabClient({ registration }: TabClientProps) {
 
                         {form.previous_visas_list.length === 0 ? (
                             <div className="text-center py-6 text-[12px] text-[var(--jaz-muted)] border border-dashed border-[var(--jaz-line)] rounded-md">
-                                لا توجد تأشيرات. اضغط "Add visa" في الأعلى.
+                                No visas yet. Click &quot;Add visa&quot; above.
                             </div>
                         ) : (
                             <ul className="space-y-2.5">
@@ -432,7 +432,7 @@ export function TabClient({ registration }: TabClientProps) {
                                                 }}
                                                 aria-label="Remove visa"
                                                 className="absolute left-0 top-7 size-7 rounded-md bg-transparent hover:bg-[var(--jaz-sovereign)]/8 text-[var(--jaz-muted)] hover:text-[var(--jaz-sovereign)] flex items-center justify-center transition-colors duration-150"
-                                                title="حذف"
+                                                title="Delete"
                                             >
                                                 <X className="size-3.5" />
                                             </button>

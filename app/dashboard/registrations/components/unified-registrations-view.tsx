@@ -46,11 +46,11 @@ interface Props {
     registrations: Record<string, unknown>[]
 }
 
-// ─── Source Config — تمييز بالأيقونة فقط، لا ألوان متفرقة ──
+// ─── Source Config — icon-only distinction, no scattered colors ──
 const SOURCES = [
-    { key: 'all',     label: 'الكل',               icon: Inbox },
-    { key: 'app',     label: 'تطبيق الجوال',       icon: Smartphone },
-    { key: 'website', label: 'الموقع الإلكتروني',  icon: Globe },
+    { key: 'all',     label: 'All',     icon: Inbox },
+    { key: 'app',     label: 'Mobile App',    icon: Smartphone },
+    { key: 'website', label: 'Website', icon: Globe },
 ] as const
 
 const ITEMS_PER_PAGE = 25
@@ -78,13 +78,13 @@ function extractEmail(data: Record<string, unknown> | null, explicit?: string | 
 
 function extractName(data: Record<string, unknown> | null, explicit?: string | null): string {
     if (explicit && explicit.trim()) return explicit.trim()
-    if (!data) return 'بدون اسم'
-    // أول قيمة نصية طويلة هي غالبًا الاسم
+    if (!data) return 'No name'
+    // The first long text value is usually the name
     for (const val of Object.values(data)) {
         const str = String(val).trim()
         if (str.length > 2 && !/^\d+$/.test(str) && !str.includes('@')) return str
     }
-    return 'بدون اسم'
+    return 'No name'
 }
 
 function formatPhoneForWA(phone: string): string {
@@ -100,10 +100,10 @@ function getRelativeTime(dateStr: string | null): string {
     const mins = Math.floor(diff / 60000)
     const hrs = Math.floor(diff / 3600000)
     const days = Math.floor(diff / 86400000)
-    if (mins < 1) return 'الآن'
-    if (mins < 60) return `منذ ${mins} د`
-    if (hrs < 24) return `منذ ${hrs} س`
-    if (days < 7) return `منذ ${days} يوم`
+    if (mins < 1) return 'Just now'
+    if (mins < 60) return `${mins}m ago`
+    if (hrs < 24) return `${hrs}h ago`
+    if (days < 7) return `${days}d ago`
     return formatDate(dateStr)
 }
 
@@ -116,7 +116,7 @@ function getRegistrationStatus(d: UnifiedRegistration): 'approved' | 'rejected' 
     const s = d.status
     if (s === 'approved' || s === 'completed') return 'approved'
     if (s === 'confirmed') {
-        // ما نعتبرها "مقبول" فعليًا إلا لو الدفع مكتمل — لكن فقط للتسجيلات اللي فيها مبلغ للدفع أصلاً
+        // We only treat it as truly "approved" once payment is complete — but only for registrations that actually have a fee
         const hasFee = (d.total_amount ?? 0) > 0
         if (hasFee && d.payment_status !== 'paid') return 'pending'
         return 'approved'
@@ -126,12 +126,12 @@ function getRegistrationStatus(d: UnifiedRegistration): 'approved' | 'rejected' 
 }
 
 function money(n: number | null | undefined): string {
-    if (!n || n <= 0) return 'مجاني'
-    return `${n.toLocaleString('ar')} د.ع`
+    if (!n || n <= 0) return 'Free'
+    return `${n.toLocaleString('en-US')} IQD`
 }
 
 function formatFieldKey(key: string): string {
-    // التحقق من وجود لاحقة بين قوسين مثل (passport)
+    // Check for a suffix in parentheses, e.g. (passport)
     const match = key.match(/^(.+?)\s*\((.+?)\)$/);
     if (match) {
         const baseKey = match[1];
@@ -140,38 +140,38 @@ function formatFieldKey(key: string): string {
     }
 
     const map: Record<string, string> = {
-        company_name: "الشركة",
-        company: "الشركة",
-        companyName: "الشركة",
-        job_title: "المسمى الوظيفي",
-        jobTitle: "المسمى الوظيفي",
-        position: "المسمى الوظيفي",
-        passport_number: "رقم الجواز",
-        passportNumber: "رقم الجواز",
-        passport: "رقم الجواز",
-        nationality: "الجنسية",
-        date_of_birth: "تاريخ الميلاد",
-        dateOfBirth: "تاريخ الميلاد",
-        dob: "تاريخ الميلاد",
-        date_of_expiry: "تاريخ انتهاء الجواز",
-        dateOfExpiry: "تاريخ انتهاء الجواز",
-        sex: "الجنس",
-        gender: "الجنس",
-        notes: "الملاحظات",
-        note: "الملاحظات",
-        full_name: "الاسم الكامل",
-        fullName: "الاسم الكامل",
-        name: "الاسم الكامل",
-        email: "البريد الإلكتروني",
-        phone: "رقم الهاتف",
-        sector: "القطاع",
-        given_names: "الاسم الأول",
-        surname: "اللقب / العائلة",
-        issuing_country: "بلد الإصدار",
+        company_name: "Company",
+        company: "Company",
+        companyName: "Company",
+        job_title: "Job Title",
+        jobTitle: "Job Title",
+        position: "Job Title",
+        passport_number: "Passport Number",
+        passportNumber: "Passport Number",
+        passport: "Passport Number",
+        nationality: "Nationality",
+        date_of_birth: "Date of Birth",
+        dateOfBirth: "Date of Birth",
+        dob: "Date of Birth",
+        date_of_expiry: "Passport Expiry Date",
+        dateOfExpiry: "Passport Expiry Date",
+        sex: "Gender",
+        gender: "Gender",
+        notes: "Notes",
+        note: "Notes",
+        full_name: "Full Name",
+        fullName: "Full Name",
+        name: "Full Name",
+        email: "Email",
+        phone: "Phone Number",
+        sector: "Sector",
+        given_names: "Given Names",
+        surname: "Surname / Family Name",
+        issuing_country: "Issuing Country",
     }
-    
+
     if (map[key]) return map[key]
-    
+
     return key
         .replace(/_/g, " ")
         .replace(/([A-Z])/g, " $1")
@@ -179,13 +179,13 @@ function formatFieldKey(key: string): string {
         .replace(/^\w/, (c) => c.toUpperCase())
 }
 
-// ─── Normalize: تحويل جدول registrations لصيغة موحدة ─────
+// ─── Normalize: convert registrations table rows into a unified shape ─────
 function normalizeAll(
     registrations: Record<string, unknown>[],
 ): UnifiedRegistration[] {
     const regs = registrations.map((r): UnifiedRegistration => {
-        // تمييز المصدر: الموقع يستخدم additional_data بحقول واضحة الاسم،
-        // أما التطبيق فيستخدم form_data بحقول ديناميكية مثل field_xxx
+        // Determine the source: website registrations use additional_data with clearly named fields,
+        // while the app uses form_data with dynamic field names like field_xxx
         const additionalData = r.additional_data as Record<string, unknown> | null
         const formData = r.form_data as Record<string, unknown> | null
 
@@ -195,7 +195,7 @@ function normalizeAll(
 
         const platform: 'app' | 'website' = hasWebsiteFields ? 'website' : 'app'
 
-        // اخذ بيانات الاتصال: الموقع يضعها في additional_data، التطبيق في form_data
+        // Pull contact data: website stores it in additional_data, app in form_data
         const contactData = platform === 'website' ? additionalData : formData
 
         return {
@@ -300,22 +300,22 @@ export function UnifiedRegistrationsView({
         const supabase = createClient()
         const { error } = await supabase.from('registrations').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
         if (error) {
-            alert('تعذّر تحديث حالة التسجيل. حاول مرة أخرى.')
+            alert('Could not update the registration status. Please try again.')
             return
         }
         setData(prev => prev.map(d => d.id === id ? { ...d, status } : d))
         if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : prev)
 
-        // إشعار المستخدم بتغيّر حالة طلبه (فقط لتسجيلات الموقع/التطبيق المرتبطة بحساب)
+        // Notify the user that their request status changed (only for website/app registrations linked to an account)
         const reg = data.find(d => d.id === id)
         if (reg?.user_id) {
-            const ev = reg.event_title || 'الفعالية'
+            const ev = reg.event_title || 'the event'
             const notif =
                 status === 'confirmed'
-                    ? { type: 'registration_approved', title: 'تم قبول طلبك ✅', body: `تم قبول تسجيلك في «${ev}». سيتواصل معك فريقنا بخطوات الدفع والتفاصيل.` }
+                    ? { type: 'registration_approved', title: 'Your request has been approved ✅', body: `Your registration for "${ev}" has been approved. Our team will contact you with payment steps and details.` }
                     : status === 'rejected'
-                        ? { type: 'registration_rejected', title: 'تحديث على طلبك', body: `نعتذر، لم يُقبل تسجيلك في «${ev}» حالياً. يمكنك التواصل معنا للمزيد.` }
-                        : { type: 'registration_update', title: 'تحديث على طلبك', body: `تم تحديث حالة تسجيلك في «${ev}».` }
+                        ? { type: 'registration_rejected', title: 'Update on your request', body: `We're sorry, your registration for "${ev}" was not approved at this time. Feel free to contact us for more information.` }
+                        : { type: 'registration_update', title: 'Update on your request', body: `Your registration status for "${ev}" has been updated.` }
             await supabase.from('notifications').insert({ user_id: reg.user_id, ...notif })
         }
     }
@@ -324,7 +324,7 @@ export function UnifiedRegistrationsView({
         const supabase = createClient()
         const { error } = await supabase.from('registrations').update({ payment_status, updated_at: new Date().toISOString() }).eq('id', id)
         if (error) {
-            alert('تعذّر تحديث حالة الدفع. حاول مرة أخرى.')
+            alert('Could not update the payment status. Please try again.')
             return
         }
         setData(prev => prev.map(d => d.id === id ? { ...d, payment_status } : d))
@@ -332,34 +332,34 @@ export function UnifiedRegistrationsView({
     }
 
     const exportExcel = () => {
-        const statusLabel = { approved: 'مقبول', rejected: 'مرفوض', pending: 'قيد الانتظار' } as const
+        const statusLabel = { approved: 'Approved', rejected: 'Rejected', pending: 'Pending' } as const
         const rows = filtered.map(d => ({
-            'المصدر': getSourceMeta(d.source).label,
-            'الاسم': d.name,
-            'البريد': d.email || '-',
-            'الهاتف': d.phone || '-',
-            'الحالة': statusLabel[getRegistrationStatus(d)],
-            'الدفع': d.payment_status === 'paid' ? 'مدفوع' : 'غير مدفوع',
-            'المبلغ': money(d.total_amount),
-            'التاريخ': d.created_at ? formatDate(d.created_at) : '-',
+            'Source': getSourceMeta(d.source).label,
+            'Name': d.name,
+            'Email': d.email || '-',
+            'Phone': d.phone || '-',
+            'Status': statusLabel[getRegistrationStatus(d)],
+            'Payment': d.payment_status === 'paid' ? 'Paid' : 'Unpaid',
+            'Amount': money(d.total_amount),
+            'Date': d.created_at ? formatDate(d.created_at) : '-',
         }))
         const ws = XLSX.utils.json_to_sheet(rows)
         const wb = XLSX.utils.book_new()
         ws['!cols'] = Object.keys(rows[0] || {}).map(() => ({ wch: 20 }))
-        XLSX.utils.book_append_sheet(wb, ws, 'التسجيلات')
+        XLSX.utils.book_append_sheet(wb, ws, 'Registrations')
         XLSX.writeFile(wb, 'all-registrations.xlsx')
     }
 
     // ─── Render ──────────────────────────────────────────
     return (
         <div className="space-y-3">
-            {/* ── KPI Stats — مسطّحة، لون واحد لكل حالة ── */}
+            {/* ── KPI Stats — flat, one color per status ── */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 {[
-                    { key: 'all', label: 'الإجمالي', icon: Users, tone: 'text-slate-500', count: statusCounts.all },
-                    { key: 'pending', label: 'قيد الانتظار', icon: Clock, tone: 'text-amber-600', count: statusCounts.pending },
-                    { key: 'approved', label: 'مقبول', icon: CheckCircle2, tone: 'text-emerald-600', count: statusCounts.approved },
-                    { key: 'rejected', label: 'مرفوض', icon: XCircle, tone: 'text-red-500', count: statusCounts.rejected },
+                    { key: 'all', label: 'Total', icon: Users, tone: 'text-slate-500', count: statusCounts.all },
+                    { key: 'pending', label: 'Pending', icon: Clock, tone: 'text-amber-600', count: statusCounts.pending },
+                    { key: 'approved', label: 'Approved', icon: CheckCircle2, tone: 'text-emerald-600', count: statusCounts.approved },
+                    { key: 'rejected', label: 'Rejected', icon: XCircle, tone: 'text-red-500', count: statusCounts.rejected },
                 ].map(s => (
                     <button
                         key={s.key}
@@ -378,7 +378,7 @@ export function UnifiedRegistrationsView({
                 ))}
             </div>
 
-            {/* ── Source Tabs + Filter Bar — صف واحد مضغوط ── */}
+            {/* ── Source Tabs + Filter Bar — single compact row ── */}
             <div className="flex flex-wrap items-center gap-2 bg-white rounded-lg border border-slate-100 p-2">
                 <div className="flex flex-wrap gap-1">
                     {SOURCES.map(s => {
@@ -404,21 +404,21 @@ export function UnifiedRegistrationsView({
                 <div className="relative flex-1 min-w-[180px]">
                     <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
                     <Input
-                        placeholder="بحث بالاسم، الهاتف، البريد..."
+                        placeholder="Search by name, phone, email..."
                         value={search}
                         onChange={(e) => { setSearch(e.target.value); resetPage() }}
                         className="pr-8 h-8 text-sm bg-slate-50 border-slate-100 focus:bg-white"
                     />
                 </div>
-                <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); resetPage() }} dir="rtl">
+                <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); resetPage() }}>
                     <SelectTrigger className="w-[140px] h-8 text-sm bg-slate-50 border-slate-100">
-                        <SelectValue placeholder="كل الحالات" />
+                        <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">كل الحالات</SelectItem>
-                        <SelectItem value="pending">قيد الانتظار ({statusCounts.pending})</SelectItem>
-                        <SelectItem value="approved">مقبول ({statusCounts.approved})</SelectItem>
-                        <SelectItem value="rejected">مرفوض ({statusCounts.rejected})</SelectItem>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="pending">Pending ({statusCounts.pending})</SelectItem>
+                        <SelectItem value="approved">Approved ({statusCounts.approved})</SelectItem>
+                        <SelectItem value="rejected">Rejected ({statusCounts.rejected})</SelectItem>
                     </SelectContent>
                 </Select>
                 <Button variant="outline" size="sm" onClick={exportExcel} className="h-8 gap-1.5 text-xs text-slate-600">
@@ -429,7 +429,7 @@ export function UnifiedRegistrationsView({
 
             {/* ── Results Count ── */}
             <p className="text-sm text-muted-foreground">
-                عرض <span className="font-bold text-foreground">{paginated.length}</span> من <span className="font-semibold">{filtered.length}</span> تسجيل
+                Showing <span className="font-bold text-foreground">{paginated.length}</span> of <span className="font-semibold">{filtered.length}</span> registrations
             </p>
 
             {/* ── Table ── */}
@@ -437,7 +437,7 @@ export function UnifiedRegistrationsView({
                 <Card className="border-dashed border-2">
                     <CardContent className="flex flex-col items-center justify-center py-20">
                         <Inbox className="w-8 h-8 text-slate-300 mb-3" />
-                        <p className="font-semibold text-slate-500">لا توجد نتائج</p>
+                        <p className="font-semibold text-slate-500">No results found</p>
                     </CardContent>
                 </Card>
             ) : (
@@ -446,11 +446,11 @@ export function UnifiedRegistrationsView({
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-slate-50/60 hover:bg-slate-50/60">
-                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">الاسم</TableHead>
-                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">الدفع</TableHead>
-                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">التاريخ</TableHead>
-                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">الحالة</TableHead>
-                                    <TableHead className="h-9 px-3 py-2 text-center font-semibold text-slate-500 text-xs">إجراءات</TableHead>
+                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">Name</TableHead>
+                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">Payment</TableHead>
+                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">Date</TableHead>
+                                    <TableHead className="h-9 px-3 py-2 font-semibold text-slate-500 text-xs">Status</TableHead>
+                                    <TableHead className="h-9 px-3 py-2 text-center font-semibold text-slate-500 text-xs">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -495,12 +495,12 @@ export function UnifiedRegistrationsView({
                                                             'text-[10px] font-medium',
                                                             reg.payment_status === 'paid' ? 'text-emerald-600' : 'text-amber-600',
                                                         )}>
-                                                            {reg.payment_status === 'paid' ? 'مدفوع' : 'غير مدفوع'}
+                                                            {reg.payment_status === 'paid' ? 'Paid' : 'Unpaid'}
                                                         </span>
                                                         <p className="text-xs text-slate-500">{money(reg.total_amount)}</p>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-slate-300">مجاني</span>
+                                                    <span className="text-xs text-slate-300">Free</span>
                                                 )}
                                             </TableCell>
 
@@ -523,7 +523,7 @@ export function UnifiedRegistrationsView({
                                                                 <Eye className="w-4 h-4 text-slate-500" />
                                                             </Button>
                                                         </TooltipTrigger>
-                                                        <TooltipContent className="text-xs">عرض</TooltipContent>
+                                                        <TooltipContent className="text-xs">View</TooltipContent>
                                                     </Tooltip>
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
@@ -533,7 +533,7 @@ export function UnifiedRegistrationsView({
                                                                 </Button>
                                                             </Link>
                                                         </TooltipTrigger>
-                                                        <TooltipContent className="text-xs">متابعة العملية</TooltipContent>
+                                                        <TooltipContent className="text-xs">Track Case</TooltipContent>
                                                     </Tooltip>
                                                     {reg.status !== 'approved' && reg.status !== 'confirmed' && (
                                                         <Tooltip>
@@ -542,7 +542,7 @@ export function UnifiedRegistrationsView({
                                                                     <CheckCircle2 className="w-4 h-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent className="text-xs">قبول</TooltipContent>
+                                                            <TooltipContent className="text-xs">Approve</TooltipContent>
                                                         </Tooltip>
                                                     )}
                                                     {reg.status !== 'rejected' && (
@@ -552,7 +552,7 @@ export function UnifiedRegistrationsView({
                                                                     <XCircle className="w-4 h-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent className="text-xs">رفض</TooltipContent>
+                                                            <TooltipContent className="text-xs">Reject</TooltipContent>
                                                         </Tooltip>
                                                     )}
                                                 </div>
@@ -568,7 +568,7 @@ export function UnifiedRegistrationsView({
                     {totalPages > 1 && (
                         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50/50">
                             <p className="text-xs text-muted-foreground">
-                                صفحة <span className="font-bold">{currentPage}</span> من <span className="font-bold">{totalPages}</span>
+                                Page <span className="font-bold">{currentPage}</span> of <span className="font-bold">{totalPages}</span>
                             </p>
                             <div className="flex items-center gap-1">
                                 <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled={currentPage <= 1} onClick={() => setCurrentPage(p => p - 1)}>
@@ -607,12 +607,12 @@ export function UnifiedRegistrationsView({
 function StatusPill({ reg }: { reg: UnifiedRegistration }) {
     const statusType = getRegistrationStatus(reg)
     if (statusType === 'approved') {
-        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />مقبول</span>
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />Approved</span>
     }
     if (statusType === 'rejected') {
-        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-red-50 text-red-700 border-red-200"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />مرفوض</span>
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-red-50 text-red-700 border-red-200"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Rejected</span>
     }
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />قيد الانتظار</span>
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />Pending</span>
 }
 
 // ─── Detail Dialog ───────────────────────────────────────
@@ -638,7 +638,7 @@ function DetailDialog({
                         <Link href={`/dashboard/registrations/${reg.id}`}>
                             <Button size="sm" className="gap-1.5">
                                 <ClipboardList className="w-3.5 h-3.5" />
-                                متابعة كاملة
+                                Full Case Details
                             </Button>
                         </Link>
                     </div>
@@ -664,7 +664,7 @@ function DetailDialog({
                     {reg.total_amount != null && reg.total_amount > 0 && (
                         <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
                             <div>
-                                <p className="text-xs font-bold text-slate-500">المبلغ المستحق</p>
+                                <p className="text-xs font-bold text-slate-500">Amount Due</p>
                                 <p className="text-sm font-semibold text-slate-800">{money(reg.total_amount)}</p>
                             </div>
                             <Button
@@ -677,14 +677,14 @@ function DetailDialog({
                                 )}
                                 onClick={() => onTogglePayment(reg.id, reg.payment_status === 'paid' ? 'pending' : 'paid')}
                             >
-                                {reg.payment_status === 'paid' ? 'تحديد كغير مدفوع' : 'تحديد كمدفوع'}
+                                {reg.payment_status === 'paid' ? 'Mark as Unpaid' : 'Mark as Paid'}
                             </Button>
                         </div>
                     )}
 
                     {entries.length > 0 && (
                         <div className="rounded-lg border border-slate-200 p-4">
-                            <p className="text-xs font-bold text-slate-500 mb-2">البيانات الكاملة</p>
+                            <p className="text-xs font-bold text-slate-500 mb-2">Full Details</p>
                             <div className="space-y-1.5">
                                 {entries.map(([key, value]) => (
                                     <div key={key} className="flex items-start justify-between gap-3 text-sm border-b border-slate-100 py-1.5 last:border-0">
@@ -698,7 +698,7 @@ function DetailDialog({
 
                     {reg.documents && reg.documents.length > 0 && (
                         <div className="rounded-lg border border-slate-200 p-4">
-                            <p className="text-xs font-bold text-slate-500 mb-2">الوثائق المرفوعة من المستخدم</p>
+                            <p className="text-xs font-bold text-slate-500 mb-2">Documents Uploaded by User</p>
                             <div className="space-y-2">
                                 {reg.documents.map((doc: any, i: number) => {
                                     const viewUrl = `/api/documents/view?path=${encodeURIComponent(doc.path)}`
@@ -711,7 +711,7 @@ function DetailDialog({
                                             className="flex items-center gap-2 rounded-lg bg-slate-50 p-2.5 hover:bg-slate-100 transition-colors"
                                         >
                                             <FileText className="w-4 h-4 text-slate-400" />
-                                            <span className="text-sm font-medium text-slate-700 truncate">{doc.name || `وثيقة ${i + 1}`}</span>
+                                            <span className="text-sm font-medium text-slate-700 truncate">{doc.name || `Document ${i + 1}`}</span>
                                             <ExternalLink className="w-3.5 h-3.5 text-slate-400 mr-auto" />
                                         </a>
                                     )
@@ -722,13 +722,13 @@ function DetailDialog({
 
                     {reg.notes && (
                         <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
-                            <p className="text-xs font-bold text-amber-700 mb-1">ملاحظات</p>
+                            <p className="text-xs font-bold text-amber-700 mb-1">Notes</p>
                             <p className="text-xs text-amber-800 whitespace-pre-wrap">{reg.notes}</p>
                         </div>
                     )}
                 </div>
 
-                <Button variant="outline" size="sm" className="mt-4 w-full" onClick={onClose}>إغلاق</Button>
+                <Button variant="outline" size="sm" className="mt-4 w-full" onClick={onClose}>Close</Button>
             </div>
         </div>
     )

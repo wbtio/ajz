@@ -75,7 +75,7 @@ export function UsersView({ users }: Props) {
                 body: JSON.stringify(body),
             })
             const data = await res.json()
-            if (!res.ok) throw new Error(data.error || 'حدث خطأ')
+            if (!res.ok) throw new Error(data.error || 'An error occurred')
             setEditingUser(null)
             router.refresh()
         } catch (err) {
@@ -87,7 +87,7 @@ export function UsersView({ users }: Props) {
 
     const handleToggleActive = async (user: User) => {
         const willActivate = !user.is_active
-        if (!willActivate && !confirm(`تعطيل حساب "${user.full_name || user.email}"؟ لن يتمكن من تسجيل الدخول حتى يُعاد تفعيله.`)) return
+        if (!willActivate && !confirm(`Deactivate account "${user.full_name || user.email}"? They won't be able to sign in until it's reactivated.`)) return
         setBusyId(user.id)
         try {
             const res = await fetch(`/api/team-members/${user.id}`, {
@@ -96,7 +96,7 @@ export function UsersView({ users }: Props) {
                 body: JSON.stringify({ is_active: willActivate }),
             })
             const data = await res.json()
-            if (!res.ok) throw new Error(data.error || 'حدث خطأ')
+            if (!res.ok) throw new Error(data.error || 'An error occurred')
             router.refresh()
         } catch (err) {
             alert((err as Error).message)
@@ -113,7 +113,7 @@ export function UsersView({ users }: Props) {
                     <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="ابحث بالاسم، البريد، أو الهاتف..."
+                        placeholder="Search by name, email, or phone..."
                         className="pr-8 h-8 text-sm bg-slate-50 border-slate-100"
                     />
                 </div>
@@ -122,11 +122,11 @@ export function UsersView({ users }: Props) {
                     onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
                     className="h-8 rounded-md border border-slate-100 bg-slate-50 px-2.5 text-sm text-slate-600"
                 >
-                    <option value="all">كل الحالات</option>
-                    <option value="active">نشط</option>
-                    <option value="inactive">معطّل</option>
+                    <option value="all">All statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
                 </select>
-                <span className="text-xs text-slate-400">{filtered.length} من {users.length}</span>
+                <span className="text-xs text-slate-400">{filtered.length} of {users.length}</span>
             </div>
 
             <Card className="overflow-hidden border-slate-100">
@@ -136,11 +136,11 @@ export function UsersView({ users }: Props) {
                             <table className="w-full text-sm">
                                 <thead className="bg-slate-50/60">
                                     <tr>
-                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">العميل</th>
-                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">الهاتف</th>
-                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">الحالة</th>
-                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">تاريخ التسجيل</th>
-                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">إجراءات</th>
+                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">Client</th>
+                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">Phone</th>
+                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">Status</th>
+                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">Registration Date</th>
+                                        <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -152,7 +152,7 @@ export function UsersView({ users }: Props) {
                                                         {(user.full_name || user.email).charAt(0).toUpperCase()}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <p className="font-semibold text-slate-900 truncate">{user.full_name || 'بدون اسم'}</p>
+                                                        <p className="font-semibold text-slate-900 truncate">{user.full_name || 'No name'}</p>
                                                         <p className="text-xs text-slate-500 flex items-center gap-1 truncate" dir="ltr">
                                                             <Mail className="w-3 h-3 shrink-0" /> {user.email}
                                                         </p>
@@ -170,7 +170,7 @@ export function UsersView({ users }: Props) {
                                                     user.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500',
                                                 )}>
                                                     {user.is_active ? <Power className="w-3 h-3" /> : <PowerOff className="w-3 h-3" />}
-                                                    {user.is_active ? 'نشط' : 'معطّل'}
+                                                    {user.is_active ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
                                             <td className="py-2 px-3 text-xs text-slate-500">
@@ -178,7 +178,7 @@ export function UsersView({ users }: Props) {
                                             </td>
                                             <td className="py-2 px-3">
                                                 <div className="flex items-center gap-1">
-                                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEdit(user)} title="ترقية / صلاحيات">
+                                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEdit(user)} title="Promote / Permissions">
                                                         <Edit className="w-4 h-4 text-slate-500" />
                                                     </Button>
                                                     <Button
@@ -187,7 +187,7 @@ export function UsersView({ users }: Props) {
                                                         className={cn('h-7 w-7 p-0', user.is_active ? 'text-amber-600' : 'text-emerald-600')}
                                                         onClick={() => handleToggleActive(user)}
                                                         disabled={busyId === user.id}
-                                                        title={user.is_active ? 'تعطيل' : 'تفعيل'}
+                                                        title={user.is_active ? 'Deactivate' : 'Activate'}
                                                     >
                                                         {busyId === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : user.is_active ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
                                                     </Button>
@@ -200,7 +200,7 @@ export function UsersView({ users }: Props) {
                         </div>
                     ) : (
                         <p className="text-center text-slate-400 text-sm py-10">
-                            {users.length === 0 ? 'لا يوجد عملاء مسجَّلين حتى الآن' : 'لا توجد نتائج مطابقة للبحث/الفلترة'}
+                            {users.length === 0 ? 'No registered customers yet' : 'No results match your search/filter'}
                         </p>
                     )}
                 </CardContent>
@@ -215,7 +215,7 @@ export function UsersView({ users }: Props) {
                         {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700">ترقية إلى لوحة التحكم</label>
+                            <label className="text-sm font-medium text-slate-700">Promote to Dashboard Access</label>
                             <div className="flex gap-2">
                                 <button
                                     type="button"
@@ -225,7 +225,7 @@ export function UsersView({ users }: Props) {
                                         form.roleChoice === 'user' ? 'border-slate-400 bg-slate-50 text-slate-700' : 'border-slate-200 text-slate-400 hover:bg-slate-50',
                                     )}
                                 >
-                                    <UserIcon className="w-3.5 h-3.5" /> عميل عادي
+                                    <UserIcon className="w-3.5 h-3.5" /> Regular Customer
                                 </button>
                                 <button
                                     type="button"
@@ -235,7 +235,7 @@ export function UsersView({ users }: Props) {
                                         form.roleChoice === 'team' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-400 hover:bg-slate-50',
                                     )}
                                 >
-                                    <UserCog className="w-3.5 h-3.5" /> عضو فريق
+                                    <UserCog className="w-3.5 h-3.5" /> Team Member
                                 </button>
                                 <button
                                     type="button"
@@ -245,15 +245,15 @@ export function UsersView({ users }: Props) {
                                         form.roleChoice === 'admin' ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-400 hover:bg-slate-50',
                                     )}
                                 >
-                                    <Shield className="w-3.5 h-3.5" /> مدير
+                                    <Shield className="w-3.5 h-3.5" /> Admin
                                 </button>
                             </div>
-                            <p className="text-xs text-slate-400">اختيار "عضو فريق" أو "مدير" ينقل الحساب فورًا لصفحة "الفريق" ويمنحه وصول للوحة التحكم.</p>
+                            <p className="text-xs text-slate-400">Selecting "Team Member" or "Admin" immediately moves the account to the "Team" page and grants dashboard access.</p>
                         </div>
 
                         {form.roleChoice === 'team' && (
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">الصفحات المسموح له بالوصول إليها</label>
+                                <label className="text-sm font-medium text-slate-700">Pages this user is allowed to access</label>
                                 <div className="grid grid-cols-2 gap-2 border border-slate-200 rounded-lg p-3 max-h-56 overflow-y-auto">
                                     {DASHBOARD_PAGES.map((page) => (
                                         <label key={page.path} className="flex items-center gap-2 text-xs cursor-pointer">
@@ -269,9 +269,9 @@ export function UsersView({ users }: Props) {
                         )}
 
                         <div className="flex justify-end gap-2 pt-2">
-                            <Button type="button" variant="outline" size="sm" onClick={() => setEditingUser(null)}>إلغاء</Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => setEditingUser(null)}>Cancel</Button>
                             <Button type="submit" size="sm" disabled={saving}>
-                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'حفظ'}
+                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
                             </Button>
                         </div>
                     </form>

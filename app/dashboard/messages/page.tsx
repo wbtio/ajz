@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import MessagesClient from './messages-client'
 
 export const metadata = {
-  title: 'رسائل التواصل | لوحة التحكم',
-  description: 'إدارة رسائل التواصل الواردة',
+  title: 'Contact Messages | Dashboard',
+  description: 'Manage incoming contact messages',
 }
 
 export default async function MessagesPage() {

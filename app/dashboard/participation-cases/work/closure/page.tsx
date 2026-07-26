@@ -34,8 +34,8 @@ export default async function ClosureStation() {
         <StationList
             cases={cases ?? []}
             station="closure"
-            title="الإغلاق والمتابعة"
-            desc="الملفات المكتملة والمغلقة والملغاة"
+            title="Closure & Follow-up"
+            desc="Completed, closed, and cancelled cases"
         />
     )
 }

@@ -80,8 +80,8 @@ const DEFAULT_EMBASSY_APPLICATION: EmbassyApplication = {
   appointment_time: "",
   status: "pending",
   requirements: [
-    { key: "flight", label: "حجز تذاكر الطيران", done: false },
-    { key: "hotel", label: "حجز الفندق", done: false },
+    { key: "flight", label: "Flight ticket booking", done: false },
+    { key: "hotel", label: "Hotel booking", done: false },
   ],
 };
 
@@ -95,13 +95,13 @@ type WorkflowStage =
   | "completed";
 
 const STAGES: { key: WorkflowStage; label: string; color: string }[] = [
-  { key: "new", label: "جديد", color: "bg-slate-500" },
-  { key: "contacted", label: "تم التواصل", color: "bg-blue-500" },
-  { key: "documents_requested", label: "طلبت الوثائق", color: "bg-amber-500" },
-  { key: "documents_received", label: "استلمت الوثائق", color: "bg-purple-500" },
-  { key: "approved", label: "مقبول", color: "bg-emerald-500" },
-  { key: "completed", label: "مكتمل", color: "bg-emerald-600" },
-  { key: "rejected", label: "مرفوض", color: "bg-red-500" },
+  { key: "new", label: "New", color: "bg-slate-500" },
+  { key: "contacted", label: "Contacted", color: "bg-blue-500" },
+  { key: "documents_requested", label: "Documents Requested", color: "bg-amber-500" },
+  { key: "documents_received", label: "Documents Received", color: "bg-purple-500" },
+  { key: "approved", label: "Approved", color: "bg-emerald-500" },
+  { key: "completed", label: "Completed", color: "bg-emerald-600" },
+  { key: "rejected", label: "Rejected", color: "bg-red-500" },
 ];
 
 interface TimelineEntry {
@@ -150,29 +150,29 @@ function formatFieldKey(key: string): string {
   if (match) return `${formatFieldKey(match[1])} (${match[2]})`;
 
   const map: Record<string, string> = {
-    company_name: "الشركة", company: "الشركة", companyName: "الشركة",
-    job_title: "المسمى الوظيفي", jobTitle: "المسمى الوظيفي", position: "المسمى الوظيفي",
-    passport_number: "رقم الجواز", passportNumber: "رقم الجواز", passport: "رقم الجواز",
-    nationality: "الجنسية",
-    date_of_birth: "تاريخ الميلاد", dateOfBirth: "تاريخ الميلاد", dob: "تاريخ الميلاد",
-    date_of_expiry: "تاريخ انتهاء الجواز", dateOfExpiry: "تاريخ انتهاء الجواز",
-    sex: "الجنس", gender: "الجنس",
-    notes: "الملاحظات", note: "الملاحظات",
-    full_name: "الاسم الكامل", fullName: "الاسم الكامل", name: "الاسم الكامل",
-    email: "البريد الإلكتروني", phone: "رقم الهاتف", sector: "القطاع",
-    given_names: "الاسم الأول", surname: "اللقب / العائلة", issuing_country: "بلد الإصدار",
+    company_name: "Company", company: "Company", companyName: "Company",
+    job_title: "Job Title", jobTitle: "Job Title", position: "Job Title",
+    passport_number: "Passport Number", passportNumber: "Passport Number", passport: "Passport Number",
+    nationality: "Nationality",
+    date_of_birth: "Date of Birth", dateOfBirth: "Date of Birth", dob: "Date of Birth",
+    date_of_expiry: "Passport Expiry Date", dateOfExpiry: "Passport Expiry Date",
+    sex: "Gender", gender: "Gender",
+    notes: "Notes", note: "Notes",
+    full_name: "Full Name", fullName: "Full Name", name: "Full Name",
+    email: "Email", phone: "Phone Number", sector: "Sector",
+    given_names: "First Name", surname: "Surname / Family Name", issuing_country: "Issuing Country",
   };
   if (map[key]) return map[key];
   return key.replace(/_/g, " ").replace(/([A-Z])/g, " $1").trim().replace(/^\w/, (c) => c.toUpperCase());
 }
 
 function money(n: number | null | undefined): string {
-  if (!n || n <= 0) return "مجاني";
-  return `${n.toLocaleString("ar")} د.ع`;
+  if (!n || n <= 0) return "Free";
+  return `${n.toLocaleString("en-US")} IQD`;
 }
 
-// كل استمارة/مستند يضيف حقوله بلاحقة "(اسم المستند)" — نجمعها في مجموعات منفصلة
-// بدل عرضها كقائمة واحدة مندمجة يصعب تمييز مصدر كل قيمة فيها.
+// Each form/document adds its fields with a "(document name)" suffix — we group them into
+// separate groups instead of showing one merged list where each value's source is hard to tell.
 interface FormGroup {
   title: string | null;
   entries: [string, unknown][];
@@ -200,7 +200,7 @@ function groupFormEntries(entries: [string, unknown][]): FormGroup[] {
   return result;
 }
 
-// عنوان المجموعة يظهر مرة واحدة في رأسها — لا داعي لتكراره داخل كل سطر
+// The group title is shown once in its header — no need to repeat it on every line
 function stripGroupSuffix(key: string, title: string | null): string {
   if (!title) return key;
   const suffix = ` (${title})`;
@@ -251,7 +251,7 @@ export default function RegistrationDetailPage() {
 
     if (!data) { setLoading(false); return; }
 
-    // الموقع الإلكتروني يحفظ في additional_data، التطبيق في form_data
+    // The website saves into additional_data, the application into form_data
     const additionalData = (data.additional_data as Record<string, unknown>) || {};
     const formData = (data.form_data as Record<string, unknown>) || {};
     const hasWebsiteFields = Object.keys(additionalData).length > 0 &&
@@ -284,7 +284,7 @@ export default function RegistrationDetailPage() {
         : DEFAULT_EMBASSY_APPLICATION
     );
 
-    // سجل التعديلات — يبقى دائمًا حتى بعد تحديث الصفحة (بعكس التايملاين الجلسة السابق)
+    // Edit history — persists even after refreshing the page (unlike the previous session timeline)
     const [editsResult, appointmentResult] = await Promise.all([
       supabase.from("registration_edits").select("*").eq("registration_id", id).order("created_at", { ascending: false }),
       supabase.from("visa_availability_slots").select("id, slot_date, slot_time, status, visa_centers(name, city)").eq("assigned_registration_id", id).order("slot_date", { ascending: true }).order("slot_time", { ascending: true }).limit(1).maybeSingle(),
@@ -297,7 +297,7 @@ export default function RegistrationDetailPage() {
       loadedEdits.map((e) => ({
         id: e.id,
         type: "edit",
-        content: `تعديل المستخدم — ${e.field_label || formatFieldKey(e.field_key)}: "${e.old_value || "—"}" ← "${e.new_value || "—"}"`,
+        content: `User edit — ${e.field_label || formatFieldKey(e.field_key)}: "${e.old_value || "—"}" ← "${e.new_value || "—"}"`,
         created_at: e.created_at,
       }))
     );
@@ -321,7 +321,7 @@ export default function RegistrationDetailPage() {
     const { error } = await supabase.from("registrations")
       .update({ notes: newNotes, updated_at: ts }).eq("id", reg.id);
     if (error) {
-      alert("تعذّر حفظ الملاحظة. حاول مرة أخرى.");
+      alert("Failed to save the note. Please try again.");
       setSavingNote(false);
       return;
     }
@@ -347,7 +347,7 @@ export default function RegistrationDetailPage() {
     const { error } = await supabase.from("registrations")
       .update({ status: dbStatus, updated_at: ts }).eq("id", reg.id);
     if (error) {
-      alert("تعذّر تحديث مرحلة المعالجة. حاول مرة أخرى.");
+      alert("Failed to update the processing stage. Please try again.");
       return;
     }
 
@@ -355,7 +355,7 @@ export default function RegistrationDetailPage() {
     setReg((prev) => (prev ? { ...prev, status: dbStatus, updated_at: ts } : prev));
     const entry: TimelineEntry = {
       id: crypto.randomUUID(), type: "status_change",
-      content: `تغيير الحالة: ${STAGES.find((s) => s.key === oldStage)?.label || oldStage} → ${STAGES.find((s) => s.key === newStage)?.label}`,
+      content: `Status changed: ${STAGES.find((s) => s.key === oldStage)?.label || oldStage} → ${STAGES.find((s) => s.key === newStage)?.label}`,
       oldStatus: oldStage, newStatus: newStage, created_at: ts,
     };
     setTimeline((prev) => [entry, ...prev]);
@@ -368,13 +368,13 @@ export default function RegistrationDetailPage() {
     const { error } = await supabase.from("registrations")
       .update({ payment_status: newStatus, updated_at: ts }).eq("id", reg.id);
     if (error) {
-      alert("تعذّر تحديث حالة الدفع. حاول مرة أخرى.");
+      alert("Failed to update payment status. Please try again.");
       return;
     }
     setReg((prev) => (prev ? { ...prev, payment_status: newStatus } : prev));
     setTimeline((prev) => [{
       id: crypto.randomUUID(), type: "status_change",
-      content: newStatus === "paid" ? "تم تحديد الدفع كمكتمل" : "تم إلغاء تحديد الدفع كمكتمل",
+      content: newStatus === "paid" ? "Payment marked as complete" : "Payment complete marking undone",
       created_at: ts,
     }, ...prev]);
   }
@@ -387,7 +387,7 @@ export default function RegistrationDetailPage() {
     const { error } = await supabase.from("registrations")
       .update({ embassy_application: next as any, updated_at: ts }).eq("id", reg.id);
     if (error) {
-      alert("تعذّر حفظ بيانات طلب السفارة. حاول مرة أخرى.");
+      alert("Failed to save embassy application data. Please try again.");
       setEmbassy(prevEmbassy);
       return;
     }
@@ -400,7 +400,7 @@ export default function RegistrationDetailPage() {
 
   function setEmbassyPlatform(platform: "TLS" | "VFS") {
     const next = { ...embassy, platform: embassy.platform === platform ? null : platform };
-    saveEmbassy(next, `تم تحديد منصة طلب السفارة: ${platform}`);
+    saveEmbassy(next, `Embassy application platform set to: ${platform}`);
   }
 
   function setEmbassyReference(reference_number: string) {
@@ -412,7 +412,7 @@ export default function RegistrationDetailPage() {
   }
 
   function commitEmbassyDetails() {
-    saveEmbassy(embassy, "تم تحديث تفاصيل طلب السفارة والموعد");
+    saveEmbassy(embassy, "Embassy application and appointment details updated");
   }
 
   function toggleRequirement(key: string) {
@@ -423,7 +423,7 @@ export default function RegistrationDetailPage() {
       ),
     };
     const target = next.requirements.find((r) => r.key === key);
-    saveEmbassy(next, `${target?.label}: ${target?.done ? "مكتمل" : "غير مكتمل"}`);
+    saveEmbassy(next, `${target?.label}: ${target?.done ? "Completed" : "Not completed"}`);
   }
 
   function addRequirement() {
@@ -433,14 +433,14 @@ export default function RegistrationDetailPage() {
       ...embassy,
       requirements: [...embassy.requirements, { key: crypto.randomUUID(), label, done: false }],
     };
-    saveEmbassy(next, `تمت إضافة متطلب جديد: ${label}`);
+    saveEmbassy(next, `New requirement added: ${label}`);
     setNewRequirement("");
   }
 
   function removeRequirement(key: string) {
     const target = embassy.requirements.find((r) => r.key === key);
     const next = { ...embassy, requirements: embassy.requirements.filter((r) => r.key !== key) };
-    saveEmbassy(next, target ? `تمت إزالة المتطلب: ${target.label}` : undefined);
+    saveEmbassy(next, target ? `Requirement removed: ${target.label}` : undefined);
   }
 
   async function scanStoredPassport(path: string, docName: string) {
@@ -454,7 +454,7 @@ export default function RegistrationDetailPage() {
         setOcrResult(data);
         setShowOcrModal(true);
 
-        // لقطات مرجعية لكل حقل من الصورة نفسها — للتدقيق البصري قبل الاعتماد على القراءة الآلية
+        // Reference crops for each field from the image itself — for visual verification before relying on the automated reading
         if (/\.(jpe?g|png)$/i.test(path) && data.fields) {
           try {
             const imgRes = await fetch(`/api/documents/view?path=${encodeURIComponent(path)}`);
@@ -462,14 +462,14 @@ export default function RegistrationDetailPage() {
             const file = new File([blob], docName, { type: blob.type || "image/jpeg" });
             setOcrCrops(await makePassportCrops(file, data.fields));
           } catch {
-            // اللقطات ميزة مساعدة فقط — تجاهل فشلها
+            // The crops are just a helper feature — ignore failure
           }
         }
       } else {
-        alert("تعذّر قراءة الجواز. يرجى التأكد من وضوح الصورة وتجربة مستند آخر.");
+        alert("Failed to read the passport. Please make sure the image is clear and try another document.");
       }
     } catch {
-      alert("حدث خطأ أثناء فحص الجواز.");
+      alert("An error occurred while scanning the passport.");
     }
     setScanningPath(null);
   }
@@ -481,13 +481,13 @@ export default function RegistrationDetailPage() {
     const existing = (reg.form_data || {}) as Record<string, unknown>;
     const updatedData = {
       ...existing,
-      [`الاسم الأول (${cleanDocName})`]: fields.given_names || "",
-      [`اللقب / العائلة (${cleanDocName})`]: fields.surname || "",
-      [`رقم الجواز (${cleanDocName})`]: fields.passport_number || "",
-      [`تاريخ الميلاد (${cleanDocName})`]: fields.date_of_birth || "",
-      [`تاريخ الانتهاء (${cleanDocName})`]: fields.date_of_expiry || "",
-      [`الجنسية (${cleanDocName})`]: fields.nationality || "",
-      [`بلد الإصدار (${cleanDocName})`]: fields.issuing_country || "",
+      [`First Name (${cleanDocName})`]: fields.given_names || "",
+      [`Surname / Family Name (${cleanDocName})`]: fields.surname || "",
+      [`Passport Number (${cleanDocName})`]: fields.passport_number || "",
+      [`Date of Birth (${cleanDocName})`]: fields.date_of_birth || "",
+      [`Expiry Date (${cleanDocName})`]: fields.date_of_expiry || "",
+      [`Nationality (${cleanDocName})`]: fields.nationality || "",
+      [`Issuing Country (${cleanDocName})`]: fields.issuing_country || "",
     };
     const { error } = await supabase.from("registrations")
       .update({ form_data: updatedData as any, updated_at: ts }).eq("id", reg.id);
@@ -495,12 +495,12 @@ export default function RegistrationDetailPage() {
       setReg((prev) => (prev ? { ...prev, form_data: updatedData } : prev));
       setTimeline((prev) => [{
         id: crypto.randomUUID(), type: "status_change",
-        content: `تم تحليل المستند (${cleanDocName}) وتحديث الاستمارة تلقائياً بنجاح`,
+        content: `Document (${cleanDocName}) analyzed and form updated automatically`,
         created_at: ts,
       }, ...prev]);
       setShowOcrModal(false);
     } else {
-      alert("تعذّر تحديث بيانات الاستمارة في قاعدة البيانات.");
+      alert("Failed to update form data in the database.");
     }
   }
 
@@ -525,14 +525,14 @@ export default function RegistrationDetailPage() {
 
       setTimeline((prev) => [{
         id: crypto.randomUUID(), type: "file",
-        content: `تم رفع وثيقة جديدة: ${file.name}`,
+        content: `New document uploaded: ${file.name}`,
         fileName: file.name,
         fileLink: `/api/documents/view?path=${encodeURIComponent(storageData.path)}`,
         created_at: ts,
       }, ...prev]);
     } catch (err) {
       console.error("Document upload error:", err);
-      alert("تعذّر رفع الوثيقة.");
+      alert("Failed to upload the document.");
     }
     setUploading(false);
   }
@@ -549,14 +549,14 @@ export default function RegistrationDetailPage() {
   if (!reg) {
     return (
       <div className="flex h-96 flex-col items-center justify-center gap-3">
-        <p className="text-slate-500">لم يُعثر على التسجيل</p>
-        <Button variant="outline" onClick={() => router.back()}>رجوع</Button>
+        <p className="text-slate-500">Registration not found</p>
+        <Button variant="outline" onClick={() => router.back()}>Back</Button>
       </div>
     );
   }
 
   const phones = extractPhones(reg.form_data || {});
-  // نستبعد القيم المعروضة أصلًا في بطاقة "بيانات التواصل" لتفادي التكرار
+  // We exclude values already shown in the "Contact Information" card to avoid duplication
   const contactValues = new Set<string>([reg.email, ...phones].filter(Boolean) as string[]);
   const formDataEntries = Object.entries(reg.form_data || {})
     .filter(([, v]) => v !== "" && v != null)
@@ -566,16 +566,16 @@ export default function RegistrationDetailPage() {
 
   // ─── Render ───────────────────────────────────────────
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir="ltr">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => router.back()}>
           <ArrowRight className="h-4 w-4" />
-          رجوع
+          Back
         </Button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-bold text-slate-900 truncate">{reg.full_name || "بدون اسم"}</h1>
-          <p className="text-xs text-slate-500">متابعة عملية التسجيل — {reg.id.substring(0, 8)}</p>
+          <h1 className="text-lg font-bold text-slate-900 truncate">{reg.full_name || "No name"}</h1>
+          <p className="text-xs text-slate-500">Tracking registration — {reg.id.substring(0, 8)}</p>
         </div>
         <Badge
           className={cn(
@@ -595,11 +595,11 @@ export default function RegistrationDetailPage() {
         {/* ── Left column: stage + contact + form data + documents + payment ── */}
         <div className="space-y-3">
 
-          {/* Workflow stage — أول شي يشوفه الإدمن، هو الإجراء الأساسي */}
+          {/* Workflow stage — the first thing the admin sees, the primary action */}
           <Card className="p-4">
             <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              مرحلة المعالجة
+              Processing Stage
             </h2>
             <div className="flex flex-wrap gap-1.5">
               {STAGES.map((stage) => (
@@ -624,7 +624,7 @@ export default function RegistrationDetailPage() {
           <Card className="p-4">
             <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
               <Building2 className="h-3.5 w-3.5" />
-              طلب السفارة والمتطلبات
+              Embassy Application & Requirements
             </h2>
 
             <div className="space-y-3">
@@ -639,7 +639,7 @@ export default function RegistrationDetailPage() {
               )}
               {/* Platform + reference number */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500">المنصة:</span>
+                <span className="text-xs font-semibold text-slate-500">Platform:</span>
                 {(["TLS", "VFS"] as const).map((p) => (
                   <button
                     key={p}
@@ -658,7 +658,7 @@ export default function RegistrationDetailPage() {
                   value={embassy.reference_number}
                   onChange={(e) => setEmbassyReference(e.target.value)}
                   onBlur={commitEmbassyDetails}
-                  placeholder="رقم مرجعي للطلب"
+                  placeholder="Application reference number"
                   className="min-w-[140px] flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs"
                   dir="ltr"
                 />
@@ -668,7 +668,7 @@ export default function RegistrationDetailPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="flex items-center gap-1 text-xs font-semibold text-slate-500">
                   <CalendarClock className="h-3.5 w-3.5" />
-                  الموعد:
+                  Appointment:
                 </span>
                 <input
                   type="date"
@@ -688,22 +688,22 @@ export default function RegistrationDetailPage() {
 
               {/* Embassy application status dropdown */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500">حالة طلب تأشيرة السفارة:</span>
+                <span className="text-xs font-semibold text-slate-500">Embassy visa application status:</span>
                 <select
                   value={embassy.status || "pending"}
                   onChange={(e) => {
                     const next = { ...embassy, status: e.target.value };
-                    saveEmbassy(next, `تم تحديث حالة طلب تأشيرة السفارة إلى: ${e.target.value}`);
+                    saveEmbassy(next, `Embassy visa application status updated to: ${e.target.value}`);
                   }}
                   className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
-                  <option value="ok">حالة الطلب اوكي (OK)</option>
-                  <option value="pending">قيد الانتظار (لم يبدأ التجهيز)</option>
-                  <option value="preparing_files">جاري تجهيز الملف والترجمة</option>
-                  <option value="appointment_booked">تم حجز موعد TLS / السفارة</option>
-                  <option value="submitted">تم تقديم الملف للقنصلية</option>
-                  <option value="approved">تم منح التأشيرة بنجاح (Approved)</option>
-                  <option value="rejected">تم الرفض من السفارة (Rejected)</option>
+                  <option value="ok">Status OK</option>
+                  <option value="pending">Pending (preparation not started)</option>
+                  <option value="preparing_files">Preparing file and translation</option>
+                  <option value="appointment_booked">TLS / embassy appointment booked</option>
+                  <option value="submitted">File submitted to the consulate</option>
+                  <option value="approved">Visa approved (Approved)</option>
+                  <option value="rejected">Rejected by the embassy (Rejected)</option>
                 </select>
               </div>
 
@@ -731,7 +731,7 @@ export default function RegistrationDetailPage() {
                     value={newRequirement}
                     onChange={(e) => setNewRequirement(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") addRequirement(); }}
-                    placeholder="إضافة متطلب إضافي..."
+                    placeholder="Add additional requirement..."
                     className="flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs"
                   />
                   <Button size="sm" variant="outline" onClick={addRequirement} disabled={!newRequirement.trim()}>
@@ -746,7 +746,7 @@ export default function RegistrationDetailPage() {
           <Card className="p-4">
             <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
               <User className="h-3.5 w-3.5" />
-              بيانات التواصل
+              Contact Information
             </h2>
             <div className="flex flex-wrap gap-2">
               {phones.map((phone, i) => (
@@ -769,24 +769,24 @@ export default function RegistrationDetailPage() {
                 </div>
               )}
               {phones.length === 0 && !reg.email && (
-                <p className="text-xs text-slate-400">لا توجد بيانات تواصل</p>
+                <p className="text-xs text-slate-400">No contact information</p>
               )}
             </div>
           </Card>
 
-          {/* Form data — مجمّعة حسب كل استمارة/مستند بدل قائمة واحدة مندمجة */}
+          {/* Form data — grouped by form/document instead of one merged list */}
           <Card className="p-4">
             <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
               <FileText className="h-3.5 w-3.5" />
-              بيانات الاستمارة
+              Form Data
               {formGroups.length > 1 && (
                 <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-400">
-                  {formGroups.length} استمارات
+                  {formGroups.length} forms
                 </span>
               )}
             </h2>
             {formGroups.length === 0 ? (
-              <p className="text-xs text-slate-400">لا توجد بيانات</p>
+              <p className="text-xs text-slate-400">No data</p>
             ) : (
               <div className="space-y-3">
                 {formGroups.map((group, gi) => {
@@ -807,7 +807,7 @@ export default function RegistrationDetailPage() {
                               target="_blank" rel="noopener noreferrer"
                               className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:underline"
                             >
-                              عرض المستند
+                              View document
                               <ExternalLink className="h-3 w-3" />
                             </a>
                           )}
@@ -838,7 +838,7 @@ export default function RegistrationDetailPage() {
             <Card className="p-4">
               <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
                 <Wallet className="h-3.5 w-3.5" />
-                الخدمات المطلوبة والدفع
+                Requested Services & Payment
               </h2>
               <div className="space-y-1.5">
                 {reg.selected_services.map((s) => (
@@ -855,7 +855,7 @@ export default function RegistrationDetailPage() {
                   </div>
                 ))}
                 <div className="flex items-center justify-between pt-1.5">
-                  <span className="text-sm font-bold text-slate-900">الإجمالي</span>
+                  <span className="text-sm font-bold text-slate-900">Total</span>
                   <span className="text-sm font-bold text-slate-900">{money(reg.total_amount)}</span>
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-lg bg-slate-50 p-2.5 mt-1.5">
@@ -864,10 +864,10 @@ export default function RegistrationDetailPage() {
                     reg.payment_status === "paid" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700",
                   )}>
                     <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                    {reg.payment_status === "paid" ? "مدفوع" : "غير مدفوع"}
+                    {reg.payment_status === "paid" ? "Paid" : "Unpaid"}
                   </span>
                   <Button size="sm" variant="outline" onClick={togglePayment}>
-                    {reg.payment_status === "paid" ? "تحديد كغير مدفوع" : "تحديد كمدفوع"}
+                    {reg.payment_status === "paid" ? "Mark as unpaid" : "Mark as paid"}
                   </Button>
                 </div>
               </div>
@@ -879,13 +879,13 @@ export default function RegistrationDetailPage() {
             <div className="mb-3 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-xs font-bold text-slate-500">
                 <Paperclip className="h-3.5 w-3.5" />
-                الوثائق المرفوعة
+                Uploaded Documents
               </h2>
               <label className="cursor-pointer">
                 <input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadDocument(f); }} />
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white hover:bg-slate-700">
                   {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-                  رفع وثيقة
+                  Upload document
                 </span>
               </label>
             </div>
@@ -903,17 +903,17 @@ export default function RegistrationDetailPage() {
                       <div className="flex items-center gap-2">
                         <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center gap-2 truncate">
                           <FileText className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                          <span className="text-sm font-medium text-slate-700 truncate">{doc.name || `وثيقة ${i + 1}`}</span>
+                          <span className="text-sm font-medium text-slate-700 truncate">{doc.name || `Document ${i + 1}`}</span>
                           <ExternalLink className="h-3 w-3 text-slate-400 shrink-0" />
                         </a>
                         {hasAutoOcr && (
                           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                            <Sparkles className="h-3 w-3" /> قُرئت تلقائيًا
+                            <Sparkles className="h-3 w-3" /> Auto-read
                           </span>
                         )}
                         {ocr?.quality === "unclear" && (
                           <span className="inline-flex shrink-0 items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-                            غير واضحة
+                            Unclear
                           </span>
                         )}
                         {isImageOrPdf && (
@@ -923,7 +923,7 @@ export default function RegistrationDetailPage() {
                             className="flex shrink-0 items-center gap-1.5 rounded-lg bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
                           >
                             {scanningPath === doc.path ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                            {hasAutoOcr ? "إعادة القراءة" : "قراءة الجواز AI"}
+                            {hasAutoOcr ? "Re-scan" : "Scan Passport AI"}
                           </button>
                         )}
                       </div>
@@ -936,7 +936,7 @@ export default function RegistrationDetailPage() {
                             onClick={() => applyOcrFields(ocrFields, doc.name || "document")}
                             className="shrink-0 text-[11px] font-semibold text-indigo-600 hover:underline"
                           >
-                            تطبيق على الاستمارة
+                            Apply to form
                           </button>
                         </div>
                       )}
@@ -947,7 +947,7 @@ export default function RegistrationDetailPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-slate-400">
                 <Paperclip className="h-6 w-6 text-slate-300 mb-2" />
-                <p className="text-xs">لا توجد وثائق مرفوعة بعد.</p>
+                <p className="text-xs">No documents uploaded yet.</p>
               </div>
             )}
           </Card>
@@ -957,7 +957,7 @@ export default function RegistrationDetailPage() {
             <Card className="p-4">
               <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
                 <History className="h-3.5 w-3.5" />
-                سجل التعديلات
+                Edit History
               </h2>
               <div className="space-y-1.5">
                 {edits.map((e) => (
@@ -967,7 +967,7 @@ export default function RegistrationDetailPage() {
                         {e.field_label || formatFieldKey(e.field_key)}
                       </span>
                       <span className="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-semibold text-orange-700">
-                        عدّله المستخدم
+                        Edited by user
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-xs">
@@ -976,7 +976,7 @@ export default function RegistrationDetailPage() {
                       <span className="font-semibold text-slate-800">{e.new_value || "—"}</span>
                     </div>
                     <p className="mt-1 text-[10px] text-slate-400">
-                      {new Date(e.created_at).toLocaleString("ar-IQ")}
+                      {new Date(e.created_at).toLocaleString("en-US")}
                     </p>
                   </div>
                 ))}
@@ -992,18 +992,18 @@ export default function RegistrationDetailPage() {
           <Card className="p-4">
             <h2 className="mb-2.5 flex items-center gap-2 text-xs font-bold text-slate-500">
               <StickyNote className="h-3.5 w-3.5" />
-              إضافة ملاحظة
+              Add Note
             </h2>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="اكتب ملاحظة عن المتابعة..."
+              placeholder="Write a follow-up note..."
               rows={3}
               className="resize-none text-sm"
             />
             <Button onClick={addNote} disabled={!note.trim() || savingNote} size="sm" className="mt-2 w-full">
               {savingNote ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
-              حفظ الملاحظة
+              Save Note
             </Button>
           </Card>
 
@@ -1011,7 +1011,7 @@ export default function RegistrationDetailPage() {
           <Card className="p-4">
             <h2 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
               <Clock className="h-3.5 w-3.5" />
-              سجل المتابعة
+              Follow-up Log
             </h2>
 
             {/* Show persisted notes */}
@@ -1023,7 +1023,7 @@ export default function RegistrationDetailPage() {
 
             {timeline.length === 0 && !reg.notes ? (
               <p className="py-6 text-center text-xs text-slate-400">
-                لا توجد ملاحظات بعد — أضف ملاحظة أو غيّر الحالة لبدء التتبع
+                No notes yet — add a note or change the status to start tracking
               </p>
             ) : (
               <div className="space-y-2.5">
@@ -1057,11 +1057,11 @@ export default function RegistrationDetailPage() {
                         <a href={entry.fileLink} target="_blank" rel="noopener noreferrer"
                           className="mt-1 inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
                           <ExternalLink className="h-3 w-3" />
-                          فتح الملف
+                          Open file
                         </a>
                       )}
                       <p className="mt-1 text-[10px] text-slate-400">
-                        {new Date(entry.created_at).toLocaleString("ar-IQ")}
+                        {new Date(entry.created_at).toLocaleString("en-US")}
                       </p>
                     </div>
                   </div>
@@ -1076,21 +1076,21 @@ export default function RegistrationDetailPage() {
       {showOcrModal && ocrResult && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setShowOcrModal(false)}>
           <div className="w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-xl bg-white p-6 shadow-lg space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b pb-3" dir="rtl">
+            <div className="flex items-center gap-2 border-b pb-3">
               <Sparkles className="h-5 w-5 text-indigo-600 animate-pulse" />
-              <h3 className="text-lg font-bold text-slate-900">نتائج تحليل الجواز بالذكاء الاصطناعي</h3>
+              <h3 className="text-lg font-bold text-slate-900">Passport AI Analysis Results</h3>
             </div>
-            <p className="text-xs text-slate-500" dir="rtl">
-              تم استخراج البيانات التالية من المستند. قارن كل قيمة باللقطة المأخوذة من الجواز نفسه قبل الحفظ.
+            <p className="text-xs text-slate-500">
+              The following data was extracted from the document. Compare each value with the snapshot taken from the passport itself before saving.
             </p>
-            <div className="rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-100 text-sm" dir="rtl">
+            <div className="rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-100 text-sm">
               {([
-                ["given_names", "الاسم الأول"],
-                ["surname", "اسم العائلة / اللقب"],
-                ["passport_number", "رقم الجواز"],
-                ["date_of_birth", "تاريخ الميلاد"],
-                ["date_of_expiry", "تاريخ الانتهاء"],
-                ["nationality", "الجنسية"],
+                ["given_names", "First Name"],
+                ["surname", "Surname / Family Name"],
+                ["passport_number", "Passport Number"],
+                ["date_of_birth", "Date of Birth"],
+                ["date_of_expiry", "Expiry Date"],
+                ["nationality", "Nationality"],
               ] as [string, string][]).map(([key, label], i) => {
                 const val = ocrResult.fields?.[key];
                 const crop = ocrCrops[key];
@@ -1101,11 +1101,11 @@ export default function RegistrationDetailPage() {
                       <span className="text-slate-900 font-semibold font-mono">{val || "—"}</span>
                     </div>
                     {crop && (
-                      // لقطة مقصوصة من الجواز نفسه لموضع هذا الحقل — تدقيق بصري سريع
+                      // Cropped snapshot from the passport itself for this field's position — quick visual check
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={crop}
-                        alt={`لقطة ${label} من الجواز`}
+                        alt={`${label} snapshot from the passport`}
                         dir="ltr"
                         className="mt-2 max-h-14 w-full rounded-lg border border-slate-200 bg-white object-contain"
                       />
@@ -1114,12 +1114,12 @@ export default function RegistrationDetailPage() {
                 );
               })}
             </div>
-            <div className="flex gap-3 pt-2" dir="rtl">
+            <div className="flex gap-3 pt-2">
               <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700 font-bold"
                 onClick={() => applyOcrFields(ocrResult.fields, scanningDocName)}>
-                تحديث بيانات الاستمارة تلقائياً
+                Update form data automatically
               </Button>
-              <Button variant="outline" onClick={() => setShowOcrModal(false)}>إغلاق</Button>
+              <Button variant="outline" onClick={() => setShowOcrModal(false)}>Close</Button>
             </div>
           </div>
         </div>

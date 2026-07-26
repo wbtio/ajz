@@ -53,15 +53,15 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
     const [exhibitionPrice, setExhibitionPrice] = useState<number>(step3.exhibition_price || event.price || 0)
     const [campaignPlan, setCampaignPlan] = useState<CampaignChannel[]>(
         step3.campaign_plan || [
-            { platform: 'website', label: 'الموقع الإلكتروني', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'facebook', label: 'فيسبوك', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'instagram', label: 'انستغرام', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'tiktok', label: 'تيك توك', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'x', label: 'إكس / تويتر', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'snapchat', label: 'سناب شات', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'linkedin', label: 'لينكد إن', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'youtube', label: 'يوتيوب', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
-            { platform: 'whatsapp', label: 'واتساب', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' }
+            { platform: 'website', label: 'Website', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'facebook', label: 'Facebook', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'instagram', label: 'Instagram', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'tiktok', label: 'TikTok', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'x', label: 'X / Twitter', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'snapchat', label: 'Snapchat', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'linkedin', label: 'LinkedIn', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'youtube', label: 'YouTube', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' },
+            { platform: 'whatsapp', label: 'WhatsApp', publish_date: '', promo_budget: 0, start_date: '', end_date: '', days_count: 0, reminder_enabled: false, status: 'pending' }
         ]
     )
     const [workPlanCompleted, setWorkPlanCompleted] = useState(step3.work_plan_completed || false)
@@ -144,34 +144,34 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
 
             if (error) throw error
 
-            setMessage({ type: 'success', text: 'تم حفظ وتحديث خطة النشر وحملة الترويج بنجاح!' })
+            setMessage({ type: 'success', text: 'Publishing plan and promotion campaign saved successfully!' })
             onUpdate(data)
         } catch (err: any) {
             console.error('Error saving step 3 publishing:', err)
-            setMessage({ type: 'error', text: err.message || 'حدث خطأ أثناء حفظ خطة النشر والترويج' })
+            setMessage({ type: 'error', text: err.message || 'An error occurred while saving the publishing and promotion plan' })
         } finally {
             setIsSaving(false)
         }
     }
 
     return (
-        <div className="space-y-6" dir="rtl">
+        <div className="space-y-6" dir="ltr">
             <Card className="border-slate-100 shadow-md bg-white/90 backdrop-blur">
                 <CardHeader className="border-b border-slate-50 pb-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <CardTitle className="text-xl font-bold text-slate-850 flex items-center gap-2">
                                 <ClipboardList className="w-5 h-5 text-indigo-600" />
-                                الخطوة 4: خطة النشر والترويج
+                                Step 4: Publishing & Promotion Plan
                             </CardTitle>
                             <CardDescription className="mt-1 text-slate-500">
-                                تحديد تواريخ إطلاق وتكلفة ترويج كل منصة إعلانية وموعد الانتهاء
+                                Set launch dates, promotion cost, and end date for each advertising platform
                             </CardDescription>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                             workPlanCompleted ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'
                         }`}>
-                            {workPlanCompleted ? 'خطة معتمدة' : 'قيد الإعداد'}
+                            {workPlanCompleted ? 'Plan approved' : 'In progress'}
                         </span>
                     </div>
                 </CardHeader>
@@ -188,8 +188,8 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                         <div className="flex items-center gap-1.5">
                             <ClipboardList className="w-5 h-5 text-indigo-650" />
                             <div>
-                                <h3 className="font-black text-slate-800 text-sm">خطة النشر وتفاصيل الترويج للفعالية</h3>
-                                <p className="text-[10px] text-slate-400 mt-0.5">تحديد تواريخ إطلاق وتكلفة ترويج كل منصة إعلانية وموعد الانتهاء.</p>
+                                <h3 className="font-black text-slate-800 text-sm">Event publishing plan and promotion details</h3>
+                                <p className="text-[10px] text-slate-400 mt-0.5">Set launch dates, promotion cost, and end date for each advertising platform.</p>
                             </div>
                         </div>
                         
@@ -198,22 +198,22 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                             {/* Exhibition Price */}
                             <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
                                 <DollarSign className="w-4 h-4 text-emerald-600" />
-                                <Label htmlFor="exhibPrice" className="text-xs font-bold text-slate-700">سعر المعرض الإجمالي:</Label>
+                                <Label htmlFor="exhibPrice" className="text-xs font-bold text-slate-700">Total exhibition price:</Label>
                                 <Input
                                     id="exhibPrice"
                                     type="number"
                                     value={exhibitionPrice || ''}
                                     onChange={(e) => setExhibitionPrice(Number(e.target.value))}
                                     disabled={isReadOnly}
-                                    placeholder="أدخل سعر المعرض"
+                                    placeholder="Enter exhibition price"
                                     className="w-28 text-xs h-7 text-center font-bold text-slate-800 border-slate-200 bg-white"
                                 />
-                                <span className="text-[10px] text-slate-500 font-bold">دولار</span>
+                                <span className="text-[10px] text-slate-500 font-bold">USD</span>
                             </div>
 
                             {/* Total Promotion Budget */}
                             <div className="flex items-center gap-2 bg-indigo-50/50 px-3 py-1.5 rounded-xl border border-indigo-100/50 text-xs">
-                                <span className="font-bold text-indigo-950">إجمالي ميزانية الترويج:</span>
+                                <span className="font-bold text-indigo-950">Total promotion budget:</span>
                                 <span className="font-black text-indigo-650 bg-white px-2 py-0.5 rounded-lg border border-indigo-100">
                                     {campaignPlan.reduce((sum, c) => sum + (c.promo_budget || 0), 0)} $
                                 </span>
@@ -225,14 +225,14 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                         <table className="w-full text-right text-xs border border-slate-150 rounded-xl overflow-hidden min-w-[700px]">
                             <thead className="bg-slate-50 text-slate-700 font-bold border-b">
                                 <tr>
-                                    <th className="p-3">المنصة</th>
-                                    <th className="p-3">تاريخ النشر</th>
-                                    <th className="p-3">ميزانية الترويج ($)</th>
-                                    <th className="p-3">تاريخ بدء الترويج</th>
-                                    <th className="p-3">تاريخ انتهاء الترويج</th>
-                                    <th className="p-3 text-center">المدة (أيام)</th>
-                                    <th className="p-3 text-center">تفعيل التنبيه</th>
-                                    <th className="p-3">حالة الترويج</th>
+                                    <th className="p-3">Platform</th>
+                                    <th className="p-3">Publish Date</th>
+                                    <th className="p-3">Promotion Budget ($)</th>
+                                    <th className="p-3">Promotion Start Date</th>
+                                    <th className="p-3">Promotion End Date</th>
+                                    <th className="p-3 text-center">Duration (Days)</th>
+                                    <th className="p-3 text-center">Enable Reminder</th>
+                                    <th className="p-3">Promotion Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 bg-white">
@@ -282,7 +282,7 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                                         <td className="p-3 text-center font-bold text-slate-700">
                                             {channel.days_count > 0 ? (
                                                 <span className="bg-indigo-50 text-indigo-750 px-2 py-0.5 rounded-md font-bold">
-                                                    {channel.days_count} يوم
+                                                    {channel.days_count} days
                                                 </span>
                                             ) : (
                                                 <span className="text-slate-400">—</span>
@@ -305,10 +305,10 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                                                 disabled={isReadOnly}
                                                 className="text-[11px] h-8 rounded border border-slate-250 bg-white px-2 focus:ring-1 focus:ring-indigo-500 w-28"
                                             >
-                                                <option value="pending">بانتظار النشر</option>
-                                                <option value="active">ترويج نشط</option>
-                                                <option value="completed">مكتمل النشر</option>
-                                                <option value="paused">متوقف مؤقتاً</option>
+                                                <option value="pending">Awaiting Publish</option>
+                                                <option value="active">Active Promotion</option>
+                                                <option value="completed">Publishing Completed</option>
+                                                <option value="paused">Temporarily Paused</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -321,17 +321,17 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                     <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
                         <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <Bell className="w-4 h-4 text-amber-500" />
-                            الإشعارات المجدولة النشطة:
+                            Active scheduled notifications:
                         </h4>
                         <div className="space-y-1.5">
                             {campaignPlan.filter(c => c.reminder_enabled).map(c => (
                                 <div key={c.platform} className="text-[10px] text-slate-655 flex items-center gap-1">
                                     <Clock className="w-3.5 h-3.5 text-slate-400" />
-                                    <span>تنبيه مفعل: سيتم إشعارك بانتهاء فترة ترويج <b>{c.label}</b> بعد <b>{c.days_count || 0} أيام</b> (في {c.end_date || 'تاريخ غير حدد'}).</span>
+                                    <span>Reminder enabled: you will be notified when the promotion period for <b>{c.label}</b> ends in <b>{c.days_count || 0} days</b> (on {c.end_date || 'date not set'}).</span>
                                 </div>
                             ))}
                             {campaignPlan.filter(c => c.reminder_enabled).length === 0 && (
-                                <p className="text-[10px] text-slate-400">لا يوجد أي تنبيهات مجدولة حالياً. قم بتفعيل الخيار لأي منصة أعلاه.</p>
+                                <p className="text-[10px] text-slate-400">No scheduled reminders currently. Enable the option for any platform above.</p>
                             )}
                         </div>
                     </div>
@@ -344,7 +344,7 @@ export function StepPublishing({ event, onUpdate, isReadOnly }: StepPublishingPr
                                 disabled={isSaving}
                                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6"
                             >
-                                {workPlanCompleted ? 'تحديث وتأكيد خطة الترويج (تم ✓)' : 'اعتماد وحفظ خطة الترويج ✓'}
+                                {workPlanCompleted ? 'Update and confirm promotion plan (Done ✓)' : 'Approve and save promotion plan ✓'}
                             </Button>
                             {workPlanCompleted && (
                                 <Button 

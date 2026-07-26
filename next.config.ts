@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/partnership',
+        destination: '/cooperation',
+        permanent: true,
+      },
+    ]
+  },
   allowedDevOrigins: ['192.168.68.115'],
   images: {
     remotePatterns: [

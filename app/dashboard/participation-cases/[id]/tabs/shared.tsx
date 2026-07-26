@@ -147,7 +147,7 @@ export const textareaClass =
 export function SaveFooter({
     saving,
     onSave,
-    label = 'حفظ',
+    label = 'Save',
     aside,
 }: {
     saving: boolean
@@ -173,7 +173,7 @@ export function SaveFooter({
                 {saving ? (
                     <>
                         <Loader2 className="size-3.5 animate-spin" />
-                        <span>جارٍ الحفظ…</span>
+                        <span>Saving…</span>
                     </>
                 ) : (
                     <span>{label}</span>
@@ -287,11 +287,11 @@ export function FileUploadField({
             const { error } = await uploadRegistrationDocumentDirect(caseId, file, docType, label)
             if (error) toast.error(error)
             else {
-                toast.success(`تم رفع ${label}`)
+                toast.success(`${label} uploaded`)
                 router.refresh()
             }
         } catch {
-            toast.error('فشل رفع الملف')
+            toast.error('Failed to upload file')
         } finally {
             setUploading(false)
         }
@@ -320,7 +320,7 @@ export function FileUploadField({
                         className="flex items-center gap-1.5 text-[12px] text-[var(--jaz-emerald)] font-medium hover:underline min-w-0"
                     >
                         <ExternalLink className="size-3.5 shrink-0" />
-                        <span className="truncate">عرض الملف المرفوع</span>
+                        <span className="truncate">View uploaded file</span>
                     </a>
                     <button
                         type="button"
@@ -328,7 +328,7 @@ export function FileUploadField({
                         disabled={uploading}
                         className="text-[11px] font-medium text-[var(--jaz-ink-soft)] hover:text-[var(--jaz-sovereign)] disabled:opacity-50 shrink-0 transition-colors"
                     >
-                        استبدال
+                        Replace
                     </button>
                 </div>
             ) : (
@@ -345,7 +345,7 @@ export function FileUploadField({
                     )}
                 >
                     {uploading ? <Spinner className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
-                    {uploading ? 'جارٍ الرفع…' : 'اختر ملف (PDF أو صورة)'}
+                    {uploading ? 'Uploading…' : 'Choose file (PDF or image)'}
                 </button>
             )}
         </div>

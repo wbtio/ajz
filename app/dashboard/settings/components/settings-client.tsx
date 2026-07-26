@@ -52,12 +52,12 @@ export function SettingsClient() {
     setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(links))
-        toast.success('إعدادات روابط التواصل الاجتماعي تم حفظها بنجاح!', {
+        toast.success('Social media link settings saved successfully!', {
           description: 'Social links have been saved successfully.',
         })
       } catch (err) {
         console.error(err)
-        toast.error('فشل في حفظ الإعدادات.')
+        toast.error('Failed to save settings.')
       } finally {
         setLoading(false)
       }

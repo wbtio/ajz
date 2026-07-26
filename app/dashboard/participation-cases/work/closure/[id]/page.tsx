@@ -34,7 +34,7 @@ export default async function ClosureDetailPage({ params }: { params: Promise<{ 
         <StationDetail
             registration={registration}
             station="closure"
-            stationLabel="الإغلاق والمتابعة"
+            stationLabel="Closure & Follow-up"
             tab="closure"
         />
     )

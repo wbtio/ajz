@@ -34,7 +34,7 @@ export default async function VisaDetailPage({ params }: { params: Promise<{ id:
         <StationDetail
             registration={registration}
             station="visa"
-            stationLabel="الفيزا والتأمين"
+            stationLabel="Visa & Insurance"
             tab="visa"
         />
     )

@@ -12,16 +12,16 @@ import { Section, InlineAlert, FieldLabel } from './shared'
 import { cn } from '@/lib/utils'
 
 const DOC_TYPES = [
-    { value: 'passport', label: 'جواز السفر' },
-    { value: 'national_id', label: 'البطاقة الموحدة' },
-    { value: 'photo', label: 'صورة شخصية' },
-    { value: 'invitation', label: 'الدعوة' },
-    { value: 'employment_letter', label: 'كتاب عمل' },
-    { value: 'company_docs', label: 'وثائق الشركة' },
-    { value: 'professional_evidence', label: 'إثبات مهني' },
-    { value: 'insurance', label: 'التأمين' },
-    { value: 'visa_copy', label: 'نسخة الفيزا' },
-    { value: 'other', label: 'أخرى' },
+    { value: 'passport', label: 'Passport' },
+    { value: 'national_id', label: 'National ID' },
+    { value: 'photo', label: 'Personal Photo' },
+    { value: 'invitation', label: 'Invitation' },
+    { value: 'employment_letter', label: 'Employment Letter' },
+    { value: 'company_docs', label: 'Company Documents' },
+    { value: 'professional_evidence', label: 'Professional Evidence' },
+    { value: 'insurance', label: 'Insurance' },
+    { value: 'visa_copy', label: 'Visa Copy' },
+    { value: 'other', label: 'Other' },
 ]
 
 function formatDate(d: string | null) {
@@ -63,20 +63,20 @@ export function TabQc({ registration }: { registration: any }) {
         try {
             const { error } = await uploadRegistrationDocumentDirect(registration.id, file, docType, label)
             if (error) toast.error(error)
-            else toast.success(`تم رفع ${label}`)
+            else toast.success(`${label} uploaded`)
             router.refresh()
-        } catch { toast.error('فشل رفع الملف') } finally { setUploading(null) }
+        } catch { toast.error('Failed to upload file') } finally { setUploading(null) }
     }
 
     async function handleDelete(docPath: string, docLabel: string) {
-        if (!confirm('هل أنت متأكد من حذف هذه الوثيقة؟')) return
+        if (!confirm('Are you sure you want to delete this document?')) return
         setDeleting(docPath)
         try {
             const { error } = await deleteRegistrationDocument(registration.id, docPath, docLabel)
             if (error) toast.error(error)
-            else toast.success('تم حذف الوثيقة')
+            else toast.success('Document deleted')
             router.refresh()
-        } catch { toast.error('فشل الحذف') } finally { setDeleting(null) }
+        } catch { toast.error('Delete failed') } finally { setDeleting(null) }
     }
 
     const hasPassportDoc = documents.some((d: any) => d.type === 'passport' || /passport|جواز/i.test(d.name || ''))
@@ -104,12 +104,12 @@ export function TabQc({ registration }: { registration: any }) {
     const passportValidForEvent = !passportExpiryDate || !event?.date || new Date(passportExpiryDate).getTime() > new Date(event.date).getTime()
 
     const zeroErrorRows = [
-        { ok: !!fullName, label: 'اسم العميل كما في الجواز', value: fullName },
-        { ok: !!getClientField('passport_number'), label: 'رقم الجواز', value: getClientField('passport_number') },
-        { ok: !!getClientField('date_of_birth'), label: 'تاريخ الميلاد', value: formatDate(getClientField('date_of_birth')) },
-        { ok: !!getClientField('nationality'), label: 'الجنسية', value: getClientField('nationality') },
-        { ok: passportValidForEvent, label: 'صلاحية الجواز بعد تاريخ الفعالية', value: formatDate(passportExpiryDate), warn: !passportValidForEvent },
-        { ok: insuranceCoversEvent, label: 'تطابق تاريخ التأمين مع الفعالية', value: event?.date ? formatDate(event.date) : '—', warn: !insuranceCoversEvent },
+        { ok: !!fullName, label: 'Client name as per passport', value: fullName },
+        { ok: !!getClientField('passport_number'), label: 'Passport number', value: getClientField('passport_number') },
+        { ok: !!getClientField('date_of_birth'), label: 'Date of birth', value: formatDate(getClientField('date_of_birth')) },
+        { ok: !!getClientField('nationality'), label: 'Nationality', value: getClientField('nationality') },
+        { ok: passportValidForEvent, label: 'Passport valid beyond event date', value: formatDate(passportExpiryDate), warn: !passportValidForEvent },
+        { ok: insuranceCoversEvent, label: 'Insurance coverage matches event date', value: event?.date ? formatDate(event.date) : '—', warn: !insuranceCoversEvent },
     ]
     const criticalIssues = zeroErrorRows.filter((row) => !row.ok).length
 
@@ -235,7 +235,7 @@ export function TabQc({ registration }: { registration: any }) {
             <Section title="Uploaded documents" desc={`${documents.length} file${documents.length === 1 ? '' : 's'}`} icon={FileText}>
                 {documents.length === 0 ? (
                     <div className="text-center py-10 text-[13px] text-[var(--jaz-muted)] border border-dashed border-[var(--jaz-line)] rounded-md">
-                        لا توجد وثائق مرفوعة بعد — اختر نوعاً من الشبكة في الأعلى.
+                        No documents uploaded yet — choose a type from the grid above.
                     </div>
                 ) : (
                     <div className="-mx-5 overflow-x-auto">
@@ -249,7 +249,7 @@ export function TabQc({ registration }: { registration: any }) {
                             </thead>
                             <tbody className="divide-y divide-[var(--jaz-line)]">
                                 {documents.map((d: any, i: number) => {
-                                    const label = d.type ? (DOC_TYPES.find((t) => t.value === d.type)?.label || d.type) : (d.name || 'وثيقة')
+                                    const label = d.type ? (DOC_TYPES.find((t) => t.value === d.type)?.label || d.type) : (d.name || 'Document')
                                     return (
                                         <tr key={i} className="hover:bg-[var(--jaz-surface-2)]/40 transition-colors duration-150">
                                             <td className="py-2.5 px-5">
@@ -294,8 +294,8 @@ export function TabQc({ registration }: { registration: any }) {
             {/* ====== Zero-error audit ======================================== */}
             <Section title="Audit (Zero-Error Data)" desc="Passport ↔ invitation ↔ badge names must match 100%." icon={CheckCircle2}>
                 <ul className="divide-y divide-[var(--jaz-line)]">
-                    <ChecklistRow ok={!!fullName} label="اسم العميل كما في الجواز" value={fullName || '—'} />
-                    <ChecklistRow ok={hasPassportDoc} label="نسخة الجواز مرفوعة" value={hasPassportDoc ? 'مرفوعة' : 'غير مرفوعة'} warn={!hasPassportDoc} />
+                    <ChecklistRow ok={!!fullName} label="Client name as per passport" value={fullName || '—'} />
+                    <ChecklistRow ok={hasPassportDoc} label="Passport copy uploaded" value={hasPassportDoc ? 'Uploaded' : 'Not uploaded'} warn={!hasPassportDoc} />
                     {zeroErrorRows.map((row) => (
                         <ChecklistRow
                             key={row.label}
@@ -309,7 +309,7 @@ export function TabQc({ registration }: { registration: any }) {
                 <div className="mt-4">
                     <InlineAlert variant="warn">
                         <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
-                        <span>مطابقة الاسم بين الجواز والدعوة والـBadge يجب أن تكون 100%.</span>
+                        <span>Name must match 100% across the passport, invitation, and badge.</span>
                     </InlineAlert>
                 </div>
             </Section>

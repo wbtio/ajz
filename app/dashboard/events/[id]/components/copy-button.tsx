@@ -9,7 +9,7 @@ interface CopyButtonProps {
     label?: string
 }
 
-export function CopyButton({ data, label = 'نسخ البيانات' }: CopyButtonProps) {
+export function CopyButton({ data, label = 'Copy data' }: CopyButtonProps) {
     const [copied, setCopied] = useState(false)
 
     const handleCopy = async () => {

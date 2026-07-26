@@ -173,7 +173,7 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
     { name: t.nav.sectors,  href: '/departments',   icon: 'solar:widget-3-bold-duotone'             },
     { name: t.nav.services, href: '/services',  icon: 'solar:settings-bold-duotone'             },
     { name: t.nav.events,   href: '/events',    icon: 'solar:calendar-date-bold-duotone'        },
-    { name: t.nav.partners, href: '/partnership',  icon: 'solar:handshake-bold-duotone'            },
+    { name: t.nav.cooperation, href: '/cooperation',  icon: 'solar:handshake-bold-duotone'            },
     { name: t.nav.training, href: '/training',  icon: 'solar:square-academic-cap-bold-duotone'  },
     { name: t.nav.blog,     href: '/blog',      icon: 'solar:notes-bold-duotone'                },
     { name: t.nav.contact,  href: '/contact',   icon: 'solar:letter-bold-duotone'               },
@@ -283,8 +283,6 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                       ? pathname === '/'
                       : pathname.startsWith(item.href)
 
-                  const isLinks = item.href === '/links'
-
                   return (
                     <Link
                       key={item.href}
@@ -292,9 +290,7 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                       title={item.name}
                       className={cn(
                         'group relative isolate flex items-center justify-center rounded-full transition-all duration-200 shrink-0',
-                        isLinks
-                          ? 'p-2 w-9 h-9'
-                          : 'px-1 lg:px-1.5 xl:px-2 py-1.5 text-[10px] lg:text-[11px] xl:text-[12px] 2xl:text-sm font-bold whitespace-nowrap',
+                        'px-1 lg:px-1.5 xl:px-2 py-1.5 text-[10px] lg:text-[11px] xl:text-[12px] 2xl:text-sm font-bold whitespace-nowrap',
                         isActive ? activeTabText : inactiveTabText
                       )}
                     >
@@ -308,14 +304,7 @@ export function Header({ isAdmin, currentUser }: { isAdmin: boolean; currentUser
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                         />
                       )}
-                      {isLinks ? (
-                        <Iconify
-                          icon={item.icon}
-                          className="shrink-0 transition-transform duration-300 group-hover:scale-110 w-[19px] h-[19px] xl:w-[21px] xl:h-[21px]"
-                        />
-                      ) : (
-                        <span>{item.name}</span>
-                      )}
+                      <span>{item.name}</span>
                     </Link>
                   )
                 })}

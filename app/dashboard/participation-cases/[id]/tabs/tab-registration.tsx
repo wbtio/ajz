@@ -17,11 +17,11 @@ import {
 } from './shared'
 
 const REG_STATUS_OPTIONS = [
-    { value: 'not_started', label: 'لم يبدأ' },
-    { value: 'in_progress', label: 'قيد التنفيذ' },
-    { value: 'draft', label: 'مسودة' },
-    { value: 'submitted', label: 'تم الإرسال' },
-    { value: 'confirmed', label: 'مؤكد' },
+    { value: 'not_started', label: 'Not started' },
+    { value: 'in_progress', label: 'In progress' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'submitted', label: 'Submitted' },
+    { value: 'confirmed', label: 'Confirmed' },
 ]
 
 export function TabRegistration({ registration }: { registration: any }) {
@@ -70,12 +70,12 @@ export function TabRegistration({ registration }: { registration: any }) {
                 'additional_data',
                 { registration_meta: saveMeta },
                 'registration_updated',
-                'تم تحديث بيانات التسجيل',
+                'Registration data updated',
             )
             if (error) toast.error(error)
-            else toast.success('تم حفظ بيانات التسجيل')
+            else toast.success('Registration data saved')
         } catch {
-            toast.error('فشل الحفظ')
+            toast.error('Save failed')
         } finally {
             setSaving(false)
         }
@@ -99,10 +99,10 @@ export function TabRegistration({ registration }: { registration: any }) {
                     <FormField label="Visitor category">
                         <select value={form.visitor_category} onChange={(e) => set('visitor_category', e.target.value)} className={selectClass}>
                             <option value="">—</option>
-                            <option value="visitor">زائر (Visitor)</option>
-                            <option value="exhibitor">عارض (Exhibitor)</option>
-                            <option value="press">إعلام (Media)</option>
-                            <option value="other">آخر (Other)</option>
+                            <option value="visitor">Visitor</option>
+                            <option value="exhibitor">Exhibitor</option>
+                            <option value="press">Media</option>
+                            <option value="other">Other</option>
                         </select>
                     </FormField>
                     {form.visitor_category === 'other' && (

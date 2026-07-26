@@ -128,13 +128,13 @@ export default function LinksManagementPage() {
         setEditingItem(null)
       } catch (error) {
         console.error('Error saving:', error)
-        alert(locale === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'An error occurred during saving')
+        alert(locale === 'ar' ? 'An error occurred during saving' : 'An error occurred during saving')
       }
     })
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm(locale === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete?')) return
+    if (!confirm(locale === 'ar' ? 'Are you sure you want to delete?' : 'Are you sure you want to delete?')) return
 
     startTransition(async () => {
       try {
@@ -148,7 +148,7 @@ export default function LinksManagementPage() {
         await loadData()
       } catch (error) {
         console.error('Error deleting:', error)
-        alert(locale === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion')
+        alert(locale === 'ar' ? 'An error occurred during deletion' : 'An error occurred during deletion')
       }
     })
   }
@@ -162,11 +162,11 @@ export default function LinksManagementPage() {
     <div className="p-6" dir={dir}>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {locale === 'ar' ? 'إدارة الروابط المهمة' : 'Important Links Management'}
+          {locale === 'ar' ? 'Important Links Management' : 'Important Links Management'}
         </h1>
         <p className="text-gray-600">
-          {locale === 'ar' 
-            ? 'إدارة الروابط، التصنيفات، والدول' 
+          {locale === 'ar'
+            ? 'Manage links, categories, and countries'
             : 'Manage links, categories, and countries'}
         </p>
       </div>
@@ -182,7 +182,7 @@ export default function LinksManagementPage() {
           }`}
         >
           <ExternalLink className={`w-5 h-5 inline ${locale === 'ar' ? 'ml-2' : 'mr-2'}`} />
-          {locale === 'ar' ? 'الروابط' : 'Links'} ({links.length})
+          {locale === 'ar' ? 'Links' : 'Links'} ({links.length})
         </button>
         <button
           onClick={() => setActiveTab('categories')}
@@ -193,7 +193,7 @@ export default function LinksManagementPage() {
           }`}
         >
           <FileText className={`w-5 h-5 inline ${locale === 'ar' ? 'ml-2' : 'mr-2'}`} />
-          {locale === 'ar' ? 'التصنيفات' : 'Categories'} ({categories.length})
+          {locale === 'ar' ? 'Categories' : 'Categories'} ({categories.length})
         </button>
         <button
           onClick={() => setActiveTab('countries')}
@@ -204,7 +204,7 @@ export default function LinksManagementPage() {
           }`}
         >
           <Globe className={`w-5 h-5 inline ${locale === 'ar' ? 'ml-2' : 'mr-2'}`} />
-          {locale === 'ar' ? 'الدول' : 'Countries'} ({countries.length})
+          {locale === 'ar' ? 'Countries' : 'Countries'} ({countries.length})
         </button>
       </div>
 
@@ -214,13 +214,13 @@ export default function LinksManagementPage() {
         className="mb-6 flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
       >
         <Plus className="w-5 h-5" />
-        {locale === 'ar' ? 'إضافة' : 'Add'}{' '}
-        {activeTab === 'links' 
-          ? (locale === 'ar' ? 'رابط' : 'Link') 
-          : activeTab === 'categories' 
-            ? (locale === 'ar' ? 'تصنيف' : 'Category') 
-            : (locale === 'ar' ? 'دولة' : 'Country')}{' '}
-        {locale === 'ar' ? 'جديد' : 'New'}
+        {locale === 'ar' ? 'Add' : 'Add'}{' '}
+        {activeTab === 'links'
+          ? (locale === 'ar' ? 'Link' : 'Link')
+          : activeTab === 'categories'
+            ? (locale === 'ar' ? 'Category' : 'Category')
+            : (locale === 'ar' ? 'Country' : 'Country')}{' '}
+        {locale === 'ar' ? 'New' : 'New'}
       </button>
 
       {/* Links Table */}
@@ -230,22 +230,22 @@ export default function LinksManagementPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'العنوان' : 'Title'}
+                  {locale === 'ar' ? 'Title' : 'Title'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'التصنيف' : 'Category'}
+                  {locale === 'ar' ? 'Category' : 'Category'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الدولة' : 'Country'}
+                  {locale === 'ar' ? 'Country' : 'Country'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الرابط' : 'URL'}
+                  {locale === 'ar' ? 'URL' : 'URL'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الحالة' : 'Status'}
+                  {locale === 'ar' ? 'Status' : 'Status'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الإجراءات' : 'Actions'}
+                  {locale === 'ar' ? 'Actions' : 'Actions'}
                 </th>
               </tr>
             </thead>
@@ -275,7 +275,7 @@ export default function LinksManagementPage() {
                       className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
                     >
                       <ExternalLink className="w-4 h-4" />
-                      {locale === 'ar' ? 'زيارة' : 'Visit'}
+                      {locale === 'ar' ? 'Visit' : 'Visit'}
                     </a>
                   </td>
                   <td className="px-6 py-4">
@@ -286,9 +286,9 @@ export default function LinksManagementPage() {
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {link.is_active 
-                        ? (locale === 'ar' ? 'نشط' : 'Active') 
-                        : (locale === 'ar' ? 'غير نشط' : 'Inactive')}
+                      {link.is_active
+                        ? (locale === 'ar' ? 'Active' : 'Active')
+                        : (locale === 'ar' ? 'Inactive' : 'Inactive')}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -323,20 +323,20 @@ export default function LinksManagementPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'العنوان' : 'Title'}
+                  {locale === 'ar' ? 'Title' : 'Title'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>Slug</th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الأيقونة' : 'Icon'}
+                  {locale === 'ar' ? 'Icon' : 'Icon'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الترتيب' : 'Order'}
+                  {locale === 'ar' ? 'Order' : 'Order'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الحالة' : 'Status'}
+                  {locale === 'ar' ? 'Status' : 'Status'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الإجراءات' : 'Actions'}
+                  {locale === 'ar' ? 'Actions' : 'Actions'}
                 </th>
               </tr>
             </thead>
@@ -362,9 +362,9 @@ export default function LinksManagementPage() {
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {category.is_active 
-                          ? (locale === 'ar' ? 'نشط' : 'Active') 
-                          : (locale === 'ar' ? 'غير نشط' : 'Inactive')}
+                        {category.is_active
+                          ? (locale === 'ar' ? 'Active' : 'Active')
+                          : (locale === 'ar' ? 'Inactive' : 'Inactive')}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -400,25 +400,25 @@ export default function LinksManagementPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الاسم' : 'Name'}
+                  {locale === 'ar' ? 'Name' : 'Name'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الكود' : 'Code'}
+                  {locale === 'ar' ? 'Code' : 'Code'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'العلم' : 'Flag'}
+                  {locale === 'ar' ? 'Flag' : 'Flag'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'المنطقة' : 'Region'}
+                  {locale === 'ar' ? 'Region' : 'Region'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الترتيب' : 'Order'}
+                  {locale === 'ar' ? 'Order' : 'Order'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الحالة' : 'Status'}
+                  {locale === 'ar' ? 'Status' : 'Status'}
                 </th>
                 <th className={`px-6 py-3 text-${locale === 'ar' ? 'right' : 'left'} text-xs font-medium text-gray-500 uppercase`}>
-                  {locale === 'ar' ? 'الإجراءات' : 'Actions'}
+                  {locale === 'ar' ? 'Actions' : 'Actions'}
                 </th>
               </tr>
             </thead>
@@ -441,9 +441,9 @@ export default function LinksManagementPage() {
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {country.is_active 
-                        ? (locale === 'ar' ? 'نشط' : 'Active') 
-                        : (locale === 'ar' ? 'غير نشط' : 'Inactive')}
+                      {country.is_active
+                        ? (locale === 'ar' ? 'Active' : 'Active')
+                        : (locale === 'ar' ? 'Inactive' : 'Inactive')}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -478,12 +478,12 @@ export default function LinksManagementPage() {
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">
-                  {editingItem ? (locale === 'ar' ? 'تعديل' : 'Edit') : (locale === 'ar' ? 'إضافة' : 'Add')}{' '}
-                  {activeTab === 'links' 
-                    ? (locale === 'ar' ? 'رابط' : 'Link') 
-                    : activeTab === 'categories' 
-                      ? (locale === 'ar' ? 'تصنيف' : 'Category') 
-                      : (locale === 'ar' ? 'دولة' : 'Country')}
+                  {editingItem ? (locale === 'ar' ? 'Edit' : 'Edit') : (locale === 'ar' ? 'Add' : 'Add')}{' '}
+                  {activeTab === 'links'
+                    ? (locale === 'ar' ? 'Link' : 'Link')
+                    : activeTab === 'categories'
+                      ? (locale === 'ar' ? 'Category' : 'Category')
+                      : (locale === 'ar' ? 'Country' : 'Country')}
                 </h2>
                 <button
                   onClick={() => {
@@ -501,7 +501,7 @@ export default function LinksManagementPage() {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'العنوان بالعربية *' : 'Title in Arabic *'}
+                        {locale === 'ar' ? 'Title in Arabic *' : 'Title in Arabic *'}
                       </label>
                       <input
                         type="text"
@@ -513,7 +513,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'العنوان بالإنجليزية *' : 'Title in English *'}
+                        {locale === 'ar' ? 'Title in English *' : 'Title in English *'}
                       </label>
                       <input
                         type="text"
@@ -535,7 +535,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الأيقونة' : 'Icon'}
+                        {locale === 'ar' ? 'Icon' : 'Icon'}
                       </label>
                       <select
                         name="icon"
@@ -551,7 +551,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'اللون' : 'Color'}
+                        {locale === 'ar' ? 'Color' : 'Color'}
                       </label>
                       <input
                         type="color"
@@ -562,7 +562,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الترتيب' : 'Order'}
+                        {locale === 'ar' ? 'Order' : 'Order'}
                       </label>
                       <input
                         type="number"
@@ -580,7 +580,7 @@ export default function LinksManagementPage() {
                         className="w-4 h-4"
                       />
                       <label className="text-sm font-medium text-gray-700">
-                        {locale === 'ar' ? 'نشط' : 'Active'}
+                        {locale === 'ar' ? 'Active' : 'Active'}
                       </label>
                     </div>
                   </>
@@ -590,7 +590,7 @@ export default function LinksManagementPage() {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الاسم بالعربية *' : 'Name in Arabic *'}
+                        {locale === 'ar' ? 'Name in Arabic *' : 'Name in Arabic *'}
                       </label>
                       <input
                         type="text"
@@ -602,7 +602,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الاسم بالإنجليزية *' : 'Name in English *'}
+                        {locale === 'ar' ? 'Name in English *' : 'Name in English *'}
                       </label>
                       <input
                         type="text"
@@ -614,7 +614,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'كود الدولة (ISO) *' : 'Country Code (ISO) *'}
+                        {locale === 'ar' ? 'Country Code (ISO) *' : 'Country Code (ISO) *'}
                       </label>
                       <input
                         type="text"
@@ -628,7 +628,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'العلم (Emoji)' : 'Flag (Emoji)'}
+                        {locale === 'ar' ? 'Flag (Emoji)' : 'Flag (Emoji)'}
                       </label>
                       <input
                         type="text"
@@ -640,24 +640,24 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'المنطقة' : 'Region'}
+                        {locale === 'ar' ? 'Region' : 'Region'}
                       </label>
                       <select
                         name="region"
                         defaultValue={editingItem?.region || ''}
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">{locale === 'ar' ? 'اختر المنطقة' : 'Select Region'}</option>
-                        <option value="middle_east">{locale === 'ar' ? 'الشرق الأوسط' : 'Middle East'}</option>
-                        <option value="europe">{locale === 'ar' ? 'أوروبا' : 'Europe'}</option>
-                        <option value="asia">{locale === 'ar' ? 'آسيا' : 'Asia'}</option>
-                        <option value="americas">{locale === 'ar' ? 'الأمريكتين' : 'Americas'}</option>
-                        <option value="africa">{locale === 'ar' ? 'أفريقيا' : 'Africa'}</option>
+                        <option value="">{locale === 'ar' ? 'Select Region' : 'Select Region'}</option>
+                        <option value="middle_east">{locale === 'ar' ? 'Middle East' : 'Middle East'}</option>
+                        <option value="europe">{locale === 'ar' ? 'Europe' : 'Europe'}</option>
+                        <option value="asia">{locale === 'ar' ? 'Asia' : 'Asia'}</option>
+                        <option value="americas">{locale === 'ar' ? 'Americas' : 'Americas'}</option>
+                        <option value="africa">{locale === 'ar' ? 'Africa' : 'Africa'}</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الترتيب' : 'Order'}
+                        {locale === 'ar' ? 'Order' : 'Order'}
                       </label>
                       <input
                         type="number"
@@ -675,7 +675,7 @@ export default function LinksManagementPage() {
                         className="w-4 h-4"
                       />
                       <label className="text-sm font-medium text-gray-700">
-                        {locale === 'ar' ? 'نشط' : 'Active'}
+                        {locale === 'ar' ? 'Active' : 'Active'}
                       </label>
                     </div>
                   </>
@@ -685,7 +685,7 @@ export default function LinksManagementPage() {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'العنوان بالعربية *' : 'Title in Arabic *'}
+                        {locale === 'ar' ? 'Title in Arabic *' : 'Title in Arabic *'}
                       </label>
                       <input
                         type="text"
@@ -697,7 +697,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'العنوان بالإنجليزية *' : 'Title in English *'}
+                        {locale === 'ar' ? 'Title in English *' : 'Title in English *'}
                       </label>
                       <input
                         type="text"
@@ -709,7 +709,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الرابط *' : 'URL *'}
+                        {locale === 'ar' ? 'URL *' : 'URL *'}
                       </label>
                       <input
                         type="url"
@@ -722,14 +722,14 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'التصنيف' : 'Category'}
+                        {locale === 'ar' ? 'Category' : 'Category'}
                       </label>
                       <select
                         name="category_id"
                         defaultValue={editingItem?.category_id || ''}
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">{locale === 'ar' ? 'بدون تصنيف' : 'No Category'}</option>
+                        <option value="">{locale === 'ar' ? 'No Category' : 'No Category'}</option>
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
                             {locale === 'ar' ? cat.title_ar : cat.title_en}
@@ -739,14 +739,14 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الدولة' : 'Country'}
+                        {locale === 'ar' ? 'Country' : 'Country'}
                       </label>
                       <select
                         name="country_id"
                         defaultValue={editingItem?.country_id || ''}
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">{locale === 'ar' ? 'بدون دولة' : 'No Country'}</option>
+                        <option value="">{locale === 'ar' ? 'No Country' : 'No Country'}</option>
                         {countries.map((country) => (
                           <option key={country.id} value={country.id}>
                             {country.flag_emoji} {locale === 'ar' ? country.name_ar : country.name_en}
@@ -756,7 +756,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'القطاع' : 'Industry'}
+                        {locale === 'ar' ? 'Industry' : 'Industry'}
                       </label>
                       <input
                         type="text"
@@ -768,7 +768,7 @@ export default function LinksManagementPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {locale === 'ar' ? 'الترتيب' : 'Order'}
+                        {locale === 'ar' ? 'Order' : 'Order'}
                       </label>
                       <input
                         type="number"
@@ -787,7 +787,7 @@ export default function LinksManagementPage() {
                           className="w-4 h-4"
                         />
                         <label className="text-sm font-medium text-gray-700">
-                          {locale === 'ar' ? 'نشط' : 'Active'}
+                          {locale === 'ar' ? 'Active' : 'Active'}
                         </label>
                       </div>
                       <div className="flex items-center gap-2">
@@ -799,7 +799,7 @@ export default function LinksManagementPage() {
                           className="w-4 h-4"
                         />
                         <label className="text-sm font-medium text-gray-700">
-                          {locale === 'ar' ? 'موثق' : 'Verified'}
+                          {locale === 'ar' ? 'Verified' : 'Verified'}
                         </label>
                       </div>
                     </div>
@@ -812,7 +812,7 @@ export default function LinksManagementPage() {
                     disabled={isPending}
                     className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   >
-                    {isPending ? (locale === 'ar' ? 'جاري الحفظ...' : 'Saving...') : (locale === 'ar' ? 'حفظ' : 'Save')}
+                    {isPending ? (locale === 'ar' ? 'Saving...' : 'Saving...') : (locale === 'ar' ? 'Save' : 'Save')}
                   </button>
                   <button
                     type="button"
@@ -822,7 +822,7 @@ export default function LinksManagementPage() {
                     }}
                     className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                   >
-                    {locale === 'ar' ? 'إلغاء' : 'Cancel'}
+                    {locale === 'ar' ? 'Cancel' : 'Cancel'}
                   </button>
                 </div>
               </form>

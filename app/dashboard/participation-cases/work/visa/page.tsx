@@ -34,8 +34,8 @@ export default async function VisaStation() {
         <StationList
             cases={cases ?? []}
             station="visa"
-            title="الفيزا والتأمين"
-            desc="متابعة France-Visas، TLS، الموعد، والتأمين الصحي"
+            title="Visa & Insurance"
+            desc="Track France-Visas, TLS, appointment, and health insurance"
         />
     )
 }

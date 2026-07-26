@@ -34,8 +34,8 @@ export default async function RegistrationStation() {
         <StationList
             cases={cases ?? []}
             station="registration"
-            title="تسجيل الفعالية والـBadge"
-            desc="تسجيل العميل في الفعالية، رقم التأكيد، والـBadge"
+            title="Event Registration & Badge"
+            desc="Register the client for the event, confirmation number, and badge"
         />
     )
 }

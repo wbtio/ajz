@@ -41,21 +41,21 @@ interface Column {
 const columns: Column[] = [
   {
     id: "todo",
-    title: "مهمة",
+    title: "To Do",
     icon: <ClipboardList className="h-5 w-5" />,
     color: "text-rose-600",
     bg: "bg-rose-50",
   },
   {
     id: "in_progress",
-    title: "تحت المعالجة",
+    title: "In Progress",
     icon: <Clock className="h-5 w-5" />,
     color: "text-amber-600",
     bg: "bg-amber-50",
   },
   {
     id: "done",
-    title: "تم الإنجاز",
+    title: "Done",
     icon: <CheckCircle2 className="h-5 w-5" />,
     color: "text-emerald-600",
     bg: "bg-emerald-50",
@@ -110,7 +110,7 @@ export default function TasksDashboardPage() {
   };
 
   const deleteTask = async (taskId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه المهمة؟")) return;
+    if (!confirm("Are you sure you want to delete this task?")) return;
     try {
       const res = await fetch(`/api/tasks/${taskId}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
@@ -150,21 +150,21 @@ export default function TasksDashboardPage() {
 
   const getPageLabel = (page: string) => {
     const map: Record<string, string> = {
-      dashboard: "لوحة التحكم",
-      site: "الموقع",
-      official: "الموقع الرسمي",
+      dashboard: "Dashboard",
+      site: "Website",
+      official: "Official Website",
     };
     return map[page] || page;
   };
 
   const getTypeLabel = (type: string) => {
     const map: Record<string, string> = {
-      text: "تعديل نص",
-      design: "تعديل تصميم",
-      image: "تعديل صورة",
-      length: "تعديل طول",
-      shape: "تعديل شكل",
-      other: "أخرى",
+      text: "Text edit",
+      design: "Design edit",
+      image: "Image edit",
+      length: "Length edit",
+      shape: "Shape edit",
+      other: "Other",
     };
     return map[type] || type;
   };
@@ -186,7 +186,7 @@ export default function TasksDashboardPage() {
           onClick={() => fetchTasks()}
           className="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
         >
-          إعادة المحاولة
+          Retry
         </button>
       </div>
     );
@@ -196,9 +196,9 @@ export default function TasksDashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-stone-950">طلبات التعديل</h1>
+          <h1 className="text-2xl font-black text-stone-950">Modification Requests</h1>
           <p className="mt-1 text-sm text-stone-500">
-            إدارة طلبات التعديل والمشاكل المرسلة من المستخدمين
+            Manage modification requests and issues submitted by users
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -207,11 +207,11 @@ export default function TasksDashboardPage() {
             className="flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
-            طلب جديد
+            New Request
           </Link>
           <div className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 shadow-sm border border-stone-200">
           <span className="text-sm font-medium text-stone-600">
-            إجمالي الطلبات:
+            Total Requests:
           </span>
           <span className="text-lg font-bold text-blue-600">{tasks.length}</span>
         </div>
@@ -274,12 +274,12 @@ export default function TasksDashboardPage() {
                       </p>
                       <div className="mt-3 flex items-center justify-between">
                         <span className="text-[11px] text-stone-400">
-                          {new Date(task.created_at).toLocaleDateString("ar-SA")}
+                          {new Date(task.created_at).toLocaleDateString("en-US")}
                         </span>
                         <div className="flex items-center gap-1">
                           {task.image_url && (
                             <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] text-stone-500">
-                              صورة
+                              Image
                             </span>
                           )}
                           <button
@@ -298,7 +298,7 @@ export default function TasksDashboardPage() {
               {tasksByColumn(col.id).length === 0 && (
                 <div className="flex flex-col items-center justify-center py-10 text-stone-300">
                   <ClipboardList className="h-10 w-10 mb-2" />
-                  <p className="text-sm font-medium">لا توجد مهام</p>
+                  <p className="text-sm font-medium">No tasks</p>
                 </div>
               )}
             </div>
@@ -317,7 +317,7 @@ export default function TasksDashboardPage() {
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-black text-stone-950">
-                تفاصيل الطلب
+                Request Details
               </h2>
               <button
                 onClick={() => setSelectedTask(null)}
@@ -331,7 +331,7 @@ export default function TasksDashboardPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-2xl bg-stone-50 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1">
-                    الصفحة
+                    Page
                   </p>
                   <p className="text-base font-bold text-stone-800">
                     {getPageLabel(selectedTask.page)}
@@ -339,7 +339,7 @@ export default function TasksDashboardPage() {
                 </div>
                 <div className="rounded-2xl bg-stone-50 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1">
-                    نوع التعديل
+                    Modification Type
                   </p>
                   <p className="text-base font-bold text-stone-800">
                     {getTypeLabel(selectedTask.modification_type)}
@@ -349,7 +349,7 @@ export default function TasksDashboardPage() {
 
               <div className="rounded-2xl bg-stone-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
-                  الوصف
+                  Description
                 </p>
                 <p className="text-base leading-relaxed text-stone-800 whitespace-pre-wrap">
                   {selectedTask.description}
@@ -359,7 +359,7 @@ export default function TasksDashboardPage() {
               {selectedTask.image_url && (
                 <div className="rounded-2xl bg-stone-50 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                    الصورة المرفقة
+                    Attached Image
                   </p>
                   <img
                     src={selectedTask.image_url}
@@ -371,10 +371,10 @@ export default function TasksDashboardPage() {
 
               <div className="rounded-2xl bg-stone-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1">
-                  تاريخ الإنشاء
+                  Created At
                 </p>
                 <p className="text-sm font-medium text-stone-700">
-                  {new Date(selectedTask.created_at).toLocaleString("ar-SA")}
+                  {new Date(selectedTask.created_at).toLocaleString("en-US")}
                 </p>
               </div>
 
@@ -386,7 +386,7 @@ export default function TasksDashboardPage() {
                   className="flex items-center gap-2 rounded-xl bg-rose-50 px-5 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-100 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
-                  حذف الطلب
+                  Delete Request
                 </button>
               </div>
             </div>

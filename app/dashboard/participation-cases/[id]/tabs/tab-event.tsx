@@ -51,11 +51,11 @@ export function TabEvent({ registration }: { registration: any }) {
             const { error } = await updateEventInviterDetails(event.id, form)
             if (error) toast.error(error)
             else {
-                toast.success('تم حفظ بيانات الداعي للفعالية')
+                toast.success('Event host details saved')
                 router.refresh()
             }
         } catch {
-            toast.error('فشل حفظ البيانات')
+            toast.error('Failed to save data')
         } finally {
             setSaving(false)
         }
@@ -66,7 +66,7 @@ export function TabEvent({ registration }: { registration: any }) {
             {isClosed && (
                 <InlineAlert variant="danger">
                     <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
-                    <span>هذه الفعالية مغلقة. إضافة أو متابعة ملفات عليها تحتاج موافقة مشرف.</span>
+                    <span>This event is closed. Adding or updating cases for it requires supervisor approval.</span>
                 </InlineAlert>
             )}
 

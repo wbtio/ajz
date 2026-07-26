@@ -9,9 +9,10 @@ export function CompanyOverviewSections() {
 
   return (
     <div dir={isAr ? 'rtl' : 'ltr'}>
-      <section className="bg-[#f5f7fa] py-8 sm:py-10">
+      <section className="relative overflow-hidden bg-[#f5f7fa] py-8 sm:py-10">
+        <div className="pointer-events-none absolute -end-20 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-[#b08d4b]/10 blur-3xl" />
         <Container>
-          <div className="max-w-4xl">
+          <div className="relative max-w-4xl">
             <h2 className="text-2xl font-extrabold text-[#101a33] sm:text-3xl">
               {isAr ? 'من نحن' : 'About Our Company'}
             </h2>
@@ -24,9 +25,10 @@ export function CompanyOverviewSections() {
         </Container>
       </section>
 
-      <section className="bg-white py-8 sm:py-10">
+      <section className="relative overflow-hidden bg-white py-8 sm:py-10">
+        <div className="pointer-events-none absolute -start-24 bottom-0 h-56 w-56 rounded-full bg-[#001a33]/5 blur-3xl" />
         <Container>
-          <div className="max-w-7xl">
+          <div className="relative max-w-7xl">
             <h2 className="text-2xl font-extrabold text-[#101a33] sm:text-3xl">
               {isAr ? 'لماذا جاز' : 'Why Our Company'}
             </h2>

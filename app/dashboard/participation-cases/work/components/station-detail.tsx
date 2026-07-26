@@ -107,13 +107,13 @@ function ClosureView({ registration }: { registration: any }) {
     const closedAt = ad.closed_at ? new Date(ad.closed_at).toLocaleString('en-GB') : '—'
 
     const CLOSURE_LABELS: Record<string, string> = {
-        registration_completed: 'اكتمل التسجيل',
-        participation_completed: 'اكتملت المشاركة',
-        visa_rejected: 'رفض الفيزا',
-        client_cancelled: 'إلغاء العميل',
-        event_cancelled: 'إلغاء الحدث',
-        no_response: 'عدم استجابة',
-        other: 'أخرى',
+        registration_completed: 'Registration Completed',
+        participation_completed: 'Participation Completed',
+        visa_rejected: 'Visa Rejected',
+        client_cancelled: 'Client Cancelled',
+        event_cancelled: 'Event Cancelled',
+        no_response: 'No Response',
+        other: 'Other',
     }
 
     return (

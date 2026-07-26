@@ -107,7 +107,7 @@ export async function deleteSector(id: string) {
       .delete()
       .eq('id', id)
 
-    if (error) throw new Error('فشل حذف القطاع')
+    if (error) throw new Error('Failed to delete sector')
 
     revalidatePath('/dashboard/sectors')
     return { success: true }

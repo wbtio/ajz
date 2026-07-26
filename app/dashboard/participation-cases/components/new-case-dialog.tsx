@@ -45,26 +45,26 @@ interface NewCaseDialogProps {
 type Step = 1 | 2
 
 const SOURCE_OPTIONS = [
-    { value: 'facebook_ad', label: 'إعلان فيسبوك' },
-    { value: 'instagram', label: 'انستغرام' },
-    { value: 'whatsapp', label: 'واتساب' },
-    { value: 'website', label: 'الموقع الإلكتروني' },
-    { value: 'referral', label: 'إحالة' },
-    { value: 'direct_visit', label: 'زيارة مباشرة' },
-    { value: 'other', label: 'أخرى' },
+    { value: 'facebook_ad', label: 'Facebook Ad' },
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'whatsapp', label: 'WhatsApp' },
+    { value: 'website', label: 'Website' },
+    { value: 'referral', label: 'Referral' },
+    { value: 'direct_visit', label: 'Direct Visit' },
+    { value: 'other', label: 'Other' },
 ]
 
 const SERVICE_PACKAGES = [
-    { value: 'registration_only', label: 'تسجيل فقط' },
-    { value: 'registration_invitation', label: 'تسجيل + دعوة' },
-    { value: 'registration_invitation_visa', label: 'تسجيل + دعوة + فيزا' },
-    { value: 'full', label: 'خدمة كاملة' },
+    { value: 'registration_only', label: 'Registration only' },
+    { value: 'registration_invitation', label: 'Registration + invitation' },
+    { value: 'registration_invitation_visa', label: 'Registration + invitation + visa' },
+    { value: 'full', label: 'Full service' },
 ]
 
 const ATTENDANCE_TYPES = [
-    { value: 'Business Visitor', label: 'زائر أعمال' },
-    { value: 'Exhibitor', label: 'عارض' },
-    { value: 'Speaker', label: 'متحدث' },
+    { value: 'Business Visitor', label: 'Business Visitor' },
+    { value: 'Exhibitor', label: 'Exhibitor' },
+    { value: 'Speaker', label: 'Speaker' },
 ]
 
 function formatEventDate(date?: string | null) {
@@ -82,10 +82,10 @@ function getEventLabel(event: any) {
 function buildTravelPurpose(event: any, attendanceType: string) {
     if (!event) return ''
     const roleLabel = ATTENDANCE_TYPES.find((type) => type.value === attendanceType)?.label || attendanceType
-    const name = event.title_ar || event.title || 'الفعالية'
+    const name = event.title_ar || event.title || 'the event'
     const place = event.location_ar || event.location || event.country_ar || event.country
     const date = formatEventDate(event.date)
-    return `حضور ${name}${place ? ` في ${place}` : ''}${date ? ` بتاريخ ${date}` : ''} بصفة ${roleLabel}`
+    return `Attending ${name}${place ? ` in ${place}` : ''}${date ? ` on ${date}` : ''} as ${roleLabel}`
 }
 
 export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps) {
@@ -134,7 +134,7 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
 
     async function handleSearch() {
         if (!searchName.trim()) {
-            toast.error('الاسم مطلوب للبحث')
+            toast.error('Name is required to search')
             return
         }
         setSearching(true)
@@ -147,7 +147,7 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
             })
             if (error) toast.error(error)
             else setResults(data)
-        } catch { toast.error('فشل البحث') } finally { setSearching(false) }
+        } catch { toast.error('Search failed') } finally { setSearching(false) }
     }
 
     function selectClient(client: any) {
@@ -168,14 +168,14 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
     }
 
     async function handleCreate() {
-        if (!newForm.fullName.trim()) { toast.error('الاسم مطلوب'); return }
-        if (!newForm.eventId) { toast.error('يجب اختيار فعالية'); return }
+        if (!newForm.fullName.trim()) { toast.error('Name is required'); return }
+        if (!newForm.eventId) { toast.error('An event must be selected'); return }
         if (!selectedEvent) {
-            toast.error('هذه الفعالية غير منشورة أو غير متاحة لإنشاء طلب جديد')
+            toast.error('This event is not published or is not available for creating a new case')
             return
         }
         if (newForm.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newForm.email)) {
-            toast.error('صيغة البريد الإلكتروني غير صحيحة')
+            toast.error('Invalid email format')
             return
         }
         setSubmitting(true)
@@ -194,26 +194,26 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
                 clientId: selectedClient?.id,
             })
             if (error || !data) {
-                toast.error(error || 'فشل إنشاء الطلب')
+                toast.error(error || 'Failed to create case')
             } else {
-                toast.success(`تم إنشاء الطلب ${data.case_number}`)
+                toast.success(`Case ${data.case_number} created`)
                 handleClose(false)
                 router.push(`/dashboard/participation-cases/${data.id}`)
             }
-        } catch { toast.error('فشل إنشاء الطلب') } finally { setSubmitting(false) }
+        } catch { toast.error('Failed to create case') } finally { setSubmitting(false) }
     }
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0" dir="rtl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0" dir="ltr">
                 <DialogHeader className="px-5 py-4 border-b border-[var(--jaz-line)]">
                     <div className="flex items-center gap-2 mb-1">
                         <span aria-hidden className="size-1.5 rounded-full bg-[var(--jaz-sovereign)]" />
                         <span className="jaz-meta tracking-[0.16em]">Inbox / New case</span>
                     </div>
-                    <DialogTitle className="text-[15px] font-semibold text-[var(--jaz-ink)]">طلب جديد</DialogTitle>
+                    <DialogTitle className="text-[15px] font-semibold text-[var(--jaz-ink)]">New case</DialogTitle>
                     <DialogDescription className="text-[12px] text-[var(--jaz-muted)]">
-                        ابحث أولاً لتجنب التكرار، ثم أنشئ التسجيل في خطوة واحدة.
+                        Search first to avoid duplicates, then create the registration in a single step.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -225,7 +225,7 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
                         <div className="space-y-5">
                             <InlineAlert variant="info">
                                 <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
-                                <span><strong>قاعدة:</strong> ابحث أولاً عن العميل لتجنّب التكرار. إذا وُجد، افتح ملفه مباشرة.</span>
+                                <span><strong>Rule:</strong> Search for the client first to avoid duplicates. If found, open their profile directly.</span>
                             </InlineAlert>
 
                             <Section title="Search existing client" desc="By full name + optional DOB and place of birth.">
@@ -234,8 +234,7 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
                                         <input
                                             value={searchName}
                                             onChange={(e) => setSearchName(e.target.value)}
-                                            placeholder="e.g. أحمد كريم…"
-                                            dir="rtl"
+                                            placeholder="e.g. Ahmed Kareem…"
                                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                             className={inputClass}
                                         />
@@ -344,7 +343,7 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
                                 <InlineAlert variant="success">
                                     <CheckCircle2 className="size-3.5 shrink-0 mt-0.5" />
                                     <span>
-                                        تم ربط الطلب بالعميل المسجّل: <strong>{selectedClient.full_name_as_passport}</strong>
+                                        Case linked to registered client: <strong>{selectedClient.full_name_as_passport}</strong>
                                     </span>
                                     <button
                                         type="button"
@@ -469,7 +468,7 @@ export function NewCaseDialog({ open, onOpenChange, events }: NewCaseDialogProps
 }
 
 function StepIndicator({ step }: { step: Step }) {
-    const steps = [{ n: 1, label: 'البحث' }, { n: 2, label: 'بيانات الطلب' }]
+    const steps = [{ n: 1, label: 'Search' }, { n: 2, label: 'Case details' }]
     return (
         <div className="flex items-center gap-3" aria-label="Dialog step">
             {steps.map((s, i) => {

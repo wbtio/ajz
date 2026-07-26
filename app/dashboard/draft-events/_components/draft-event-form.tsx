@@ -72,6 +72,18 @@ type PromotionPlan = {
   channels: PromotionChannel[]
 }
 
+type PricingItem = {
+  id: string
+  label: string
+  price: string
+}
+
+const PRICING_CURRENCY_OPTIONS = [
+  { value: 'USD', label: 'USD - US Dollar ($)' },
+  { value: 'IQD', label: 'IQD - Iraqi Dinar (IQD)' },
+  { value: 'EUR', label: 'EUR - Euro (€)' },
+]
+
 const defaultPromotion: PromotionPlan = {
   objective: '', budget: '', start_date: '', end_date: '',
   channels: [
@@ -118,11 +130,37 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
           : defaultPromotion.channels,
       }
     : defaultPromotion
+  const initialRegConfig = initialData?.registration_config && typeof initialData.registration_config === 'object' && !Array.isArray(initialData.registration_config)
+    ? initialData.registration_config as Record<string, unknown>
+    : {}
+  const initialPricingItems = Array.isArray(initialRegConfig.pricing_items)
+    ? (initialRegConfig.pricing_items as PricingItem[]).map((item) => ({
+        id: typeof item.id === 'string' && item.id ? item.id : crypto.randomUUID(),
+        label: englishValue(item.label),
+        price: String(item.price ?? ''),
+      }))
+    : []
+  const initialPricingCurrency = typeof initialRegConfig.pricing_currency === 'string' && initialRegConfig.pricing_currency
+    ? initialRegConfig.pricing_currency
+    : 'USD'
   const [currentStep, setCurrentStep] = useState(initialStep || 1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [expectedReplies, setExpectedReplies] = useState<ExpectedReply[]>(initialExpectedReplies)
   const [promotion, setPromotion] = useState<PromotionPlan>(initialPromotion)
-  
+  const [pricingItems, setPricingItems] = useState<PricingItem[]>(initialPricingItems)
+  const [pricingCurrency, setPricingCurrency] = useState(initialPricingCurrency)
+
+  const pricingTotal = useMemo(
+    () => pricingItems.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0),
+    [pricingItems],
+  )
+  const pricingCurrencySymbol = pricingCurrency === 'IQD' ? 'IQD' : pricingCurrency === 'EUR' ? '€' : '$'
+
+  const addPricingItem = () => setPricingItems((items) => [...items, { id: crypto.randomUUID(), label: '', price: '' }])
+  const updatePricingItem = (id: string, field: keyof PricingItem, value: string) =>
+    setPricingItems((items) => items.map((item) => (item.id === id ? { ...item, [field]: field === 'label' ? sanitizeEnglishText(value) : value } : item)))
+  const removePricingItem = (id: string) => setPricingItems((items) => items.filter((item) => item.id !== id))
+
   const [formData, setFormData] = useState({
     title: englishValue(initialData?.title),
     description: englishValue((initialData as any)?.description),
@@ -132,7 +170,6 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
     location: englishValue(initialData?.location),
     event_type: initialData?.event_type || 'offline',
     capacity: (initialData as any)?.capacity?.toString() || '',
-    price: (initialData as any)?.price?.toString() || '',
     host_has_accommodation: initialHostInfo.has_accommodation || false,
     host_org_name: englishValue(initialHostInfo.org_name),
     host_org_address: englishValue(initialHostInfo.org_address),
@@ -254,7 +291,16 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
         event_type: formData.event_type,
         is_active: true,
         status: 'active',
-        registration_config: initialData?.registration_config ?? null,
+        registration_config: {
+          ...initialRegConfig,
+          pricing_items: pricingItems
+            .filter((item) => item.label.trim() || item.price.trim())
+            .map((item) => ({ id: item.id, label: item.label.trim(), price: parseFloat(item.price) || 0 })),
+          pricing_currency: pricingCurrency,
+          pricing_total: pricingItems
+            .filter((item) => item.label.trim() || item.price.trim())
+            .reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0),
+        },
           conference_config: {
           ...initialConferenceConfig,
           expected_replies: expectedReplies.filter((item) => item.question.trim() || item.answer.trim()),
@@ -482,7 +528,7 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
             )}
 
             {activeStepKey === 'logistics' && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="capacity">Capacity (Optional)</Label>
@@ -496,17 +542,66 @@ export function DraftEventForm({ eventId, initialData, initialStep }: DraftEvent
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="price">Ticket Price in $ (Optional)</Label>
-                    <Input
-                      id="price"
-                      name="price"
-                      type="number"
-                      step="0.01"
-                      placeholder="e.g. 150.00"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                    />
+                    <Label htmlFor="pricing_currency">Pricing currency</Label>
+                    <Select dir="ltr" value={pricingCurrency} onValueChange={(value) => setPricingCurrency(value)}>
+                      <SelectTrigger id="pricing_currency" aria-label="Pricing currency"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectGroup>
+                        {PRICING_CURRENCY_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                      </SelectGroup></SelectContent>
+                    </Select>
                   </div>
+                </div>
+
+                <div className="space-y-3 border-t border-slate-100 pt-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900">Pricing items</h3>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">Define what the customer pays for this event. Each line is a separate chargeable service (e.g. Registration, Invitation, Visa, Transport). These prices are locked per order and shown to the finance team only.</p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={addPricingItem}>
+                      <Plus className="mr-1.5 h-4 w-4" /> Add item
+                    </Button>
+                  </div>
+
+                  {pricingItems.length === 0 ? (
+                    <button type="button" onClick={addPricingItem} className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 transition hover:border-primary hover:text-primary">
+                      <Plus className="h-4 w-4" /> Add the first pricing item
+                    </button>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {pricingItems.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+                          <div className="flex-1">
+                            <Input
+                              value={item.label}
+                              onChange={(e) => updatePricingItem(item.id, 'label', e.target.value)}
+                              placeholder="Item name (e.g. Event Registration)"
+                              className="bg-white"
+                            />
+                          </div>
+                          <div className="relative w-36">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={item.price}
+                              onChange={(e) => updatePricingItem(item.id, 'price', e.target.value)}
+                              placeholder="0.00"
+                              className="bg-white pr-8 text-right"
+                            />
+                            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">{pricingCurrencySymbol}</span>
+                          </div>
+                          <Button type="button" variant="ghost" size="sm" aria-label="Remove item" onClick={() => removePricingItem(item.id)} className="h-9 w-9 p-0 text-slate-400 hover:text-rose-600">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-end gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-900">
+                        <span>Total</span>
+                        <span>{pricingCurrencySymbol} {pricingTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

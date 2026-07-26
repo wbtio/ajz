@@ -99,19 +99,19 @@ const STATUS_META: Record<SectorRegistrationStatus, {
   surface: string
 }> = {
   pending: {
-    label: 'قيد المراجعة',
+    label: 'Under Review',
     icon: Clock3,
     pill: 'border-amber-200 bg-amber-50 text-amber-700',
     surface: 'from-amber-50 to-orange-50',
   },
   approved: {
-    label: 'مقبول',
+    label: 'Approved',
     icon: CheckCircle2,
     pill: 'border-emerald-200 bg-emerald-50 text-emerald-700',
     surface: 'from-emerald-50 to-green-50',
   },
   rejected: {
-    label: 'مرفوض',
+    label: 'Rejected',
     icon: XCircle,
     pill: 'border-rose-200 bg-rose-50 text-rose-700',
     surface: 'from-rose-50 to-red-50',
@@ -142,10 +142,10 @@ function formatRelativeDate(date: string | null) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return 'الآن'
-  if (minutes < 60) return `منذ ${minutes} دقيقة`
-  if (hours < 24) return `منذ ${hours} ساعة`
-  if (days < 7) return `منذ ${days} يوم`
+  if (minutes < 1) return 'Just now'
+  if (minutes < 60) return `${minutes}m ago`
+  if (hours < 24) return `${hours}h ago`
+  if (days < 7) return `${days}d ago`
   return formatDate(date)
 }
 
@@ -364,7 +364,7 @@ function getApplicantName(registration: RegistrationRecord) {
     combinedName ||
     (typeof data.full_name === 'string' ? data.full_name : '') ||
     (typeof data.company_name === 'string' ? data.company_name : '') ||
-    'طلب بدون اسم'
+    'Unnamed application'
   )
 }
 
@@ -390,7 +390,7 @@ function getApplicantPhones(registration: RegistrationRecord) {
 }
 
 function getSectorName(registration: RegistrationRecord) {
-  return registration.sectors?.name_ar || registration.sectors?.name || 'قطاع غير محدد'
+  return registration.sectors?.name_ar || registration.sectors?.name || 'Unspecified sector'
 }
 
 function getSectorNameEnglish(registration: RegistrationRecord) {
@@ -551,7 +551,7 @@ function EmptyState({
         <p className="mt-1.5 max-w-md text-xs leading-6 text-slate-500">{description}</p>
         {onReset && (
           <Button variant="outline" size="sm" className="mt-3" onClick={onReset}>
-            إعادة ضبط الفلاتر
+            Reset Filters
           </Button>
         )}
       </CardContent>
@@ -669,7 +669,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
       window.setTimeout(() => setCopiedKey((current) => (current === key ? null : current)), 1800)
     } catch (error) {
       console.error('Copy failed:', error)
-      setFeedback({ kind: 'error', message: 'تعذر نسخ البيانات إلى الحافظة.' })
+      setFeedback({ kind: 'error', message: 'Could not copy the data to the clipboard.' })
     }
   }
 
@@ -679,7 +679,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
     setPendingId(null)
 
     if (!result.success) {
-      setFeedback({ kind: 'error', message: result.error || 'تعذر تحديث حالة الطلب.' })
+      setFeedback({ kind: 'error', message: result.error || 'Could not update the application status.' })
       return
     }
 
@@ -695,11 +695,11 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
       )
     )
 
-    setFeedback({ kind: 'success', message: 'تم تحديث حالة الطلب بنجاح.' })
+    setFeedback({ kind: 'success', message: 'Application status updated successfully.' })
   }
 
   async function handleDelete(registration: RegistrationRecord) {
-    const confirmed = window.confirm(`هل تريد حذف طلب "${getApplicantName(registration)}" نهائياً؟`)
+    const confirmed = window.confirm(`Permanently delete the application "${getApplicantName(registration)}"?`)
     if (!confirmed) return
 
     setDeletingId(registration.id)
@@ -707,7 +707,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
     setDeletingId(null)
 
     if (!result.success) {
-      setFeedback({ kind: 'error', message: result.error || 'تعذر حذف الطلب.' })
+      setFeedback({ kind: 'error', message: result.error || 'Could not delete the application.' })
       return
     }
 
@@ -715,23 +715,23 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
     if (selectedId === registration.id) {
       setSelectedId(null)
     }
-    setFeedback({ kind: 'success', message: 'تم حذف الطلب بنجاح.' })
+    setFeedback({ kind: 'success', message: 'Application deleted successfully.' })
   }
 
   function exportFilteredItems() {
     if (filteredItems.length === 0) {
-      setFeedback({ kind: 'error', message: 'لا توجد بيانات مطابقة للتصدير حالياً.' })
+      setFeedback({ kind: 'error', message: 'No matching data available to export right now.' })
       return
     }
 
     const rows = filteredItems.map((item) => {
       const row: Record<string, string> = {
-        'الاسم': getApplicantName(item),
-        'القطاع': getSectorName(item),
-        'الحالة': STATUS_META[normalizeStatus(item.status)].label,
-        'البريد الإلكتروني': getApplicantEmail(item) || '-',
-        'الهاتف': getApplicantPhones(item).join(' | ') || '-',
-        'تاريخ الإنشاء': item.created_at ? formatDateTime(item.created_at) : '-',
+        'Name': getApplicantName(item),
+        'Sector': getSectorName(item),
+        'Status': STATUS_META[normalizeStatus(item.status)].label,
+        'Email': getApplicantEmail(item) || '-',
+        'Phone': getApplicantPhones(item).join(' | ') || '-',
+        'Created At': item.created_at ? formatDateTime(item.created_at, 'en-US') : '-',
       }
 
       getDataEntries(item).forEach((entry) => {
@@ -757,13 +757,13 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
   function copyRegistrationSummary(registration: RegistrationRecord) {
     const lines = [
-      `الاسم: ${getApplicantName(registration)}`,
-      `القطاع: ${getSectorName(registration)}`,
-      `الحالة: ${STATUS_META[normalizeStatus(registration.status)].label}`,
-      `البريد الإلكتروني: ${getApplicantEmail(registration) || '-'}`,
-      `الهاتف: ${getApplicantPhones(registration).join(' | ') || '-'}`,
-      `تاريخ الإرسال: ${registration.created_at ? formatDateTime(registration.created_at) : '-'}`,
-      '--- البيانات ---',
+      `Name: ${getApplicantName(registration)}`,
+      `Sector: ${getSectorName(registration)}`,
+      `Status: ${STATUS_META[normalizeStatus(registration.status)].label}`,
+      `Email: ${getApplicantEmail(registration) || '-'}`,
+      `Phone: ${getApplicantPhones(registration).join(' | ') || '-'}`,
+      `Submitted At: ${registration.created_at ? formatDateTime(registration.created_at, 'en-US') : '-'}`,
+      '--- Data ---',
       ...getDataEntries(registration).map((entry) => `${entry.label}: ${entry.value}`),
     ]
 
@@ -1071,10 +1071,10 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
         }
 
         doc.save(toEnglishPdfFileName(registration))
-        setFeedback({ kind: 'success', message: 'تم تنزيل ملف PDF بنجاح.' })
+        setFeedback({ kind: 'success', message: 'PDF file downloaded successfully.' })
       } catch (error) {
         console.error('Failed to export sector registration PDF:', error)
-        setFeedback({ kind: 'error', message: 'فشل إنشاء ملف PDF. حاول مرة أخرى.' })
+        setFeedback({ kind: 'error', message: 'Failed to generate the PDF file. Please try again.' })
       }
     })()
   }
@@ -1083,22 +1083,22 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
   return (
     <div className="space-y-3">
-      {/* Header — مضغوط بدون بانر ضخم */}
+      {/* Header — compact, no oversized banner */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">طلبات الشراكة في القطاعات</h1>
-          <p className="text-sm text-slate-500">عرض الطلبات ومراجعتها وتحديث حالتها.</p>
+          <h1 className="text-xl font-bold text-slate-900">Sector Partnership Applications</h1>
+          <p className="text-sm text-slate-500">View, review, and update the status of applications.</p>
         </div>
         <Button variant="outline" size="sm" onClick={exportFilteredItems}>
           <Download className="ml-1.5 h-3.5 w-3.5" />
-          تصدير النتائج
+          Export Results
         </Button>
       </div>
 
-      {/* KPI — بطاقات مسطّحة موحّدة الحجم */}
+      {/* KPI — flat, uniformly sized cards */}
       <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
         <MiniStatCard
-          label="إجمالي الطلبات"
+          label="Total Applications"
           value={stats.all}
           icon={Inbox}
           tone="text-slate-500"
@@ -1106,7 +1106,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
           onClick={() => setStatusFilter('all')}
         />
         <MiniStatCard
-          label="قيد المراجعة"
+          label="Under Review"
           value={stats.pending}
           icon={Clock3}
           tone="text-amber-600"
@@ -1114,7 +1114,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
           onClick={() => setStatusFilter(statusFilter === 'pending' ? 'all' : 'pending')}
         />
         <MiniStatCard
-          label="طلبات مقبولة"
+          label="Approved Applications"
           value={stats.approved}
           icon={CheckCircle2}
           tone="text-emerald-600"
@@ -1122,7 +1122,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
           onClick={() => setStatusFilter(statusFilter === 'approved' ? 'all' : 'approved')}
         />
         <MiniStatCard
-          label="طلبات مرفوضة"
+          label="Rejected Applications"
           value={stats.rejected}
           icon={ShieldAlert}
           tone="text-red-500"
@@ -1148,14 +1148,14 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
         <CardHeader className="border-b border-slate-100 bg-white p-4">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <CardTitle className="text-sm font-bold text-slate-900">مركز المراجعة والفرز</CardTitle>
+              <CardTitle className="text-sm font-bold text-slate-900">Review &amp; Filter Center</CardTitle>
               <CardDescription className="mt-0.5 text-xs text-slate-500">
-                ابحث باسم المتقدم أو البريد أو القطاع.
+                Search by applicant name, email, or sector.
               </CardDescription>
             </div>
             <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500">
               <ClipboardList className="h-4 w-4 text-slate-500" />
-              {filteredItems.length} نتيجة من أصل {stats.all}
+              {filteredItems.length} results out of {stats.all}
             </div>
           </div>
         </CardHeader>
@@ -1166,17 +1166,17 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="ابحث بالاسم، الشركة، البريد، الهاتف أو أي حقل داخل الطلب..."
+                placeholder="Search by name, company, email, phone, or any field within the application..."
                 className="h-9 text-sm bg-slate-50 border-slate-100 pr-8 focus:bg-white"
               />
             </div>
 
             <Select value={sectorFilter} onValueChange={setSectorFilter}>
               <SelectTrigger className="h-9 text-sm bg-slate-50 border-slate-100">
-                <SelectValue placeholder="كل القطاعات" />
+                <SelectValue placeholder="All Sectors" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">كل القطاعات</SelectItem>
+                <SelectItem value="all">All Sectors</SelectItem>
                 {sectorOptions.map((option) => (
                   <SelectItem key={option.id} value={option.id}>
                     {option.label}
@@ -1187,26 +1187,26 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
             <Select value={statusFilter} onValueChange={(value: 'all' | SectorRegistrationStatus) => setStatusFilter(value)}>
               <SelectTrigger className="h-9 text-sm bg-slate-50 border-slate-100">
-                <SelectValue placeholder="كل الحالات" />
+                <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">كل الحالات</SelectItem>
-                <SelectItem value="pending">قيد المراجعة ({stats.pending})</SelectItem>
-                <SelectItem value="approved">مقبول ({stats.approved})</SelectItem>
-                <SelectItem value="rejected">مرفوض ({stats.rejected})</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="pending">Under Review ({stats.pending})</SelectItem>
+                <SelectItem value="approved">Approved ({stats.approved})</SelectItem>
+                <SelectItem value="rejected">Rejected ({stats.rejected})</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={sortMode} onValueChange={(value: SortMode) => setSortMode(value)}>
               <SelectTrigger className="h-9 text-sm bg-slate-50 border-slate-100">
-                <SelectValue placeholder="الترتيب" />
+                <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">الأحدث أولاً</SelectItem>
-                <SelectItem value="oldest">الأقدم أولاً</SelectItem>
-                <SelectItem value="name">حسب الاسم</SelectItem>
-                <SelectItem value="sector">حسب القطاع</SelectItem>
-                <SelectItem value="status">حسب الحالة</SelectItem>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="name">By Name</SelectItem>
+                <SelectItem value="sector">By Sector</SelectItem>
+                <SelectItem value="status">By Status</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1215,15 +1215,15 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             <div className="flex flex-wrap items-center gap-1.5">
               <Badge variant="outline" className="rounded-full border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600">
                 <ClipboardList className="ml-1 h-3 w-3" />
-                {filteredItems.length} طلب ظاهر
+                {filteredItems.length} applications shown
               </Badge>
               <Badge variant="outline" className="rounded-full border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600">
                 <Building2 className="ml-1 h-3 w-3" />
-                {stats.sectors} قطاع
+                {stats.sectors} sectors
               </Badge>
               {activeFilters > 0 && (
                 <Badge variant="outline" className="rounded-full border-[#8b0000]/15 bg-[#8b0000]/5 px-2 py-0.5 text-xs text-[#8b0000]">
-                  {activeFilters} فلتر نشط
+                  {activeFilters} active filters
                 </Badge>
               )}
             </div>
@@ -1231,7 +1231,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" className="text-xs" onClick={clearFilters}>
                 <X className="ml-1.5 h-3.5 w-3.5" />
-                مسح الفلاتر
+                Clear Filters
               </Button>
               <Button variant="outline" size="sm" className="text-xs" onClick={exportFilteredItems}>
                 <FileSpreadsheet className="ml-1.5 h-3.5 w-3.5" />
@@ -1244,11 +1244,11 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
       {filteredItems.length === 0 ? (
         <EmptyState
-          title={stats.all === 0 ? 'لا توجد طلبات شراكة حتى الآن' : 'لا توجد نتائج مطابقة للفلاتر الحالية'}
+          title={stats.all === 0 ? 'No partnership applications yet' : 'No results match the current filters'}
           description={
             stats.all === 0
-              ? 'بمجرد أن يبدأ الزوار أو الشركات بإرسال طلبات الشراكة من صفحات القطاعات، ستظهر هنا مع كل تفاصيلها وإجراءات إدارتها.'
-              : 'جرّب تعديل كلمات البحث أو إعادة ضبط الفلاتر لعرض الطلبات المتاحة من جديد.'
+              ? 'Once visitors or companies start submitting partnership applications from the sector pages, they will appear here with all their details and management actions.'
+              : 'Try adjusting your search terms or resetting the filters to see the available applications again.'
           }
           onReset={stats.all === 0 ? undefined : clearFilters}
         />
@@ -1260,12 +1260,12 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                 <Table>
                   <TableHeader>
                     <TableRow className="border-slate-100 bg-slate-50/60 hover:bg-slate-50/60">
-                      <TableHead className="w-[24%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">مقدم الطلب</TableHead>
-                      <TableHead className="w-[15%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">القطاع</TableHead>
-                      <TableHead className="w-[26%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">ملخص البيانات</TableHead>
-                      <TableHead className="w-[13%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">الحالة</TableHead>
-                      <TableHead className="w-[12%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">التاريخ</TableHead>
-                      <TableHead className="w-[10%] h-9 px-3 py-2 text-left text-xs font-semibold text-slate-500">الإجراءات</TableHead>
+                      <TableHead className="w-[24%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">Applicant</TableHead>
+                      <TableHead className="w-[15%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">Sector</TableHead>
+                      <TableHead className="w-[26%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">Data Summary</TableHead>
+                      <TableHead className="w-[13%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">Status</TableHead>
+                      <TableHead className="w-[12%] h-9 px-3 py-2 text-xs font-semibold text-slate-500">Date</TableHead>
+                      <TableHead className="w-[10%] h-9 px-3 py-2 text-left text-xs font-semibold text-slate-500">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1327,7 +1327,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   <p className="mt-0.5 line-clamp-1 text-xs font-medium text-slate-700">{entry.value}</p>
                                 </div>
                               )) : (
-                                <p className="text-xs text-slate-400">لا توجد بيانات إضافية.</p>
+                                <p className="text-xs text-slate-400">No additional data.</p>
                               )}
                               {getDataEntries(registration).length > 3 && (
                                 <button
@@ -1335,7 +1335,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   onClick={() => setSelectedId(registration.id)}
                                   className="text-xs font-semibold text-[#8b0000] hover:text-[#6f0000]"
                                 >
-                                  عرض {getDataEntries(registration).length - 3} حقول إضافية
+                                  View {getDataEntries(registration).length - 3} additional fields
                                 </button>
                               )}
                             </div>
@@ -1353,9 +1353,9 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="pending">قيد المراجعة</SelectItem>
-                                  <SelectItem value="approved">قبول</SelectItem>
-                                  <SelectItem value="rejected">رفض</SelectItem>
+                                  <SelectItem value="pending">Under Review</SelectItem>
+                                  <SelectItem value="approved">Approve</SelectItem>
+                                  <SelectItem value="rejected">Reject</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
@@ -1384,7 +1384,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                     <Eye className="h-4 w-4 text-slate-500" />
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>فتح التفاصيل</TooltipContent>
+                                <TooltipContent>Open Details</TooltipContent>
                               </Tooltip>
 
                               <DropdownMenu>
@@ -1398,14 +1398,14 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-56">
-                                  <DropdownMenuLabel>إجراءات الطلب</DropdownMenuLabel>
+                                  <DropdownMenuLabel>Application Actions</DropdownMenuLabel>
                                   <DropdownMenuItem onClick={() => setSelectedId(registration.id)}>
                                     <Eye className="ml-2 h-4 w-4" />
-                                    عرض كل التفاصيل
+                                    View All Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => copyRegistrationSummary(registration)}>
                                     {copiedKey === `summary-${registration.id}` ? <Check className="ml-2 h-4 w-4 text-emerald-600" /> : <Copy className="ml-2 h-4 w-4" />}
-                                    نسخ بيانات الطلب
+                                    Copy Application Data
                                   </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => exportRegistrationPdf(registration)}>
                                     <Printer className="ml-2 h-4 w-4 text-blue-700" />
@@ -1415,7 +1415,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                     <DropdownMenuItem asChild>
                                       <a href={buildOutlookComposeUrl(registration) || '#'} target="_blank" rel="noreferrer">
                                         <Mail className="ml-2 h-4 w-4" />
-                                        إرسال عبر Outlook
+                                        Send via Outlook
                                       </a>
                                     </DropdownMenuItem>
                                   )}
@@ -1423,7 +1423,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                     <DropdownMenuItem asChild>
                                       <a href={`https://wa.me/${formatPhoneForWhatsApp(phones[0])}`} target="_blank" rel="noreferrer">
                                         <ExternalLink className="ml-2 h-4 w-4" />
-                                        فتح واتساب
+                                        Open WhatsApp
                                       </a>
                                     </DropdownMenuItem>
                                   )}
@@ -1431,19 +1431,19 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                   {status !== 'approved' && (
                                     <DropdownMenuItem onClick={() => handleStatusChange(registration.id, 'approved')}>
                                       <CheckCircle2 className="ml-2 h-4 w-4 text-emerald-600" />
-                                      اعتماد الطلب
+                                      Approve Application
                                     </DropdownMenuItem>
                                   )}
                                   {status !== 'pending' && (
                                     <DropdownMenuItem onClick={() => handleStatusChange(registration.id, 'pending')}>
                                       <Clock3 className="ml-2 h-4 w-4 text-amber-600" />
-                                      إعادة للمراجعة
+                                      Send Back for Review
                                     </DropdownMenuItem>
                                   )}
                                   {status !== 'rejected' && (
                                     <DropdownMenuItem onClick={() => handleStatusChange(registration.id, 'rejected')}>
                                       <ShieldAlert className="ml-2 h-4 w-4 text-rose-600" />
-                                      رفض الطلب
+                                      Reject Application
                                     </DropdownMenuItem>
                                   )}
                                   <DropdownMenuSeparator />
@@ -1453,7 +1453,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                     disabled={deletingId === registration.id}
                                   >
                                     <Trash2 className="ml-2 h-4 w-4" />
-                                    حذف الطلب
+                                    Delete Application
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -1510,14 +1510,14 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56">
-                          <DropdownMenuLabel>إجراءات الطلب</DropdownMenuLabel>
+                          <DropdownMenuLabel>Application Actions</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => setSelectedId(registration.id)}>
                             <Eye className="ml-2 h-4 w-4" />
-                            عرض التفاصيل
+                            View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => copyRegistrationSummary(registration)}>
                             {copiedKey === `summary-${registration.id}` ? <Check className="ml-2 h-4 w-4 text-emerald-600" /> : <Copy className="ml-2 h-4 w-4" />}
-                            نسخ البيانات
+                            Copy Data
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => exportRegistrationPdf(registration)}>
                             <Printer className="ml-2 h-4 w-4 text-blue-700" />
@@ -1527,27 +1527,27 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                             <DropdownMenuItem asChild>
                               <a href={buildOutlookComposeUrl(registration) || '#'} target="_blank" rel="noreferrer">
                                 <Mail className="ml-2 h-4 w-4" />
-                                إرسال عبر Outlook
+                                Send via Outlook
                               </a>
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleStatusChange(registration.id, 'approved')}>
                             <CheckCircle2 className="ml-2 h-4 w-4 text-emerald-600" />
-                            قبول
+                            Approve
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleStatusChange(registration.id, 'pending')}>
                             <Clock3 className="ml-2 h-4 w-4 text-amber-600" />
-                            مراجعة
+                            Review
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleStatusChange(registration.id, 'rejected')}>
                             <ShieldAlert className="ml-2 h-4 w-4 text-rose-600" />
-                            رفض
+                            Reject
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-rose-700 focus:text-rose-700" onClick={() => handleDelete(registration)}>
                             <Trash2 className="ml-2 h-4 w-4" />
-                            حذف
+                            Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -1568,7 +1568,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                       )}
                       <div className="flex items-center gap-1.5 text-xs text-slate-600">
                         <CalendarDays className="h-3 w-3 text-slate-400" />
-                        <span>{registration.created_at ? formatDateTime(registration.created_at) : '-'}</span>
+                        <span>{registration.created_at ? formatDateTime(registration.created_at, 'en-US') : '-'}</span>
                       </div>
                     </div>
 
@@ -1579,7 +1579,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           <p className="mt-0.5 text-xs font-medium text-slate-700">{entry.value}</p>
                         </div>
                       )) : (
-                        <p className="text-xs text-slate-400">لا توجد حقول إضافية في هذا الطلب.</p>
+                        <p className="text-xs text-slate-400">No additional fields in this application.</p>
                       )}
                     </div>
 
@@ -1590,7 +1590,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                         onClick={() => setSelectedId(registration.id)}
                       >
                         <Eye className="ml-1.5 h-3.5 w-3.5" />
-                        التفاصيل
+                        Details
                       </Button>
                       <Select
                         value={status}
@@ -1601,9 +1601,9 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="pending">قيد المراجعة</SelectItem>
-                          <SelectItem value="approved">قبول</SelectItem>
-                          <SelectItem value="rejected">رفض</SelectItem>
+                          <SelectItem value="pending">Under Review</SelectItem>
+                          <SelectItem value="approved">Approve</SelectItem>
+                          <SelectItem value="rejected">Reject</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1615,7 +1615,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
           <div className="flex flex-col gap-2 rounded-lg border border-slate-100 bg-white px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-slate-500">
-              صفحة {currentPage} من {totalPages}
+              Page {currentPage} of {totalPages}
             </p>
             <div className="flex items-center gap-1.5">
               <Button
@@ -1626,7 +1626,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                 disabled={currentPage === 1}
               >
                 <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                السابق
+                Previous
               </Button>
               <div className="min-w-16 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center text-xs font-semibold text-slate-600">
                 {currentPage} / {totalPages}
@@ -1638,7 +1638,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                 onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
                 disabled={currentPage >= totalPages}
               >
-                التالي
+                Next
                 <ChevronLeft className="mr-1 h-3.5 w-3.5" />
               </Button>
             </div>
@@ -1664,14 +1664,14 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                         {getApplicantName(selected)}
                       </DialogTitle>
                       <DialogDescription className="max-w-2xl text-xs text-slate-500">
-                        طلب شراكة أُرسل في {selected.created_at ? formatDateTime(selected.created_at) : '-'}
+                        Partnership application submitted on {selected.created_at ? formatDateTime(selected.created_at, 'en-US') : '-'}
                       </DialogDescription>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5">
                       <Button variant="outline" size="sm" className="text-xs" onClick={() => copyRegistrationSummary(selected)}>
                         {copiedKey === `summary-${selected.id}` ? <Check className="ml-1.5 h-3.5 w-3.5 text-emerald-600" /> : <Copy className="ml-1.5 h-3.5 w-3.5" />}
-                        نسخ الملخص
+                        Copy Summary
                       </Button>
                       <Button variant="outline" size="sm" className="text-xs text-blue-700" onClick={() => exportRegistrationPdf(selected)}>
                         <Printer className="ml-1.5 h-3.5 w-3.5" />
@@ -1685,7 +1685,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                         disabled={pendingId === selected.id}
                       >
                         <Clock3 className="ml-1.5 h-3.5 w-3.5" />
-                        مراجعة
+                        Review
                       </Button>
                       <Button
                         variant="outline"
@@ -1695,7 +1695,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                         disabled={pendingId === selected.id}
                       >
                         <CheckCircle2 className="ml-1.5 h-3.5 w-3.5" />
-                        قبول
+                        Approve
                       </Button>
                       <Button
                         variant="outline"
@@ -1705,7 +1705,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                         disabled={pendingId === selected.id}
                       >
                         <ShieldAlert className="ml-1.5 h-3.5 w-3.5" />
-                        رفض
+                        Reject
                       </Button>
                     </div>
                   </div>
@@ -1731,12 +1731,12 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                               {selected.user_id ? (
                                 <Badge variant="outline" className="border-blue-200 bg-blue-50 text-xs text-blue-700">
                                   <UserRound className="ml-1 h-3 w-3" />
-                                  مستخدم مسجل
+                                  Registered User
                                 </Badge>
                               ) : (
                                 <Badge variant="outline" className="border-slate-200 bg-slate-50 text-xs text-slate-600">
                                   <UserRound className="ml-1 h-3 w-3" />
-                                  ضيف
+                                  Guest
                                 </Badge>
                               )}
                             </div>
@@ -1747,7 +1747,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
                     <Card className="border-slate-100">
                       <CardContent className="p-3">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">تاريخ الإرسال</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">Submitted At</p>
                         <p className="mt-1.5 text-sm font-bold text-slate-900">{selected.created_at ? formatDate(selected.created_at) : '-'}</p>
                         <p className="mt-0.5 text-xs text-slate-500">{formatRelativeDate(selected.created_at)}</p>
                       </CardContent>
@@ -1757,10 +1757,10 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                       <CardContent className="p-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">المرجع</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">Reference</p>
                             <p className="mt-1.5 truncate text-sm font-bold tracking-[0.04em] text-slate-900">{getRegistrationReference(selected)}</p>
                             <p className="mt-0.5 text-[11px] text-slate-500">
-                              {selected.updated_at ? `آخر تحديث: ${formatCompactDateTime(selected.updated_at)}` : 'لم يتم تحديث الطلب بعد'}
+                              {selected.updated_at ? `Last updated: ${formatCompactDateTime(selected.updated_at)}` : 'Application not yet updated'}
                             </p>
                           </div>
                           <Hash className="h-4 w-4 shrink-0 text-slate-400" />
@@ -1771,7 +1771,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-100 bg-slate-50 px-2 py-1 text-[11px] font-semibold text-slate-600 transition-colors hover:bg-slate-100"
                         >
                           {copiedKey === `full-id-${selected.id}` ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
-                          نسخ المعرف الكامل
+                          Copy Full ID
                         </button>
                       </CardContent>
                     </Card>
@@ -1780,8 +1780,8 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                   <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
                     <Card className="border-slate-100">
                       <CardHeader className="p-3 pb-1.5">
-                        <CardTitle className="text-sm font-bold text-slate-900">قنوات التواصل</CardTitle>
-                        <CardDescription className="text-xs">إرسال عبر Outlook، فتح واتساب، الاتصال المباشر، أو نسخ البيانات.</CardDescription>
+                        <CardTitle className="text-sm font-bold text-slate-900">Contact Channels</CardTitle>
+                        <CardDescription className="text-xs">Send via Outlook, open WhatsApp, call directly, or copy the data.</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-2 p-3 pt-0">
                         {getApplicantEmail(selected) ? (
@@ -1802,7 +1802,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                       <ExternalLink className="h-4 w-4" />
                                     </a>
                                   </TooltipTrigger>
-                                  <TooltipContent>إرسال عبر Outlook</TooltipContent>
+                                  <TooltipContent>Send via Outlook</TooltipContent>
                                 </Tooltip>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -1814,14 +1814,14 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                       {copiedKey === `email-${selected.id}` ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                                     </button>
                                   </TooltipTrigger>
-                                  <TooltipContent>نسخ البريد</TooltipContent>
+                                  <TooltipContent>Copy Email</TooltipContent>
                                 </Tooltip>
                               </div>
                             }
                           />
                         ) : (
                           <div className="rounded-lg border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-400">
-                            لا يوجد بريد إلكتروني واضح في هذا الطلب.
+                            No clear email address found in this application.
                           </div>
                         )}
 
@@ -1843,7 +1843,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                         <PhoneCall className="h-4 w-4" />
                                       </a>
                                     </TooltipTrigger>
-                                    <TooltipContent>اتصال</TooltipContent>
+                                    <TooltipContent>Call</TooltipContent>
                                   </Tooltip>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
@@ -1856,7 +1856,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                         <ExternalLink className="h-4 w-4" />
                                       </a>
                                     </TooltipTrigger>
-                                    <TooltipContent>واتساب</TooltipContent>
+                                    <TooltipContent>WhatsApp</TooltipContent>
                                   </Tooltip>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
@@ -1868,7 +1868,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                                         {copiedKey === `phone-${selected.id}-${index}` ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                                       </button>
                                     </TooltipTrigger>
-                                    <TooltipContent>نسخ الرقم</TooltipContent>
+                                    <TooltipContent>Copy Number</TooltipContent>
                                   </Tooltip>
                                 </div>
                               }
@@ -1876,7 +1876,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           ))
                         ) : (
                           <div className="rounded-lg border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-400">
-                            لا يوجد رقم هاتف واضح في هذا الطلب.
+                            No clear phone number found in this application.
                           </div>
                         )}
                       </CardContent>
@@ -1884,8 +1884,8 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
 
                     <Card className="border-slate-100">
                       <CardHeader className="p-3 pb-1.5">
-                        <CardTitle className="text-sm font-bold text-slate-900">كل الحقول المرسلة</CardTitle>
-                        <CardDescription className="text-xs">عرض كامل لجميع القيم القادمة من نموذج القطاع مع عناوينها المترجمة.</CardDescription>
+                        <CardTitle className="text-sm font-bold text-slate-900">All Submitted Fields</CardTitle>
+                        <CardDescription className="text-xs">A full view of all values submitted through the sector form, with their translated labels.</CardDescription>
                       </CardHeader>
                       <CardContent className="p-3 pt-0">
                         {getDataEntries(selected).length > 0 ? (
@@ -1914,7 +1914,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           </div>
                         ) : (
                           <div className="rounded-lg border border-dashed border-slate-200 px-3 py-6 text-center text-xs text-slate-400">
-                            لم يتم العثور على حقول إضافية صالحة داخل هذا الطلب.
+                            No valid additional fields were found in this application.
                           </div>
                         )}
                       </CardContent>
@@ -1924,8 +1924,8 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                   <Card className="border-slate-100">
                     <CardHeader className="flex flex-col gap-2.5 p-3 md:flex-row md:items-center md:justify-between">
                       <div>
-                        <CardTitle className="text-sm font-bold text-slate-900">إجراءات سريعة</CardTitle>
-                        <CardDescription className="text-xs">إدارة الحالة أو حذف الطلب مباشرة من نافذة التفاصيل.</CardDescription>
+                        <CardTitle className="text-sm font-bold text-slate-900">Quick Actions</CardTitle>
+                        <CardDescription className="text-xs">Manage the status or delete the application directly from the details window.</CardDescription>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         <Button
@@ -1936,7 +1936,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           disabled={pendingId === selected.id}
                         >
                           <CheckCircle2 className="ml-1.5 h-3.5 w-3.5" />
-                          قبول الطلب
+                          Approve Application
                         </Button>
                         <Button
                           variant="outline"
@@ -1946,7 +1946,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           disabled={pendingId === selected.id}
                         >
                           <Clock3 className="ml-1.5 h-3.5 w-3.5" />
-                          إبقاؤه قيد المراجعة
+                          Keep Under Review
                         </Button>
                         <Button
                           variant="outline"
@@ -1956,7 +1956,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           disabled={pendingId === selected.id}
                         >
                           <ShieldAlert className="ml-1.5 h-3.5 w-3.5" />
-                          رفض الطلب
+                          Reject Application
                         </Button>
                         <Button
                           variant="danger"
@@ -1966,7 +1966,7 @@ export function SectorRegistrationsView({ registrations }: SectorRegistrationsVi
                           isLoading={deletingId === selected.id}
                         >
                           <Trash2 className="ml-1.5 h-3.5 w-3.5" />
-                          حذف الطلب
+                          Delete Application
                         </Button>
                       </div>
                     </CardHeader>

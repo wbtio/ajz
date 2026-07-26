@@ -4,7 +4,7 @@ import type { Tables } from '@/lib/database.types'
 import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
-  title: 'تسجيلات القطاعات | JAZ Admin',
+  title: 'Sector Registrations | JAZ Admin',
 }
 
 type RegistrationRecord = Tables<'sector_registrations'> & {

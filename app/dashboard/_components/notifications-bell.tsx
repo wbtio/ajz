@@ -77,7 +77,7 @@ function playAlertSound() {
         })
         setTimeout(() => ctx.close().catch(() => {}), 400)
     } catch {
-        // بعض المتصفحات تمنع الصوت قبل أول تفاعل من المستخدم — نتجاهل الخطأ بصمت
+        // Some browsers block audio before the user's first interaction — fail silently.
     }
 }
 
@@ -95,7 +95,7 @@ export function NotificationsBell() {
             if (!res.ok) return
             const data: Notification[] = await res.json()
 
-            // نشغّل الصوت فقط عند ظهور إشعارات غير مقروءة جديدة لم نرَها من قبل (وليس عند أول تحميل للصفحة)
+            // Only play the sound when new, previously unseen unread notifications appear (not on the initial page load).
             if (seenIds.current) {
                 const newUnread = data.filter((n) => !n.is_read && !seenIds.current!.has(n.id))
                 if (newUnread.length > 0) {

@@ -20,7 +20,7 @@ export default async function CaseDetailsPage({ params }: { params: Promise<{ id
         redirect('/dashboard/home')
     }
 
-    // التسجيل مع الفعالية والموظف والعميل المستقل
+    // Registration along with the event, employee, and independent client
     const { data: registration } = await supabase
         .from('registrations')
         .select(`
@@ -34,7 +34,7 @@ export default async function CaseDetailsPage({ params }: { params: Promise<{ id
 
     if (!registration) notFound()
 
-    // سجل النشاط
+    // Activity log
     const { data: events } = await supabase
         .from('registration_events')
         .select('*')

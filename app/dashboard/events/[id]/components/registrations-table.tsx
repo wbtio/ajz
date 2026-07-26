@@ -102,7 +102,7 @@ function CopyBtn({ text, copyKey }: { text: string; copyKey: string }) {
                     {isCopied ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
                 </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">{isCopied ? 'تم النسخ!' : 'نسخ'}</TooltipContent>
+            <TooltipContent side="top">{isCopied ? 'Copied!' : 'Copy'}</TooltipContent>
         </Tooltip>
     )
 }
@@ -116,30 +116,30 @@ function PhoneActions({ phone, regId, idx }: { phone: string; regId: string; idx
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>إجراءات الهاتف</DropdownMenuLabel>
+                <DropdownMenuLabel>Phone Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <a href={`https://wa.me/${formatPhoneForWhatsApp(phone)}`} target="_blank" rel="noopener noreferrer">
                         <MessageCircle className="w-4 h-4 text-green-600" />
-                        <span>إرسال واتساب</span>
+                        <span>Send WhatsApp Message</span>
                     </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <a href={`tel:${phone}`}>
                         <PhoneCall className="w-4 h-4 text-blue-600" />
-                        <span>اتصال مباشر</span>
+                        <span>Call Directly</span>
                     </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <a href={`sms:${phone}`}>
                         <Mail className="w-4 h-4 text-purple-600" />
-                        <span>إرسال SMS</span>
+                        <span>Send SMS</span>
                     </a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigator.clipboard.writeText(phone)}>
                     <ClipboardCopy className="w-4 h-4" />
-                    <span>نسخ الرقم</span>
+                    <span>Copy Number</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -174,10 +174,10 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'confirmed': return 'مؤكد'
-            case 'cancelled': return 'ملغي'
-            case 'pending': return 'قيد الانتظار'
-            case 'attended': return 'حضر'
+            case 'confirmed': return 'Confirmed'
+            case 'cancelled': return 'Cancelled'
+            case 'pending': return 'Pending'
+            case 'attended': return 'Attended'
             default: return status
         }
     }
@@ -206,19 +206,19 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
 
     const copyAllData = (reg: any) => {
         const lines: string[] = []
-        lines.push(`الاسم: ${reg.users?.full_name || 'زائر'}`)
-        lines.push(`البريد: ${reg.users?.email || '-'}`)
-        if (reg.users?.phone) lines.push(`الهاتف: ${reg.users.phone}`)
-        lines.push(`الحالة: ${getStatusLabel(reg.status)}`)
-        lines.push(`تاريخ التسجيل: ${formatDate(reg.created_at)}`)
-        if (reg.ticket_number) lines.push(`رقم التذكرة: ${reg.ticket_number}`)
+        lines.push(`Name: ${reg.users?.full_name || 'Guest'}`)
+        lines.push(`Email: ${reg.users?.email || '-'}`)
+        if (reg.users?.phone) lines.push(`Phone: ${reg.users.phone}`)
+        lines.push(`Status: ${getStatusLabel(reg.status)}`)
+        lines.push(`Registration Date: ${formatDate(reg.created_at)}`)
+        if (reg.ticket_number) lines.push(`Ticket Number: ${reg.ticket_number}`)
         if (reg.additional_data && Object.keys(reg.additional_data).length > 0) {
-            lines.push('--- بيانات إضافية ---')
+            lines.push('--- Additional Data ---')
             Object.entries(reg.additional_data).forEach(([key, value]) => {
                 lines.push(`${getFieldLabel(key)}: ${String(value)}`)
             })
         }
-        if (reg.notes) lines.push(`ملاحظات: ${reg.notes}`)
+        if (reg.notes) lines.push(`Notes: ${reg.notes}`)
         copyText(lines.join('\n'), `all-${reg.id}`)
     }
 
@@ -226,13 +226,13 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
         const data = filteredRegistrations.map(reg => {
             const formData = reg.additional_data || {}
             const row: any = {
-                'المستخدم': reg.users?.full_name || 'زائر',
-                'البريد الإلكتروني': reg.users?.email || '-',
-                'رقم الهاتف': reg.users?.phone || '-',
-                'رقم التذكرة': reg.ticket_number || '-',
-                'تاريخ التسجيل': formatDate(reg.created_at),
-                'الحالة': getStatusLabel(reg.status),
-                'ملاحظات': reg.notes || '-'
+                'User': reg.users?.full_name || 'Guest',
+                'Email': reg.users?.email || '-',
+                'Phone Number': reg.users?.phone || '-',
+                'Ticket Number': reg.ticket_number || '-',
+                'Registration Date': formatDate(reg.created_at),
+                'Status': getStatusLabel(reg.status),
+                'Notes': reg.notes || '-'
             }
             if (event.registration_config) {
                 event.registration_config.forEach((field: any) => {
@@ -266,7 +266,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                     <div className="relative w-full sm:w-80">
                         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                            placeholder="بحث بالاسم، البريد، الهاتف، أو أي بيانات..."
+                            placeholder="Search by name, email, phone, or any data..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pr-9"
@@ -274,10 +274,10 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                     </div>
                     <div className="flex gap-2 items-center">
                         <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v)} variant="outline" size="sm">
-                            <ToggleGroupItem value="cards" aria-label="عرض بطاقات">
+                            <ToggleGroupItem value="cards" aria-label="Card view">
                                 <LayoutGrid className="w-4 h-4" />
                             </ToggleGroupItem>
-                            <ToggleGroupItem value="table" aria-label="عرض جدول">
+                            <ToggleGroupItem value="table" aria-label="Table view">
                                 <LayoutList className="w-4 h-4" />
                             </ToggleGroupItem>
                         </ToggleGroup>
@@ -285,32 +285,32 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                             <TooltipTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={exportToExcel} className="gap-2 text-green-700 hover:text-green-800 hover:bg-green-50 border-green-200">
                                     <FileSpreadsheet className="w-4 h-4" />
-                                    <span className="hidden sm:inline">تصدير Excel</span>
+                                    <span className="hidden sm:inline">Export Excel</span>
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>تصدير البيانات كملف Excel</TooltipContent>
+                            <TooltipContent>Export data as an Excel file</TooltipContent>
                         </Tooltip>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-2 text-blue-700 hover:text-blue-800 hover:bg-blue-50 border-blue-200">
                                     <Printer className="w-4 h-4" />
-                                    <span className="hidden sm:inline">طباعة</span>
+                                    <span className="hidden sm:inline">Print</span>
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>طباعة أو تصدير PDF</TooltipContent>
+                            <TooltipContent>Print or export as PDF</TooltipContent>
                         </Tooltip>
                     </div>
                 </div>
 
                 {/* Status Filter Tabs */}
-                <Tabs value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
+                <Tabs value={statusFilter} onValueChange={setStatusFilter}>
                     <TabsList variant="line" className="w-full justify-start">
                         {[
-                            { key: 'all', label: 'الكل' },
-                            { key: 'confirmed', label: 'مؤكد' },
-                            { key: 'pending', label: 'قيد الانتظار' },
-                            { key: 'attended', label: 'حضر' },
-                            { key: 'cancelled', label: 'ملغي' },
+                            { key: 'all', label: 'All' },
+                            { key: 'confirmed', label: 'Confirmed' },
+                            { key: 'pending', label: 'Pending' },
+                            { key: 'attended', label: 'Attended' },
+                            { key: 'cancelled', label: 'Cancelled' },
                         ].map(s => (
                             <TabsTrigger key={s.key} value={s.key} className="gap-1.5">
                                 {s.label}
@@ -325,15 +325,15 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
 
             {/* Results Count */}
             <p className="text-sm text-muted-foreground no-print">
-                عرض {filteredRegistrations.length} من {registrations.length} تسجيل
+                Showing {filteredRegistrations.length} of {registrations.length} registrations
             </p>
 
             {/* Print Header */}
             <div className="hidden print:block mb-6 p-4 text-center border-b">
                 <h1 className="text-2xl font-bold mb-2">{event.title_ar || event.title}</h1>
                 <div className="flex justify-center gap-6 text-sm text-muted-foreground">
-                    <span>التاريخ: {formatDate(event.date)}</span>
-                    <span>عدد المسجلين: {filteredRegistrations.length}</span>
+                    <span>Date: {formatDate(event.date)}</span>
+                    <span>Number of registrants: {filteredRegistrations.length}</span>
                 </div>
             </div>
 
@@ -341,8 +341,8 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                 <Card className="border-dashed">
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <User className="w-10 h-10 mb-3 text-muted-foreground/40" />
-                        <p className="font-medium text-muted-foreground">لا توجد نتائج مطابقة</p>
-                        <p className="text-sm text-muted-foreground/60 mt-1">حاول تغيير معايير البحث أو الفلتر</p>
+                        <p className="font-medium text-muted-foreground">No matching results</p>
+                        <p className="text-sm text-muted-foreground/60 mt-1">Try changing your search or filter criteria</p>
                     </CardContent>
                 </Card>
             ) : viewMode === 'cards' ? (
@@ -364,7 +364,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                         <div>
                                             <div className="flex items-center gap-1.5">
                                                 <h3 className="font-semibold text-foreground">
-                                                    {reg.users?.full_name || 'زائر'}
+                                                    {reg.users?.full_name || 'Guest'}
                                                 </h3>
                                                 <CopyBtn text={reg.users?.full_name || ''} copyKey={`name-${reg.id}`} />
                                             </div>
@@ -390,10 +390,10 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                                 onClick={() => copyAllData(reg)}
                                             >
                                                 {copiedKey === `all-${reg.id}` ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                                نسخ الكل
+                                                Copy All
                                             </Button>
                                         </TooltipTrigger>
-                                        <TooltipContent>نسخ جميع بيانات التسجيل</TooltipContent>
+                                        <TooltipContent>Copy all registration data</TooltipContent>
                                     </Tooltip>
                                 </div>
 
@@ -417,7 +417,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                                             </a>
                                                         </Button>
                                                     </TooltipTrigger>
-                                                    <TooltipContent>إرسال بريد</TooltipContent>
+                                                    <TooltipContent>Send Email</TooltipContent>
                                                 </Tooltip>
                                             </div>
                                         </div>
@@ -439,7 +439,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground/60">
                                         <Calendar className="w-3 h-3 shrink-0" />
                                         <span>{formatDate(reg.created_at)}</span>
-                                        <span dir="ltr">{new Date(reg.created_at).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' })}</span>
+                                        <span dir="ltr">{new Date(reg.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                                     </div>
                                 </CardContent>
 
@@ -448,7 +448,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                     <Collapsible>
                                         <Separator />
                                         <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/50 transition-colors">
-                                            <span>بيانات إضافية ({Object.keys(additionalData).length})</span>
+                                            <span>Additional Data ({Object.keys(additionalData).length})</span>
                                             <ChevronsUpDown className="w-3.5 h-3.5" />
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
@@ -472,7 +472,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                     <>
                                         <Separator />
                                         <div className="px-4 py-2.5">
-                                            <span className="text-[11px] text-muted-foreground/60 block mb-0.5">ملاحظات</span>
+                                            <span className="text-[11px] text-muted-foreground/60 block mb-0.5">Notes</span>
                                             <p className="text-sm text-muted-foreground">{reg.notes}</p>
                                         </div>
                                     </>
@@ -487,12 +487,12 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/50">
-                                <TableHead>المستخدم</TableHead>
-                                <TableHead>معلومات الاتصال</TableHead>
-                                <TableHead>التاريخ</TableHead>
-                                <TableHead>الحالة</TableHead>
-                                <TableHead>بيانات إضافية</TableHead>
-                                <TableHead className="print:hidden">إجراءات</TableHead>
+                                <TableHead>User</TableHead>
+                                <TableHead>Contact Info</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Additional Data</TableHead>
+                                <TableHead className="print:hidden">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -510,7 +510,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-1">
-                                                        <p className="font-medium text-sm">{reg.users?.full_name || 'زائر'}</p>
+                                                        <p className="font-medium text-sm">{reg.users?.full_name || 'Guest'}</p>
                                                         <CopyBtn text={reg.users?.full_name || ''} copyKey={`tname-${reg.id}`} />
                                                     </div>
                                                     {reg.ticket_number && (
@@ -541,7 +541,7 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                         <TableCell className="text-sm text-muted-foreground">
                                             <div>{formatDate(reg.created_at)}</div>
                                             <div className="text-[10px] text-muted-foreground/60" dir="ltr">
-                                                {new Date(reg.created_at).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' })}
+                                                {new Date(reg.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -574,10 +574,10 @@ export function RegistrationsTable({ registrations, event }: RegistrationsTableP
                                                         onClick={() => copyAllData(reg)}
                                                     >
                                                         {copiedKey === `all-${reg.id}` ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                                        نسخ الكل
+                                                        Copy All
                                                     </Button>
                                                 </TooltipTrigger>
-                                                <TooltipContent>نسخ جميع بيانات التسجيل</TooltipContent>
+                                                <TooltipContent>Copy all registration data</TooltipContent>
                                             </Tooltip>
                                         </TableCell>
                                     </TableRow>

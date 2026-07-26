@@ -30,14 +30,14 @@ export function RegistrationDetailsDialog({ data, userName }: RegistrationDetail
             <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                     <Eye className="h-4 w-4 text-blue-600" />
-                    <span className="sr-only">عرض التفاصيل</span>
+                    <span className="sr-only">View details</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]" dir="rtl">
-                <DialogHeader className="text-right">
-                    <DialogTitle>بيانات التسجيل</DialogTitle>
+            <DialogContent className="sm:max-w-[425px]" dir="ltr">
+                <DialogHeader>
+                    <DialogTitle>Registration Data</DialogTitle>
                     <DialogDescription>
-                        البيانات الإضافية التي قام {userName} بتعبئتها
+                        Additional data filled in by {userName}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">

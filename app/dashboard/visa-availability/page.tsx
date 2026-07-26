@@ -605,7 +605,7 @@ export default function VisaAvailabilityDashboard() {
                     <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                         <SelectTrigger className="h-8 bg-white text-xs"><SelectValue placeholder="Select country..." /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Countries / كل الدول</SelectItem>
+                            <SelectItem value="all">All Countries</SelectItem>
                             {countryOptions.map(opt => (
                                 <SelectItem key={opt.value} value={opt.value}>
                                     {opt.label}

@@ -310,7 +310,8 @@ export function FocusSectors({ sectors = [] }: FocusSectorsProps) {
   })
 
   return (
-    <section className="bg-[#f5f5f5] py-4 lg:py-6" data-purpose="focus-sectors">
+    <section className="relative overflow-hidden bg-[#f5f5f5] py-4 lg:py-6" data-purpose="focus-sectors">
+      <div className="pointer-events-none absolute -end-16 top-0 h-40 w-40 rounded-full bg-[#8B0000]/5 blur-3xl" />
       <Container>
         <SectionHeader
           title={t.homepage.sectors.title}

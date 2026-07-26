@@ -24,8 +24,16 @@ export function normalizeRegistrationDocuments(value: unknown): RegistrationDocu
     if (!entry || typeof entry !== 'object') return []
     const doc = entry as Record<string, unknown>
     const path = String(doc.path ?? doc.file_url ?? doc.url ?? '')
-    return path ? [{ name: String(doc.name ?? doc.label ?? 'Document'), path, type: String(doc.type ?? 'other'), uploadedAt: typeof doc.uploadedAt === 'string' ? doc.uploadedAt : undefined }] : []
+    return path ? [{ name: String(doc.name ?? doc.label ?? 'Document'), path, type: String(doc.type ?? 'other'), uploadedAt: typeof doc.uploadedAt === 'string' ? doc.uploadedAt : undefined, size: typeof doc.size === 'number' ? doc.size : undefined }] : []
   })
+}
+
+/** Human-readable file size; returns an em dash for legacy rows without one. */
+export function formatFileSize(bytes?: number) {
+  if (typeof bytes !== 'number' || !Number.isFinite(bytes) || bytes <= 0) return '—'
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 export function formatEventDate(date?: string | null) { return date ? new Date(date).toLocaleDateString('en-GB') : '' }

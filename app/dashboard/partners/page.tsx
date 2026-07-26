@@ -121,12 +121,12 @@ export default function PartnersDashboard() {
             fetchData()
         } catch (error) {
             console.error(error)
-            toast.error('حدث خطأ')
+            toast.error('An error occurred')
         }
     }
 
     const handleDeleteCategory = async (id: string) => {
-        if (!confirm('هل أنت متأكد؟ سيتم حذف جميع البطاقات والطلبات المرتبطة بهذا القسم!')) return
+        if (!confirm('Are you sure? All cards and submissions linked to this category will be deleted!')) return
         await deletePartnerCategory(id)
         fetchData()
     }
@@ -166,12 +166,12 @@ export default function PartnersDashboard() {
             fetchData()
         } catch (error) {
             console.error(error)
-            toast.error('حدث خطأ')
+            toast.error('An error occurred')
         }
     }
 
     const handleDeleteOpportunity = async (id: string) => {
-        if (!confirm('هل أنت متأكد من حذف هذه البطاقة؟')) return
+        if (!confirm('Are you sure you want to delete this card?')) return
         await deletePartnerOpportunity(id)
         fetchData()
     }
@@ -198,11 +198,11 @@ export default function PartnersDashboard() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-900">إدارة صفحة الشركاء</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Partners Page Management</h1>
                 {activeTab === 'content' && (
                     <Button onClick={handleCreateCategory}>
                         <Plus className="w-4 h-4 ml-2" />
-                        إضافة قسم رئيسي
+                        Add Main Category
                     </Button>
                 )}
             </div>
@@ -216,7 +216,7 @@ export default function PartnersDashboard() {
                     onClick={() => setActiveTab('content')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'content' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
                 >
-                    المحتوى والبطاقات
+                    Content & Cards
                 </button>
                 <button
                     role="tab"
@@ -226,14 +226,14 @@ export default function PartnersDashboard() {
                     onClick={() => setActiveTab('submissions')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'submissions' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
                 >
-                    طلبات الشراكة ({submissions.filter(s => s.status === 'pending').length})
+                    Partnership Requests ({submissions.filter(s => s.status === 'pending').length})
                 </button>
             </div>
 
             {loading ? (
                 <div className="text-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-600" />
-                    <p className="mt-2 text-gray-500">جاري تحميل البيانات...</p>
+                    <p className="mt-2 text-gray-500">Loading data...</p>
                 </div>
             ) : activeTab === 'content' ? (
                 <div id="panel-content" role="tabpanel" aria-labelledby="tab-content" className="space-y-8">
@@ -255,7 +255,7 @@ export default function PartnersDashboard() {
                                 <div className="flex gap-2">
                                     <Button variant="outline" size="sm" onClick={() => handleEditCategory(category)}>
                                         <Edit className="w-4 h-4 ml-2" />
-                                        تعديل القسم
+                                        Edit Category
                                     </Button>
                                     <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDeleteCategory(category.id)}>
                                         <Trash2 className="w-4 h-4" />
@@ -264,10 +264,10 @@ export default function PartnersDashboard() {
                             </CardHeader>
                             <CardContent className="p-6">
                                 <div className="mb-4 flex items-center justify-between">
-                                    <h3 className="text-sm font-semibold text-gray-500">البطاقات الفرعية (Opportunities)</h3>
+                                    <h3 className="text-sm font-semibold text-gray-500">Sub-cards (Opportunities)</h3>
                                     <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-50" onClick={() => handleCreateOpportunity(category.id)}>
                                         <Plus className="w-4 h-4 ml-2" />
-                                        إضافة بطاقة
+                                        Add Card
                                     </Button>
                                 </div>
                                 
@@ -296,7 +296,7 @@ export default function PartnersDashboard() {
                                     ))}
                                     {(opportunitiesByCategory.get(category.id) || []).length === 0 && (
                                         <div className="col-span-full py-8 text-center text-gray-400 text-sm border-2 border-dashed rounded-xl">
-                                            لا توجد بطاقات في هذا القسم
+                                            No cards in this category yet
                                         </div>
                                     )}
                                 </div>
@@ -305,7 +305,7 @@ export default function PartnersDashboard() {
                     ))}
                     {categories.length === 0 && (
                         <div className="text-center py-12 text-gray-500">
-                            ابدأ بإضافة قسم رئيسي جديد
+                            Get started by adding a new main category
                         </div>
                     )}
                 </div>
@@ -313,17 +313,17 @@ export default function PartnersDashboard() {
                 /* Submissions Tab */
                 <Card id="panel-submissions" role="tabpanel" aria-labelledby="tab-submissions">
                     <CardHeader>
-                        <CardTitle>طلبات الشراكة الواردة</CardTitle>
+                        <CardTitle>Incoming Partnership Requests</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b">
                                     <tr>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">القسم</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">البيانات</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">الحالة</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">التاريخ</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Category</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Data</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Date</th>
                                         <th className="text-right py-3 px-4 text-sm font-medium text-gray-500"></th>
                                     </tr>
                                 </thead>
@@ -331,7 +331,7 @@ export default function PartnersDashboard() {
                                     {submissions.map(sub => (
                                         <tr key={sub.id} className="hover:bg-gray-50">
                                             <td className="py-3 px-4">
-                                                <div className="font-medium">{sub.opportunity?.category?.title_ar || 'غير معروف'}</div>
+                                                <div className="font-medium">{sub.opportunity?.category?.title_ar || 'Unknown'}</div>
                                                 <div className="text-xs text-gray-500">{sub.opportunity?.title_ar}</div>
                                             </td>
                                             <td className="py-3 px-4">
@@ -345,7 +345,7 @@ export default function PartnersDashboard() {
                                                     sub.status === 'rejected' ? 'bg-red-100 text-red-700' :
                                                     'bg-yellow-100 text-yellow-700'
                                                 }`}>
-                                                    {sub.status === 'approved' ? 'مقبول' : sub.status === 'rejected' ? 'مرفوض' : 'قيد الانتظار'}
+                                                    {sub.status === 'approved' ? 'Approved' : sub.status === 'rejected' ? 'Rejected' : 'Pending'}
                                                 </span>
                                             </td>
                                             <td className="py-3 px-4 text-sm text-gray-500">
@@ -359,7 +359,7 @@ export default function PartnersDashboard() {
                                         </tr>
                                     ))}
                                     {submissions.length === 0 && (
-                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">لا توجد طلبات</td></tr>
+                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">No requests found</td></tr>
                                     )}
                                 </tbody>
                             </table>
@@ -372,37 +372,37 @@ export default function PartnersDashboard() {
             <Dialog open={isCategoryFormOpen} onOpenChange={setIsCategoryFormOpen}>
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>{editingCategory ? 'تعديل القسم' : 'إضافة قسم جديد'}</DialogTitle>
+                        <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitCategory} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>الاسم (عربي)</Label>
+                                <Label>Name (Arabic)</Label>
                                 <Input value={categoryForm.title_ar} onChange={e => setCategoryForm({...categoryForm, title_ar: e.target.value})} required dir="rtl" />
                             </div>
                             <div className="space-y-2">
-                                <Label>الاسم (إنجليزي)</Label>
+                                <Label>Name (English)</Label>
                                 <Input value={categoryForm.title_en} onChange={e => setCategoryForm({...categoryForm, title_en: e.target.value})} required dir="ltr" />
                             </div>
                             <div className="space-y-2 col-span-2">
-                                <Label>الوصف (عربي)</Label>
+                                <Label>Description (Arabic)</Label>
                                 <Textarea value={categoryForm.description_ar} onChange={e => setCategoryForm({...categoryForm, description_ar: e.target.value})} dir="rtl" />
                             </div>
                             <div className="space-y-2 col-span-2">
-                                <Label>الوصف (إنجليزي)</Label>
+                                <Label>Description (English)</Label>
                                 <Textarea value={categoryForm.description_en} onChange={e => setCategoryForm({...categoryForm, description_en: e.target.value})} dir="ltr" />
                             </div>
                             <div className="space-y-2">
-                                <Label>الرابط (Slug)</Label>
+                                <Label>URL (Slug)</Label>
                                 <Input value={categoryForm.slug} onChange={e => setCategoryForm({...categoryForm, slug: e.target.value})} required />
                             </div>
                             <div className="space-y-2">
-                                <Label>الترتيب</Label>
+                                <Label>Sort Order</Label>
                                 <Input type="number" value={categoryForm.sort_order} onChange={e => setCategoryForm({...categoryForm, sort_order: parseInt(e.target.value)})} />
                             </div>
                             <div className="space-y-2">
-                                <Label>الأيقونة</Label>
-                                <select 
+                                <Label>Icon</Label>
+                                <select
                                     className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
                                     value={categoryForm.icon}
                                     onChange={e => setCategoryForm({...categoryForm, icon: e.target.value})}
@@ -411,22 +411,22 @@ export default function PartnersDashboard() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <Label>اللون (Tailwind Classes)</Label>
+                                <Label>Color (Tailwind Classes)</Label>
                                 <Input value={categoryForm.color} onChange={e => setCategoryForm({...categoryForm, color: e.target.value})} placeholder="e.g. bg-blue-50 text-blue-600" dir="ltr" />
                             </div>
                         </div>
-                        
+
                         <div className="border-t pt-4">
-                            <h3 className="font-bold mb-4">بناء نموذج التسجيل الخاص بهذا القسم</h3>
-                            <RegistrationFormBuilder 
-                                fields={categoryForm.registration_config} 
-                                onChange={fields => setCategoryForm({...categoryForm, registration_config: fields})} 
+                            <h3 className="font-bold mb-4">Build the Registration Form for this Category</h3>
+                            <RegistrationFormBuilder
+                                fields={categoryForm.registration_config}
+                                onChange={fields => setCategoryForm({...categoryForm, registration_config: fields})}
                             />
                         </div>
 
                         <div className="flex justify-end gap-2 pt-4">
-                            <Button type="button" variant="outline" onClick={() => setIsCategoryFormOpen(false)}>إلغاء</Button>
-                            <Button type="submit">حفظ</Button>
+                            <Button type="button" variant="outline" onClick={() => setIsCategoryFormOpen(false)}>Cancel</Button>
+                            <Button type="submit">Save</Button>
                         </div>
                     </form>
                 </DialogContent>
@@ -436,29 +436,29 @@ export default function PartnersDashboard() {
             <Dialog open={isOpportunityFormOpen} onOpenChange={setIsOpportunityFormOpen}>
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
-                        <DialogTitle>{editingOpportunity ? 'تعديل البطاقة' : 'إضافة بطاقة جديدة'}</DialogTitle>
+                        <DialogTitle>{editingOpportunity ? 'Edit Card' : 'Add New Card'}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitOpportunity} className="space-y-4">
                         <div className="space-y-2">
-                            <Label>العنوان (عربي)</Label>
+                            <Label>Title (Arabic)</Label>
                             <Input value={opportunityForm.title_ar} onChange={e => setOpportunityForm({...opportunityForm, title_ar: e.target.value})} required dir="rtl" />
                         </div>
                         <div className="space-y-2">
-                            <Label>العنوان (إنجليزي)</Label>
+                            <Label>Title (English)</Label>
                             <Input value={opportunityForm.title_en} onChange={e => setOpportunityForm({...opportunityForm, title_en: e.target.value})} required dir="ltr" />
                         </div>
                         <div className="space-y-2">
-                            <Label>الوصف (عربي)</Label>
+                            <Label>Description (Arabic)</Label>
                             <Textarea value={opportunityForm.description_ar} onChange={e => setOpportunityForm({...opportunityForm, description_ar: e.target.value})} dir="rtl" />
                         </div>
                         <div className="space-y-2">
-                            <Label>الوصف (إنجليزي)</Label>
+                            <Label>Description (English)</Label>
                             <Textarea value={opportunityForm.description_en} onChange={e => setOpportunityForm({...opportunityForm, description_en: e.target.value})} dir="ltr" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>الأيقونة</Label>
-                                <select 
+                                <Label>Icon</Label>
+                                <select
                                     className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
                                     value={opportunityForm.icon}
                                     onChange={e => setOpportunityForm({...opportunityForm, icon: e.target.value})}
@@ -467,13 +467,13 @@ export default function PartnersDashboard() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <Label>اللون (Tailwind Classes)</Label>
+                                <Label>Color (Tailwind Classes)</Label>
                                 <Input value={opportunityForm.color} onChange={e => setOpportunityForm({...opportunityForm, color: e.target.value})} placeholder="e.g. bg-blue-50 text-blue-600" dir="ltr" />
                             </div>
                         </div>
                         <div className="flex justify-end gap-2 pt-4">
-                            <Button type="button" variant="outline" onClick={() => setIsOpportunityFormOpen(false)}>إلغاء</Button>
-                            <Button type="submit">حفظ</Button>
+                            <Button type="button" variant="outline" onClick={() => setIsOpportunityFormOpen(false)}>Cancel</Button>
+                            <Button type="submit">Save</Button>
                         </div>
                     </form>
                 </DialogContent>
@@ -483,33 +483,33 @@ export default function PartnersDashboard() {
             <Dialog open={!!selectedSubmission} onOpenChange={open => !open && setSelectedSubmission(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>تفاصيل الطلب</DialogTitle>
+                        <DialogTitle>Request Details</DialogTitle>
                     </DialogHeader>
                     {selectedSubmission && (
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="text-gray-500 block">القسم</span>
+                                    <span className="text-gray-500 block">Category</span>
                                     <span className="font-medium">{selectedSubmission.opportunity?.category?.title_ar}</span>
                                 </div>
                                 <div>
-                                    <span className="text-gray-500 block">تاريخ الطلب</span>
+                                    <span className="text-gray-500 block">Request Date</span>
                                     <span className="font-medium">{formatDate(selectedSubmission.created_at)}</span>
                                 </div>
                                 <div className="col-span-2">
-                                    <span className="text-gray-500 block">الحالة الحالية</span>
+                                    <span className="text-gray-500 block">Current Status</span>
                                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full mt-1 ${
                                         selectedSubmission.status === 'approved' ? 'bg-green-100 text-green-700' :
                                         selectedSubmission.status === 'rejected' ? 'bg-red-100 text-red-700' :
                                         'bg-yellow-100 text-yellow-700'
                                     }`}>
-                                        {selectedSubmission.status === 'approved' ? 'مقبول' : selectedSubmission.status === 'rejected' ? 'مرفوض' : 'قيد الانتظار'}
+                                        {selectedSubmission.status === 'approved' ? 'Approved' : selectedSubmission.status === 'rejected' ? 'Rejected' : 'Pending'}
                                     </span>
                                 </div>
                             </div>
-                            
+
                             <div className="border rounded-xl p-4 bg-gray-50">
-                                <h3 className="font-semibold mb-3 text-sm text-gray-700">البيانات المقدمة</h3>
+                                <h3 className="font-semibold mb-3 text-sm text-gray-700">Submitted Data</h3>
                                 <div className="space-y-2">
                                     {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
                                         <div key={key} className="flex justify-between border-b border-gray-200 pb-2 last:border-0 last:pb-0">
@@ -522,10 +522,10 @@ export default function PartnersDashboard() {
 
                             <div className="flex justify-end gap-2 pt-4">
                                 <Button variant="outline" onClick={() => handleStatusUpdate(selectedSubmission.id, 'rejected')} className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200">
-                                    رفض الطلب
+                                    Reject Request
                                 </Button>
                                 <Button onClick={() => handleStatusUpdate(selectedSubmission.id, 'approved')} className="bg-green-600 hover:bg-green-700 text-white">
-                                    قبول الطلب
+                                    Approve Request
                                 </Button>
                             </div>
                         </div>

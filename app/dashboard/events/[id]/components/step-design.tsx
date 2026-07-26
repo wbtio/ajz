@@ -152,7 +152,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}))
-                throw new Error(errData.error || 'فشل الرفع')
+                throw new Error(errData.error || 'Upload failed')
             }
 
             const data = await response.json()
@@ -179,7 +179,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
             }
         } catch (err: any) {
             console.error('Upload error:', err)
-            setMessage({ type: 'error', text: 'فشل رفع الملف: ' + err.message })
+            setMessage({ type: 'error', text: 'Failed to upload file: ' + err.message })
         } finally {
             setUploadingPlatform(null)
         }
@@ -208,7 +208,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                 {isVideo ? (
                     <video src={url} controls className="w-full h-full object-contain bg-black" />
                 ) : (
-                    <Image src={url} alt="معاينة التصميم" fill className="object-cover" />
+                    <Image src={url} alt="Design preview" fill className="object-cover" />
                 )}
             </div>
         )
@@ -294,11 +294,11 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
 
             if (error) throw error
 
-            setMessage({ type: 'success', text: 'تم تحديث وحفظ تفاصيل التصاميم بنجاح!' })
+            setMessage({ type: 'success', text: 'Design details updated and saved successfully!' })
             onUpdate(data)
         } catch (err: any) {
             console.error('Error saving step 2 design:', err)
-            setMessage({ type: 'error', text: err.message || 'حدث خطأ أثناء حفظ خطة الترويج' })
+            setMessage({ type: 'error', text: err.message || 'An error occurred while saving the promotion plan' })
         } finally {
             setIsSaving(false)
         }
@@ -306,30 +306,30 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
 
     // Inner progress calculations
     const innerSteps = [
-        { key: 'website', label: 'الموقع', completed: webCompleted },
-        { key: 'facebook', label: 'فيسبوك', completed: fbCompleted },
-        { key: 'instagram', label: 'انستغرام', completed: igCompleted },
-        { key: 'tiktok', label: 'تيك توك', completed: ttCompleted },
-        { key: 'x', label: 'إكس / تويتر', completed: xCompleted },
-        { key: 'snapchat', label: 'سناب شات', completed: snapCompleted },
-        { key: 'linkedin', label: 'لينكد إن', completed: liCompleted },
-        { key: 'youtube', label: 'يوتيوب', completed: ytCompleted },
-        { key: 'whatsapp', label: 'واتساب', completed: waCompleted }
+        { key: 'website', label: 'Website', completed: webCompleted },
+        { key: 'facebook', label: 'Facebook', completed: fbCompleted },
+        { key: 'instagram', label: 'Instagram', completed: igCompleted },
+        { key: 'tiktok', label: 'TikTok', completed: ttCompleted },
+        { key: 'x', label: 'X / Twitter', completed: xCompleted },
+        { key: 'snapchat', label: 'Snapchat', completed: snapCompleted },
+        { key: 'linkedin', label: 'LinkedIn', completed: liCompleted },
+        { key: 'youtube', label: 'YouTube', completed: ytCompleted },
+        { key: 'whatsapp', label: 'WhatsApp', completed: waCompleted }
     ]
     const completedInnerCount = innerSteps.filter(s => s.completed).length
     const innerProgressPercentage = Math.round((completedInnerCount / 9) * 100)
 
     // Platform Design Specs Tooltips
     const platformSpecs: Record<string, string> = {
-        website: 'مقاسات الموقع الإلكتروني:\n• المقاس المفضل: 1200px × 630px (Landscape)\n• التنسيق: PNG أو JPG أو GIF متحركة\n• نصيحة: يفضل ترك مسافات أمان من الأطراف لضمان التوافق مع الشاشات المختلفة.',
-        facebook: 'مقاسات الفيسبوك:\n• بوست مربع: 1200px × 1200px\n• بوست عرضي: 1200px × 630px\n• التنسيق: صورة عالية الجودة PNG أو فيديو MP4\n• نصيحة: يمكنك إضافة مجموعات تصاميم إعلانية متعددة لتناسب الحملات المتغيرة.',
-        instagram: 'مقاسات الانستغرام:\n• بوست عمودي: 1080px × 1350px (نسبة 4:5 - يغطي المساحة بالكامل)\n• بوست مربع: 1080px × 1080px\n• ستوري: 1080px × 1920px\n• التنسيق: صورة عالية الدقة PNG.',
-        tiktok: 'مقاسات التيك توك:\n• فيديو عمودي كامل: 1080px × 1920px (نسبة 9:16)\n• التنسيق: MP4 أو MOV بمعدل إطارات مرتفع\n• نصيحة: ركز على الصوتيات الرائجة (Trending Music) في المونتاج.',
-        x: 'مقاسات منصة إكس (تويتر):\n• بوست عرضي: 1600px × 900px (نسبة 16:9)\n• بوست مربع: 1080px × 1080px\n• التنسيق: PNG أو JPG أو GIF متحركة\n• نصيحة: التغريدة يجب أن تكون موجزة وواضحة جداً وتستخدم الهاشتاغات الرائجة.',
-        snapchat: 'مقاسات سناب شات:\n• تصميم عمودي كامل: 1080px × 1920px (نسبة 9:16)\n• التنسيق: صورة عالية الدقة PNG أو فيديو MP4 قصير (أقل من 15 ثانية)\n• نصيحة: يفضل ترك 150px من الأعلى والأسفل فارغة لعدم تغطية شعار الحساب أو زر السحب لأعلى.',
-        linkedin: 'مقاسات لينكد إن:\n• بوست عرضي: 1200px × 627px\n• بوست مربع: 1080px × 1080px\n• التنسيق: PNG أو PDF لسهولة التمرير الدائري (Carousel)\n• نصيحة: أسلوب التصميم والمحتوى يجب أن يكون مهنياً واحترافياً للغاية.',
-        youtube: 'مقاسات اليوتيوب:\n• صورة مصغرة (Thumbnail): 1280px × 720px (نسبة 16:9)\n• فيديو كامل: 1920px × 1080px أو Shorts: 1080px × 1920px\n• نصيحة: العنوان والصورة المصغرة يجب أن يكونا جذابين للغاية لزيادة نسبة النقر (CTR).',
-        whatsapp: 'مواصفات واتساب:\n• ملف العرض (Brochure): ملف PDF احترافي يوضح تفاصيل وجدول الفعالية بالكامل (بحد أقصى 10 ميجابايت).\n• نصوص الردود: قوالب منسقة بنقاط واضحة يسهل نسخها وإرسالها للمشتركين لتوضيح الحجوزات والخطوات.'
+        website: 'Website image sizes:\n• Preferred size: 1200px × 630px (Landscape)\n• Format: PNG, JPG, or animated GIF\n• Tip: Leave safe margins from the edges to ensure compatibility across different screens.',
+        facebook: 'Facebook sizes:\n• Square post: 1200px × 1200px\n• Landscape post: 1200px × 630px\n• Format: high-quality PNG image or MP4 video\n• Tip: You can add multiple ad design sets to suit different campaigns.',
+        instagram: 'Instagram sizes:\n• Portrait post: 1080px × 1350px (4:5 ratio - fills the space fully)\n• Square post: 1080px × 1080px\n• Story: 1080px × 1920px\n• Format: high-resolution PNG image.',
+        tiktok: 'TikTok sizes:\n• Full vertical video: 1080px × 1920px (9:16 ratio)\n• Format: MP4 or MOV with a high frame rate\n• Tip: Focus on trending music in the edit.',
+        x: 'X (Twitter) sizes:\n• Landscape post: 1600px × 900px (16:9 ratio)\n• Square post: 1080px × 1080px\n• Format: PNG, JPG, or animated GIF\n• Tip: The tweet should be concise, very clear, and use trending hashtags.',
+        snapchat: 'Snapchat sizes:\n• Full vertical design: 1080px × 1920px (9:16 ratio)\n• Format: high-resolution PNG image or short MP4 video (under 15 seconds)\n• Tip: Leave 150px empty at the top and bottom so the account logo or swipe-up button is not covered.',
+        linkedin: 'LinkedIn sizes:\n• Landscape post: 1200px × 627px\n• Square post: 1080px × 1080px\n• Format: PNG or PDF for easy carousel scrolling\n• Tip: The design style and content must be highly professional.',
+        youtube: 'YouTube sizes:\n• Thumbnail: 1280px × 720px (16:9 ratio)\n• Full video: 1920px × 1080px or Shorts: 1080px × 1920px\n• Tip: The title and thumbnail must be highly compelling to increase click-through rate (CTR).',
+        whatsapp: 'WhatsApp specs:\n• Brochure file: a professional PDF outlining the event\'s full details and schedule (10MB max).\n• Reply texts: clearly formatted templates that are easy to copy and send to subscribers to explain bookings and steps.'
     }
 
     const getPlatformIcon = (platform: string) => {
@@ -348,30 +348,30 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
     }
 
     return (
-        <div className="space-y-6 text-start" dir="rtl">
+        <div className="space-y-6 text-start" dir="ltr">
             <Card className="border-slate-100 shadow-md bg-white/90 backdrop-blur">
                 <CardHeader className="border-b border-slate-50 pb-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <CardTitle className="text-xl font-bold text-slate-850 flex items-center gap-2">
                                 <Palette className="w-5 h-5 text-indigo-650" />
-                                الخطوة 2: فريق التصميم والمحتوى الإعلاني
+                                Step 2: Design & Advertising Content Team
                             </CardTitle>
                             <CardDescription className="mt-1 text-slate-500 text-xs">
-                                إعداد وتجهيز ملفات وتصاميم النشر لـ 9 منصات تواصل اجتماعي مختلفة بتسلسل متكامل.
+                                Prepare and finalize publishing files and designs for 9 different social media platforms in one integrated workflow.
                             </CardDescription>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold self-start md:self-auto ${
                             completedInnerCount === 10 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                         }`}>
-                            {completedInnerCount === 10 ? 'مكتملة بالكامل ✓' : `تم إنجاز ${completedInnerCount} من 10`}
+                            {completedInnerCount === 10 ? 'Fully Completed ✓' : `${completedInnerCount} of 10 completed`}
                         </span>
                     </div>
 
                     {/* Design Progress Bar */}
                     <div className="mt-4 space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-slate-700">شريط إنجاز المنصات والتصاميم</span>
+                            <span className="font-bold text-slate-700">Platforms &amp; Designs Progress</span>
                             <span className="font-black text-indigo-600">{innerProgressPercentage}%</span>
                         </div>
                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -387,18 +387,18 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                     {/* General Settings */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100 mb-6">
                         <div className="space-y-1">
-                            <Label htmlFor="designerName" className="text-xs text-slate-750 font-bold">المصمم / المشرف الفني</Label>
+                            <Label htmlFor="designerName" className="text-xs text-slate-750 font-bold">Designer / Art Director</Label>
                             <Input
                                 id="designerName"
                                 value={designer}
                                 onChange={(e) => setDesigner(e.target.value)}
                                 disabled={isReadOnly}
-                                placeholder="اسم المصمم أو الوكالة الإعلانية"
+                                placeholder="Designer or advertising agency name"
                                 className="bg-white text-xs h-8"
                             />
                         </div>
                         <div className="space-y-1">
-                            <Label htmlFor="designStatus" className="text-xs text-slate-755 font-bold">حالة المرحلة الكلية</Label>
+                            <Label htmlFor="designStatus" className="text-xs text-slate-755 font-bold">Overall Stage Status</Label>
                             <Select
                                 value={status}
                                 onValueChange={(val) => setStatus(val)}
@@ -408,8 +408,8 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="in_progress">قيد العمل والتصميم</SelectItem>
-                                    <SelectItem value="completed">مكتملة بالكامل ومصدقة</SelectItem>
+                                    <SelectItem value="in_progress">In Progress / Designing</SelectItem>
+                                    <SelectItem value="completed">Fully Completed &amp; Approved</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -464,7 +464,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Globe className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">تصاميم الموقع الإلكتروني (يرفع فقط الصورة أو GIF)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">Website Designs (image or GIF upload only)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -494,7 +494,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         {webImageUrl ? (
                                             <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
                                                 <div className="relative h-48 w-full">
-                                                    <Image src={webImageUrl} alt="غلاف الفعالية" fill className="object-cover" />
+                                                    <Image src={webImageUrl} alt="Event cover image" fill className="object-cover" />
                                                 </div>
                                                 {!isReadOnly && (
                                                     <div className="absolute top-2 left-2 flex gap-2">
@@ -527,8 +527,8 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 ) : (
                                                     <>
                                                         <Upload className="w-6 h-6 text-slate-400" />
-                                                        <p className="text-xs font-bold text-slate-655">اضغط لرفع الغلاف والصورة للموقع</p>
-                                                        <p className="text-[9px] text-slate-400">PNG, JPG, GIF حتى 5MB</p>
+                                                        <p className="text-xs font-bold text-slate-655">Click to upload the cover image for the website</p>
+                                                        <p className="text-[9px] text-slate-400">PNG, JPG, GIF up to 5MB</p>
                                                     </>
                                                 )}
                                             </button>
@@ -536,14 +536,14 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="webNotes" className="text-xs text-slate-600">ملاحظات أو تفاصيل فنية للموقع</Label>
+                                            <Label htmlFor="webNotes" className="text-xs text-slate-600">Notes or technical details for the website</Label>
                                             <Textarea
                                                 id="webNotes"
                                                 value={webNotes}
                                                 onChange={(e) => setWebNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={4}
-                                                placeholder="أي تعديلات في التصميم أو الهوية الخاصة بالموقع..."
+                                                placeholder="Any changes to the design or branding of the website..."
                                                 className="text-xs"
                                             />
                                         </div>
@@ -554,7 +554,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving || !webImageUrl}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {webCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {webCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {webCompleted && (
                                                 <Button 
@@ -579,7 +579,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Facebook className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة فيسبوك (مجموعات إعلانية متعددة)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">Facebook Platform (multiple ad sets)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -600,7 +600,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     {fbSets.map((set, index) => (
                                         <div key={set.id || index} className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/20 relative space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-slate-800">المجموعة الإعلانية #{index + 1}</span>
+                                                <span className="text-xs font-bold text-slate-800">Ad Set #{index + 1}</span>
                                                 {fbSets.length > 1 && !isReadOnly && (
                                                     <button
                                                         type="button"
@@ -614,12 +614,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className="text-[11px] text-slate-650 font-semibold">رابط تصميم المجموعة أو رفعه</Label>
+                                                    <Label className="text-[11px] text-slate-650 font-semibold">Ad set design link or upload</Label>
                                                     <div className="flex gap-2">
                                                         <Input
                                                             value={set.image_url}
                                                             onChange={(e) => handleFbSetChange(index, 'image_url', e.target.value)}
-                                                            placeholder="رابط درايف للتصميم أو رابط الصورة المرفوعة"
+                                                            placeholder="Drive link for the design, or the uploaded image link"
                                                             className="text-xs h-8 text-left"
                                                             dir="ltr"
                                                             disabled={isReadOnly}
@@ -654,11 +654,11 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                     {renderMediaPreview(set.image_url)}
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <Label className="text-[11px] text-slate-655 font-semibold">المحتوى الإعلاني للمجموعة</Label>
+                                                    <Label className="text-[11px] text-slate-655 font-semibold">Ad set content</Label>
                                                     <Textarea
                                                         value={set.content}
                                                         onChange={(e) => handleFbSetChange(index, 'content', e.target.value)}
-                                                        placeholder="أكتب النص الإعلاني لهذه المجموعة هنا..."
+                                                        placeholder="Write the ad copy for this set here..."
                                                         className="text-xs"
                                                         rows={4}
                                                         disabled={isReadOnly}
@@ -677,7 +677,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                             className="w-full border-dashed border-indigo-200 hover:border-indigo-400 text-indigo-750 font-bold text-xs py-2 flex items-center justify-center gap-1 bg-indigo-50/10"
                                         >
                                             <Plus className="w-4 h-4" />
-                                            إضافة مجموعة إعلانية أخرى (Facebook Set)
+                                            Add another ad set (Facebook Set)
                                         </Button>
                                     )}
 
@@ -688,7 +688,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                             disabled={isSaving}
                                             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6"
                                         >
-                                            {fbCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                            {fbCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                         </Button>
                                         {fbCompleted && (
                                             <Button 
@@ -712,7 +712,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Instagram className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة انستغرام (محتوى وصورة عمودية)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">Instagram Platform (content and portrait image)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -732,13 +732,13 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="md:col-span-2 space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="igUrl" className="text-xs text-slate-600 font-semibold">رابط تصميم انستغرام أو رفعه</Label>
+                                            <Label htmlFor="igUrl" className="text-xs text-slate-600 font-semibold">Instagram design link or upload</Label>
                                             <div className="flex gap-2">
                                                 <Input
                                                     id="igUrl"
                                                     value={igUrl}
                                                     onChange={(e) => setIgUrl(e.target.value)}
-                                                    placeholder="رابط درايف للتصميم أو رابط الصورة المرفوعة"
+                                                    placeholder="Drive link for the design, or the uploaded image link"
                                                     className="text-xs h-9 text-left"
                                                     dir="ltr"
                                                     disabled={isReadOnly}
@@ -773,12 +773,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="igContent" className="text-xs text-slate-600 font-semibold">نص البوست / محتوى انستغرام</Label>
+                                            <Label htmlFor="igContent" className="text-xs text-slate-600 font-semibold">Post text / Instagram content</Label>
                                             <Textarea
                                                 id="igContent"
                                                 value={igContent}
                                                 onChange={(e) => setIgContent(e.target.value)}
-                                                placeholder="أكتب النص الإعلاني والهاشتاغات لمنصة انستغرام..."
+                                                placeholder="Write the ad copy and hashtags for Instagram..."
                                                 className="text-xs"
                                                 rows={4}
                                                 disabled={isReadOnly}
@@ -787,14 +787,14 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="igNotes" className="text-xs text-slate-600">ملاحظات انستغرام</Label>
+                                            <Label htmlFor="igNotes" className="text-xs text-slate-600">Instagram notes</Label>
                                             <Textarea
                                                 id="igNotes"
                                                 value={igNotes}
                                                 onChange={(e) => setIgNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={4}
-                                                placeholder="هاشتاغات مفضلة، حسابات الرعاة، شروط الصورة..."
+                                                placeholder="Preferred hashtags, sponsor accounts, image requirements..."
                                                 className="text-xs resize-none"
                                             />
                                         </div>
@@ -805,7 +805,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {igCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {igCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {igCompleted && (
                                                 <Button 
@@ -830,7 +830,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Video className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة تيك توك (فيديو عمودي ومحتوى)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">TikTok Platform (vertical video and content)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -850,13 +850,13 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="md:col-span-2 space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="ttUrl" className="text-xs text-slate-600 font-semibold">رابط فيديو التيك توك أو رفعه</Label>
+                                            <Label htmlFor="ttUrl" className="text-xs text-slate-600 font-semibold">TikTok video link or upload</Label>
                                             <div className="flex gap-2">
                                                 <Input
                                                     id="ttUrl"
                                                     value={ttUrl}
                                                     onChange={(e) => setTtUrl(e.target.value)}
-                                                    placeholder="رابط درايف للفيديو أو رابط التيك توك النهائي"
+                                                    placeholder="Drive link for the video, or the final TikTok link"
                                                     className="text-xs h-9 text-left"
                                                     dir="ltr"
                                                     disabled={isReadOnly}
@@ -891,12 +891,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="ttContent" className="text-xs text-slate-600 font-semibold">وصف الفيديو والهاشتاغات (Caption)</Label>
+                                            <Label htmlFor="ttContent" className="text-xs text-slate-600 font-semibold">Video description and hashtags (Caption)</Label>
                                             <Textarea
                                                 id="ttContent"
                                                 value={ttContent}
                                                 onChange={(e) => setTtContent(e.target.value)}
-                                                placeholder="أكتب نصوص الهيدرز والهاشتاغات العمودية المخصصة للتيك توك..."
+                                                placeholder="Write the headline text and hashtags tailored for TikTok..."
                                                 className="text-xs"
                                                 rows={4}
                                                 disabled={isReadOnly}
@@ -905,14 +905,14 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="ttNotes" className="text-xs text-slate-600">ملاحظات المونتاج والصوت</Label>
+                                            <Label htmlFor="ttNotes" className="text-xs text-slate-600">Editing and audio notes</Label>
                                             <Textarea
                                                 id="ttNotes"
                                                 value={ttNotes}
                                                 onChange={(e) => setTtNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={4}
-                                                placeholder="ملاحظات المونتاج والمقاطع الصوتية الرائجة..."
+                                                placeholder="Editing notes and trending audio clips..."
                                                 className="text-xs resize-none"
                                             />
                                         </div>
@@ -923,7 +923,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {ttCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {ttCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {ttCompleted && (
                                                 <Button 
@@ -948,7 +948,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Twitter className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة إكس / تويتر (محتوى وتغريدة)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">X / Twitter Platform (content and tweet)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -968,13 +968,13 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="md:col-span-2 space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="xUrl" className="text-xs text-slate-600 font-semibold">رابط تصميم منصة إكس أو رفعه</Label>
+                                            <Label htmlFor="xUrl" className="text-xs text-slate-600 font-semibold">X design link or upload</Label>
                                             <div className="flex gap-2">
                                                 <Input
                                                     id="xUrl"
                                                     value={xUrl}
                                                     onChange={(e) => setXUrl(e.target.value)}
-                                                    placeholder="رابط درايف للتصميم أو رابط الصورة المرفوعة"
+                                                    placeholder="Drive link for the design, or the uploaded image link"
                                                     className="text-xs h-9 text-left"
                                                     dir="ltr"
                                                     disabled={isReadOnly}
@@ -1009,12 +1009,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="xContent" className="text-xs text-slate-600 font-semibold">نص التغريدة (Tweet Content)</Label>
+                                            <Label htmlFor="xContent" className="text-xs text-slate-600 font-semibold">Tweet Content</Label>
                                             <Textarea
                                                 id="xContent"
                                                 value={xContent}
                                                 onChange={(e) => setXContent(e.target.value)}
-                                                placeholder="أكتب التغريدة هنا (تحذير: لا تتعدى 280 حرفاً للحسابات العادية)..."
+                                                placeholder="Write the tweet here (note: do not exceed 280 characters for standard accounts)..."
                                                 className="text-xs"
                                                 rows={4}
                                                 disabled={isReadOnly}
@@ -1023,14 +1023,14 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="xNotes" className="text-xs text-slate-600">ملاحظات تويتر / إكس</Label>
+                                            <Label htmlFor="xNotes" className="text-xs text-slate-600">X / Twitter notes</Label>
                                             <Textarea
                                                 id="xNotes"
                                                 value={xNotes}
                                                 onChange={(e) => setXNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={4}
-                                                placeholder="ملاحظات النشر والتاغات والحسابات الشريكة..."
+                                                placeholder="Publishing notes, tags, and partner accounts..."
                                                 className="text-xs resize-none"
                                             />
                                         </div>
@@ -1041,7 +1041,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {xCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {xCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {xCompleted && (
                                                 <Button 
@@ -1066,7 +1066,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Ghost className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة سناب شات (تصميم طولي كامل)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">Snapchat Platform (full vertical design)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -1086,13 +1086,13 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="md:col-span-2 space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="snapUrl" className="text-xs text-slate-600 font-semibold">رابط تصميم السناب شات أو رفعه</Label>
+                                            <Label htmlFor="snapUrl" className="text-xs text-slate-600 font-semibold">Snapchat design link or upload</Label>
                                             <div className="flex gap-2">
                                                 <Input
                                                     id="snapUrl"
                                                     value={snapUrl}
                                                     onChange={(e) => setSnapUrl(e.target.value)}
-                                                    placeholder="رابط درايف للتصميم أو رابط الصورة المرفوعة"
+                                                    placeholder="Drive link for the design, or the uploaded image link"
                                                     className="text-xs h-9 text-left"
                                                     dir="ltr"
                                                     disabled={isReadOnly}
@@ -1127,12 +1127,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="snapContent" className="text-xs text-slate-600 font-semibold">نص الفلتر أو عبارة السحب لأعلى (Swipe-Up text)</Label>
+                                            <Label htmlFor="snapContent" className="text-xs text-slate-600 font-semibold">Filter text or Swipe-Up copy</Label>
                                             <Textarea
                                                 id="snapContent"
                                                 value={snapContent}
                                                 onChange={(e) => setSnapContent(e.target.value)}
-                                                placeholder="أكتب عبارة السحب لأعلى، أو عنوان الفلتر الإعلاني..."
+                                                placeholder="Write the swipe-up copy, or the ad filter title..."
                                                 className="text-xs"
                                                 rows={4}
                                                 disabled={isReadOnly}
@@ -1141,14 +1141,14 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="snapNotes" className="text-xs text-slate-600">ملاحظات سناب شات</Label>
+                                            <Label htmlFor="snapNotes" className="text-xs text-slate-600">Snapchat notes</Label>
                                             <Textarea
                                                 id="snapNotes"
                                                 value={snapNotes}
                                                 onChange={(e) => setSnapNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={4}
-                                                placeholder="هاشتاغ سناب، الجيوفلتر الجغرافي المستهدف..."
+                                                placeholder="Snap hashtag, targeted geofilter..."
                                                 className="text-xs resize-none"
                                             />
                                         </div>
@@ -1159,7 +1159,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {snapCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {snapCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {snapCompleted && (
                                                 <Button 
@@ -1184,7 +1184,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Linkedin className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة لينكد إن (نشر احترافي ومستندات)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">LinkedIn Platform (professional posts and documents)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -1204,13 +1204,13 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="md:col-span-2 space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="liUrl" className="text-xs text-slate-600 font-semibold">رابط تصميم لينكد إن أو رفعه</Label>
+                                            <Label htmlFor="liUrl" className="text-xs text-slate-600 font-semibold">LinkedIn design link or upload</Label>
                                             <div className="flex gap-2">
                                                 <Input
                                                     id="liUrl"
                                                     value={liUrl}
                                                     onChange={(e) => setLiUrl(e.target.value)}
-                                                    placeholder="رابط درايف للتصميم أو رابط الصورة المرفوعة"
+                                                    placeholder="Drive link for the design, or the uploaded image link"
                                                     className="text-xs h-9 text-left"
                                                     dir="ltr"
                                                     disabled={isReadOnly}
@@ -1245,12 +1245,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="liContent" className="text-xs text-slate-600 font-semibold">المحتوى النصي المهني للبوست</Label>
+                                            <Label htmlFor="liContent" className="text-xs text-slate-600 font-semibold">Professional post copy</Label>
                                             <Textarea
                                                 id="liContent"
                                                 value={liContent}
                                                 onChange={(e) => setLiContent(e.target.value)}
-                                                placeholder="أكتب المقال أو النص المهني التفصيلي هنا..."
+                                                placeholder="Write the article or detailed professional copy here..."
                                                 className="text-xs"
                                                 rows={4}
                                                 disabled={isReadOnly}
@@ -1259,14 +1259,14 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="liNotes" className="text-xs text-slate-600">ملاحظات لينكد إن</Label>
+                                            <Label htmlFor="liNotes" className="text-xs text-slate-600">LinkedIn notes</Label>
                                             <Textarea
                                                 id="liNotes"
                                                 value={liNotes}
                                                 onChange={(e) => setLiNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={4}
-                                                placeholder="شخصيات مستهدفة، تاغات، شركات راعية للفعالية..."
+                                                placeholder="Target personas, tags, event sponsor companies..."
                                                 className="text-xs resize-none"
                                             />
                                         </div>
@@ -1277,7 +1277,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {liCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {liCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {liCompleted && (
                                                 <Button 
@@ -1302,7 +1302,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Youtube className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة يوتيوب (صورة مصغرة وفيديو)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">YouTube Platform (thumbnail and video)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -1323,24 +1323,24 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     <div className="md:col-span-2 space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <Label htmlFor="ytTitle" className="text-xs text-slate-600 font-semibold">عنوان مقطع الفيديو الإعلاني</Label>
+                                                <Label htmlFor="ytTitle" className="text-xs text-slate-600 font-semibold">Ad video title</Label>
                                                 <Input
                                                     id="ytTitle"
                                                     value={ytTitle}
                                                     onChange={(e) => setYtTitle(e.target.value)}
-                                                    placeholder="العنوان الجذاب لليوتيوب"
+                                                    placeholder="Compelling title for YouTube"
                                                     className="text-xs h-9"
                                                     disabled={isReadOnly}
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <Label htmlFor="ytUrl" className="text-xs text-slate-600 font-semibold">رابط الفيديو أو الصورة المصغرة</Label>
+                                                <Label htmlFor="ytUrl" className="text-xs text-slate-600 font-semibold">Video link or thumbnail</Label>
                                                 <div className="flex gap-2">
                                                     <Input
                                                         id="ytUrl"
                                                         value={ytUrl}
                                                         onChange={(e) => setYtUrl(e.target.value)}
-                                                        placeholder="رابط درايف للتصميم أو رابط الصورة المصغرة"
+                                                        placeholder="Drive link for the design, or the thumbnail image link"
                                                         className="text-xs h-9 text-left"
                                                         dir="ltr"
                                                         disabled={isReadOnly}
@@ -1377,26 +1377,26 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <Label htmlFor="ytContent" className="text-xs text-slate-600 font-semibold">وصف الفيديو التفصيلي (Description)</Label>
+                                            <Label htmlFor="ytContent" className="text-xs text-slate-600 font-semibold">Detailed video description</Label>
                                             <Textarea
                                                 id="ytContent"
                                                 value={ytContent}
                                                 onChange={(e) => setYtContent(e.target.value)}
-                                                placeholder="أكتب وصف الفيديو بالتفصيل مع وضع روابط التسجيل وحجوزات الفعالية..."
+                                                placeholder="Write the detailed video description, including registration links and event booking info..."
                                                 className="text-xs"
                                                 rows={4}
                                                 disabled={isReadOnly}
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <Label htmlFor="ytNotes" className="text-xs text-slate-600">الكلمات المفتاحية والملاحظات</Label>
+                                            <Label htmlFor="ytNotes" className="text-xs text-slate-600">Keywords and notes</Label>
                                             <Textarea
                                                 id="ytNotes"
                                                 value={ytNotes}
                                                 onChange={(e) => setYtNotes(e.target.value)}
                                                 disabled={isReadOnly}
                                                 rows={2}
-                                                placeholder="الكلمات الدلالية (Tags)..."
+                                                placeholder="Tags..."
                                                 className="text-xs resize-none"
                                             />
                                         </div>
@@ -1407,7 +1407,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {ytCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {ytCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {ytCompleted && (
                                                 <Button 
@@ -1432,7 +1432,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                                     <div className="flex items-center gap-1.5">
                                         <MessageSquare className="w-4 h-4 text-indigo-650" />
-                                        <h3 className="font-bold text-slate-800 text-sm">منصة واتساب (بروشور PDF وقوالب الردود السريعة)</h3>
+                                        <h3 className="font-bold text-slate-800 text-sm">WhatsApp Platform (PDF brochure and quick reply templates)</h3>
                                     </div>
                                     <button
                                         type="button"
@@ -1454,17 +1454,17 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                         
                                         {/* WhatsApp PDF Brochure */}
                                         <div className="space-y-1">
-                                            <Label className="text-xs text-slate-600 font-semibold block mb-1">ملف عرض الفعالية أو البروشور (PDF)</Label>
+                                            <Label className="text-xs text-slate-600 font-semibold block mb-1">Event brochure or presentation file (PDF)</Label>
                                             
                                             {waPdfUrl ? (
                                                 <div className="flex items-center justify-between p-3 rounded-xl border border-indigo-100 bg-indigo-50/30 text-xs">
                                                     <div className="flex items-center gap-2 text-indigo-700 font-semibold">
                                                         <FileText className="w-5 h-5" />
-                                                        <span>تم رفع ملف البروشور بنجاح ✓</span>
+                                                        <span>Brochure file uploaded successfully ✓</span>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <a href={waPdfUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] bg-white border border-slate-200 px-2.5 py-1.5 rounded-lg font-bold text-slate-700 hover:bg-slate-50 shadow-sm">
-                                                            تحميل وعرض الـ PDF
+                                                            Download &amp; view PDF
                                                         </a>
                                                         {!isReadOnly && (
                                                             <button 
@@ -1498,8 +1498,8 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                         ) : (
                                                             <>
                                                                 <File className="w-6 h-6 text-slate-400" />
-                                                                <span>اضغط هنا لرفع بروشور الفعالية (PDF)</span>
-                                                                <span className="text-[9px] text-slate-400 font-normal">PDF حتى 10 ميجابايت</span>
+                                                                <span>Click here to upload the event brochure (PDF)</span>
+                                                                <span className="text-[9px] text-slate-400 font-normal">PDF up to 10MB</span>
                                                             </>
                                                         )}
                                                     </Button>
@@ -1509,12 +1509,12 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
 
                                         {/* Reply Templates */}
                                         <div className="space-y-1">
-                                            <Label htmlFor="waReplies" className="text-xs text-slate-600 font-semibold">قوالب ونصوص الردود السريعة لخدمة العملاء</Label>
+                                            <Label htmlFor="waReplies" className="text-xs text-slate-600 font-semibold">Quick reply templates for customer service</Label>
                                             <Textarea
                                                 id="waReplies"
                                                 value={waReplies}
                                                 onChange={(e) => setWaReplies(e.target.value)}
-                                                placeholder="أكتب قوالب الردود على الاستفسارات الشائعة هنا ليقوم الموظف بنسخها (الأسعار، المواعيد، الفندق، إلخ)..."
+                                                placeholder="Write reply templates for common questions here for staff to copy (pricing, dates, hotel, etc.)..."
                                                 className="text-xs"
                                                 rows={5}
                                                 disabled={isReadOnly}
@@ -1524,7 +1524,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
 
                                     <div className="space-y-4 justify-end flex flex-col">
                                         <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-[10px] text-slate-500 leading-relaxed">
-                                            <b>ملاحظة:</b> ملف البروشور وقوالب الردود تسهل عمل ممثلي الردود (الخطوة 3) وتوفر لهم كافة تفاصيل الفعالية للرد الفوري على رسائل الواتساب.
+                                            <b>Note:</b> The brochure file and reply templates make it easier for the response team (Step 3) by giving them all the event details needed to reply instantly to WhatsApp messages.
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Button
@@ -1533,7 +1533,7 @@ export function StepDesign({ event, onUpdate, isReadOnly }: StepDesignProps) {
                                                 disabled={isSaving}
                                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                                             >
-                                                {waCompleted ? 'تحديث وتأكيد (تم ✓)' : 'اعتماد وحفظ كـ مكتمل ✓'}
+                                                {waCompleted ? 'Update & Confirm (Done ✓)' : 'Approve & Save as Complete ✓'}
                                             </Button>
                                             {waCompleted && (
                                                 <Button 

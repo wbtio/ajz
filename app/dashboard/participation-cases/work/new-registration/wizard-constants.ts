@@ -18,38 +18,67 @@ export const PLACE_OF_BIRTH_CITIES: Record<string, string[]> = {
   GB: ['London', 'Birmingham', 'Manchester', 'Glasgow', 'Liverpool', 'Leeds'],
 }
 
+/**
+ * Shared option lists. These used to live inside wizard-controller.tsx and were
+ * forwarded to every step through the untyped view bag; step files now import
+ * them directly.
+ */
+export const IRAQI_GOVERNORATES = ['Baghdad', 'Basra', 'Nineveh', 'Anbar', 'Najaf', 'Karbala', 'Babil', 'Wasit', 'Qadisiyah', 'Muthanna', 'Dhi Qar', 'Maysan', 'Kirkuk', 'Salah Al-Din', 'Diyala', 'Erbil', 'Duhok', 'Sulaymaniyah']
+
+export const SCHENGEN_COUNTRIES = ['Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Italy', 'Latvia', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland']
+
+export const VISA_TYPE_OPTIONS = [
+  { value: 'C', label: 'C' },
+  { value: 'T', label: 'T' },
+]
+
+export const VISA_SUBMISSION_METHODS = [
+  'TLScontact',
+  'VFS Global',
+  'VFS Global - Baghdad',
+  'VFS Global - Erbil',
+  'VFS Global - Basra',
+  'TLScontact - Baghdad',
+  'BLS International',
+  'iDATA',
+  'Embassy Direct',
+  'Consulate Direct',
+  'Online Portal',
+  'Other',
+]
+
 export const VISA_ROUTES: VisaRoute[] = [
-  { country: 'Austria', label: 'Austria · النمسا', embassy: 'Embassy of Austria in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Belgium', label: 'Belgium · بلجيكا', embassy: 'Embassy of Belgium in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Bulgaria', label: 'Bulgaria · بلغاريا', embassy: 'Embassy of Bulgaria in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Croatia', label: 'Croatia · كرواتيا', embassy: 'Embassy of Croatia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Czech Republic', label: 'Czech Republic · التشيك', embassy: 'Embassy of the Czech Republic in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Denmark', label: 'Denmark · الدنمارك', embassy: 'Embassy of Denmark in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Estonia', label: 'Estonia · إستونيا', embassy: 'Embassy of Estonia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Finland', label: 'Finland · فنلندا', embassy: 'Embassy of Finland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'France', label: 'France · فرنسا', embassy: 'Embassy of France in Iraq', portal: 'France-Visas', submissionMethod: 'TLScontact', center: 'TLScontact Baghdad', city: 'Baghdad' },
-  { country: 'Germany', label: 'Germany · ألمانيا', embassy: 'Embassy of Germany in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Greece', label: 'Greece · اليونان', embassy: 'Embassy of Greece in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Hungary', label: 'Hungary · المجر', embassy: 'Embassy of Hungary in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Iceland', label: 'Iceland · آيسلندا', embassy: 'Embassy of Iceland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Italy', label: 'Italy · إيطاليا', embassy: 'Embassy of Italy in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
-  { country: 'Latvia', label: 'Latvia · لاتفيا', embassy: 'Embassy of Latvia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Liechtenstein', label: 'Liechtenstein · ليختنشتاين', embassy: 'Embassy of Liechtenstein in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Lithuania', label: 'Lithuania · ليتوانيا', embassy: 'Embassy of Lithuania in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Luxembourg', label: 'Luxembourg · لوكسمبورغ', embassy: 'Embassy of Luxembourg in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Malta', label: 'Malta · مالطا', embassy: 'Embassy of Malta in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Netherlands', label: 'Netherlands · هولندا', embassy: 'Embassy of the Netherlands in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Norway', label: 'Norway · النرويج', embassy: 'Embassy of Norway in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Poland', label: 'Poland · بولندا', embassy: 'Embassy of Poland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Portugal', label: 'Portugal · البرتغال', embassy: 'Embassy of Portugal in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Romania', label: 'Romania · رومانيا', embassy: 'Embassy of Romania in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Spain', label: 'Spain · إسبانيا', embassy: 'Embassy of Spain in Iraq', portal: 'Official visa portal', submissionMethod: 'BLS International', center: 'Verify BLS center', city: 'Baghdad' },
-  { country: 'Slovakia', label: 'Slovakia · سلوفاكيا', embassy: 'Embassy of Slovakia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Slovenia', label: 'Slovenia · سلوفينيا', embassy: 'Embassy of Slovenia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Sweden', label: 'Sweden · السويد', embassy: 'Embassy of Sweden in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'Switzerland', label: 'Switzerland · سويسرا', embassy: 'Embassy of Switzerland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
-  { country: 'United Kingdom', label: 'United Kingdom · بريطانيا', embassy: 'UK Visa Application Centre in Iraq', portal: 'UK Visas and Immigration', submissionMethod: 'VFS Global', center: 'Verify UK visa center', city: 'Baghdad' },
-  { country: 'United States', label: 'United States · أمريكا', embassy: 'Embassy of the United States in Iraq', portal: 'U.S. Department of State', submissionMethod: 'Embassy Direct', center: 'US Embassy Baghdad', city: 'Baghdad' },
+  { country: 'Austria', label: 'Austria', embassy: 'Embassy of Austria in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Belgium', label: 'Belgium', embassy: 'Embassy of Belgium in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Bulgaria', label: 'Bulgaria', embassy: 'Embassy of Bulgaria in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Croatia', label: 'Croatia', embassy: 'Embassy of Croatia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Czech Republic', label: 'Czech Republic', embassy: 'Embassy of the Czech Republic in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Denmark', label: 'Denmark', embassy: 'Embassy of Denmark in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Estonia', label: 'Estonia', embassy: 'Embassy of Estonia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Finland', label: 'Finland', embassy: 'Embassy of Finland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'France', label: 'France', embassy: 'Embassy of France in Iraq', portal: 'France-Visas', submissionMethod: 'TLScontact', center: 'TLScontact Baghdad', city: 'Baghdad' },
+  { country: 'Germany', label: 'Germany', embassy: 'Embassy of Germany in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Greece', label: 'Greece', embassy: 'Embassy of Greece in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Hungary', label: 'Hungary', embassy: 'Embassy of Hungary in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Iceland', label: 'Iceland', embassy: 'Embassy of Iceland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Italy', label: 'Italy', embassy: 'Embassy of Italy in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'Verify visa center', city: 'Baghdad' },
+  { country: 'Latvia', label: 'Latvia', embassy: 'Embassy of Latvia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Liechtenstein', label: 'Liechtenstein', embassy: 'Embassy of Liechtenstein in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Lithuania', label: 'Lithuania', embassy: 'Embassy of Lithuania in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Luxembourg', label: 'Luxembourg', embassy: 'Embassy of Luxembourg in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Malta', label: 'Malta', embassy: 'Embassy of Malta in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Netherlands', label: 'Netherlands', embassy: 'Embassy of the Netherlands in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Norway', label: 'Norway', embassy: 'Embassy of Norway in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Poland', label: 'Poland', embassy: 'Embassy of Poland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Portugal', label: 'Portugal', embassy: 'Embassy of Portugal in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Romania', label: 'Romania', embassy: 'Embassy of Romania in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Spain', label: 'Spain', embassy: 'Embassy of Spain in Iraq', portal: 'Official visa portal', submissionMethod: 'BLS International', center: 'Verify BLS center', city: 'Baghdad' },
+  { country: 'Slovakia', label: 'Slovakia', embassy: 'Embassy of Slovakia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Slovenia', label: 'Slovenia', embassy: 'Embassy of Slovenia in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Sweden', label: 'Sweden', embassy: 'Embassy of Sweden in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'Switzerland', label: 'Switzerland', embassy: 'Embassy of Switzerland in Iraq', portal: 'Official visa portal', submissionMethod: 'VFS Global', center: 'VFS Global', city: 'Baghdad' },
+  { country: 'United Kingdom', label: 'United Kingdom', embassy: 'UK Visa Application Centre in Iraq', portal: 'UK Visas and Immigration', submissionMethod: 'VFS Global', center: 'Verify UK visa center', city: 'Baghdad' },
+  { country: 'United States', label: 'United States', embassy: 'Embassy of the United States in Iraq', portal: 'U.S. Department of State', submissionMethod: 'Embassy Direct', center: 'US Embassy Baghdad', city: 'Baghdad' },
 ]
 
 export const VISA_DOCUMENTS: VisaDocumentDefinition[] = [

@@ -34,8 +34,8 @@ export default async function QcStation() {
         <StationList
             cases={cases ?? []}
             station="qc"
-            title="التدقيق والجودة"
-            desc="فحص الاكتمال، مطابقة البيانات، والتدقيق النهائي قبل الإغلاق"
+            title="Quality Control"
+            desc="Completeness check, data matching, and final review before closure"
         />
     )
 }

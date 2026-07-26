@@ -169,7 +169,11 @@ export function Footer() {
                 <p className="font-semibold text-white/90">{isAr ? 'مكتب ألمانيا' : 'Germany Office'}</p>
               </div>
               <div className="pt-1.5 space-y-0.5 border-t border-[#6f85a3]/10">
-                <a href="tel:+9647719000600" className="block text-white/90 hover:text-[#f7e382] transition-colors font-medium" dir="ltr">
+                <a
+                  href="tel:+9647719000600"
+                  className={`block text-white/90 hover:text-[#f7e382] transition-colors font-medium ${isAr ? 'text-right' : 'text-left'}`}
+                  dir="ltr"
+                >
                   +964 771 900 0600
                 </a>
                 <a href="mailto:info@jaz.iq" className="block hover:text-[#f7e382] transition-colors font-medium">
@@ -236,7 +240,7 @@ export function Footer() {
               </h3>
               <div className="text-xs text-[#6f85a3]">
                 <p>{isAr ? 'السبت – الخميس' : 'Saturday – Thursday'}</p>
-                <p className="font-semibold text-white/90" dir={isAr ? 'ltr' : undefined}>
+                <p className="font-semibold text-white/90">
                   {isAr ? '8:30 ص – 4:30 م' : '8:30 AM – 4:30 PM'}
                 </p>
               </div>
@@ -248,8 +252,8 @@ export function Footer() {
         <div className="mt-8 pt-4 border-t border-[#6f85a3]/10 flex flex-col md:flex-row justify-between items-center gap-3.5 text-xs text-[#6f85a3]/70 text-center md:text-start">
           <p>
             {locale === 'ar'
-              ? '© 2026 الجاز. جميع الحقوق محفوظة.'
-              : '© 2026 Joint Annual Zone (JAZ). All rights reserved.'}
+              ? '© 2026 جاز. جميع الحقوق محفوظة.'
+              : '© 2026 JAZ (Joint Annual Zone to Your Place). All rights reserved.'}
           </p>
           <div className="flex items-center gap-4">
             <Link className="hover:text-[#f7e382] transition-colors" href="/privacy">

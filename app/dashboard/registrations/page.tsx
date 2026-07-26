@@ -3,7 +3,7 @@ import { UnifiedRegistrationsView } from './components/unified-registrations-vie
 import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
-    title: 'تسجيلات الفعاليات | JAZ Admin',
+    title: 'Event Registrations | JAZ Admin',
 }
 
 export default async function RegistrationsPage() {
@@ -21,11 +21,11 @@ export default async function RegistrationsPage() {
         .order('created_at', { ascending: false })
 
     return (
-        <div className="space-y-6" dir="rtl">
+        <div className="space-y-6" dir="ltr">
             <div>
-                <h1 className="text-2xl font-bold text-slate-900">تسجيلات الفعاليات</h1>
+                <h1 className="text-2xl font-bold text-slate-900">Event Registrations</h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                    جميع التسجيلات الواردة من تطبيق الجوال والموقع الإلكتروني
+                    All registrations received from the mobile app and the website
                 </p>
             </div>
             <UnifiedRegistrationsView

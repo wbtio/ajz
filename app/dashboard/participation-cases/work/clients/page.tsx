@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { canAccessPath } from '@/lib/permissions'
@@ -10,9 +11,11 @@ export default async function ClientsProgressPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/auth/login')
 
+    // full_name / email are needed so the wizard can show who is handling the
+    // payment instead of falling back to a hardcoded staff name.
     const { data: profile } = await supabase
         .from('users')
-        .select('id, role, permissions')
+        .select('id, full_name, email, role, permissions')
         .eq('id', user.id)
         .single()
 
@@ -53,10 +56,14 @@ export default async function ClientsProgressPage() {
     ])
 
     return (
-        <ProgressDashboardClient
-            events={events || []}
-            employees={employees || []}
-            currentUser={profile}
-        />
+        // The list reads its deep-link parameters with useSearchParams, which
+        // requires a Suspense boundary in the app router.
+        <Suspense fallback={null}>
+            <ProgressDashboardClient
+                events={events || []}
+                employees={employees || []}
+                currentUser={profile}
+            />
+        </Suspense>
     )
 }

@@ -19,7 +19,7 @@ export async function uploadRegistrationDocumentDirect(
     )
 
     if (prepared.error || !prepared.bucket || !prepared.path || !prepared.token) {
-        return { error: prepared.error || 'تعذر تجهيز رفع الملف' }
+        return { error: prepared.error || 'Failed to prepare file upload' }
     }
 
     const supabase = createClient()
@@ -32,7 +32,7 @@ export async function uploadRegistrationDocumentDirect(
 
     if (uploadError) {
         console.error('uploadRegistrationDocumentDirect storage upload failed:', uploadError)
-        return { error: uploadError.message || 'فشل رفع الملف إلى التخزين' }
+        return { error: uploadError.message || 'Failed to upload file to storage' }
     }
 
     const finalized = await finalizeRegistrationDocumentUpload(

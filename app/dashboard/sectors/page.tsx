@@ -24,10 +24,10 @@ const iconMap: Record<string, any> = {
 }
 
 const ICONS = [
-    { value: 'Building2', label: 'بناء', icon: Building2 },
-    { value: 'Heart', label: 'صحة', icon: Heart },
-    { value: 'Cpu', label: 'تقنية', icon: Cpu },
-    { value: 'GraduationCap', label: 'تعليم', icon: GraduationCap },
+    { value: 'Building2', label: 'Construction', icon: Building2 },
+    { value: 'Heart', label: 'Health', icon: Heart },
+    { value: 'Cpu', label: 'Technology', icon: Cpu },
+    { value: 'GraduationCap', label: 'Education', icon: GraduationCap },
 ]
 
 interface SectorRegistration {
@@ -115,7 +115,7 @@ export default function SectorsPage() {
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm('هل أنت متأكد من الحذف؟')) return
+        if (!confirm('Are you sure you want to delete this?')) return
         try {
             const result = await deleteSector(id)
             if (result.success) {
@@ -123,7 +123,7 @@ export default function SectorsPage() {
             }
         } catch (e) {
             console.error(e)
-            alert('حدث خطأ أثناء الحذف')
+            alert('An error occurred while deleting')
         }
     }
 
@@ -133,7 +133,7 @@ export default function SectorsPage() {
 
         // Basic validation
         if (!formData.name || !formData.name_ar || !formData.slug) {
-            alert('الرجاء تعبئة الحقول المطلوبة (الاسم، الاسم بالعربية، الرابط)')
+            alert('Please fill in the required fields (Name, Arabic Name, Slug)')
             setSubmitting(false)
             return
         }
@@ -150,7 +150,7 @@ export default function SectorsPage() {
             setIsFormOpen(false)
             fetchSectors()
         } catch (e) {
-            alert('حدث خطأ أثناء الحفظ')
+            alert('An error occurred while saving')
             console.error(e)
         } finally {
             setSubmitting(false)
@@ -161,11 +161,11 @@ export default function SectorsPage() {
         <div className="relative">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">إدارة القطاعات</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Sectors Management</h1>
                 {activeTab === 'sectors' && (
                     <Button onClick={handleCreate}>
                         <Plus className="w-4 h-4 ml-2" />
-                        إضافة قطاع
+                        Add Sector
                     </Button>
                 )}
             </div>
@@ -180,7 +180,7 @@ export default function SectorsPage() {
                             : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'
                     }`}
                 >
-                    القطاعات
+                    Sectors
                 </button>
                 <button
                     onClick={() => setActiveTab('registrations')}
@@ -190,7 +190,7 @@ export default function SectorsPage() {
                             : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'
                     }`}
                 >
-                    طلبات الشراكة
+                    Partnership Requests
                 </button>
             </div>
 
@@ -203,18 +203,18 @@ export default function SectorsPage() {
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b">
                                     <tr>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">الأيقونة</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">الاسم</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">الوصف</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">الحالة</th>
-                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">الإجراءات</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Icon</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Name</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Description</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {loading ? (
-                                        <tr><td colSpan={5} className="p-8 text-center">جار التحميل...</td></tr>
+                                        <tr><td colSpan={5} className="p-8 text-center">Loading...</td></tr>
                                     ) : sectors.length === 0 ? (
-                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">لا توجد بيانات</td></tr>
+                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">No data available</td></tr>
                                     ) : (
                                         sectors.map((sector) => {
                                             const Icon = iconMap[sector.icon || 'Building2'] || Building2
@@ -236,7 +236,7 @@ export default function SectorsPage() {
                                                     <td className="py-3 px-4">
                                                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${sector.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                                                             }`}>
-                                                            {sector.is_active ? 'نشط' : 'غير نشط'}
+                                                            {sector.is_active ? 'Active' : 'Inactive'}
                                                         </span>
                                                     </td>
                                                     <td className="py-3 px-4">
@@ -264,23 +264,23 @@ export default function SectorsPage() {
                     <CardHeader className="border-b bg-gray-50/50">
                         <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                             <FileText className="w-5 h-5 text-gray-400" />
-                            جميع الطلبات الواردة
+                            All Incoming Requests
                         </h2>
                     </CardHeader>
                     <CardContent className="p-0">
                         {loading ? (
-                            <div className="p-8 text-center">جار التحميل...</div>
+                            <div className="p-8 text-center">Loading...</div>
                         ) : registrations && registrations.length > 0 ? (
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead>
                                         <tr className="border-b border-gray-200 bg-gray-50/30">
-                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">القطاع</th>
-                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">مقدم الطلب</th>
-                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">البيانات المقدمة</th>
-                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">الحالة</th>
-                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">التاريخ</th>
-                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">الإجراءات</th>
+                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">Sector</th>
+                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">Applicant</th>
+                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">Submitted Data</th>
+                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">Status</th>
+                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">Date</th>
+                                            <th className="text-right py-4 px-6 text-sm font-semibold text-gray-600">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -288,13 +288,13 @@ export default function SectorsPage() {
                                             <tr key={reg.id} className="hover:bg-gray-50/50 transition-colors">
                                                 <td className="py-4 px-6">
                                                     <div className="font-bold text-gray-900">
-                                                        {reg.sectors?.name_ar || reg.sectors?.name || 'قطاع محذوف'}
+                                                        {reg.sectors?.name_ar || reg.sectors?.name || 'Deleted Sector'}
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-gray-900">
-                                                            {reg.full_name || reg.users?.full_name || 'زائر'}
+                                                            {reg.full_name || reg.users?.full_name || 'Guest'}
                                                         </span>
                                                         <span className="text-sm text-gray-500">
                                                             {reg.email || reg.users?.email || '-'}
@@ -329,7 +329,7 @@ export default function SectorsPage() {
                                                                 })}
                                                                 {Object.keys(data).length > 3 && (
                                                                     <span className="text-xs text-blue-600 font-medium cursor-pointer" onClick={() => setSelectedRegistration(reg)}>
-                                                                        ... والمزيد
+                                                                        ... and more
                                                                     </span>
                                                                 )}
                                                             </div>
@@ -351,8 +351,8 @@ export default function SectorsPage() {
                                                         ) : (
                                                             <Clock className="w-3.5 h-3.5" />
                                                         )}
-                                                        {reg.status === 'confirmed' || reg.status === 'approved' ? 'تم القبول' :
-                                                         reg.status === 'rejected' ? 'مرفوض' : 'قيد المراجعة'}
+                                                        {reg.status === 'confirmed' || reg.status === 'approved' ? 'Approved' :
+                                                         reg.status === 'rejected' ? 'Rejected' : 'Under Review'}
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6 text-sm text-gray-500 font-medium">
@@ -378,8 +378,8 @@ export default function SectorsPage() {
                                 <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                                     <FileText className="w-8 h-8 text-gray-300" />
                                 </div>
-                                <p className="text-gray-900 font-medium mb-1">لا توجد طلبات شراكة حتى الآن</p>
-                                <p className="text-gray-500 text-sm">ستظهر الطلبات هنا بمجرد تقديمها من قبل الشركاء المحتملين</p>
+                                <p className="text-gray-900 font-medium mb-1">No partnership requests yet</p>
+                                <p className="text-gray-500 text-sm">Requests will appear here once submitted by potential partners</p>
                             </div>
                         )}
                     </CardContent>
@@ -391,7 +391,7 @@ export default function SectorsPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
                     <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <CardHeader className="flex flex-row items-center justify-between border-b p-4">
-                            <h2 className="text-lg font-bold">{editingId ? 'تعديل قطاع' : 'إضافة قطاع'}</h2>
+                            <h2 className="text-lg font-bold">{editingId ? 'Edit Sector' : 'Add Sector'}</h2>
                             <button onClick={() => setIsFormOpen(false)} className="text-gray-500 hover:text-gray-700">
                                 <X className="w-5 h-5" />
                             </button>
@@ -400,7 +400,7 @@ export default function SectorsPage() {
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>الاسم (بالعربية)</Label>
+                                        <Label>Name (Arabic)</Label>
                                         <Input
                                             value={formData.name_ar}
                                             onChange={e => setFormData({ ...formData, name_ar: e.target.value })}
@@ -408,7 +408,7 @@ export default function SectorsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>الاسم (باللغة الإنجليزية)</Label>
+                                        <Label>Name (English)</Label>
                                         <Input
                                             value={formData.name}
                                             onChange={e => {
@@ -423,7 +423,7 @@ export default function SectorsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>الرابط (Slug)</Label>
+                                        <Label>URL (Slug)</Label>
                                         <Input
                                             value={formData.slug}
                                             onChange={e => setFormData({ ...formData, slug: e.target.value })}
@@ -431,7 +431,7 @@ export default function SectorsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>الترتيب</Label>
+                                        <Label>Sort Order</Label>
                                         <Input
                                             type="number"
                                             value={formData.sort_order || 0}
@@ -439,9 +439,9 @@ export default function SectorsPage() {
                                         />
                                     </div>
 
-                                    {/* الوصف القصير */}
+                                    {/* Short Description */}
                                     <div className="col-span-full space-y-2">
-                                        <Label>وصف مختصر (بالعربية)</Label>
+                                        <Label>Short Description (Arabic)</Label>
                                         <Textarea
                                             value={formData.description_ar || ''}
                                             onChange={e => setFormData({ ...formData, description_ar: e.target.value })}
@@ -450,7 +450,7 @@ export default function SectorsPage() {
                                         />
                                     </div>
                                     <div className="col-span-full space-y-2">
-                                        <Label>وصف مختصر (باللغة الإنجليزية)</Label>
+                                        <Label>Short Description (English)</Label>
                                         <Textarea
                                             value={formData.description || ''}
                                             onChange={e => setFormData({ ...formData, description: e.target.value })}
@@ -459,31 +459,31 @@ export default function SectorsPage() {
                                         />
                                     </div>
 
-                                    {/* الوصف الطويل - جديد */}
+                                    {/* Long Description - New */}
                                     <div className="col-span-full space-y-2 bg-gray-50 p-4 rounded-lg border">
-                                        <h3 className="font-semibold text-gray-700 mb-2">تفاصيل كاملة حول القطاع</h3>
+                                        <h3 className="font-semibold text-gray-700 mb-2">Full Details About the Sector</h3>
                                         <div className="text-xs text-gray-500 mb-4 bg-blue-50 p-3 rounded border border-blue-100">
-                                            <p className="font-semibold mb-1 text-blue-800">يمكنك استخدام تنسيق Markdown لكتابة المحتوى:</p>
+                                            <p className="font-semibold mb-1 text-blue-800">You can use Markdown formatting to write the content:</p>
                                             <ul className="list-disc list-inside space-y-0.5 text-blue-700">
-                                                <li>استخدم <code># عنوان</code> للعناوين الرئيسية</li>
-                                                <li>استخدم <code>## عنوان فرعي</code> للعناوين الفرعية</li>
-                                                <li>استخدم <code>**نص عريض**</code> لجعل النص غامقاً</li>
-                                                <li>استخدم <code>- عنصر</code> للقوائم النقطية</li>
+                                                <li>Use <code># Heading</code> for main headings</li>
+                                                <li>Use <code>## Subheading</code> for subheadings</li>
+                                                <li>Use <code>**bold text**</code> to make text bold</li>
+                                                <li>Use <code>- item</code> for bullet lists</li>
                                             </ul>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>وصف تفصيلي (بالعربية)</Label>
+                                                <Label>Detailed Description (Arabic)</Label>
                                                 <Textarea
                                                     value={formData.long_description_ar || ''}
                                                     onChange={e => setFormData({ ...formData, long_description_ar: e.target.value })}
                                                     dir="rtl"
                                                     className="h-64 font-mono text-sm"
-                                                    placeholder="# نبذة عن القطاع&#10;&#10;اكتب هنا التفاصيل الكاملة...&#10;&#10;## أهدافنا&#10;- الهدف الأول&#10;- الهدف الثاني"
+                                                    placeholder="# Sector Overview&#10;&#10;Write the full details here...&#10;&#10;## Our Goals&#10;- First goal&#10;- Second goal"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>وصف تفصيلي (باللغة الإنجليزية)</Label>
+                                                <Label>Detailed Description (English)</Label>
                                                 <Textarea
                                                     value={formData.long_description || ''}
                                                     onChange={e => setFormData({ ...formData, long_description: e.target.value })}
@@ -495,9 +495,9 @@ export default function SectorsPage() {
                                         </div>
                                     </div>
 
-                                    {/* صور - جديد */}
+                                    {/* Images - New */}
                                     <div className="col-span-full space-y-2">
-                                        <Label>صورة الغلاف (Cover Image)</Label>
+                                        <Label>Cover Image</Label>
                                         <div className="flex items-center gap-4">
                                             {formData.cover_image && (
                                                 <div className="relative w-32 h-20 rounded-lg overflow-hidden border">
@@ -519,7 +519,7 @@ export default function SectorsPage() {
                                                         ) : (
                                                             <>
                                                                 <Upload className="w-6 h-6 text-gray-400 mb-1" />
-                                                                <p className="text-xs text-gray-500">انقر لرفع صورة</p>
+                                                                <p className="text-xs text-gray-500">Click to upload an image</p>
                                                             </>
                                                         )}
                                                     </div>
@@ -542,7 +542,7 @@ export default function SectorsPage() {
                                                                     setFormData(prev => ({ ...prev, cover_image: url }))
                                                                 }
                                                             } catch (error) {
-                                                                alert('فشل رفع الصورة')
+                                                                alert('Image upload failed')
                                                                 console.error(error)
                                                             } finally {
                                                                 setUploading(false)
@@ -553,7 +553,7 @@ export default function SectorsPage() {
                                             </div>
                                         </div>
                                         <div className="mt-2">
-                                            <Label className="text-xs text-gray-500">أو أدخل رابط الصورة مباشرة</Label>
+                                            <Label className="text-xs text-gray-500">Or enter the image URL directly</Label>
                                             <Input
                                                 value={formData.cover_image || ''}
                                                 onChange={e => setFormData({ ...formData, cover_image: e.target.value })}
@@ -565,7 +565,7 @@ export default function SectorsPage() {
                                     </div>
 
                                     <div className="col-span-full space-y-2">
-                                        <Label>الأيقونة</Label>
+                                        <Label>Icon</Label>
                                         <div className="flex gap-4">
                                             {ICONS.map(icon => (
                                                 <div
@@ -581,7 +581,7 @@ export default function SectorsPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>اللون</Label>
+                                        <Label>Color</Label>
                                         <div className="flex gap-2">
                                             <Input
                                                 type="color"
@@ -597,7 +597,7 @@ export default function SectorsPage() {
                                         </div>
                                     </div>
 
-                                    {/* الخيارات الإضافية - جديد */}
+                                    {/* Additional Options - New */}
                                     <div className="col-span-full flex gap-6 p-4 bg-gray-50 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <input
@@ -607,7 +607,7 @@ export default function SectorsPage() {
                                                 onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
                                                 className="w-4 h-4"
                                             />
-                                            <Label htmlFor="is_active">نشط (Active)</Label>
+                                            <Label htmlFor="is_active">Active</Label>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <input
@@ -617,14 +617,14 @@ export default function SectorsPage() {
                                                 onChange={e => setFormData({ ...formData, is_featured: e.target.checked })}
                                                 className="w-4 h-4"
                                             />
-                                            <Label htmlFor="is_featured" className="text-orange-600 font-bold">مميز (Featured)</Label>
+                                            <Label htmlFor="is_featured" className="text-orange-600 font-bold">Featured</Label>
                                         </div>
                                     </div>
 
-                                    {/* منشئ نموذج التسجيل */}
+                                    {/* Registration Form Builder */}
                                     <div className="col-span-full space-y-4 pt-6 border-t border-gray-200">
-                                        <h3 className="text-lg font-bold text-gray-900">نموذج التسجيل المخصص</h3>
-                                        <p className="text-sm text-gray-500">قم بتخصيص الحقول التي سيتم طلبها عند التسجيل في هذا القطاع.</p>
+                                        <h3 className="text-lg font-bold text-gray-900">Custom Registration Form</h3>
+                                        <p className="text-sm text-gray-500">Customize the fields that will be requested when registering for this sector.</p>
                                         <RegistrationFormBuilder
                                             fields={(formData.registration_config as FormField[]) || []}
                                             onChange={(fields) => setFormData({ ...formData, registration_config: fields })}
@@ -633,11 +633,11 @@ export default function SectorsPage() {
                                 </div>
                                 <div className="flex justify-end gap-2 pt-4 border-t">
                                     <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>
-                                        إلغاء
+                                        Cancel
                                     </Button>
                                     <Button type="submit" disabled={submitting}>
                                         {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                                        حفظ
+                                        Save
                                     </Button>
                                 </div>
                             </form>
@@ -649,9 +649,9 @@ export default function SectorsPage() {
             <Dialog open={!!selectedRegistration} onOpenChange={(open) => !open && setSelectedRegistration(null)}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>تفاصيل طلب الشراكة</DialogTitle>
+                        <DialogTitle>Partnership Request Details</DialogTitle>
                         <DialogDescription>
-                            مقدم الطلب: {selectedRegistration?.full_name || selectedRegistration?.users?.full_name || 'زائر'}
+                            Applicant: {selectedRegistration?.full_name || selectedRegistration?.users?.full_name || 'Guest'}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -660,33 +660,33 @@ export default function SectorsPage() {
                             {/* Basic Info */}
                             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
                                 <div>
-                                    <Label className="text-xs text-gray-500">البريد الإلكتروني</Label>
+                                    <Label className="text-xs text-gray-500">Email</Label>
                                     <p className="text-sm font-medium">{selectedRegistration.email || selectedRegistration.users?.email || '-'}</p>
                                 </div>
                                 <div>
-                                    <Label className="text-xs text-gray-500">رقم الهاتف</Label>
+                                    <Label className="text-xs text-gray-500">Phone Number</Label>
                                     <p className="text-sm font-medium" dir="ltr">{selectedRegistration.phone || '-'}</p>
                                 </div>
                                 <div>
-                                    <Label className="text-xs text-gray-500">القطاع</Label>
+                                    <Label className="text-xs text-gray-500">Sector</Label>
                                     <p className="text-sm font-medium">{selectedRegistration.sectors?.name_ar}</p>
                                 </div>
                                 <div>
-                                    <Label className="text-xs text-gray-500">تاريخ الطلب</Label>
+                                    <Label className="text-xs text-gray-500">Request Date</Label>
                                     <p className="text-sm font-medium">{formatDate(selectedRegistration.created_at)}</p>
                                 </div>
                             </div>
 
                             {/* Form Data */}
                             <div>
-                                <h3 className="text-lg font-bold mb-4 border-b pb-2">بيانات الاستمارة</h3>
+                                <h3 className="text-lg font-bold mb-4 border-b pb-2">Form Data</h3>
                                 <div className="space-y-4">
                                     {(() => {
                                         const data = selectedRegistration.data || {};
                                         const config = getSectorRegistrationFallback();
-                                        
+
                                         if (Object.keys(data).length === 0) {
-                                            return <p className="text-gray-500 text-center py-4">لا توجد بيانات إضافية</p>;
+                                            return <p className="text-gray-500 text-center py-4">No additional data</p>;
                                         }
 
                                         return Object.entries(data).map(([key, value]) => {
@@ -708,7 +708,7 @@ export default function SectorsPage() {
 
                             <div className="flex justify-end pt-4 border-t">
                                 <Button onClick={() => setSelectedRegistration(null)}>
-                                    إغلاق
+                                    Close
                                 </Button>
                             </div>
                         </div>

@@ -113,18 +113,18 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}))
-                throw new Error(errData.error || 'فشل الرفع')
+                throw new Error(errData.error || 'Upload failed')
             }
 
             const data = await response.json()
-            
+
             setLogisticsForm(prev => ({
                 ...prev,
                 [type === 'passport' ? 'passportUrl' : type === 'national_id' ? 'nationalIdUrl' : 'otherDocUrl']: data.url
             }))
         } catch (err: any) {
             console.error('Error uploading document:', err)
-            setMessage({ type: 'error', text: 'فشل رفع المستند: ' + err.message })
+            setMessage({ type: 'error', text: 'Failed to upload document: ' + err.message })
         } finally {
             if (type === 'passport') setIsUploadingPassport(false)
             if (type === 'national_id') setIsUploadingNationalId(false)
@@ -242,7 +242,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                 )
             )
 
-            setMessage({ type: 'success', text: 'تم حفظ وتحديث البيانات اللوجستية والحجوزات بنجاح!' })
+            setMessage({ type: 'success', text: 'Logistics and booking details saved and updated successfully!' })
             
             // Update selected registration local state
             setSelectedReg({
@@ -256,7 +256,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
 
         } catch (err: any) {
             console.error('Error saving logistics:', err)
-            setMessage({ type: 'error', text: err.message || 'حدث خطأ أثناء حفظ البيانات اللوجستية' })
+            setMessage({ type: 'error', text: err.message || 'An error occurred while saving logistics data' })
         } finally {
             setIsSaving(false)
         }
@@ -293,43 +293,43 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
     const getEmbassyBadge = (status: string) => {
         switch (status) {
             case 'ok':
-                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 font-bold">حالة الطلب اوكي (OK)</Badge>
+                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 font-bold">Status OK</Badge>
             case 'approved':
-                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">تم منح الفيزا</Badge>
+                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Visa Granted</Badge>
             case 'rejected':
-                return <Badge className="bg-rose-100 text-rose-800 border-rose-200">مرفوض</Badge>
+                return <Badge className="bg-rose-100 text-rose-800 border-rose-200">Rejected</Badge>
             case 'appointment_booked':
-                return <Badge className="bg-blue-100 text-blue-800 border-blue-200">موعد TLS مؤكد</Badge>
+                return <Badge className="bg-blue-100 text-blue-800 border-blue-200">TLS Appointment Confirmed</Badge>
             case 'submitted':
-                return <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200">تم تقديم الملف</Badge>
+                return <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200">File Submitted</Badge>
             case 'preparing_files':
-                return <Badge className="bg-amber-100 text-amber-800 border-amber-200">جاري تجهيز الملف</Badge>
+                return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Preparing File</Badge>
             default:
-                return <Badge variant="outline" className="text-slate-500 bg-slate-50">قيد الانتظار</Badge>
+                return <Badge variant="outline" className="text-slate-500 bg-slate-50">Pending</Badge>
         }
     }
 
     const getHotelBadge = (status: string) => {
         switch (status) {
             case 'confirmed':
-                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">مؤكد</Badge>
+                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Confirmed</Badge>
             case 'cancelled':
-                return <Badge className="bg-rose-100 text-rose-800 border-rose-200">ملغي</Badge>
+                return <Badge className="bg-rose-100 text-rose-800 border-rose-200">Cancelled</Badge>
             default:
-                return <Badge variant="outline" className="text-slate-500 bg-slate-50">لم يحجز</Badge>
+                return <Badge variant="outline" className="text-slate-500 bg-slate-50">Not Booked</Badge>
         }
     }
 
     const getFlightBadge = (status: string) => {
         switch (status) {
             case 'confirmed':
-                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">مؤكد</Badge>
+                return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Confirmed</Badge>
             case 'booked_temp':
-                return <Badge className="bg-amber-100 text-amber-800 border-amber-200">حجز مؤقت</Badge>
+                return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Temporary Hold</Badge>
             case 'cancelled':
-                return <Badge className="bg-rose-100 text-rose-800 border-rose-200">ملغي</Badge>
+                return <Badge className="bg-rose-100 text-rose-800 border-rose-200">Cancelled</Badge>
             default:
-                return <Badge variant="outline" className="text-slate-500 bg-slate-50">لم يحجز</Badge>
+                return <Badge variant="outline" className="text-slate-500 bg-slate-50">Not Booked</Badge>
         }
     }
 
@@ -344,7 +344,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <Users className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[11px] font-bold text-slate-400 block uppercase">الحضور الكلي</span>
+                            <span className="text-[11px] font-bold text-slate-400 block uppercase">Total Attendees</span>
                             <span className="text-xl font-black text-slate-900">{totalRegs}</span>
                         </div>
                     </CardContent>
@@ -356,7 +356,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[11px] font-bold text-indigo-400 block uppercase">طلبات الفيزا والسفارة</span>
+                            <span className="text-[11px] font-bold text-indigo-400 block uppercase">Visa & Embassy Requests</span>
                             <span className="text-xl font-black text-indigo-900">{needVisaCount}</span>
                         </div>
                     </CardContent>
@@ -368,7 +368,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <Building className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[11px] font-bold text-emerald-400 block uppercase">الفنادق المؤكدة</span>
+                            <span className="text-[11px] font-bold text-emerald-400 block uppercase">Confirmed Hotels</span>
                             <span className="text-xl font-black text-emerald-900">{hotelBookedCount}</span>
                         </div>
                     </CardContent>
@@ -380,7 +380,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <Plane className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[11px] font-bold text-sky-400 block uppercase">رحلات الطيران المؤكدة</span>
+                            <span className="text-[11px] font-bold text-sky-400 block uppercase">Confirmed Flights</span>
                             <span className="text-xl font-black text-sky-900">{flightBookedCount}</span>
                         </div>
                     </CardContent>
@@ -394,8 +394,8 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                     <Card className="border-slate-100 bg-white shadow-sm">
                         <CardHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle className="text-sm font-bold">الحجوزات والطلبات اللوجستية للعملاء</CardTitle>
-                                <CardDescription className="text-[11px] mt-0.5">اختر مستخدمًا لتعديل تفاصيل سفره وتأشيرته وإقامته الفندقية.</CardDescription>
+                                <CardTitle className="text-sm font-bold">Client Bookings & Logistics Requests</CardTitle>
+                                <CardDescription className="text-[11px] mt-0.5">Select a client to edit their travel, visa, and hotel details.</CardDescription>
                             </div>
                         </CardHeader>
                         
@@ -405,7 +405,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                 <Input
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="البحث بالاسم، البريد، الهاتف أو رقم التذكرة..."
+                                    placeholder="Search by name, email, phone, or ticket number..."
                                     className="text-xs h-9 pr-9 pl-3 rounded-lg border-slate-250 bg-white"
                                 />
                             </div>
@@ -415,11 +415,11 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <Table className="text-right">
                                 <TableHeader className="bg-slate-50/60">
                                     <TableRow className="border-slate-100">
-                                        <TableHead className="text-right text-xs">الاسم والبيانات</TableHead>
-                                        <TableHead className="text-right text-xs">تأشيرة السفارة</TableHead>
-                                        <TableHead className="text-right text-xs">حجز الفندق</TableHead>
-                                        <TableHead className="text-right text-xs">حجز الطيران</TableHead>
-                                        <TableHead className="text-center text-xs w-24">إجراء</TableHead>
+                                        <TableHead className="text-right text-xs">Name & Details</TableHead>
+                                        <TableHead className="text-right text-xs">Embassy Visa</TableHead>
+                                        <TableHead className="text-right text-xs">Hotel Booking</TableHead>
+                                        <TableHead className="text-right text-xs">Flight Booking</TableHead>
+                                        <TableHead className="text-center text-xs w-24">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -459,7 +459,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                                                 handleSelectRegistration(reg)
                                                             }}
                                                         >
-                                                            إدارة الحجز
+                                                            Manage Booking
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>
@@ -468,7 +468,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                     ) : (
                                         <TableRow>
                                             <TableCell colSpan={5} className="text-center py-10 text-xs text-slate-400 font-semibold">
-                                                لا توجد نتائج حجز مطابقة لبحثك.
+                                                No matching booking results found.
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -487,10 +487,10 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <CardHeader className="p-4 border-b border-slate-100">
                                 <CardTitle className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
                                     <Building className="w-4 h-4 text-indigo-600" />
-                                    تعديل الحجوزات واللوجستيات
+                                    Edit Bookings & Logistics
                                 </CardTitle>
                                 <CardDescription className="text-[10px] mt-0.5">
-                                    المسجل: <b>{selectedReg.full_name}</b>
+                                    Registrant: <b>{selectedReg.full_name}</b>
                                 </CardDescription>
                             </CardHeader>
                             
@@ -498,7 +498,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                 {/* Document Viewer Links */}
                                 {selectedReg.documents && (selectedReg.documents.passport_url || selectedReg.documents.national_id_url || selectedReg.documents.other_doc_url) && (
                                     <div className="bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100/50 space-y-1.5 mb-4">
-                                        <span className="text-[10px] font-bold text-indigo-950 block">المستندات المرفوعة من العميل (واتساب):</span>
+                                        <span className="text-[10px] font-bold text-indigo-950 block">Documents uploaded by client (WhatsApp):</span>
                                         <div className="flex flex-wrap gap-2 pt-0.5">
                                             {selectedReg.documents.passport_url && (
                                                 <a 
@@ -507,27 +507,27 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 text-[10px] bg-white border border-slate-200 px-2.5 py-1 rounded-lg text-indigo-700 hover:bg-slate-50 font-bold shadow-sm"
                                                 >
-                                                    📄 جواز السفر
+                                                    📄 Passport
                                                 </a>
                                             )}
                                             {selectedReg.documents.national_id_url && (
-                                                <a 
-                                                    href={selectedReg.documents.national_id_url} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={selectedReg.documents.national_id_url}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 text-[10px] bg-white border border-slate-200 px-2.5 py-1 rounded-lg text-indigo-700 hover:bg-slate-50 font-bold shadow-sm"
                                                 >
-                                                    🪪 الهوية الوطنية
+                                                    🪪 National ID
                                                 </a>
                                             )}
                                             {selectedReg.documents.other_doc_url && (
-                                                <a 
-                                                    href={selectedReg.documents.other_doc_url} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={selectedReg.documents.other_doc_url}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 text-[10px] bg-white border border-slate-200 px-2.5 py-1 rounded-lg text-indigo-700 hover:bg-slate-50 font-bold shadow-sm"
                                                 >
-                                                    📁 وثيقة إضافية
+                                                    📁 Additional Document
                                                 </a>
                                             )}
                                         </div>
@@ -538,14 +538,14 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                     
                                     {/* Section 1: Visa Assistance */}
                                     <div className="space-y-3.5 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                                        <h4 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-1.5">1. تأشيرة السفر والسفارة</h4>
-                                        
-                                        <Label className="text-xs text-slate-800 font-semibold block mb-1">خدمات تأشيرة السفر والسفارة المطلوب تقديمها</Label>
+                                        <h4 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-1.5">1. Travel Visa & Embassy</h4>
+
+                                        <Label className="text-xs text-slate-800 font-semibold block mb-1">Required Travel Visa & Embassy Services</Label>
 
                                         <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-100 hover:bg-slate-50 transition-colors">
                                             <div className="flex items-center gap-2">
                                                 <FileText className="w-4 h-4 text-slate-600" />
-                                                <span className="text-xs text-slate-805 font-semibold">خطاب دعوة رسمي للفعالية</span>
+                                                <span className="text-xs text-slate-805 font-semibold">Official Event Invitation Letter</span>
                                             </div>
                                             <Switch
                                                 checked={logisticsForm.needInvitation}
@@ -558,7 +558,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                         <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-100 hover:bg-slate-50 transition-colors">
                                             <div className="flex items-center gap-2">
                                                 <Plane className="w-4 h-4 text-slate-600" />
-                                                <span className="text-xs text-slate-805 font-semibold">مساعدة تعبئة طلب السفارة (Application)</span>
+                                                <span className="text-xs text-slate-805 font-semibold">Embassy Application Assistance</span>
                                             </div>
                                             <Switch
                                                 checked={logisticsForm.needAppAssistance}
@@ -571,7 +571,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                         <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-100 hover:bg-slate-50 transition-colors">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-slate-600" />
-                                                <span className="text-xs text-slate-805 font-semibold">حجز موعد السفارة / TLS</span>
+                                                <span className="text-xs text-slate-805 font-semibold">Embassy / TLS Appointment Booking</span>
                                             </div>
                                             <Switch
                                                 checked={logisticsForm.needTlsAppointment}
@@ -584,7 +584,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                         <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-100 hover:bg-slate-50 transition-colors">
                                             <div className="flex items-center gap-2">
                                                 <CheckCircle2 className="w-4 h-4 text-slate-600" />
-                                                <span className="text-xs text-slate-805 font-semibold">تأمين صحي للسفر</span>
+                                                <span className="text-xs text-slate-805 font-semibold">Travel Health Insurance</span>
                                             </div>
                                             <Switch
                                                 checked={logisticsForm.needInsurance}
@@ -595,7 +595,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="embassyStatus" className="text-xs text-slate-650 font-semibold">حالة طلب تأشيرة السفارة</Label>
+                                            <Label htmlFor="embassyStatus" className="text-xs text-slate-650 font-semibold">Embassy Visa Application Status</Label>
                                             <select
                                                 id="embassyStatus"
                                                 value={logisticsForm.embassyStatus}
@@ -603,28 +603,28 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                                 disabled={isReadOnly}
                                                 className="w-full text-xs h-9 rounded-lg border border-slate-200 bg-white px-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                             >
-                                                <option value="ok">حالة الطلب اوكي (OK)</option>
-                                                <option value="pending">قيد الانتظار (لم يبدأ التجهيز)</option>
-                                                <option value="preparing_files">جاري تجهيز الملف والترجمة</option>
-                                                <option value="appointment_booked">تم حجز موعد TLS / السفارة</option>
-                                                <option value="submitted">تم تقديم الملف للقنصلية</option>
-                                                <option value="approved">تم منح التأشيرة بنجاح (Approved)</option>
-                                                <option value="rejected">تم الرفض من السفارة (Rejected)</option>
+                                                <option value="ok">Application Status OK</option>
+                                                <option value="pending">Pending (Not Started)</option>
+                                                <option value="preparing_files">Preparing File & Translation</option>
+                                                <option value="appointment_booked">TLS / Embassy Appointment Booked</option>
+                                                <option value="submitted">File Submitted to Consulate</option>
+                                                <option value="approved">Visa Approved</option>
+                                                <option value="rejected">Rejected by Embassy</option>
                                             </select>
                                         </div>
 
                                         {/* Document Upload Section */}
                                         <div className="space-y-3 pt-3 border-t border-slate-150">
-                                            <Label className="text-xs text-slate-800 font-semibold block">رفع وثائق ومستندات العميل</Label>
-                                            
+                                            <Label className="text-xs text-slate-800 font-semibold block">Upload Client Documents</Label>
+
                                             <div className="grid grid-cols-1 gap-2">
                                                 {/* Passport File */}
                                                 <div className="space-y-1">
-                                                    <Label className="text-[10px] text-slate-500 font-medium">جواز السفر</Label>
+                                                    <Label className="text-[10px] text-slate-500 font-medium">Passport</Label>
                                                     {logisticsForm.passportUrl ? (
                                                         <div className="flex items-center justify-between p-1.5 rounded-lg border border-indigo-150 bg-indigo-50/50 text-[11px]">
                                                             <a href={logisticsForm.passportUrl} target="_blank" rel="noopener noreferrer" className="truncate max-w-[180px] text-indigo-750 font-bold hover:underline">
-                                                                📄 عرض جواز السفر الحالي ✓
+                                                                📄 View Current Passport ✓
                                                             </a>
                                                             {!isReadOnly && (
                                                                 <button 
@@ -652,11 +652,11 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
 
                                                 {/* National ID File */}
                                                 <div className="space-y-1">
-                                                    <Label className="text-[10px] text-slate-500 font-medium">البطاقة الموحدة / الهوية</Label>
+                                                    <Label className="text-[10px] text-slate-500 font-medium">National ID / Unified Card</Label>
                                                     {logisticsForm.nationalIdUrl ? (
                                                         <div className="flex items-center justify-between p-1.5 rounded-lg border border-indigo-150 bg-indigo-50/50 text-[11px]">
                                                             <a href={logisticsForm.nationalIdUrl} target="_blank" rel="noopener noreferrer" className="truncate max-w-[180px] text-indigo-750 font-bold hover:underline">
-                                                                🪪 عرض الهوية الحالية ✓
+                                                                🪪 View Current ID ✓
                                                             </a>
                                                             {!isReadOnly && (
                                                                 <button 
@@ -684,11 +684,11 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
 
                                                 {/* Other Docs */}
                                                 <div className="space-y-1">
-                                                    <Label className="text-[10px] text-slate-500 font-medium">وثائق أخرى</Label>
+                                                    <Label className="text-[10px] text-slate-500 font-medium">Other Documents</Label>
                                                     {logisticsForm.otherDocUrl ? (
                                                         <div className="flex items-center justify-between p-1.5 rounded-lg border border-indigo-150 bg-indigo-50/50 text-[11px]">
                                                             <a href={logisticsForm.otherDocUrl} target="_blank" rel="noopener noreferrer" className="truncate max-w-[180px] text-indigo-750 font-bold hover:underline">
-                                                                📁 عرض الوثيقة الحالية ✓
+                                                                📁 View Current Document ✓
                                                             </a>
                                                             {!isReadOnly && (
                                                                 <button 
@@ -719,36 +719,36 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
 
                                     {/* Section 2: Hotel Booking */}
                                     <div className="space-y-3 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                                        <h4 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-1.5">2. حجز السكن والفندق</h4>
-                                        
+                                        <h4 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-1.5">2. Accommodation & Hotel Booking</h4>
+
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="space-y-1">
-                                                <Label htmlFor="hotelName" className="text-[10px] text-slate-650 font-medium">اسم الفندق</Label>
+                                                <Label htmlFor="hotelName" className="text-[10px] text-slate-650 font-medium">Hotel Name</Label>
                                                 <Input
                                                     id="hotelName"
                                                     value={logisticsForm.hotelName}
                                                     onChange={(e) => setLogisticsForm(prev => ({ ...prev, hotelName: e.target.value }))}
                                                     disabled={isReadOnly}
                                                     className="text-xs h-8 rounded-lg"
-                                                    placeholder="مثال: فندق بابل"
+                                                    placeholder="Example: Babylon Hotel"
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <Label htmlFor="roomNumber" className="text-[10px] text-slate-650 font-medium">رقم الغرفة</Label>
+                                                <Label htmlFor="roomNumber" className="text-[10px] text-slate-650 font-medium">Room Number</Label>
                                                 <Input
                                                     id="roomNumber"
                                                     value={logisticsForm.roomNumber}
                                                     onChange={(e) => setLogisticsForm(prev => ({ ...prev, roomNumber: e.target.value }))}
                                                     disabled={isReadOnly}
                                                     className="text-xs h-8 rounded-lg"
-                                                    placeholder="مثال: 402"
+                                                    placeholder="Example: 402"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="space-y-1">
-                                                <Label htmlFor="checkIn" className="text-[10px] text-slate-650 font-medium">تاريخ الدخول</Label>
+                                                <Label htmlFor="checkIn" className="text-[10px] text-slate-650 font-medium">Check-in Date</Label>
                                                 <Input
                                                     id="checkIn"
                                                     type="date"
@@ -759,7 +759,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <Label htmlFor="checkOut" className="text-[10px] text-slate-650 font-medium">تاريخ الخروج</Label>
+                                                <Label htmlFor="checkOut" className="text-[10px] text-slate-650 font-medium">Check-out Date</Label>
                                                 <Input
                                                     id="checkOut"
                                                     type="date"
@@ -772,7 +772,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="hotelStatus" className="text-[10px] text-slate-650 font-semibold">حالة حجز الفندق</Label>
+                                            <Label htmlFor="hotelStatus" className="text-[10px] text-slate-650 font-semibold">Hotel Booking Status</Label>
                                             <select
                                                 id="hotelStatus"
                                                 value={logisticsForm.hotelStatus}
@@ -780,44 +780,44 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                                 disabled={isReadOnly}
                                                 className="w-full text-xs h-8 rounded-lg border border-slate-200 bg-white px-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                             >
-                                                <option value="pending">لم يتم الحجز بعد</option>
-                                                <option value="confirmed">حجز مؤكد وثابت (Confirmed)</option>
-                                                <option value="cancelled">تم إلغاء الحجز (Cancelled)</option>
+                                                <option value="pending">Not Booked Yet</option>
+                                                <option value="confirmed">Confirmed Booking</option>
+                                                <option value="cancelled">Booking Cancelled</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     {/* Section 3: Flight Booking */}
                                     <div className="space-y-3 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                                        <h4 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-1.5">3. حجز رحلة الطيران</h4>
-                                        
+                                        <h4 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-1.5">3. Flight Booking</h4>
+
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="space-y-1">
-                                                <Label htmlFor="airline" className="text-[10px] text-slate-650 font-medium">شركة الطيران</Label>
+                                                <Label htmlFor="airline" className="text-[10px] text-slate-650 font-medium">Airline</Label>
                                                 <Input
                                                     id="airline"
                                                     value={logisticsForm.airline}
                                                     onChange={(e) => setLogisticsForm(prev => ({ ...prev, airline: e.target.value }))}
                                                     disabled={isReadOnly}
                                                     className="text-xs h-8 rounded-lg"
-                                                    placeholder="مثال: الخطوط العراقية"
+                                                    placeholder="Example: Iraqi Airways"
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <Label htmlFor="flightNumber" className="text-[10px] text-slate-650 font-medium">رقم الرحلة</Label>
+                                                <Label htmlFor="flightNumber" className="text-[10px] text-slate-650 font-medium">Flight Number</Label>
                                                 <Input
                                                     id="flightNumber"
                                                     value={logisticsForm.flightNumber}
                                                     onChange={(e) => setLogisticsForm(prev => ({ ...prev, flightNumber: e.target.value }))}
                                                     disabled={isReadOnly}
                                                     className="text-xs h-8 rounded-lg"
-                                                    placeholder="مثال: IA-102"
+                                                    placeholder="Example: IA-102"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="departureDate" className="text-[10px] text-slate-650 font-medium">تاريخ ووقت الإقلاع</Label>
+                                            <Label htmlFor="departureDate" className="text-[10px] text-slate-650 font-medium">Departure Date & Time</Label>
                                             <Input
                                                 id="departureDate"
                                                 type="datetime-local"
@@ -829,7 +829,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                         </div>
 
                                         <div className="space-y-1">
-                                            <Label htmlFor="flightStatus" className="text-[10px] text-slate-650 font-semibold">حالة تذكرة الطيران</Label>
+                                            <Label htmlFor="flightStatus" className="text-[10px] text-slate-650 font-semibold">Flight Ticket Status</Label>
                                             <select
                                                 id="flightStatus"
                                                 value={logisticsForm.flightStatus}
@@ -837,17 +837,17 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                                 disabled={isReadOnly}
                                                 className="w-full text-xs h-8 rounded-lg border border-slate-200 bg-white px-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                             >
-                                                <option value="pending">لم تحجز التذكرة</option>
-                                                <option value="booked_temp">حجز مبدئي/مؤقت</option>
-                                                <option value="confirmed">حجز مؤكد وإصدار التذكرة</option>
-                                                <option value="cancelled">تم إلغاء الرحلة/الحجز</option>
+                                                <option value="pending">Ticket Not Booked</option>
+                                                <option value="booked_temp">Provisional / Temporary Booking</option>
+                                                <option value="confirmed">Confirmed & Ticket Issued</option>
+                                                <option value="cancelled">Flight/Booking Cancelled</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     {/* Notes */}
                                     <div className="space-y-1">
-                                        <Label htmlFor="logNotes" className="text-[10px] text-slate-650 font-semibold">ملاحظات لوجستية إضافية</Label>
+                                        <Label htmlFor="logNotes" className="text-[10px] text-slate-650 font-semibold">Additional Logistics Notes</Label>
                                         <Textarea
                                             id="logNotes"
                                             value={logisticsForm.notes}
@@ -855,7 +855,7 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                             disabled={isReadOnly}
                                             className="text-xs resize-none"
                                             rows={2}
-                                            placeholder="اكتب أي متطلبات خاصة للنقل، الاستقبال بالمطار..."
+                                            placeholder="Enter any special requirements for transport, airport pickup..."
                                         />
                                     </div>
 
@@ -877,12 +877,12 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                                             {isSaving ? (
                                                 <>
                                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                    جاري حفظ الحجوزات...
+                                                    Saving bookings...
                                                 </>
                                             ) : (
                                                 <>
                                                     <Save className="w-3.5 h-3.5" />
-                                                    حفظ وتحديث الحجوزات
+                                                    Save & Update Bookings
                                                 </>
                                             )}
                                         </Button>
@@ -896,8 +896,8 @@ export function StepLogistics({ event, initialRegistrations, isReadOnly }: StepL
                             <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
                                 <Plane className="w-6 h-6 text-slate-400" />
                             </div>
-                            <h4 className="text-xs font-bold text-slate-800">لم يتم اختيار أي مستخدم</h4>
-                            <p className="text-[10px] text-slate-400 mt-1 max-w-[200px]">اختر أحد الضيوف أو المشاركين من الجدول لإدارة حجوزات الفندق وتذاكر السفر وتأشيرات TLS.</p>
+                            <h4 className="text-xs font-bold text-slate-800">No Client Selected</h4>
+                            <p className="text-[10px] text-slate-400 mt-1 max-w-[200px]">Select a guest or participant from the table to manage their hotel, flight, and TLS visa bookings.</p>
                         </Card>
                     )}
                 </div>

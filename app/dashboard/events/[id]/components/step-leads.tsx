@@ -39,9 +39,10 @@ interface StepLeadsProps {
     isReadOnly: boolean
 }
 
-// تسجيلات الموقع/التطبيق تُخزَّن بحقول مختلفة عن التسجيل اليدوي من واتساب
-// (additional_data + selected_services بدل form_data + embassy_application)،
-// لذا نحتاج توحيد القراءة هنا حتى تظهر تسجيلات العملاء الحقيقية بشكل صحيح.
+// Website/app registrations are stored under different fields than manual
+// WhatsApp registrations (additional_data + selected_services instead of
+// form_data + embassy_application), so we need to normalize the read here
+// so real client registrations display correctly.
 function getContactData(reg: any): Record<string, any> | null {
     const additionalData = reg.additional_data
     if (additionalData && Object.keys(additionalData).length > 0) return additionalData
@@ -69,14 +70,14 @@ function extractEmail(data: Record<string, any> | null, explicit?: string | null
 }
 
 function getSourceInfo(reg: any): { key: 'website' | 'app' | 'manual'; label: string; Icon: typeof Globe } {
-    if (!reg.user_id) return { key: 'manual', label: 'يدوي (واتساب)', Icon: MessageCircle }
+    if (!reg.user_id) return { key: 'manual', label: 'Manual (WhatsApp)', Icon: MessageCircle }
     const additionalData = reg.additional_data
     const hasWebsiteFields = additionalData &&
         Object.keys(additionalData).length > 0 &&
         !Object.keys(additionalData).every((k) => /^field_\d+$/.test(k))
     return hasWebsiteFields
-        ? { key: 'website', label: 'الموقع الإلكتروني', Icon: Globe }
-        : { key: 'app', label: 'تطبيق الجوال', Icon: Smartphone }
+        ? { key: 'website', label: 'Website', Icon: Globe }
+        : { key: 'app', label: 'Mobile App', Icon: Smartphone }
 }
 
 function getNeededServices(reg: any) {
@@ -148,18 +149,18 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}))
-                throw new Error(errData.error || 'فشل الرفع')
+                throw new Error(errData.error || 'Upload failed')
             }
 
             const data = await response.json()
-            
+
             setLeadForm(prev => ({
                 ...prev,
                 [type === 'passport' ? 'passportUrl' : type === 'national_id' ? 'nationalIdUrl' : 'otherDocUrl']: data.url
             }))
         } catch (err: any) {
             console.error('Error uploading document:', err)
-            setFormMessage({ type: 'error', text: 'فشل رفع المستند: ' + err.message })
+            setFormMessage({ type: 'error', text: 'Failed to upload document: ' + err.message })
         } finally {
             if (type === 'passport') setIsUploadingPassport(false)
             if (type === 'national_id') setIsUploadingNationalId(false)
@@ -213,7 +214,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
             needAppAssistance,
             needTlsAppointment,
             needInsurance,
-            notes: `تم الاستخراج تلقائياً من رسالة الوارد: "${chatText.substring(0, 80)}..."`
+            notes: `Auto-extracted from inbound message: "${chatText.substring(0, 80)}..."`
         }))
     }
 
@@ -270,7 +271,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
             if (error) throw error
 
             setRegistrations(prev => [data, ...prev])
-            setFormMessage({ type: 'success', text: 'تم تسجيل العميل وإضافته لقائمة الحضور وتأشيرات السفارة!' })
+            setFormMessage({ type: 'success', text: 'Client registered and added to the attendance list and embassy visa tracking!' })
 
             // Reset form
             setLeadForm({
@@ -290,7 +291,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
             setChatText('')
         } catch (err: any) {
             console.error('Error saving registration:', err)
-            setFormMessage({ type: 'error', text: err.message || 'فشل تسجيل العميل' })
+            setFormMessage({ type: 'error', text: err.message || 'Failed to register client' })
         } finally {
             setIsSaving(false)
         }
@@ -305,8 +306,9 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
             const supabase = createClient()
             const checkInTime = newStatus === 'checked_in' ? new Date().toISOString() : null
             const target = registrations.find(r => r.id === registrationId)
-            // نضمّ check_in_time لبيانات additional_data الحالية بدل استبدالها،
-            // لأن تسجيلات الموقع/التطبيق تخزّن هناك بيانات النموذج الفعلية للعميل
+            // Merge check_in_time into the existing additional_data instead of
+            // overwriting it, because website/app registrations store the
+            // client's actual form data there.
             const mergedAdditionalData = { ...(target?.additional_data || {}), check_in_time: checkInTime }
 
             const { error } = await supabase
@@ -346,7 +348,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
     // Export registrations as CSV
     const exportCSV = () => {
-        const headers = ['المصدر', 'تذكرة', 'الاسم الكامل', 'البريد الإلكتروني', 'الهاتف', 'خطاب دعوة', 'طلب السفارة', 'موعد السفارة TLS', 'تأمين صحي', 'حالة الحضور', 'تاريخ التسجيل']
+        const headers = ['Source', 'Ticket', 'Full Name', 'Email', 'Phone', 'Invitation Letter', 'Embassy Application', 'TLS Appointment', 'Health Insurance', 'Attendance Status', 'Registration Date']
         const rows = registrations.map(r => {
             const contactData = getContactData(r)
             const services = getNeededServices(r)
@@ -356,12 +358,12 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                 r.full_name || '',
                 r.email || extractEmail(contactData) || '',
                 r.form_data?.phone || extractPhone(contactData) || '',
-                services.needInvitation ? 'نعم' : 'لا',
-                services.needAppAssistance ? 'نعم' : 'لا',
-                services.needTlsAppointment ? 'نعم' : 'لا',
-                services.needInsurance ? 'نعم' : 'لا',
-                r.status === 'checked_in' ? 'حاضر' : 'مسجل فقط',
-                r.created_at ? new Date(r.created_at).toLocaleDateString('ar-IQ') : ''
+                services.needInvitation ? 'Yes' : 'No',
+                services.needAppAssistance ? 'Yes' : 'No',
+                services.needTlsAppointment ? 'Yes' : 'No',
+                services.needInsurance ? 'Yes' : 'No',
+                r.status === 'checked_in' ? 'Checked In' : 'Registered Only',
+                r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB') : ''
             ]
         })
 
@@ -377,7 +379,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
     }
 
     return (
-        <div className="space-y-6" dir="rtl">
+        <div className="space-y-6" dir="ltr">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Left Panel: Chat Lead Parser / Registry form */}
@@ -392,8 +394,8 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                     <div className="flex items-center gap-2">
                                         <Sparkles className="w-4 h-4 text-slate-500" />
                                         <div>
-                                            <CardTitle className="text-sm font-bold text-slate-800">محلل الرسائل</CardTitle>
-                                            <CardDescription className="text-xs text-slate-500">لصق رسالة واتساب أو فيسبوك لتسجيل العميل</CardDescription>
+                                            <CardTitle className="text-sm font-bold text-slate-800">Message Parser</CardTitle>
+                                            <CardDescription className="text-xs text-slate-500">Paste a WhatsApp or Facebook message to register the client</CardDescription>
                                         </div>
                                     </div>
                                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isParserOpen ? 'rotate-180' : ''}`} />
@@ -402,13 +404,14 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                             <CollapsibleContent>
                                 <CardContent className="pt-4 space-y-4 border-t border-slate-100">
                                     <div className="space-y-2">
-                                        <Label htmlFor="chatText" className="text-xs text-slate-700 font-semibold">نص الرسالة الواردة</Label>
+                                        <Label htmlFor="chatText" className="text-xs text-slate-700 font-semibold">Inbound Message Text</Label>
                                         <Textarea
                                             id="chatText"
                                             value={chatText}
                                             onChange={(e) => setChatText(e.target.value)}
-                                            placeholder="مثال: مرحبًا اسمي علي جاسم وايميلي ali.jassim@mail.com وتلفوني 07701234567 وأريد تحجزولي موعد سفارة TLS وتأمين صحي"
+                                            placeholder="Example: Hello, my name is Ali Jassim, my email is ali.jassim@mail.com, my phone is 07701234567, and I'd like to book a TLS embassy appointment and travel insurance"
                                             rows={4}
+                                            dir="auto"
                                             className="bg-white text-xs border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
                                         />
                                         <Button
@@ -418,7 +421,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-1.5 rounded-lg flex items-center justify-center gap-1 shadow-sm"
                                         >
                                             <Sparkles className="w-3.5 h-3.5" />
-                                            تحليل واستخراج البيانات
+                                            Parse & Extract Data
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -428,7 +431,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
                     <Card className="border-slate-100 shadow-md">
                         <CardHeader className="border-b border-slate-50 pb-3">
-                            <CardTitle className="text-sm font-bold text-slate-800">بيانات العميل والتأشيرة</CardTitle>
+                            <CardTitle className="text-sm font-bold text-slate-800">Client & Visa Details</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-4">
                             <form onSubmit={handleRegisterLead} className="space-y-4">
@@ -442,15 +445,15 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
                                 {/* Document Upload Section */}
                                 <div className="space-y-3 pb-3 border-b border-slate-100">
-                                    <Label className="text-xs text-slate-800 font-bold block">رفع وثائق ومستندات العميل</Label>
-                                    
+                                    <Label className="text-xs text-slate-800 font-bold block">Upload Client Documents</Label>
+
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                         {/* Passport File */}
                                         <div className="space-y-1">
-                                            <Label className="text-[10px] text-slate-500">جواز السفر</Label>
+                                            <Label className="text-[10px] text-slate-500">Passport</Label>
                                             {leadForm.passportUrl ? (
                                                 <div className="flex items-center justify-between p-1.5 rounded-lg border border-indigo-100 bg-indigo-50/50 text-[10px]">
-                                                    <span className="truncate max-w-[80px] text-indigo-700 font-semibold">تم الرفع ✓</span>
+                                                    <span className="truncate max-w-[80px] text-indigo-700 font-semibold">Uploaded ✓</span>
                                                     <button 
                                                         type="button" 
                                                         onClick={() => setLeadForm(prev => ({ ...prev, passportUrl: '' }))}
@@ -475,10 +478,10 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
                                         {/* National ID File */}
                                         <div className="space-y-1">
-                                            <Label className="text-[10px] text-slate-500">البطاقة الموحدة / الهوية</Label>
+                                            <Label className="text-[10px] text-slate-500">National ID / Unified Card</Label>
                                             {leadForm.nationalIdUrl ? (
                                                 <div className="flex items-center justify-between p-1.5 rounded-lg border border-indigo-100 bg-indigo-50/50 text-[10px]">
-                                                    <span className="truncate max-w-[80px] text-indigo-700 font-semibold">تم الرفع ✓</span>
+                                                    <span className="truncate max-w-[80px] text-indigo-700 font-semibold">Uploaded ✓</span>
                                                     <button 
                                                         type="button" 
                                                         onClick={() => setLeadForm(prev => ({ ...prev, nationalIdUrl: '' }))}
@@ -503,10 +506,10 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
                                         {/* Other Docs */}
                                         <div className="space-y-1">
-                                            <Label className="text-[10px] text-slate-500">وثائق أخرى</Label>
+                                            <Label className="text-[10px] text-slate-500">Other Documents</Label>
                                             {leadForm.otherDocUrl ? (
                                                 <div className="flex items-center justify-between p-1.5 rounded-lg border border-indigo-100 bg-indigo-50/50 text-[10px]">
-                                                    <span className="truncate max-w-[80px] text-indigo-700 font-semibold">تم الرفع ✓</span>
+                                                    <span className="truncate max-w-[80px] text-indigo-700 font-semibold">Uploaded ✓</span>
                                                     <button 
                                                         type="button" 
                                                         onClick={() => setLeadForm(prev => ({ ...prev, otherDocUrl: '' }))}
@@ -532,12 +535,12 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label htmlFor="fullName" className="text-xs text-slate-600 font-medium">الاسم الكامل للعميل</Label>
+                                    <Label htmlFor="fullName" className="text-xs text-slate-600 font-medium">Client&apos;s Full Name</Label>
                                     <Input
                                         id="fullName"
                                         value={leadForm.fullName}
                                         onChange={(e) => setLeadForm(prev => ({ ...prev, fullName: e.target.value }))}
-                                        placeholder="الاسم الثلاثي واللقب"
+                                        placeholder="Full legal name"
                                         className="text-xs h-9"
                                         required
                                         disabled={isReadOnly}
@@ -546,7 +549,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label htmlFor="phone" className="text-xs text-slate-600 font-medium">رقم الهاتف</Label>
+                                        <Label htmlFor="phone" className="text-xs text-slate-600 font-medium">Phone Number</Label>
                                         <Input
                                             id="phone"
                                             value={leadForm.phone}
@@ -558,7 +561,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label htmlFor="email" className="text-xs text-slate-600 font-medium">البريد الإلكتروني</Label>
+                                        <Label htmlFor="email" className="text-xs text-slate-600 font-medium">Email Address</Label>
                                         <Input
                                             id="email"
                                             value={leadForm.email}
@@ -573,12 +576,12 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
 
                                 {/* Visa Services checkboxes */}
                                 <div className="space-y-2 pt-2 border-t border-slate-100">
-                                    <Label className="text-xs text-slate-800 font-semibold block mb-1">خدمات تأشيرة السفر والسفارة المطلوب تقديمها</Label>
+                                    <Label className="text-xs text-slate-800 font-semibold block mb-1">Required Travel Visa & Embassy Services</Label>
 
                                     <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
                                         <div className="flex items-center gap-2">
                                             <FileText className="w-4 h-4 text-slate-600" />
-                                            <span className="text-xs text-slate-800 font-medium">خطاب دعوة رسمي للفعالية</span>
+                                            <span className="text-xs text-slate-800 font-medium">Official Event Invitation Letter</span>
                                         </div>
                                         <Switch
                                             checked={leadForm.needInvitation}
@@ -591,7 +594,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                     <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
                                         <div className="flex items-center gap-2">
                                             <Plane className="w-4 h-4 text-slate-600" />
-                                            <span className="text-xs text-slate-800 font-medium">مساعدة تعبئة طلب السفارة (Application)</span>
+                                            <span className="text-xs text-slate-800 font-medium">Embassy Application Assistance</span>
                                         </div>
                                         <Switch
                                             checked={leadForm.needAppAssistance}
@@ -604,7 +607,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                     <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
                                         <div className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-slate-600" />
-                                            <span className="text-xs text-slate-800 font-medium">حجز موعد السفارة / TLS</span>
+                                            <span className="text-xs text-slate-800 font-medium">Embassy / TLS Appointment Booking</span>
                                         </div>
                                         <Switch
                                             checked={leadForm.needTlsAppointment}
@@ -617,7 +620,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                     <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
                                         <div className="flex items-center gap-2">
                                             <CheckCircle2 className="w-4 h-4 text-slate-600" />
-                                            <span className="text-xs text-slate-800 font-medium">تأمين صحي للسفر</span>
+                                            <span className="text-xs text-slate-800 font-medium">Travel Health Insurance</span>
                                         </div>
                                         <Switch
                                             checked={leadForm.needInsurance}
@@ -629,7 +632,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label htmlFor="embassyStatus" className="text-xs text-slate-600 font-medium">حالة طلب تأشيرة السفارة</Label>
+                                    <Label htmlFor="embassyStatus" className="text-xs text-slate-600 font-medium">Embassy Visa Application Status</Label>
                                     <select
                                         id="embassyStatus"
                                         value={leadForm.embassyStatus}
@@ -637,23 +640,23 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                         disabled={isReadOnly}
                                         className="w-full text-xs h-9 rounded-lg border border-slate-200 bg-white px-3 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                     >
-                                        <option value="ok">حالة الطلب اوكي (OK)</option>
-                                        <option value="pending">قيد الانتظار (لم يبدأ التجهيز)</option>
-                                        <option value="preparing_files">جاري تجهيز الملف والترجمة</option>
-                                        <option value="appointment_booked">تم حجز موعد TLS / السفارة</option>
-                                        <option value="submitted">تم تقديم الملف للقنصلية</option>
-                                        <option value="approved">تم منح التأشيرة بنجاح (Approved)</option>
-                                        <option value="rejected">تم الرفض من السفارة (Rejected)</option>
+                                        <option value="ok">Application Status OK</option>
+                                        <option value="pending">Pending (Not Started)</option>
+                                        <option value="preparing_files">Preparing File & Translation</option>
+                                        <option value="appointment_booked">TLS / Embassy Appointment Booked</option>
+                                        <option value="submitted">File Submitted to Consulate</option>
+                                        <option value="approved">Visa Approved</option>
+                                        <option value="rejected">Rejected by Embassy</option>
                                     </select>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label htmlFor="notes" className="text-xs text-slate-600 font-medium">ملاحظات أو متطلبات خاصة بالعميل</Label>
+                                    <Label htmlFor="notes" className="text-xs text-slate-600 font-medium">Notes or Special Client Requirements</Label>
                                     <Textarea
                                         id="notes"
                                         value={leadForm.notes}
                                         onChange={(e) => setLeadForm(prev => ({ ...prev, notes: e.target.value }))}
-                                        placeholder="أي متطلبات طبية، إعاقة، فندق، تاريخ حجز الطيران المفترض..."
+                                        placeholder="Any medical needs, disability, hotel, expected flight booking date..."
                                         className="text-xs resize-none"
                                         rows={2}
                                         disabled={isReadOnly}
@@ -669,12 +672,12 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                         {isSaving ? (
                                             <>
                                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                جاري التسجيل...
+                                                Registering...
                                             </>
                                         ) : (
                                             <>
                                                 <UserPlus className="w-3.5 h-3.5" />
-                                                تسجيل العميل وحفظ الطلب
+                                                Register Client & Save Application
                                             </>
                                         )}
                                     </Button>
@@ -691,10 +694,10 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                             <div>
                                 <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
                                     <Users className="w-5 h-5 text-indigo-600" />
-                                    قائمة الحضور وتسجيلات الفعالية
+                                    Attendance List & Event Registrations
                                 </CardTitle>
                                 <CardDescription className="text-xs text-slate-500">
-                                    إجمالي العملاء المسجلين: {registrations.length} | الحاضرون (Check-in): {registrations.filter(r => r.status === 'checked_in').length}
+                                    Total registered clients: {registrations.length} | Checked in: {registrations.filter(r => r.status === 'checked_in').length}
                                 </CardDescription>
                             </div>
                             <div className="flex items-center gap-2 self-end md:self-auto">
@@ -705,7 +708,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                     className="border-slate-200 text-slate-700 font-medium text-xs flex items-center gap-1.5 h-9"
                                 >
                                     <Download className="w-3.5 h-3.5" />
-                                    تصدير تقرير CSV
+                                    Export CSV Report
                                 </Button>
                             </div>
                         </CardHeader>
@@ -715,7 +718,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                 <Input
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="بحث باسم العميل، البريد الإلكتروني، رقم الهاتف أو التذكرة..."
+                                    placeholder="Search by client name, email, phone, or ticket..."
                                     className="pr-10 text-xs border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
                                 />
                                 <Search className="absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -726,12 +729,12 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                     <Table>
                                         <TableHeader className="bg-slate-100">
                                             <TableRow>
-                                                <TableHead className="text-right text-xs">التذكرة والاسم</TableHead>
-                                                <TableHead className="text-right text-xs">المصدر</TableHead>
-                                                <TableHead className="text-right text-xs">الهاتف والبريد</TableHead>
-                                                <TableHead className="text-right text-xs">متطلبات السفارة</TableHead>
-                                                <TableHead className="text-right text-xs">حالة التأشيرة</TableHead>
-                                                <TableHead className="text-right text-xs">التحضير (Check-in)</TableHead>
+                                                <TableHead className="text-right text-xs">Ticket & Name</TableHead>
+                                                <TableHead className="text-right text-xs">Source</TableHead>
+                                                <TableHead className="text-right text-xs">Phone & Email</TableHead>
+                                                <TableHead className="text-right text-xs">Embassy Requirements</TableHead>
+                                                <TableHead className="text-right text-xs">Visa Status</TableHead>
+                                                <TableHead className="text-right text-xs">Check-in</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -740,7 +743,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                                 const services = getNeededServices(reg)
                                                 const source = getSourceInfo(reg)
                                                 const checkInTime = reg.additional_data?.check_in_time
-                                                const displayName = reg.full_name || 'بدون اسم'
+                                                const displayName = reg.full_name || 'No Name'
                                                 const displayPhone = reg.form_data?.phone || extractPhone(contactData)
                                                 const displayEmail = reg.email || extractEmail(contactData)
                                                 const isDocsArray = Array.isArray(reg.documents)
@@ -763,7 +766,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                                                                 rel="noopener noreferrer"
                                                                                 className="inline-flex items-center gap-0.5 text-[9px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 px-1 rounded hover:underline"
                                                                             >
-                                                                                📄 {doc.name || `وثيقة ${i + 1}`}
+                                                                                📄 {doc.name || `Document ${i + 1}`}
                                                                             </a>
                                                                         ))}
                                                                     </div>
@@ -772,17 +775,17 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                                                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                                                                     {reg.documents.passport_url && (
                                                                         <a href={reg.documents.passport_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 text-[9px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 px-1 rounded hover:underline">
-                                                                            📄 جواز
+                                                                            📄 Passport
                                                                         </a>
                                                                     )}
                                                                     {reg.documents.national_id_url && (
                                                                         <a href={reg.documents.national_id_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 text-[9px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 px-1 rounded hover:underline">
-                                                                            🪪 هوية
+                                                                            🪪 ID
                                                                         </a>
                                                                     )}
                                                                     {reg.documents.other_doc_url && (
                                                                         <a href={reg.documents.other_doc_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 text-[9px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 px-1 rounded hover:underline">
-                                                                            📁 أخرى
+                                                                            📁 Other
                                                                         </a>
                                                                     )}
                                                                 </div>
@@ -801,32 +804,32 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                                         <TableCell>
                                                             <div className="flex flex-wrap gap-1">
                                                                 {services.needInvitation && (
-                                                                    <Badge variant="outline" className="text-[9px] bg-slate-50 text-indigo-600 border-indigo-100">خطاب دعوة</Badge>
+                                                                    <Badge variant="outline" className="text-[9px] bg-slate-50 text-indigo-600 border-indigo-100">Invitation Letter</Badge>
                                                                 )}
                                                                 {services.needAppAssistance && (
                                                                     <Badge variant="outline" className="text-[9px] bg-slate-50 text-indigo-600 border-indigo-100">Application</Badge>
                                                                 )}
                                                                 {services.needTlsAppointment && (
-                                                                    <Badge variant="outline" className="text-[9px] bg-slate-50 text-pink-600 border-pink-100">موعد TLS</Badge>
+                                                                    <Badge variant="outline" className="text-[9px] bg-slate-50 text-pink-600 border-pink-100">TLS Appointment</Badge>
                                                                 )}
                                                                 {services.needInsurance && (
-                                                                    <Badge variant="outline" className="text-[9px] bg-slate-50 text-emerald-600 border-emerald-100">تأمين صحي</Badge>
+                                                                    <Badge variant="outline" className="text-[9px] bg-slate-50 text-emerald-600 border-emerald-100">Health Insurance</Badge>
                                                                 )}
                                                             </div>
                                                         </TableCell>
                                                         <TableCell>
                                                             {services.status === 'ok' ? (
-                                                                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] hover:bg-emerald-100 font-bold">حالة الطلب اوكي (OK)</Badge>
+                                                                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] hover:bg-emerald-100 font-bold">Status OK</Badge>
                                                             ) : services.status === 'approved' ? (
-                                                                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] hover:bg-emerald-100">مقبول</Badge>
+                                                                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] hover:bg-emerald-100">Approved</Badge>
                                                             ) : services.status === 'rejected' ? (
-                                                                <Badge className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] hover:bg-rose-100">مرفوض</Badge>
+                                                                <Badge className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] hover:bg-rose-100">Rejected</Badge>
                                                             ) : services.status === 'appointment_booked' ? (
-                                                                <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] hover:bg-blue-100">موعد محجوز</Badge>
+                                                                <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] hover:bg-blue-100">Appointment Booked</Badge>
                                                             ) : services.status === 'preparing_files' ? (
-                                                                <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] hover:bg-amber-100">تجهيز الملفات</Badge>
+                                                                <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] hover:bg-amber-100">Preparing Files</Badge>
                                                             ) : (
-                                                                <Badge className="bg-slate-50 text-slate-700 border-slate-200 text-[10px] hover:bg-slate-100">بانتظار المراجعة</Badge>
+                                                                <Badge className="bg-slate-50 text-slate-700 border-slate-200 text-[10px] hover:bg-slate-100">Awaiting Review</Badge>
                                                             )}
                                                         </TableCell>
                                                         <TableCell>
@@ -842,11 +845,11 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                                                             : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                                                                     }`}
                                                                 >
-                                                                    {reg.status === 'checked_in' ? 'تم تسجيل الحضور' : 'تسجيل حضور'}
+                                                                    {reg.status === 'checked_in' ? 'Checked In' : 'Check In'}
                                                                 </Button>
                                                                 {checkInTime && (
                                                                     <span className="text-[9px] text-slate-400 font-mono">
-                                                                        {new Date(checkInTime).toLocaleTimeString('ar-IQ')}
+                                                                        {new Date(checkInTime).toLocaleTimeString('en-GB')}
                                                                     </span>
                                                                 )}
                                                             </div>
@@ -859,7 +862,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                 </div>
                             ) : (
                                 <div className="text-center py-12 text-slate-500 text-sm">
-                                    لا يوجد مسجلين يطابقون بحثك.
+                                    No registrants match your search.
                                 </div>
                             )}
                         </CardContent>

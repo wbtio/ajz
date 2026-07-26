@@ -34,8 +34,8 @@ export default async function PaymentStation() {
         <StationList
             cases={cases ?? []}
             station="payment"
-            title="المالية والدفع"
-            desc="الملفات الجاهزة للتسعير والدفع وتأكيد الإيصالات"
+            title="Finance & Payment"
+            desc="Cases ready for pricing, payment, and receipt confirmation"
         />
     )
 }

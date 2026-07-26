@@ -34,7 +34,7 @@ export default async function PaymentDetailPage({ params }: { params: Promise<{ 
         <StationDetail
             registration={registration}
             station="payment"
-            stationLabel="المالية والدفع"
+            stationLabel="Finance & Payment"
             tab="payment"
         />
     )

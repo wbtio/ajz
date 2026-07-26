@@ -1,57 +1,54 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useEffect, useTransition, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
-import { PLACE_OF_BIRTH_CITIES as placeOfBirthCitiesByCountry, PLACE_OF_BIRTH_COUNTRIES as placeOfBirthCountries, VISA_ROUTES, VISA_DOCUMENTS } from "./wizard-constants";
-import { EMPTY_SCHENGEN_VISA, normalizePreviousSchengenVisas, normalizeResidencePermit, normalizeRegistrationDocuments, buildTravelPurpose, getPhoneValidation, getEmailValidation, normalizeLocalPhoneInput } from "./wizard-helpers";
-import { EmailField, PhoneNumberField } from "./wizard-fields";
-import { SearchableChoice } from "./searchable-choice";
-import type { PreviousSchengenVisa, VisaAppointmentReminder, VisaDocumentDefinition } from "./wizard-types";
-import { formatEventDate } from "./wizard-helpers";
+import {
+  IRAQI_GOVERNORATES,
+  PLACE_OF_BIRTH_CITIES as placeOfBirthCitiesByCountry,
+  PLACE_OF_BIRTH_COUNTRIES as placeOfBirthCountries,
+  VISA_DOCUMENTS,
+  VISA_ROUTES,
+} from "./wizard-constants";
+import {
+  normalizePreviousSchengenVisas,
+  normalizeRegistrationDocuments,
+  normalizeResidencePermit,
+  getEmailValidation,
+  getPhoneValidation,
+} from "./wizard-helpers";
+import type {
+  RegistrationEvent,
+  VisaAppointmentReminder,
+  VisaDocumentDefinition,
+} from "./wizard-types";
+import type { ClientSearchForm, StepStatus, WizardModel } from "./wizard-model";
+import { buildClientResidencyPatch, buildClientSnapshot } from "./wizard-snapshots";
+import { buildClientReceiptPdf, buildCompanyReceiptPdf, buildPackageCoverPdf, loadLogoDataUrl, mergeDocumentsIntoPdf } from "./wizard-pdf";
+import { REGISTRATION_STEPS } from "./registration-progress";
 import { WizardView } from "./wizard-view";
 import { sanitizeEnglishText } from "@/lib/english-only";
+import { hasExactPermission } from "@/lib/permissions";
+import {
+  continueWithClientAction,
+  createNewClientAndApplication,
+  deleteRegistrationDocument,
+  recordRegistrationActivity,
+  revealVisaPortalPassword,
+  saveVisaPortalPassword,
+  searchClientsWithMatchingScore,
+  updateClientData,
+} from "../../actions";
+import { uploadRegistrationDocumentDirect } from "../../registration-document-upload";
 
-const IRAQI_GOVERNORATES = ["Baghdad", "Basra", "Nineveh", "Anbar", "Najaf", "Karbala", "Babil", "Wasit", "Qadisiyah", "Muthanna", "Dhi Qar", "Maysan", "Kirkuk", "Salah Al-Din", "Diyala", "Erbil", "Duhok", "Sulaymaniyah"];
 const normalizeWorkCity = (value: unknown) => {
   const raw = sanitizeEnglishText(String(value || "")).trim();
   const normalized = raw.replace(/\s+governorate$/i, "").trim();
   return IRAQI_GOVERNORATES.find((city) => city.toLowerCase() === normalized.toLowerCase()) || raw;
 };
-const SCHENGEN_COUNTRIES = ["Austria", "Belgium", "Bulgaria", "Croatia", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Italy", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"];
-const VISA_TYPE_OPTIONS = [
-  { value: "C", label: "C" },
-  { value: "T", label: "T" },
-];
-const VISA_SUBMISSION_METHODS = [
-  "TLScontact",
-  "VFS Global",
-  "VFS Global - Baghdad",
-  "VFS Global - Erbil",
-  "VFS Global - Basra",
-  "TLScontact - Baghdad",
-  "BLS International",
-  "iDATA",
-  "Embassy Direct",
-  "Consulate Direct",
-  "Online Portal",
-  "Other",
-];
-import { hasExactPermission } from "@/lib/permissions";
-import { searchClientsWithMatchingScore, continueWithClientAction, createNewClientAndApplication, recordRegistrationActivity, updateClientData } from "../../actions";
-import { uploadRegistrationDocumentDirect } from "../../registration-document-upload";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ClientSummary } from "./client-summary";
-import { ApplicationSummary } from "./application-summary";
-import { REGISTRATION_STEPS, RegistrationProgress } from "./registration-progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, User, FileText, CheckCircle2, AlertTriangle, Eye, EyeOff, X, Plus, Printer, Download, FolderKanban, Lock, Clock, FileCode, RefreshCw, ExternalLink, MessageCircle, Mail, Bell, Volume2, Trash2, Upload } from "lucide-react";
 
 // --- Types ---
 // Shape of rows coming from the drift_events table (filtered by the parent
@@ -92,7 +89,6 @@ interface WizardClientProps {
 }
 
 export function WizardClient({ events, employees, initialRegistrationId, initialStep = 1, currentUser, onClose }: WizardClientProps) {
-  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const canEditFeeBreakdown = hasExactPermission(currentUser?.role, "/dashboard/participation-cases/work/payment", Array.isArray(currentUser?.permissions) ? currentUser.permissions : null);
 
@@ -103,7 +99,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const [isPending, startTransition] = useTransition();
 
   // Step 1 Search inputs
-  const [searchForm, setSearchForm] = useState({
+  const [searchForm, setSearchForm] = useState<ClientSearchForm>({
     fullName: "",
     surname: "",
     salutation: "",
@@ -128,7 +124,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     workEmail: "",
     residenceCountry: "Iraq",
     previousSchengenVisa: false,
-    previousSchengenVisas: [] as PreviousSchengenVisa[],
+    previousSchengenVisas: [],
     hasOtherResidencePermit: false,
     otherResidenceCountry: "",
     otherResidenceNumber: "",
@@ -312,7 +308,13 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const [visaPlatform, setVisaPlatform] = useState("");
   const [visaSubmissionMethod, setVisaSubmissionMethod] = useState("");
   const [visaPortalEmail, setVisaPortalEmail] = useState("");
+  // The portal password is stored encrypted server-side. The field holds the
+  // cleartext only while the user is typing it or after an explicit reveal;
+  // `visaPasswordIsStored` tracks whether a saved value exists behind it.
   const [visaPortalPassword, setVisaPortalPassword] = useState("");
+  const [visaPasswordIsStored, setVisaPasswordIsStored] = useState(false);
+  const [visaPasswordDirty, setVisaPasswordDirty] = useState(false);
+  const [isRevealingPassword, setIsRevealingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [visaAccountStatus, setVisaAccountStatus] = useState("");
   const [visaAppRefNumber, setVisaAppRefNumber] = useState("");
@@ -341,6 +343,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const [includeClientInfoInPackage, setIncludeClientInfoInPackage] = useState(true);
   const [packageDocumentPaths, setPackageDocumentPaths] = useState<string[]>([]);
   const [uploadingDocumentType, setUploadingDocumentType] = useState<string | null>(null);
+  const [deletingDocumentPath, setDeletingDocumentPath] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<{ type: string; message: string } | null>(null);
   const [isPackageGenerating, setIsPackageGenerating] = useState(false);
 
@@ -350,17 +353,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split("T")[0]);
   const [paymentNotes, setPaymentNotes] = useState("");
   const [currency, setCurrency] = useState("USD");
-  const [fees, setFees] = useState({
-    service: 150,
-    event: 300,
-    invitation: 75,
-    coordination: 200,
-    appointment: 80,
-    insurance: 60,
-    printing: 25,
-    discount: -50,
-  });
-  const [amountPaid, setAmountPaid] = useState(840);
+  // Discount is a finance-only per-case adjustment. The actual service prices
+  // come from the event (drift_events.registration_config.pricing_items) and are
+  // NOT editable per order — they are unified from the event.
+  const [discount, setDiscount] = useState(0);
+  const [amountPaid, setAmountPaid] = useState(0);
 
   const [deliveryDocumentPaths, setDeliveryDocumentPaths] = useState<string[]>([]);
   const [deliveryMessage, setDeliveryMessage] = useState("");
@@ -492,11 +489,25 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       // Step 4 fields
       if (ad.visa_destination_country) setVisaDestination(ad.visa_destination_country);
       if (ad.visa_embassy) setVisaEmbassy(ad.visa_embassy);
+      // The embassy city drives the Embassy/Consulate selector. Older rows only
+      // stored the composed `visa_embassy` string, so recover the city from it
+      // when the dedicated field is missing.
+      if (ad.visa_embassy_city) {
+        setVisaEmbassyCity(ad.visa_embassy_city);
+      } else if (typeof ad.visa_embassy === "string") {
+        const recoveredCity = IRAQI_GOVERNORATES.find((city) => ad.visa_embassy.endsWith(` in ${city}`));
+        if (recoveredCity) setVisaEmbassyCity(recoveredCity);
+      }
       if (ad.visa_type) setVisaType(ad.visa_type);
       if (ad.visa_platform) setVisaPlatform(ad.visa_platform);
       if (ad.visa_submission_method) setVisaSubmissionMethod(ad.visa_submission_method);
       if (ad.visa_portal_email) setVisaPortalEmail(ad.visa_portal_email);
-      if (ad.visa_portal_password) setVisaPortalPassword(ad.visa_portal_password);
+      // Never hydrate the cleartext password from the case payload — only note
+      // that one exists so the field can render a masked placeholder.
+      setVisaPasswordIsStored(Boolean(ad.visa_portal_password_encrypted || ad.visa_portal_password));
+      setVisaPortalPassword("");
+      setVisaPasswordDirty(false);
+      setShowPassword(false);
       if (ad.visa_portal_status) setVisaAccountStatus(ad.visa_portal_status);
       if (ad.visa_app_ref_number) setVisaAppRefNumber(ad.visa_app_ref_number);
       if (ad.visa_portal_app_status) setVisaPortalAppStatus(ad.visa_portal_app_status);
@@ -539,8 +550,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       if (ad.payment_method) setPaymentMethod(ad.payment_method);
       if (ad.payment_date) setPaymentDate(ad.payment_date);
       if (typeof ad.payment_notes === "string") setPaymentNotes(ad.payment_notes);
-      if (ad.payment_currency === "USD" || ad.payment_currency === "IQD") setCurrency(ad.payment_currency);
-      if (ad.fee_breakdown) setFees(ad.fee_breakdown);
+      if (ad.payment_currency === "USD" || ad.payment_currency === "IQD" || ad.payment_currency === "EUR") setCurrency(ad.payment_currency);
+      if (typeof ad.discount === "number") setDiscount(ad.discount);
       if (typeof ad.amount_paid === "number") setAmountPaid(ad.amount_paid);
 
     // Reset client autosave baseline so loading doesn't trigger an immediate save
@@ -680,7 +691,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     const highMatch = searchResults.find((r) => r.score >= 80);
     if (highMatch && !showWarningDialog) {
       setShowWarningDialog(true);
-      toast.warning("تنبيه: يوجد عميل مسجل بنسبة تطابق عالية في النظام. إذا كنت متأكداً وتريد إنشاء عميل جديد، اضغط مرة أخرى على زر الحفظ.");
+      toast.warning("Warning: a client with a high match score is already registered in the system. If you are sure and want to create a new client, click the Save button again.");
       return;
     }
 
@@ -744,52 +755,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     }
 
     try {
-      const draftSnapshot = {
-        full_name: searchForm.fullName || null,
-        surname: searchForm.surname || null,
-        salutation: searchForm.salutation || null,
-        gender: searchForm.gender || null,
-        marital_status: searchForm.maritalStatus || null,
-        passport_number: searchForm.passportNumber || null,
-        passport_issue_date: searchForm.passportIssueDate || null,
-        passport_expiry_date: searchForm.passportExpiryDate || null,
-        national_id: searchForm.nationalId || null,
-        date_of_birth: searchForm.dateOfBirth || null,
-        place_of_birth: searchForm.placeOfBirth || null,
-        phone: normalizedSearchForm.phone || null,
-        email: searchForm.email || null,
-        company_name: searchForm.companyName || null,
-        job_title: searchForm.jobTitle || null,
-        department: searchForm.department || null,
-        work_city: searchForm.workCity || null,
-        work_phone: workPhoneValidation.normalized || null,
-        work_email: searchForm.workEmail || null,
-        residence_country: searchForm.residenceCountry || null,
-        previous_schengen_visa: searchForm.previousSchengenVisa,
-        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
-        other_residence_permit: {
-          has_permit: searchForm.hasOtherResidencePermit,
-          country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
-          number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
-          expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
-          issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
-        },
-        timestamp: new Date().toISOString(),
-      };
-
-      const clientUpdateData = {
-        residence_country: searchForm.residenceCountry || null,
-        previous_schengen_visa: searchForm.previousSchengenVisa,
-        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
-        other_residence_permit: {
-          has_permit: searchForm.hasOtherResidencePermit,
-          country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
-          number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
-          expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
-          issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
-        }
-      };
-      await updateClientData(registrationId, clientUpdateData);
+      const draftSnapshot = buildClientSnapshot(snapshotInputs);
+      await updateClientData(registrationId, buildClientResidencyPatch(searchForm));
 
       const { error } = await (supabase as any)
         .from("registrations")
@@ -815,52 +782,8 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     if (!registrationId) return;
 
     try {
-      const snapshot = {
-          full_name: searchForm.fullName || null,
-          surname: searchForm.surname || null,
-          salutation: searchForm.salutation || null,
-          gender: searchForm.gender || null,
-          marital_status: searchForm.maritalStatus || null,
-          passport_number: searchForm.passportNumber || null,
-          passport_issue_date: searchForm.passportIssueDate || null,
-          passport_expiry_date: searchForm.passportExpiryDate || null,
-          national_id: searchForm.nationalId || null,
-          date_of_birth: searchForm.dateOfBirth || null,
-          place_of_birth: searchForm.placeOfBirth || null,
-          phone: normalizedSearchForm.phone || null,
-          email: searchForm.email || null,
-          company_name: searchForm.companyName || null,
-          job_title: searchForm.jobTitle || null,
-          department: searchForm.department || null,
-          work_city: searchForm.workCity || null,
-          work_phone: workPhoneValidation.normalized || null,
-          work_email: searchForm.workEmail || null,
-          residence_country: searchForm.residenceCountry || null,
-          previous_schengen_visa: searchForm.previousSchengenVisa,
-          schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
-          other_residence_permit: {
-            has_permit: searchForm.hasOtherResidencePermit,
-            country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
-            number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
-            expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
-            issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
-          },
-          timestamp: new Date().toISOString(),
-      };
-
-      const clientUpdateData = {
-        residence_country: searchForm.residenceCountry || null,
-        previous_schengen_visa: searchForm.previousSchengenVisa,
-        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
-        other_residence_permit: {
-          has_permit: searchForm.hasOtherResidencePermit,
-          country: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceCountry : "",
-          number: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceNumber : "",
-          expiry_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceExpiryDate : "",
-          issue_date: searchForm.hasOtherResidencePermit ? searchForm.otherResidenceIssueDate : "",
-        }
-      };
-      await updateClientData(registrationId, clientUpdateData);
+      const snapshot = buildClientSnapshot(snapshotInputs);
+      await updateClientData(registrationId, buildClientResidencyPatch(searchForm));
 
       const { error: snapshotError } = await (supabase as any)
         .from("registrations")
@@ -892,33 +815,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   async function handleSaveClientDraft(): Promise<boolean> {
     if (!registrationId || !client?.id) return false;
     try {
-      const snapshot = {
-        full_name: searchForm.fullName || null,
-        surname: searchForm.surname || null,
-        salutation: searchForm.salutation || null,
-        gender: searchForm.gender || null,
-        marital_status: searchForm.maritalStatus || null,
-        passport_number: searchForm.passportNumber || null,
-        passport_issue_date: searchForm.passportIssueDate || null,
-        passport_expiry_date: searchForm.passportExpiryDate || null,
-        national_id: searchForm.nationalId || null,
-        date_of_birth: searchForm.dateOfBirth || null,
-        place_of_birth: searchForm.placeOfBirth || null,
-        phone: normalizedSearchForm.phone || null,
-        email: searchForm.email || null,
-        company_name: searchForm.companyName || null,
-        company_specialty: normalizedSearchForm.companySpecialty || null,
-        job_title: searchForm.jobTitle || null,
-        department: searchForm.department || null,
-        work_city: searchForm.workCity || null,
-        work_phone: workPhoneValidation.normalized || null,
-        work_email: searchForm.workEmail || null,
-        residence_country: searchForm.residenceCountry || null,
-        previous_schengen_visa: searchForm.previousSchengenVisa,
-        schengen_visas_last_5y: searchForm.previousSchengenVisa ? searchForm.previousSchengenVisas : [],
-        other_residence_permit: normalizedSearchForm.otherResidencePermit,
-        timestamp: new Date().toISOString(),
-      };
+      const snapshot = buildClientSnapshot(snapshotInputs);
 
       const emptyToNull = (v: string) => (v === "" ? null : v);
       const clientPatch: Record<string, unknown> = {
@@ -967,10 +864,12 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
   }
 
   // --- Step 1: Save Event Selection ---
-  async function handleSaveEventDetails() {
+  // `advance = false` backs the "Save Draft" button, which previously only
+  // showed a success toast without writing anything.
+  async function handleSaveEventDetails(advance = true) {
     if (!selectedEventId) {
       toast.error("Select an event first.");
-      return;
+      return false;
     }
 
     if (registrationId) {
@@ -992,22 +891,68 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
           .eq("id", registrationId!);
 
         if (error) throw error;
-        toast.success("Event details updated.");
-        loadRegistration(registrationId);
+        toast.success(advance ? "Event details updated." : "Event draft saved.");
+        await loadRegistration(registrationId);
       } catch (e: any) {
         toast.error(e.message || "Could not update the event details.");
-        return;
+        return false;
       }
+    } else if (!advance) {
+      // No registration row exists yet, so there is nothing to persist.
+      toast.info("The event will be saved once the client is linked in the next step.");
+      return false;
     }
 
-    setStep(2);
+    if (advance) setStep(2);
+    return true;
+  }
+
+  function handleSaveEventDraft() {
+    return handleSaveEventDetails(false);
+  }
+
+  function handleVisaPasswordChange(value: string) {
+    setVisaPortalPassword(value);
+    setVisaPasswordDirty(true);
+  }
+
+  async function handleRevealVisaPassword() {
+    if (!registrationId) return;
+    setIsRevealingPassword(true);
+    try {
+      const result = await revealVisaPortalPassword(registrationId);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      if (!result.password) {
+        toast.info("No portal password has been saved for this application.");
+        return;
+      }
+      setVisaPortalPassword(result.password);
+      setShowPassword(true);
+      // Revealing must not mark the field dirty, otherwise the next autosave
+      // would rewrite the same value and log a spurious change.
+      setVisaPasswordDirty(false);
+    } finally {
+      setIsRevealingPassword(false);
+    }
+  }
+
+  /** Composes the stored embassy label; blank until a city is picked. */
+  function composeEmbassyLabel(country: string, city: string) {
+    return country && city ? `${country} Embassy in ${city}` : "";
   }
 
   function handleVisaDestinationChange(country: string) {
     const route = VISA_ROUTES.find((item) => item.country === country);
     setVisaDestination(country);
     if (!route) return;
-    setVisaEmbassy(`${country} Embassy in ${visaEmbassyCity}`);
+    // Fall back to the route's default city so switching destination never
+    // leaves the required embassy field as "<country> Embassy in ".
+    const city = visaEmbassyCity || route.city;
+    setVisaEmbassyCity(city);
+    setVisaEmbassy(composeEmbassyLabel(country, city));
     setVisaPlatform(route.portal);
     setVisaSubmissionMethod(route.submissionMethod);
     setVisaAppointmentCenter(route.center);
@@ -1047,11 +992,6 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     } else {
       startAlarm();
     }
-  }
-
-  async function requestReminderPermission() {
-    playReminderSound();
-    toast.success("Appointment reminder enabled in the dashboard.");
   }
 
   function addVisaReminder() {
@@ -1242,11 +1182,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         ...ad,
         visa_destination_country: visaDestination,
         visa_embassy: visaEmbassy,
+        visa_embassy_city: visaEmbassyCity,
         visa_type: visaType,
         visa_platform: visaPlatform,
         visa_submission_method: visaSubmissionMethod,
         visa_portal_email: visaPortalEmail,
-        visa_portal_password: visaPortalPassword,
         visa_portal_status: visaAccountStatus,
         visa_app_ref_number: visaAppRefNumber,
         visa_portal_app_status: visaPortalAppStatus,
@@ -1272,6 +1212,18 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       const { error } = await supabase.from("registrations").update(updatePayload).eq("id", registrationId!);
 
       if (error) throw error;
+
+      // The password takes a separate, encrypted path and is only written when
+      // the user actually typed a new one.
+      if (visaPasswordDirty) {
+        const passwordResult = await saveVisaPortalPassword(registrationId, visaPortalPassword);
+        if (passwordResult.error) {
+          if (!options?.silent) toast.error(passwordResult.error);
+          return false;
+        }
+        setVisaPasswordIsStored(Boolean(visaPortalPassword));
+        setVisaPasswordDirty(false);
+      }
 
       // Autosave should not create an activity row every time the user
       // pauses typing. Only an intentional step advance is meaningful
@@ -1303,6 +1255,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       JSON.stringify({
         visaDestination,
         visaEmbassy,
+        visaEmbassyCity,
         visaType,
         visaPlatform,
         visaSubmissionMethod,
@@ -1320,7 +1273,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         visaAppointmentStatus,
         visaReminders,
       }),
-    [visaDestination, visaEmbassy, visaType, visaPlatform, visaSubmissionMethod, visaPortalEmail, visaPortalPassword, visaAccountStatus, visaAppRefNumber, visaPortalAppStatus, visaAppointmentChannel, visaAppointmentCenter, visaAppointmentCity, visaAppointmentDate, visaAppointmentTime, visaAppointmentRefNumber, visaAppointmentStatus, visaReminders],
+    [visaDestination, visaEmbassy, visaEmbassyCity, visaType, visaPlatform, visaSubmissionMethod, visaPortalEmail, visaPortalPassword, visaAccountStatus, visaAppRefNumber, visaPortalAppStatus, visaAppointmentChannel, visaAppointmentCenter, visaAppointmentCity, visaAppointmentDate, visaAppointmentTime, visaAppointmentRefNumber, visaAppointmentStatus, visaReminders],
   );
 
   useEffect(() => {
@@ -1439,6 +1392,28 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     }
   }
 
+  /** Removes a stored document from both storage and the registration row. */
+  async function handleDeleteDocument(document: { path: string; name: string }) {
+    if (!registrationId) return;
+    if (!window.confirm(`Delete "${document.name}"? This cannot be undone.`)) return;
+
+    setDeletingDocumentPath(document.path);
+    try {
+      const result = await deleteRegistrationDocument(registrationId, document.path, document.name);
+      if (result.error) throw new Error(result.error);
+      // Drop it from any selection lists so the package/delivery steps do not
+      // keep referencing a file that no longer exists.
+      setPackageDocumentPaths((current) => current.filter((path) => path !== document.path));
+      setDeliveryDocumentPaths((current) => current.filter((path) => path !== document.path));
+      toast.success(`${document.name} deleted.`);
+      await loadRegistration(registrationId);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not delete the document.");
+    } finally {
+      setDeletingDocumentPath(null);
+    }
+  }
+
   // --- Step 5: Document Assembly & Package Index ---
   async function handleMergeFiles() {
     if (!registrationId) {
@@ -1460,130 +1435,40 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     try {
       // Client information is rendered first, then the selected source files are
       // appended as real pages in the same PDF package.
-      const { jsPDF } = await import("jspdf");
-      const { PDFDocument } = await import("pdf-lib");
-      const pdf = new jsPDF();
-      const generatedAt = new Date().toLocaleString("en-GB");
-      const valueOrDash = (value: unknown) => {
-        const normalized = String(value ?? "").trim();
-        return normalized || "—";
-      };
-      const applicantDetails = [
-        ["Full Name", searchForm.fullName || client?.full_name_as_passport],
-        ["Surname", searchForm.surname || client?.last_name],
-        ["Title / Salutation", searchForm.salutation || client?.title_salutation],
-        ["Gender", searchForm.gender || client?.sex],
-        ["Marital Status", searchForm.maritalStatus || client?.marital_status],
-        ["Passport Number", searchForm.passportNumber || client?.passport_number],
-        ["National ID", searchForm.nationalId || client?.national_id],
-        ["Date of Birth", searchForm.dateOfBirth || client?.date_of_birth],
-        ["Place of Birth", searchForm.placeOfBirth || client?.place_of_birth],
-        ["Passport Date of Issue", searchForm.passportIssueDate || client?.passport_issue_date],
-        ["Passport Date of Expiry", searchForm.passportExpiryDate || client?.passport_expiry_date],
-        ["Phone Number", normalizedSearchForm.phone || client?.phone],
-        ["Email Address", normalizedSearchForm.email || client?.email],
-        ["Company Name", searchForm.companyName || client?.employer_name],
-      ] as const;
+      const coverPdf = includeClientInfoInPackage
+        ? await buildPackageCoverPdf({
+            caseNumber,
+            clientName: searchForm.fullName || client?.full_name_as_passport || "Client",
+            applicantDetails: [
+              ["Full Name", searchForm.fullName || client?.full_name_as_passport],
+              ["Surname", searchForm.surname || client?.last_name],
+              ["Title / Salutation", searchForm.salutation || client?.title_salutation],
+              ["Gender", searchForm.gender || client?.sex],
+              ["Marital Status", searchForm.maritalStatus || client?.marital_status],
+              ["Passport Number", searchForm.passportNumber || client?.passport_number],
+              ["National ID", searchForm.nationalId || client?.national_id],
+              ["Date of Birth", searchForm.dateOfBirth || client?.date_of_birth],
+              ["Place of Birth", searchForm.placeOfBirth || client?.place_of_birth],
+              ["Passport Date of Issue", searchForm.passportIssueDate || client?.passport_issue_date],
+              ["Passport Date of Expiry", searchForm.passportExpiryDate || client?.passport_expiry_date],
+              ["Phone Number", normalizedSearchForm.phone || client?.phone],
+              ["Email Address", normalizedSearchForm.email || client?.email],
+              ["Company Name", searchForm.companyName || client?.employer_name],
+            ].map(([label, value]) => [String(label), String(value ?? "")] as [string, string]),
+            eventName: selectedEvent?.title_ar || selectedEvent?.title || "",
+            participationType,
+            travelPurpose,
+            visaDestination,
+            visaEmbassy,
+            visaType,
+            visaSubmissionMethod,
+            appointmentAt: [visaAppointmentDate, visaAppointmentTime].filter(Boolean).join(" "),
+            appointmentReference: visaAppointmentRefNumber,
+            documents: selectedDocuments,
+          })
+        : null;
 
-      pdf.setFontSize(18);
-      pdf.text("JAZ Visa Document Package", 20, 22);
-      pdf.setFontSize(10);
-      pdf.text(`Application: ${caseNumber || "Draft"}`, 20, 34);
-      pdf.text(`Client: ${searchForm.fullName || client?.full_name_as_passport || "Client"}`, 20, 41);
-      pdf.text(`Destination: ${visaDestination}`, 20, 48);
-      pdf.text(`Generated: ${generatedAt}`, 20, 55);
-      pdf.line(20, 62, 190, 62);
-
-      pdf.setFontSize(12);
-      pdf.text("Applicant details", 20, 74);
-      pdf.setDrawColor(220);
-      let detailsY = 82;
-      applicantDetails.forEach(([label, value], index) => {
-        const column = index % 2;
-        const x = column === 0 ? 20 : 108;
-        if (column === 0 && index > 0) detailsY += 18;
-        pdf.setFontSize(8);
-        pdf.setTextColor(100);
-        pdf.text(label, x, detailsY);
-        pdf.setFontSize(10);
-        pdf.setTextColor(25);
-        const wrappedValue = pdf.splitTextToSize(valueOrDash(value), 78);
-        pdf.text(wrappedValue.slice(0, 2), x, detailsY + 6);
-        pdf.line(x, detailsY + 12, x + 78, detailsY + 12);
-      });
-
-      const detailsBottom = detailsY + 22;
-      pdf.setTextColor(25);
-      pdf.setFontSize(12);
-      pdf.text("Visa application details", 20, detailsBottom);
-      const applicationDetails = [`Event: ${selectedEvent?.title_ar || selectedEvent?.title || "—"}`, `Participation type: ${participationType || "—"}`, `Travel purpose: ${travelPurpose || "—"}`, `Visa destination: ${visaDestination || "—"}`, `Embassy: ${visaEmbassy || "—"}`, `Visa type: ${visaType || "—"}`, `Submission method: ${visaSubmissionMethod || "—"}`, `Appointment: ${[visaAppointmentDate, visaAppointmentTime].filter(Boolean).join(" ") || "—"}`, `Appointment reference: ${visaAppointmentRefNumber || "—"}`];
-      pdf.setFontSize(9);
-      let applicationY = detailsBottom + 9;
-      applicationDetails.forEach((line) => {
-        const wrappedLine = pdf.splitTextToSize(line, 166);
-        pdf.text(wrappedLine, 24, applicationY);
-        applicationY += wrappedLine.length * 5 + 2;
-      });
-
-      pdf.addPage();
-      pdf.setFontSize(15);
-      pdf.text("Documents included in this JAZ file", 20, 22);
-      pdf.setFontSize(9);
-      pdf.text(`Application: ${caseNumber || "Draft"}  |  Total files: ${selectedDocuments.length}`, 20, 31);
-      pdf.line(20, 37, 190, 37);
-      let documentsY = 48;
-      selectedDocuments.forEach((document, index) => {
-        const documentLine = `${index + 1}. ${document.name} (${document.type})`;
-        const wrappedLine = pdf.splitTextToSize(documentLine, 160);
-        const requiredHeight = wrappedLine.length * 6 + 4;
-        if (documentsY + requiredHeight > 278) {
-          pdf.addPage();
-          pdf.setFontSize(12);
-          pdf.text("Documents included — continued", 20, 22);
-          pdf.line(20, 28, 190, 28);
-          documentsY = 40;
-          pdf.setFontSize(9);
-        }
-        pdf.text(wrappedLine, 24, documentsY);
-        documentsY += requiredHeight;
-      });
-      pdf.setFontSize(8);
-      pdf.text("The original documents remain available from the application record.", 20, 288);
-
-      const mergedPdf = await PDFDocument.create();
-      if (includeClientInfoInPackage) {
-        const infoPdf = await PDFDocument.load(pdf.output("arraybuffer"));
-        const infoPages = await mergedPdf.copyPages(infoPdf, infoPdf.getPageIndices());
-        infoPages.forEach((page) => mergedPdf.addPage(page));
-      }
-
-      for (const document of selectedDocuments) {
-        const response = await fetch(document.path);
-        if (!response.ok) throw new Error(`Could not load file: ${document.name}`);
-        const bytes = new Uint8Array(await response.arrayBuffer());
-        const contentType = response.headers.get("content-type")?.toLowerCase() || "";
-        const lowerName = document.name.toLowerCase();
-
-        if (contentType.includes("pdf") || lowerName.endsWith(".pdf")) {
-          const sourcePdf = await PDFDocument.load(bytes);
-          const pages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
-          pages.forEach((page) => mergedPdf.addPage(page));
-        } else if (contentType.includes("png") || lowerName.endsWith(".png")) {
-          const image = await mergedPdf.embedPng(bytes);
-          const page = mergedPdf.addPage([595.28, 841.89]);
-          const scale = Math.min(555.28 / image.width, 801.89 / image.height);
-          page.drawImage(image, { x: (595.28 - image.width * scale) / 2, y: (841.89 - image.height * scale) / 2, width: image.width * scale, height: image.height * scale });
-        } else if (contentType.includes("jpeg") || contentType.includes("jpg") || /\.(jpe?g)$/i.test(lowerName)) {
-          const image = await mergedPdf.embedJpg(bytes);
-          const page = mergedPdf.addPage([595.28, 841.89]);
-          const scale = Math.min(555.28 / image.width, 801.89 / image.height);
-          page.drawImage(image, { x: (595.28 - image.width * scale) / 2, y: (841.89 - image.height * scale) / 2, width: image.width * scale, height: image.height * scale });
-        } else {
-          throw new Error(`Unsupported package file: ${document.name}. Use PDF, PNG, or JPG.`);
-        }
-      }
-
-      const mergedBytes = await mergedPdf.save();
+      const mergedBytes = await mergeDocumentsIntoPdf(coverPdf, selectedDocuments);
       const requestedName = packageName.trim() || `${(client?.full_name_as_passport || "Client").replace(/\s+/g, "_")}_Visa_Package.pdf`;
       const fileName = requestedName.toLowerCase().endsWith(".pdf") ? requestedName : `${requestedName}.pdf`;
       const mergedFile = new File([new Blob([mergedBytes as BlobPart], { type: "application/pdf" })], fileName, { type: "application/pdf" });
@@ -1623,225 +1508,55 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     }
   }
 
-  // --- Step 6: Fee Calculation & Receipt Issue ---
-  const totalAmount = useMemo(() => {
-    return Object.values(fees).reduce((acc, val) => acc + val, 0);
-  }, [fees]);
-
-  const balanceDue = useMemo(() => {
-    return totalAmount - amountPaid;
-  }, [totalAmount, amountPaid]);
+  // --- Step 6: Pricing (unified from event) + Payment ---
+  // Pricing items come from the selected event's registration_config.pricing_items.
+  // They are NOT editable per order — the manager defines them when creating the event.
+  // (pricingItems / totalAmount / balanceDue are computed after `selectedEvent` below.)
 
   async function handleGenerateReceipt() {
     if (!registrationId) return;
     toast.loading("Generating the client receipt...");
     try {
-      const { jsPDF } = await import("jspdf");
-      const receiptId = `RCPT-${new Date().getFullYear()}-${caseNumber.split("-").pop() || "00124"}`;
-      const pdf = new jsPDF({ unit: "mm", format: "a4" });
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const left = 18;
-      const right = pageWidth - 18;
-      const clientName = client?.full_name_as_passport || searchForm.fullName || "Client";
-      const eventName = selectedEvent?.title || selectedEvent?.title_ar || "Event not set";
-      const money = (value: number) => `${currency === "IQD" ? "د.ع" : "$"} ${value.toFixed(2)}`;
-      const drawLabelValue = (label: string, value: string, x: number, y: number, width: number) => {
-        pdf.setFontSize(7.5);
-        pdf.setTextColor(112, 128, 144);
-        pdf.text(label.toUpperCase(), x, y);
-        pdf.setFontSize(9.5);
-        pdf.setTextColor(31, 41, 55);
-        const lines = pdf.splitTextToSize(value || "—", width);
-        pdf.text(lines, x, y + 5);
+      const receiptInput = {
+        receiptId,
+        caseNumber,
+        registrationId,
+        clientName: client?.full_name_as_passport || searchForm.fullName || "Client",
+        clientCompany: client?.employer_name || searchForm.companyName || "—",
+        eventName: selectedEvent?.title || selectedEvent?.title_ar || "Event not set",
+        paymentDate,
+        paymentMethod,
+        paymentNotes,
+        currency,
+        pricingItems,
+        discount,
+        totalAmount,
+        amountPaid,
+        balanceDue,
       };
 
-      // Branded header
-      pdf.setFillColor(139, 0, 0);
-      pdf.rect(0, 0, pageWidth, 34, "F");
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(21);
-      pdf.text("JAZ", left, 16);
-      pdf.setFontSize(10);
-      pdf.setFont("helvetica", "normal");
-      pdf.text("APPLICATIONS CONTROL", left, 23);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(15);
-      pdf.text("PAYMENT RECEIPT", right, 16, { align: "right" });
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(8.5);
-      pdf.text(receiptId, right, 23, { align: "right" });
-
-      // Receipt metadata
-      pdf.setFillColor(248, 250, 252);
-      pdf.roundedRect(left, 44, pageWidth - 36, 27, 3, 3, "F");
-      drawLabelValue("Receipt number", receiptId, left + 6, 51, 45);
-      drawLabelValue("Issue date", paymentDate || new Date().toLocaleDateString("en-GB"), left + 62, 51, 45);
-      drawLabelValue("Payment method", paymentMethod || "—", left + 118, 51, 55);
-
-      // Client and application details
-      pdf.setTextColor(139, 0, 0);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(11);
-      pdf.text("CLIENT & APPLICATION", left, 84);
-      pdf.setDrawColor(226, 232, 240);
-      pdf.line(left, 87, right, 87);
-      drawLabelValue("Client name", clientName, left, 96, 75);
-      drawLabelValue("Application ID", caseNumber || "Draft", left + 82, 96, 45);
-      drawLabelValue("Event", eventName, left + 137, 96, 37);
-
-      // Complete fee breakdown
-      pdf.setTextColor(139, 0, 0);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(11);
-      pdf.text("FEE BREAKDOWN", left, 124);
-      pdf.setFillColor(248, 250, 252);
-      pdf.roundedRect(left, 128, pageWidth - 36, 70, 3, 3, "F");
-      const feeRows = [
-        ["Service Fee", fees.service],
-        ["Event Registration Fee", fees.event],
-        ["Invitation Letter Fee", fees.invitation],
-        ["Visa Coordination Fee", fees.coordination],
-        ["Appointment Fee", fees.appointment],
-        ["Insurance Fee", fees.insurance],
-        ["Printing / Document Fee", fees.printing],
-        ["Discount", fees.discount],
-      ] as const;
-      let feeY = 138;
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(9);
-      feeRows.forEach(([label, value]) => {
-        pdf.setTextColor(label === "Discount" ? 190 : 71, label === "Discount" ? 24 : 85, label === "Discount" ? 93 : 105);
-        pdf.text(label, left + 7, feeY);
-        pdf.text(money(value), right - 7, feeY, { align: "right" });
-        pdf.setDrawColor(226, 232, 240);
-        pdf.line(left + 7, feeY + 3, right - 7, feeY + 3);
-        feeY += 7.5;
-      });
-
-      // Totals panel
-      pdf.setFillColor(139, 0, 0);
-      pdf.roundedRect(left, 208, pageWidth - 36, 39, 3, 3, "F");
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(9);
-      pdf.text("TOTAL AMOUNT", left + 8, 219);
-      pdf.text("AMOUNT PAID", left + 8, 230);
-      pdf.text("BALANCE DUE", left + 8, 241);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(11);
-      pdf.text(money(totalAmount), right - 8, 219, { align: "right" });
-      pdf.text(money(amountPaid), right - 8, 230, { align: "right" });
-      pdf.text(money(balanceDue), right - 8, 241, { align: "right" });
-
-      if (paymentNotes) {
-        pdf.setTextColor(71, 85, 105);
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(9);
-        pdf.text("NOTES", left, 263);
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(9);
-        pdf.text(pdf.splitTextToSize(paymentNotes, pageWidth - 36), left, 270);
-      }
-      pdf.setDrawColor(226, 232, 240);
-      pdf.line(left, 282, right, 282);
-      pdf.setTextColor(148, 163, 184);
-      pdf.setFontSize(8);
-      pdf.text("Generated by JAZ Applications Control", left, 290);
-      pdf.text(caseNumber || registrationId, right, 290, { align: "right" });
-
-      const fileName = `Payment_Receipt_${caseNumber || registrationId}.pdf`;
-      const receiptFile = new File([pdf.output("blob")], fileName, { type: "application/pdf" });
-      const upload = (await uploadRegistrationDocumentDirect(registrationId, receiptFile, "receipt", fileName)) as any;
+      // Internal receipt: full fee breakdown.
+      const companyFileName = `Payment_Receipt_${caseNumber || registrationId}.pdf`;
+      const companyBlob = await buildCompanyReceiptPdf(receiptInput);
+      const upload = (await uploadRegistrationDocumentDirect(
+        registrationId,
+        new File([companyBlob], companyFileName, { type: "application/pdf" }),
+        "receipt",
+        companyFileName,
+      )) as any;
       if (upload.error) throw new Error(upload.error);
       const receiptUrl = upload.url || "";
 
-      // Create a separate client-facing receipt without internal fee details.
-      const clientPdf = new jsPDF({ unit: "mm", format: "a4" });
-      const clientSafeName = clientName.replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "") || "Client";
-      const clientCompany = client?.company_name || client?.employer_name || searchForm.companyName || "—";
+      // Client-facing receipt: no internal fee details.
+      const clientSafeName = receiptInput.clientName.replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "") || "Client";
       const clientFileName = `JAZ_Payment_Receipt_${clientSafeName}_${receiptId}.pdf`;
-      let logoDataUrl = "";
-      try {
-        const logoBlob = await fetch("/Joint Annual Zone logo.png").then((response) => response.blob());
-        logoDataUrl = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(typeof reader.result === "string" ? reader.result : "");
-          reader.readAsDataURL(logoBlob);
-        });
-      } catch {
-        logoDataUrl = "";
-      }
-      clientPdf.setFillColor(11, 52, 58);
-      clientPdf.rect(0, 0, pageWidth, 42, "F");
-      clientPdf.setFillColor(38, 190, 151);
-      clientPdf.rect(0, 0, pageWidth * 0.22, 42, "F");
-      clientPdf.setFillColor(246, 190, 32);
-      clientPdf.triangle(pageWidth * 0.22, 42, pageWidth * 0.31, 42, pageWidth * 0.27, 25, "F");
-      if (logoDataUrl) clientPdf.addImage(logoDataUrl, "PNG", left, 8, 30, 20);
-      clientPdf.setTextColor(255, 255, 255);
-      clientPdf.setFont("helvetica", "bold");
-      clientPdf.setFontSize(17);
-      clientPdf.text("PAYMENT RECEIPT", right, 18, { align: "right" });
-      clientPdf.setFont("helvetica", "normal");
-      clientPdf.setFontSize(8.5);
-      clientPdf.text(receiptId, right, 27, { align: "right" });
-      clientPdf.setTextColor(83, 48, 91);
-      clientPdf.setFont("helvetica", "bold");
-      clientPdf.setFontSize(15);
-      clientPdf.text("Your payment", pageWidth / 2, 57, { align: "center" });
-      clientPdf.setTextColor(31, 41, 55);
-      clientPdf.setFont("helvetica", "normal");
-      clientPdf.setFontSize(8.5);
-      clientPdf.text(`Order number: ${receiptId}`, left, 72);
-      clientPdf.text(`Order date: ${paymentDate || new Date().toLocaleDateString("en-GB")}`, left, 79);
-      clientPdf.text("Order status: Confirmed", left, 86);
-      clientPdf.text(`Method of payment: ${paymentMethod || "—"}`, left, 93);
-      const clientInfoX = right - 76;
-      clientPdf.text(`Client name: ${clientName}`, clientInfoX, 72);
-      clientPdf.text(`Company: ${clientCompany}`, clientInfoX, 79);
-      clientPdf.text(`Application: ${caseNumber || "—"}`, clientInfoX, 86);
-      clientPdf.setDrawColor(148, 163, 184);
-      clientPdf.setLineWidth(0.35);
-      const tableTop = 119;
-      const tableBottom = 139;
-      const quantityX = left + 48;
-      const amountX = right - 92;
-      clientPdf.line(left, tableTop, right, tableTop);
-      clientPdf.line(left, tableTop + 8, right, tableTop + 8);
-      clientPdf.line(left, tableBottom, right, tableBottom);
-      clientPdf.line(quantityX, tableTop, quantityX, tableBottom);
-      clientPdf.line(amountX, tableTop, amountX, tableBottom);
-      clientPdf.setFont("helvetica", "bold");
-      clientPdf.setFontSize(8);
-      clientPdf.text("Description", left + 5, tableTop + 5);
-      clientPdf.text("Quantity", quantityX + 5, tableTop + 5);
-      clientPdf.text("Total amount (incl. services)", amountX + 5, tableTop + 5);
-      clientPdf.setFont("helvetica", "normal");
-      clientPdf.text("Event & visa services", left + 2, tableTop + 15);
-      clientPdf.text("1", quantityX + 8, tableTop + 15);
-      clientPdf.text(`(${money(totalAmount)})`, right - 5, tableTop + 15, { align: "right" });
-      clientPdf.setFont("helvetica", "bold");
-      clientPdf.setFontSize(9);
-      clientPdf.text("TOTAL (incl. services):", right - 5, 155, { align: "right" });
-      clientPdf.text(`(${money(totalAmount)})`, right - 5, 163, { align: "right" });
-      clientPdf.setTextColor(100, 116, 139);
-      clientPdf.setFont("helvetica", "normal");
-      clientPdf.setFontSize(8.5);
-      clientPdf.text("Thank you for your payment.", left, 252);
-      clientPdf.setDrawColor(226, 232, 240);
-      clientPdf.line(left, 263, right, 263);
-      clientPdf.setTextColor(71, 85, 105);
-      clientPdf.setFont("helvetica", "bold");
-      clientPdf.setFontSize(8);
-      clientPdf.text("JOINT ANNUAL ZONE (JAZ)", left, 272);
-      clientPdf.setFont("helvetica", "normal");
-      clientPdf.setFontSize(7.5);
-      clientPdf.text("Iraq's gateway to international exhibitions and partnerships", left, 278);
-      clientPdf.text("info@jaz.iq  •  +964 771 900 0600  •  www.jaz.iq", left, 284);
-      clientPdf.text(receiptId, right, 287, { align: "right" });
-      const clientReceiptFile = new File([clientPdf.output("blob")], clientFileName, { type: "application/pdf" });
-      const clientUpload = (await uploadRegistrationDocumentDirect(registrationId, clientReceiptFile, "client_receipt", clientFileName)) as any;
+      const clientBlob = await buildClientReceiptPdf(receiptInput, await loadLogoDataUrl());
+      const clientUpload = (await uploadRegistrationDocumentDirect(
+        registrationId,
+        new File([clientBlob], clientFileName, { type: "application/pdf" }),
+        "client_receipt",
+        clientFileName,
+      )) as any;
       if (clientUpload.error) throw new Error(clientUpload.error);
       const clientReceiptUrl = clientUpload.url || "";
 
@@ -1853,7 +1568,11 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         payment_date: paymentDate,
         payment_notes: paymentNotes,
         payment_currency: currency,
-        ...(canEditFeeBreakdown ? { fee_breakdown: fees } : {}),
+        // Snapshot the event pricing at receipt time so the record stays stable
+        // even if the event prices change later. Discount is finance-only.
+        pricing_snapshot: pricingItems.map((item) => ({ label: item.label, price: item.price })),
+        pricing_currency: currency,
+        ...(canEditFeeBreakdown ? { discount } : {}),
         amount_paid: amountPaid,
         balance_due: balanceDue,
         receipt_number: receiptId,
@@ -1866,7 +1585,7 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       const { error } = await supabase
         .from("registrations")
         .update({
-          payment_status: balanceDue <= 0 ? "paid" : "partially_paid",
+          payment_status: amountPaid <= 0 ? "unpaid" : balanceDue <= 0 ? "paid" : "partially_paid",
           total_amount: totalAmount,
           additional_data: updatedAd,
           case_status: "ready_for_next_stage",
@@ -1944,13 +1663,15 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     }
   }
 
-  async function handleSavePaymentDraft() {
-    if (!registrationId) return;
+  async function handleSavePaymentDraft(options?: { silent?: boolean }) {
+    if (!registrationId) return false;
     try {
       const ad = (registration?.additional_data as Record<string, unknown>) || {};
+      const paymentStatus = amountPaid <= 0 ? "unpaid" : balanceDue <= 0 ? "paid" : "partially_paid";
       const { error } = await supabase
         .from("registrations")
         .update({
+          payment_status: paymentStatus,
           total_amount: totalAmount,
           additional_data: {
             ...ad,
@@ -1959,7 +1680,9 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
             payment_date: paymentDate,
             payment_notes: paymentNotes,
             payment_currency: currency,
-            ...(canEditFeeBreakdown ? { fee_breakdown: fees } : {}),
+            pricing_snapshot: pricingItems.map((item) => ({ label: item.label, price: item.price })),
+            pricing_currency: currency,
+            ...(canEditFeeBreakdown ? { discount } : {}),
             amount_paid: amountPaid,
             balance_due: balanceDue,
           },
@@ -1973,13 +1696,37 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
         action: "payment_updated",
         description: "Payment draft saved.",
         step: 6,
-        metadata: { payment_status: registration?.payment_status, amount_paid: amountPaid, payment_currency: currency },
+        metadata: { payment_status: paymentStatus, amount_paid: amountPaid, payment_currency: currency },
       });
-      toast.success("Payment draft saved.");
-      await loadRegistration(registrationId);
+      if (!options?.silent) {
+        toast.success("Payment draft saved.");
+        await loadRegistration(registrationId);
+      }
+      return true;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not save the payment draft.");
+      return false;
     }
+  }
+
+  /** Step 5 → 6. Persists the workflow position so the list view is accurate. */
+  async function handleAdvanceToPayment() {
+    if (!validateStepBeforeAdvance(6)) return;
+    await persistCurrentStep(6);
+    setStep(6);
+  }
+
+  /**
+   * Step 6 → 7. Saves the payment inputs first — previously everything typed
+   * on the payment step was discarded unless a receipt had been generated.
+   */
+  async function handleAdvanceToDelivery() {
+    if (!validateStepBeforeAdvance(7)) return;
+    const saved = await handleSavePaymentDraft({ silent: true });
+    if (!saved) return;
+    await persistCurrentStep(7);
+    setStep(7);
+    if (registrationId) await loadRegistration(registrationId);
   }
 
   async function handleArchiveReceipt() {
@@ -2011,6 +1758,70 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not archive the receipt.");
     }
+  }
+
+  // --- Step 7: Client file delivery ---
+  // Step 7 previously had no persistence at all: the message, the selected
+  // files and the delivery status were rendered from the database but never
+  // written back, so a case could never be marked as delivered.
+  const [deliverySaveState, setDeliverySaveState] = useState<"idle" | "saving">("idle");
+
+  async function handleSaveDelivery(markAsSent: boolean) {
+    if (!registrationId) return false;
+    if (markAsSent && deliveryDocumentPaths.length === 0) {
+      toast.error("Select at least one file before recording the delivery.");
+      return false;
+    }
+
+    setDeliverySaveState("saving");
+    try {
+      const ad = (registration?.additional_data as Record<string, unknown>) || {};
+      const nextStatus = markAsSent ? "sent" : "not_sent";
+      const deliveredAt = new Date().toISOString();
+      const { error } = await supabase
+        .from("registrations")
+        .update({
+          additional_data: {
+            ...ad,
+            delivery_message: deliveryMessage,
+            delivery_document_paths: deliveryDocumentPaths,
+            delivery_status: nextStatus,
+            ...(markAsSent ? { delivery_sent_at: deliveredAt, delivery_sent_by: currentUser?.id || null } : {}),
+          },
+          ...(markAsSent ? { case_status: "completed" } : {}),
+          current_step: 7,
+          updated_at: deliveredAt,
+        })
+        .eq("id", registrationId);
+      if (error) throw error;
+
+      setDeliveryStatus(nextStatus);
+      await recordRegistrationActivity({
+        registrationId,
+        action: markAsSent ? "delivery_sent" : "delivery_updated",
+        description: markAsSent ? "Client file delivery recorded and the case was closed." : "Delivery draft saved.",
+        step: 7,
+        metadata: { delivery_status: nextStatus, files: deliveryDocumentPaths.length },
+      });
+      toast.success(markAsSent ? "Delivery recorded and the case is now closed." : "Delivery draft saved.");
+      await loadRegistration(registrationId);
+      return true;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save the delivery details.");
+      return false;
+    } finally {
+      setDeliverySaveState("idle");
+    }
+  }
+
+  /** Marks the workflow position without touching stage-specific data. */
+  async function persistCurrentStep(nextStep: number) {
+    if (!registrationId) return;
+    const { error } = await supabase
+      .from("registrations")
+      .update({ current_step: nextStep, updated_at: new Date().toISOString() })
+      .eq("id", registrationId);
+    if (error) console.error("Failed to persist the current step:", error);
   }
 
   function openWhatsApp() {
@@ -2064,6 +1875,50 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     return events.find((e) => e.id === selectedEventId);
   }, [events, selectedEventId]);
 
+  // Pricing items are unified from the event (registration_config.pricing_items).
+  // They are NOT editable per order — the manager defines them when creating the event.
+  const pricingItems = useMemo(() => {
+    const rc = (selectedEvent?.registration_config as Record<string, unknown> | null) || {};
+    const list = Array.isArray(rc.pricing_items) ? rc.pricing_items : [];
+    return list
+      .map((item: any) => ({ label: String(item?.label || "Item").trim() || "Item", price: Number(item?.price) || 0 }))
+      .filter((item) => item.label || item.price);
+  }, [selectedEvent]);
+
+  const currencySymbol = currency === "IQD" ? "IQD" : currency === "EUR" ? "€" : "$";
+
+  /**
+   * Single source of truth for the receipt number. The payment step used to
+   * render a hardcoded `RCPT-2026-…` while the generated PDF used the current
+   * year, so the number on screen did not match the number in the file.
+   * A receipt that has already been issued keeps its original number.
+   */
+  const receiptId = useMemo(() => {
+    const issued = (registration?.additional_data as Record<string, unknown> | null)?.receipt_number;
+    if (typeof issued === "string" && issued) return issued;
+    const sequence = caseNumber.split("-").pop() || "00000";
+    return `RCPT-${new Date().getFullYear()}-${sequence}`;
+  }, [registration?.additional_data, caseNumber]);
+
+  const totalAmount = useMemo(() => {
+    const itemsTotal = pricingItems.reduce((acc, item) => acc + item.price, 0);
+    return Math.max(0, itemsTotal - (discount || 0));
+  }, [pricingItems, discount]);
+
+  const balanceDue = useMemo(() => {
+    return totalAmount - amountPaid;
+  }, [totalAmount, amountPaid]);
+
+  // Sync the payment currency with the event's pricing currency whenever the
+  // selected event changes.
+  useEffect(() => {
+    const rc = (selectedEvent?.registration_config as Record<string, unknown> | null) || {};
+    const eventCurrency = rc.pricing_currency;
+    if (eventCurrency === "USD" || eventCurrency === "IQD" || eventCurrency === "EUR") {
+      setCurrency(eventCurrency);
+    }
+  }, [selectedEvent]);
+
   const phoneValidation = useMemo(() => getPhoneValidation(searchForm.phone, phoneCountry), [searchForm.phone, phoneCountry]);
   const workPhoneValidation = useMemo(() => getPhoneValidation(searchForm.workPhone, workPhoneCountry), [searchForm.workPhone, workPhoneCountry]);
 
@@ -2085,6 +1940,17 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
       }
     }),
     [searchForm, phoneValidation.normalized, workPhoneValidation.normalized, emailValidation.normalized, companySpecialtyOther],
+  );
+
+  /** Inputs for `buildClientSnapshot`, shared by every save path. */
+  const snapshotInputs = useMemo(
+    () => ({
+      searchForm,
+      phone: normalizedSearchForm.phone,
+      workPhone: workPhoneValidation.normalized,
+      companySpecialty: normalizedSearchForm.companySpecialty,
+    }),
+    [searchForm, normalizedSearchForm.phone, normalizedSearchForm.companySpecialty, workPhoneValidation.normalized],
   );
 
   const clientDraftSnapshot = useMemo(
@@ -2219,270 +2085,248 @@ export function WizardClient({ events, employees, initialRegistrationId, initial
     };
   }, [selectedEvent]);
 
+
   // --- Render Helpers ---
   const breadcrumbLabel = useMemo(() => {
-    switch (step) {
-      case 1:
-        return "Select Event";
-      case 2:
-        return "Select Event > Search Client";
-      case 3:
-        return "Select Event > Search Client > New Application";
-      case 4:
-        return "Select Event > Search Client > New Application > Visa Application & Appointment";
-      case 5:
-        return "Select Event > Search Client > New Application > Visa Application & Appointment > Document Assembly & Archiving";
-      case 6:
-        return "Select Event > Search Client > New Application > Visa Application & Appointment > Document Assembly & Archiving > Payment & Receipt";
-      case 7:
-        return "Select Event > Search Client > New Application > Visa Application & Appointment > Document Assembly & Archiving > Payment & Receipt > Client File Delivery & Status";
-      default:
-        return "Select Event";
-    }
+    const trail = REGISTRATION_STEPS.slice(0, Math.max(1, Math.min(step, REGISTRATION_STEPS.length)))
+      .map((item) => item.label);
+    return trail.join(" > ");
   }, [step]);
 
   const assignedEmployee = employees.find((employee) => employee.id === assignedTo);
-  const latestActivity = Array.isArray(registration?.registration_events) ? [...registration.registration_events].sort((a: any, b: any) => String(b.created_at).localeCompare(String(a.created_at)))[0] : null;
+  const latestActivity = Array.isArray(registration?.registration_events)
+    ? [...registration.registration_events].sort((a: any, b: any) => String(b.created_at).localeCompare(String(a.created_at)))[0]
+    : null;
   const summaryAd = (registration?.additional_data as Record<string, any>) || {};
-  const summaryAppointment = summaryAd.visa_appointment_date ? `${summaryAd.visa_appointment_date}${summaryAd.visa_appointment_time ? ` ${summaryAd.visa_appointment_time}` : ""}` : "";
+  const summaryAppointment = summaryAd.visa_appointment_date
+    ? `${summaryAd.visa_appointment_date}${summaryAd.visa_appointment_time ? ` ${summaryAd.visa_appointment_time}` : ""}`
+    : "";
   const summaryStatus = registration?.case_status === "completed" ? "Completed" : registration?.case_status === "ready_for_next_stage" ? "Ready" : registration ? "In progress" : "Draft";
   const missingSummaryDocuments = requiredVisaDocuments.filter((definition) => !findDocument(definition)).length;
-  const stepStatus = {
+
+  const stepStatus: Record<number, StepStatus> = {
     1: selectedEvent ? "complete" : "warning",
     2: client ? "complete" : "warning",
     3: registration && client ? "complete" : "warning",
     4: visaDestination && visaEmbassy.trim() && visaType && visaSubmissionMethod ? "complete" : "warning",
     5: missingSummaryDocuments === 0 && !!packageDocument ? "complete" : "warning",
-    6: amountPaid >= totalAmount ? "complete" : "warning",
+    6: totalAmount > 0 && amountPaid >= totalAmount ? "complete" : "warning",
     7: deliveryStatus === "sent" ? "complete" : "warning",
-  } as const;
+  };
 
-  return (
-    <WizardView
-      {...{
-        AlertTriangle,
-        ApplicationSummary,
-        Badge,
-        Bell,
-        Button,
-        Card,
-        CheckCircle2,
-        ClientSummary,
-        Clock,
-        Download,
-        EMPTY_SCHENGEN_VISA,
-        EmailField,
-        ExternalLink,
-        Eye,
-        EyeOff,
-        FileCode,
-        FileText,
-        FolderKanban,
-        IRAQI_GOVERNORATES,
-        Input,
-        Lock,
-        Mail,
-        MessageCircle,
-        PhoneNumberField,
-        Plus,
-        Printer,
-        REGISTRATION_STEPS,
-        RefreshCw,
-        RegistrationProgress,
-        SCHENGEN_COUNTRIES,
-        Search,
-        SearchableChoice,
-        Select,
-        SelectContent,
-        SelectItem,
-        SelectTrigger,
-        SelectValue,
-        Trash2,
-        Upload,
-        User,
-        VISA_DOCUMENTS,
-        VISA_ROUTES,
-        VISA_SUBMISSION_METHODS,
-        VISA_TYPE_OPTIONS,
-        Volume2,
-        X,
-        addVisaReminder,
-        amountPaid,
-        appNotes,
-        assignedEmployee,
-        assignedTo,
-        balanceDue,
-        breadcrumbLabel,
-        buildTravelPurpose,
-        canEditFeeBreakdown,
-        caseNumber,
-        client,
-        clientSaveState,
-        cn,
-        companySpecialtyOther,
-        currentUser,
-        deliveryDocumentPaths,
-        deliveryMessage,
-        deliveryStatus,
-        documentImportFile,
-        documentImportText,
-        documentImportType,
-        emailValidation,
-        employees,
-        events,
-        fees,
-        findDocument,
-        formatEventDate,
-        fullNameIsValid,
-        handleArchiveReceipt,
-        handleContinueWithClient,
-        handleCreateNewClient,
-        handleDownloadReceipt,
-        handleGenerateReceipt,
-        handleMergeFiles,
-        handlePrintReceipt,
-        handleSaveDraftOnly,
-        handleSaveEventDetails,
-        handleSaveIntake,
-        handleSavePaymentDraft,
-        handleSaveVisaDetails,
-        handleSearch,
-        handleStep4FileUpload,
-        handleVisaDestinationChange,
-        hasSearched,
-        includeClientInfoInPackage,
-        inviterConfig,
-        isImportingDocument,
-        isPackageGenerating,
-        isPending,
-        jobTitleIsOther,
-        jobTitleOther,
-        latestActivity,
-        mergeableDocuments,
-        missingSummaryDocuments,
-        nationalIdIsValid,
-        newReminderAt,
-        newReminderNote,
-        onClose,
-        openWhatsApp,
-        openDeliveryEmail,
-        packageDocument,
-        packageDocumentPaths,
-        packageName,
-        participationType,
-        passportNumberIsValid,
-        paymentCategory,
-        currency,
-        paymentDate,
-        paymentMethod,
-        paymentNotes,
-        phoneCountry,
-        workPhoneCountry,
-        setWorkPhoneCountry,
-        phoneValidation,
-        placeOfBirthCitiesByCountry,
-        placeOfBirthCountries,
-        processImportedDocument,
-        populateCompanyInformationFromClient,
-        ocrHighlightedFields,
-        setOcrHighlightedFields,
-        registration,
-        registrationDocuments,
-        registrationId,
-        requiredVisaDocuments,
-        router,
-        searchForm,
-        searchResults,
-        selectedEvent,
-        selectedEventId,
-        selectedPotentialMatch,
-        setAmountPaid,
-        setCurrency,
-        setAppNotes,
-        setAssignedTo,
-        setCompanySpecialtyOther,
-        setDeliveryDocumentPaths,
-        setDeliveryMessage,
-        setDocumentImportFile,
-        setDocumentImportText,
-        setDocumentImportType,
-        setFees,
-        setHasSearched,
-        setIncludeClientInfoInPackage,
-        setJobTitleIsOther,
-        setJobTitleOther,
-        setNewReminderAt,
-        setNewReminderNote,
-        setPackageDocumentPaths,
-        setPackageName,
-        setParticipationType,
-        setPaymentCategory,
-        setPaymentDate,
-        setPaymentMethod,
-        setPaymentNotes,
-        setPhoneCountry,
-        setSearchForm,
-        setSearchResults,
-        setSelectedEventId,
-        setSelectedPotentialMatch,
-        setShowDocumentImport,
-        setShowPassword,
-        setStep,
-        setTravelPurpose,
-        setVisaAccountStatus,
-        setVisaAppRefNumber,
-        setVisaAppointmentCenter,
-        setVisaAppointmentChannel,
-        setVisaAppointmentCity,
-        setVisaAppointmentDate,
-        setVisaAppointmentRefNumber,
-        setVisaAppointmentStatus,
-        setVisaAppointmentTime,
-        setVisaEmbassy,
-        setVisaEmbassyCity,
-        setVisaPlatform,
-        setVisaPortalAppStatus,
-        setVisaPortalEmail,
-        setVisaPortalPassword,
-        setVisaReminders,
-        setVisaSubmissionMethod,
-        setVisaType,
-        setWorkCityIsOther,
-        setWorkCityOther,
-        showDocumentImport,
-        showPassword,
-        step,
-        stepStatus,
-        summaryAppointment,
-        summaryStatus,
-        surnameIsValid,
-        toast,
-        totalAmount,
-        travelPurpose,
-        uploadError,
-        uploadingDocumentType,
-        validateStepBeforeAdvance,
-        visaAccountStatus,
-        visaAppRefNumber,
-        visaAppointmentCenter,
-        visaAppointmentChannel,
-        visaAppointmentCity,
-        visaAppointmentDate,
-        visaAppointmentRefNumber,
-        visaAppointmentStatus,
-        visaAppointmentTime,
-        visaDestination,
-        visaEmbassyCity,
-        visaPlatform,
-        visaPortalAppStatus,
-        visaPortalEmail,
-        visaPortalPassword,
-        visaReminders,
-        visaSubmissionMethod,
-        visaType,
-        workCityIsOther,
-        workCityOther,
-      }}
-    />
-  );
+  const reloadRegistration = async () => {
+    if (registrationId) await loadRegistration(registrationId);
+  };
+
+  const storedReceipt = getStoredReceipt();
+
+  // The model is assembled slice by slice. Because `WizardModel` is a concrete
+  // interface, a key that a step needs but the controller forgets to provide
+  // is now a compile error rather than a runtime `undefined`.
+  const model: WizardModel = {
+    shell: {
+      step,
+      setStep,
+      registrationId,
+      registration,
+      client,
+      caseNumber,
+      currentUser,
+      employees,
+      assignedEmployee,
+      isPending,
+      onClose,
+      breadcrumbLabel,
+      stepStatus,
+      summaryStatus,
+      summaryAppointment,
+      latestActivity,
+      missingSummaryDocuments,
+      validateStepBeforeAdvance,
+      reloadRegistration,
+    },
+    event: {
+      events: events as unknown as RegistrationEvent[],
+      selectedEvent: selectedEvent as unknown as RegistrationEvent | undefined,
+      selectedEventId,
+      setSelectedEventId,
+      participationType,
+      setParticipationType,
+      travelPurpose,
+      setTravelPurpose,
+      inviterConfig,
+      handleSaveEventDetails,
+      handleSaveEventDraft,
+    },
+    intake: {
+      searchForm,
+      setSearchForm,
+      fullNameIsValid,
+      surnameIsValid,
+      passportNumberIsValid,
+      nationalIdIsValid,
+      phoneValidation,
+      workPhoneValidation,
+      emailValidation,
+      phoneCountry,
+      setPhoneCountry,
+      workPhoneCountry,
+      setWorkPhoneCountry,
+      companySpecialtyOther,
+      setCompanySpecialtyOther,
+      jobTitleIsOther,
+      setJobTitleIsOther,
+      jobTitleOther,
+      setJobTitleOther,
+      workCityIsOther,
+      setWorkCityIsOther,
+      workCityOther,
+      setWorkCityOther,
+      searchResults,
+      setSearchResults,
+      hasSearched,
+      setHasSearched,
+      selectedPotentialMatch,
+      setSelectedPotentialMatch,
+      handleSearch,
+      handleContinueWithClient,
+      handleCreateNewClient,
+      populateCompanyInformationFromClient,
+      assignedTo,
+      setAssignedTo,
+      appNotes,
+      setAppNotes,
+      handleSaveIntake,
+      handleSaveDraftOnly,
+      clientSaveState,
+      showDocumentImport,
+      setShowDocumentImport,
+      documentImportType,
+      setDocumentImportType,
+      documentImportFile,
+      setDocumentImportFile,
+      documentImportText,
+      setDocumentImportText,
+      isImportingDocument,
+      processImportedDocument,
+      ocrHighlightedFields,
+      setOcrHighlightedFields,
+    },
+    visa: {
+      visaDestination,
+      setVisaDestination,
+      visaEmbassy,
+      setVisaEmbassy,
+      visaEmbassyCity,
+      setVisaEmbassyCity,
+      visaType,
+      setVisaType,
+      visaPlatform,
+      setVisaPlatform,
+      visaSubmissionMethod,
+      setVisaSubmissionMethod,
+      visaPortalEmail,
+      setVisaPortalEmail,
+      visaPortalPassword,
+      handleVisaPasswordChange,
+      visaPasswordIsStored,
+      isRevealingPassword,
+      handleRevealVisaPassword,
+      showPassword,
+      setShowPassword,
+      visaAccountStatus,
+      setVisaAccountStatus,
+      visaAppRefNumber,
+      setVisaAppRefNumber,
+      visaPortalAppStatus,
+      setVisaPortalAppStatus,
+      visaAppointmentCenter,
+      setVisaAppointmentCenter,
+      visaAppointmentCity,
+      setVisaAppointmentCity,
+      visaAppointmentDate,
+      setVisaAppointmentDate,
+      visaAppointmentTime,
+      setVisaAppointmentTime,
+      visaAppointmentRefNumber,
+      setVisaAppointmentRefNumber,
+      visaAppointmentStatus,
+      setVisaAppointmentStatus,
+      visaReminders,
+      setVisaReminders,
+      newReminderAt,
+      setNewReminderAt,
+      newReminderNote,
+      setNewReminderNote,
+      addVisaReminder,
+      visaSaveState,
+      handleVisaDestinationChange,
+      handleSaveVisaDetails,
+    },
+    documents: {
+      registrationDocuments,
+      mergeableDocuments,
+      packageDocument,
+      packageDocumentPaths,
+      setPackageDocumentPaths,
+      packageName,
+      setPackageName,
+      includeClientInfoInPackage,
+      setIncludeClientInfoInPackage,
+      isPackageGenerating,
+      handleMergeFiles,
+      handleUploadDocument: handleStep4FileUpload,
+      handleDeleteDocument,
+      uploadingDocumentType,
+      deletingDocumentPath,
+      uploadError,
+      requiredVisaDocuments,
+      findDocument,
+      handleAdvanceToPayment,
+    },
+    payment: {
+      paymentCategory,
+      setPaymentCategory,
+      paymentMethod,
+      setPaymentMethod,
+      paymentDate,
+      setPaymentDate,
+      paymentNotes,
+      setPaymentNotes,
+      currency,
+      setCurrency,
+      currencySymbol,
+      pricingItems,
+      discount,
+      setDiscount,
+      totalAmount,
+      amountPaid,
+      setAmountPaid,
+      balanceDue,
+      canEditFeeBreakdown,
+      receiptId,
+      storedReceipt,
+      clientReceiptUrl: String(summaryAd.client_receipt_pdf_url || ""),
+      receiptArchivedAt: String(summaryAd.receipt_archived_at || ""),
+      handleGenerateReceipt,
+      handleDownloadReceipt,
+      handlePrintReceipt,
+      handleArchiveReceipt,
+      handleSavePaymentDraft,
+      handleAdvanceToDelivery,
+    },
+    delivery: {
+      deliveryDocumentPaths,
+      setDeliveryDocumentPaths,
+      deliveryMessage,
+      setDeliveryMessage,
+      deliveryStatus,
+      deliverySaveState,
+      handleSaveDelivery,
+      openWhatsApp,
+      openDeliveryEmail,
+    },
+  };
+
+  return <WizardView model={model} />;
 }

@@ -35,7 +35,7 @@ export function TrainingDevelopmentSection() {
                 {isAr ? 'استعرض برامج التدريب' : 'Explore Training Programs'}
               </Link>
               <Link
-                href="/partnership"
+                href="/cooperation"
                 className="inline-flex items-center rounded-full border border-[#001a33] px-5 py-2.5 text-xs font-bold text-[#001a33] transition-colors hover:bg-[#001a33] hover:text-white"
               >
                 {isAr ? 'ابدأ مشاركتك معنا' : 'Start Your Participation with Us'}

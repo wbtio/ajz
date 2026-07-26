@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- event configs and the
+   current-user profile are free-form JSONB payloads from Supabase. */
+
 export interface RegistrationEvent {
   id: string
   title: string
@@ -11,7 +14,9 @@ export interface RegistrationEvent {
   sector: string | null
   status?: string | null
   organizer?: string | null
+  event_type?: string | null
   registration_config: any
+  conference_config?: any
 }
 
 export interface Employee {
@@ -45,6 +50,8 @@ export type RegistrationDocument = {
   path: string
   type: string
   uploadedAt?: string
+  /** Bytes, as reported by storage at upload time. Absent on legacy rows. */
+  size?: number
 }
 
 export type PreviousSchengenVisa = {

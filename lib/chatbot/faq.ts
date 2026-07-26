@@ -82,25 +82,25 @@ export const FAQ: Record<Locale, FaqCategory[]> = {
       ],
     },
     {
-      id: 'partners',
+      id: 'cooperation',
       icon: 'Handshake',
-      label: 'الشراكات',
+      label: 'التعاون',
       items: [
         {
-          q: 'شلون أصير شريك ويا جاز؟',
-          a: 'روح لصفحة [الشراكات](/partnership)، اختر نوع الشراكة المناسب، وبعدها تكدر تتواصل ويانا عبر البريد الإلكتروني أو تملأ استمارة التعاون ونرجعلك.',
+          q: 'شلون أتعاون ويا جاز؟',
+          a: 'روح لصفحة [التعاون](/cooperation)، اختر مسار التعاون المناسب (شركات، جامعات، مهنيون، أو فرص الشباب)، وبعدها املأ استمارة طلب التعاون ونرجعلك.',
         },
         {
-          q: 'شنو أنواع الشراكات المؤسسية؟',
-          a: 'نوفّر أربعة أنواع من الشراكات المؤسسية:\n\n- **الشراكات التجارية** — دعم المنتجات والخدمات المستدامة.\n- **الشراكات التسويقية** — ترويج مشترك للمبادرات.\n- **الدعم التقني** — حلول تقنية مبتكرة.\n- **المسؤولية الاجتماعية** — رعاية حملات التوعية والتدريب المجتمعي.',
+          q: 'شنو مسارات التعاون المتاحة؟',
+          a: 'نوفّر أربعة مسارات للتعاون:\n\n- **الشركات والمؤسسات** — المشاركة في المعارض والوفود والرعاية.\n- **الجامعات والمؤسسات الأكاديمية** — الوفود الأكاديمية والمؤتمرات وتبادل المعرفة.\n- **المهنيون والأفراد** — المشاركة في المعارض المتخصصة والبرامج المهنية.\n- **فرص الشباب** — مبادرة جاز للشباب والتدريب العملي ودعم الأفكار الريادية.',
         },
         {
-          q: 'شلون أتطوع وياكم؟',
-          a: 'نرحّب بالطاقات التطوعية! تكدر تنضم بأحد المجالات: **التصميم الجرافيكي**، **إدارة المشاريع**، **التسويق الرقمي**، **الدعم المجتمعي**، أو **تطوير الويب**. سجّل من صفحة [الشراكات](/partnership).',
+          q: 'شلون أشارك بفرصة من فرص الشباب؟',
+          a: 'تقدر تنضم عبر مسار فرص الشباب في صفحة [التعاون](/cooperation): مبادرة جاز للشباب، التدريب العملي وتطوير المهارات، دعم الأفكار والمشاريع الريادية، أو المشاركة في لجان الفعاليات.',
         },
         {
-          q: 'عندي فكرة مشروع مستدام، تكدرون تدعموني؟',
-          a: 'أكيد! نساعد الأفراد والمؤسسات على تحويل الأفكار إلى مشاريع حقيقية تخدم البيئة والمجتمع. شارك فكرتك معنا من صفحة [الشراكات](/partnership) وراح نناقش كيفية دعمها وتطويرها.',
+          q: 'عندي فكرة مشروع، تكدرون تدعموني؟',
+          a: 'أكيد! نساعد الأفراد والمؤسسات على تحويل الأفكار إلى مشاريع حقيقية. شارك فكرتك عبر استمارة طلب التعاون في صفحة [التعاون](/cooperation) وراح نناقش كيفية دعمها وتطويرها.',
         },
       ],
     },
@@ -213,25 +213,25 @@ export const FAQ: Record<Locale, FaqCategory[]> = {
       ],
     },
     {
-      id: 'partners',
+      id: 'cooperation',
       icon: 'Handshake',
-      label: 'Partnerships',
+      label: 'Cooperation',
       items: [
         {
-          q: 'How can I become a partner?',
-          a: 'Go to the [Partnership](/partnership) page, choose the partnership type that fits you, then reach out by email or fill out the collaboration form and we\'ll get back to you.',
+          q: 'How can I cooperate with JAZ?',
+          a: 'Go to the [Cooperation](/cooperation) page, choose the cooperation path that fits you (Companies, Universities, Professionals, or Youth), then fill out the cooperation request form and we\'ll get back to you.',
         },
         {
-          q: 'What types of corporate partnerships are there?',
-          a: 'We offer four types of corporate partnerships:\n\n- **Commercial** — supporting sustainable products and services.\n- **Marketing** — joint promotion of initiatives.\n- **Technical Support** — innovative technology solutions.\n- **Social Responsibility** — sponsoring awareness campaigns and community training.',
+          q: 'What cooperation paths are available?',
+          a: 'We offer four cooperation paths:\n\n- **Companies and Institutions** — participation in exhibitions, delegations, and sponsorship.\n- **Universities and Academic Institutions** — academic delegations, conferences, and knowledge exchange.\n- **Professionals and Individuals** — participation in specialized exhibitions and professional programs.\n- **Youth Opportunities** — JAZ Youth Initiative, practical training, and support for entrepreneurial ideas.',
         },
         {
-          q: 'How can I volunteer with you?',
-          a: 'We welcome volunteers! You can join in: **Graphic Design**, **Project Management**, **Digital Marketing**, **Community Support**, or **Web Development**. Register from the [Partnership](/partnership) page.',
+          q: 'How can I join a youth opportunity?',
+          a: 'You can apply through the Youth Opportunities path on the [Cooperation](/cooperation) page: JAZ Youth Initiative, practical training and skills development, support for entrepreneurial ideas, or participation in event committees.',
         },
         {
-          q: 'I have a sustainable project idea — can you support it?',
-          a: 'Absolutely! We help individuals and institutions turn ideas into real projects that serve the environment and society. Share your idea via the [Partnership](/partnership) page and we\'ll discuss how to support and develop it.',
+          q: 'I have a project idea — can you support it?',
+          a: 'Absolutely! We help individuals and institutions turn ideas into real projects. Share your idea via the cooperation request form on the [Cooperation](/cooperation) page and we\'ll discuss how to support and develop it.',
         },
       ],
     },

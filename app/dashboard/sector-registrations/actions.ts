@@ -18,7 +18,7 @@ export async function updateSectorRegistrationStatus(id: string, status: SectorR
       .eq('id', id)
 
     if (error) {
-      throw new Error(error.message || 'تعذر تحديث حالة الطلب')
+      throw new Error(error.message || 'Unable to update the request status')
     }
 
     revalidatePath('/dashboard/sector-registrations')
@@ -27,7 +27,7 @@ export async function updateSectorRegistrationStatus(id: string, status: SectorR
     console.error('Error updating sector registration status:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'تعذر تحديث حالة الطلب',
+      error: error instanceof Error ? error.message : 'Unable to update the request status',
     }
   }
 }
@@ -42,7 +42,7 @@ export async function deleteSectorRegistration(id: string) {
       .eq('id', id)
 
     if (error) {
-      throw new Error(error.message || 'تعذر حذف الطلب')
+      throw new Error(error.message || 'Unable to delete the request')
     }
 
     revalidatePath('/dashboard/sector-registrations')
@@ -51,7 +51,7 @@ export async function deleteSectorRegistration(id: string) {
     console.error('Error deleting sector registration:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'تعذر حذف الطلب',
+      error: error instanceof Error ? error.message : 'Unable to delete the request',
     }
   }
 }

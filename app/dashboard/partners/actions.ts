@@ -31,7 +31,7 @@ export async function createPartnerCategory(data: any) {
         const { error } = await supabase.from('partner_categories').insert(data)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partnership')
+        revalidatePath('/cooperation')
         return { success: true }
     } catch (err: any) {
         console.error('createPartnerCategory failed:', err)
@@ -45,7 +45,7 @@ export async function updatePartnerCategory(id: string, data: any) {
         const { error } = await supabase.from('partner_categories').update(data).eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partnership')
+        revalidatePath('/cooperation')
         return { success: true }
     } catch (err: any) {
         console.error('updatePartnerCategory failed:', err)
@@ -59,7 +59,7 @@ export async function deletePartnerCategory(id: string) {
         const { error } = await supabase.from('partner_categories').delete().eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partnership')
+        revalidatePath('/cooperation')
         return { success: true }
     } catch (err: any) {
         console.error('deletePartnerCategory failed:', err)
@@ -90,7 +90,7 @@ export async function createPartnerOpportunity(data: any) {
         const { error } = await supabase.from('partner_opportunities').insert(data)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partnership')
+        revalidatePath('/cooperation')
         return { success: true }
     } catch (err: any) {
         console.error('createPartnerOpportunity failed:', err)
@@ -104,7 +104,7 @@ export async function updatePartnerOpportunity(id: string, data: any) {
         const { error } = await supabase.from('partner_opportunities').update(data).eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partnership')
+        revalidatePath('/cooperation')
         return { success: true }
     } catch (err: any) {
         console.error('updatePartnerOpportunity failed:', err)
@@ -118,7 +118,7 @@ export async function deletePartnerOpportunity(id: string) {
         const { error } = await supabase.from('partner_opportunities').delete().eq('id', id)
         if (error) throw error
         revalidatePath('/dashboard/partners')
-        revalidatePath('/partnership')
+        revalidatePath('/cooperation')
         return { success: true }
     } catch (err: any) {
         console.error('deletePartnerOpportunity failed:', err)
@@ -173,11 +173,11 @@ export async function submitPartnerForm(data: any) {
 
         const fields = (data?.data ?? {}) as Record<string, string>
         const nameKey = Object.keys(fields).find((k) => /اسم|name/i.test(k))
-        const submitterName = (nameKey && fields[nameKey]) || 'جهة جديدة'
-        // notifyAdmins يحتاج قراءة كل المستخدمين بدور admin — الزائر ممنوع من هذا بالـ RLS
+        const submitterName = (nameKey && fields[nameKey]) || 'New organization'
+        // notifyAdmins needs to read all users with the admin role — public submitters are blocked from this by RLS
         await notifyAdmins(createAdminClient(), {
             type: 'partner_submission',
-            title: 'طلب شراكة جديد',
+            title: 'New partnership request',
             body: submitterName,
             linkUrl: '/dashboard/partners',
         })
@@ -199,7 +199,7 @@ export async function submitStaticPartnerForm(data: any, type: string) {
             full_name: fullName,
             email: data['البريد الإلكتروني الرسمي / Official Email'] || 'no-email@example.com',
             phone: data['رقم التواصل / Contact Number'] || data['رقم الواتساب / WhatsApp Number'] || '',
-            subject: `طلب انضمام/شراكة: ${type}`,
+            subject: `Partnership/Membership request: ${type}`,
             category: 'Partnership',
             message: JSON.stringify(data, null, 2),
             status: 'new'
@@ -208,7 +208,7 @@ export async function submitStaticPartnerForm(data: any, type: string) {
 
         await notifyAdmins(createAdminClient(), {
             type: 'partner_submission',
-            title: `طلب انضمام/شراكة: ${type}`,
+            title: `Partnership/Membership request: ${type}`,
             body: fullName,
             linkUrl: '/dashboard/messages',
         })

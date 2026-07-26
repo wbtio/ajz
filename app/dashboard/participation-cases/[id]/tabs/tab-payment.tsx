@@ -18,17 +18,17 @@ import {
 } from './shared'
 
 const PAYMENT_STATUS_OPTIONS = [
-    { value: 'pending', label: 'بانتظار الدفع' },
-    { value: 'paid', label: 'مدفوع' },
-    { value: 'partially_paid', label: 'مدفوع جزئياً' },
-    { value: 'not_invoiced', label: 'بدون فاتورة' },
+    { value: 'pending', label: 'Awaiting payment' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'partially_paid', label: 'Partially paid' },
+    { value: 'not_invoiced', label: 'Not invoiced' },
 ]
 
 const SERVICE_PACKAGES = [
-    { value: 'registration_only', label: 'تسجيل فقط' },
-    { value: 'registration_invitation', label: 'تسجيل + دعوة' },
-    { value: 'registration_invitation_visa', label: 'تسجيل + دعوة + فيزا' },
-    { value: 'full', label: 'خدمة كاملة' },
+    { value: 'registration_only', label: 'Registration only' },
+    { value: 'registration_invitation', label: 'Registration + Invitation' },
+    { value: 'registration_invitation_visa', label: 'Registration + Invitation + Visa' },
+    { value: 'full', label: 'Full service' },
 ]
 
 const CURRENCY_OPTIONS = [
@@ -74,9 +74,9 @@ export function TabPayment({ registration }: { registration: any }) {
                 receipt: { number: form.receipt_number, date: form.receipt_date, method: form.payment_method },
             })
             if (error) toast.error(error)
-            else toast.success('تم حفظ بيانات الدفع')
+            else toast.success('Payment data saved')
         } catch {
-            toast.error('فشل الحفظ')
+            toast.error('Save failed')
         } finally {
             setSaving(false)
         }
@@ -86,7 +86,7 @@ export function TabPayment({ registration }: { registration: any }) {
         <div className="space-y-4">
             <InlineAlert variant="warn">
                 <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
-                <span>أي خصم يحتاج: المبلغ، السبب، وموافقة المشرف.</span>
+                <span>Any discount requires: amount, reason, and supervisor approval.</span>
             </InlineAlert>
 
             <Section title="Service, price & discount" icon={CreditCard}>

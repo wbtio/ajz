@@ -34,7 +34,7 @@ export default async function RegistrationDetailPage({ params }: { params: Promi
         <StationDetail
             registration={registration}
             station="registration"
-            stationLabel="تسجيل الفعالية"
+            stationLabel="Event Registration"
             tab="registration"
         />
     )

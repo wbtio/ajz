@@ -17,12 +17,12 @@ interface ConferenceSubmission {
 }
 
 const sectionLabels: Record<string, string> = {
-    sponsors: 'الرعاة',
-    exhibitors: 'العارضون',
-    partners: 'الشركاء',
-    registration: 'التسجيل',
-    home: 'الصفحة الرئيسية',
-    theme: 'موضوع المؤتمر',
+    sponsors: 'Sponsors',
+    exhibitors: 'Exhibitors',
+    partners: 'Partners',
+    registration: 'Registration',
+    home: 'Home Page',
+    theme: 'Conference Theme',
 }
 
 interface Props {
@@ -54,7 +54,7 @@ export function ConferenceSubmissionsTable({ submissions: initialSubmissions, ev
     if (submissions.length === 0) {
         return (
             <div className="text-center py-8 text-gray-500">
-                <p>لا توجد طلبات مؤتمر لهذه الفعالية بعد</p>
+                <p>No conference submissions for this event yet</p>
             </div>
         )
     }
@@ -67,7 +67,7 @@ export function ConferenceSubmissionsTable({ submissions: initialSubmissions, ev
                     onClick={() => setFilter('all')}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${filter === 'all' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                 >
-                    الكل ({submissions.length})
+                    All ({submissions.length})
                 </button>
                 {uniqueSections.map(slug => (
                     <button
@@ -85,10 +85,10 @@ export function ConferenceSubmissionsTable({ submissions: initialSubmissions, ev
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b">
                         <tr>
-                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">القسم</th>
-                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">البيانات</th>
-                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">الحالة</th>
-                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">التاريخ</th>
+                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Section</th>
+                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Data</th>
+                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Status</th>
+                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Date</th>
                             <th className="text-right py-3 px-4 text-xs font-medium text-gray-500"></th>
                         </tr>
                     </thead>
@@ -111,9 +111,9 @@ export function ConferenceSubmissionsTable({ submissions: initialSubmissions, ev
                                         sub.status === 'rejected' ? 'bg-red-100 text-red-700' :
                                         'bg-yellow-100 text-yellow-700'
                                     }`}>
-                                        {sub.status === 'approved' ? <><CheckCircle className="w-3 h-3" /> مقبول</> :
-                                         sub.status === 'rejected' ? <><XCircle className="w-3 h-3" /> مرفوض</> :
-                                         <><Clock className="w-3 h-3" /> قيد الانتظار</>}
+                                        {sub.status === 'approved' ? <><CheckCircle className="w-3 h-3" /> Approved</> :
+                                         sub.status === 'rejected' ? <><XCircle className="w-3 h-3" /> Rejected</> :
+                                         <><Clock className="w-3 h-3" /> Pending</>}
                                     </span>
                                 </td>
                                 <td className="py-3 px-4 text-sm text-gray-500">
@@ -134,29 +134,29 @@ export function ConferenceSubmissionsTable({ submissions: initialSubmissions, ev
             <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>تفاصيل الطلب - {selected ? (sectionLabels[selected.section_slug] || selected.section_slug) : ''}</DialogTitle>
+                        <DialogTitle>Submission Details - {selected ? (sectionLabels[selected.section_slug] || selected.section_slug) : ''}</DialogTitle>
                     </DialogHeader>
                     {selected && (
                         <div className="space-y-4">
                             <div className="flex items-center gap-4 text-sm">
                                 <div>
-                                    <span className="text-gray-500 block">التاريخ</span>
+                                    <span className="text-gray-500 block">Date</span>
                                     <span className="font-medium">{selected.created_at ? formatDate(selected.created_at) : '—'}</span>
                                 </div>
                                 <div>
-                                    <span className="text-gray-500 block">الحالة</span>
+                                    <span className="text-gray-500 block">Status</span>
                                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full mt-1 ${
                                         selected.status === 'approved' ? 'bg-green-100 text-green-700' :
                                         selected.status === 'rejected' ? 'bg-red-100 text-red-700' :
                                         'bg-yellow-100 text-yellow-700'
                                     }`}>
-                                        {selected.status === 'approved' ? 'مقبول' : selected.status === 'rejected' ? 'مرفوض' : 'قيد الانتظار'}
+                                        {selected.status === 'approved' ? 'Approved' : selected.status === 'rejected' ? 'Rejected' : 'Pending'}
                                     </span>
                                 </div>
                             </div>
 
                             <div className="border rounded-xl p-4 bg-gray-50">
-                                <h3 className="font-semibold mb-3 text-sm text-gray-700">البيانات المقدمة</h3>
+                                <h3 className="font-semibold mb-3 text-sm text-gray-700">Submitted Data</h3>
                                 <div className="space-y-2">
                                     {selected.data && Object.entries(selected.data).map(([key, value]) => (
                                         <div key={key} className="flex justify-between border-b border-gray-200 pb-2 last:border-0 last:pb-0">
@@ -173,13 +173,13 @@ export function ConferenceSubmissionsTable({ submissions: initialSubmissions, ev
                                     onClick={() => updateStatus(selected.id, 'rejected')}
                                     className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
                                 >
-                                    رفض
+                                    Reject
                                 </Button>
                                 <Button
                                     onClick={() => updateStatus(selected.id, 'approved')}
                                     className="bg-green-600 hover:bg-green-700 text-white"
                                 >
-                                    قبول
+                                    Approve
                                 </Button>
                             </div>
                         </div>

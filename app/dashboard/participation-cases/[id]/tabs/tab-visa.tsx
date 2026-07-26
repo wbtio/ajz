@@ -17,18 +17,18 @@ import {
 } from './shared'
 
 const ACCT_STATUS = [
-    { value: 'not_created', label: 'لم يُنشأ' },
-    { value: 'pending_activation', label: 'بانتظار التفعيل' },
-    { value: 'activated', label: 'مُفعّل' },
-    { value: 'access_problem', label: 'مشكلة وصول' },
+    { value: 'not_created', label: 'Not created' },
+    { value: 'pending_activation', label: 'Pending activation' },
+    { value: 'activated', label: 'Activated' },
+    { value: 'access_problem', label: 'Access problem' },
 ]
 const APP_STATUS = [
-    { value: 'not_started', label: 'لم يبدأ' },
-    { value: 'draft', label: 'مسودة' },
-    { value: 'under_review', label: 'تحت المراجعة' },
-    { value: 'reference_obtained', label: 'تم الحصول على الرقم المرجعي' },
-    { value: 'pending_appointment', label: 'بانتظار الموعد' },
-    { value: 'finalized', label: 'منتهي' },
+    { value: 'not_started', label: 'Not started' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'under_review', label: 'Under review' },
+    { value: 'reference_obtained', label: 'Reference number obtained' },
+    { value: 'pending_appointment', label: 'Awaiting appointment' },
+    { value: 'finalized', label: 'Finalized' },
 ]
 
 export function TabVisa({ registration }: { registration: any }) {
@@ -67,11 +67,11 @@ export function TabVisa({ registration }: { registration: any }) {
             if (form.tls_appointment_date) payload.tls_appointment_date = new Date(form.tls_appointment_date).toISOString()
             const { error } = await saveRegistrationJsonb(
                 registration.id, 'embassy_application', payload,
-                'visa_updated', 'تم تحديث بيانات الفيزا',
+                'visa_updated', 'Visa data updated',
             )
             if (error) toast.error(error)
-            else toast.success('تم حفظ بيانات الفيزا')
-        } catch { toast.error('فشل الحفظ') } finally { setSaving(false) }
+            else toast.success('Visa data saved')
+        } catch { toast.error('Save failed') } finally { setSaving(false) }
     }
 
     return (
@@ -107,7 +107,7 @@ export function TabVisa({ registration }: { registration: any }) {
                 <div className="space-y-4"> 
                     <InlineAlert variant="info">
                         <Info className="size-3.5 shrink-0 mt-0.5" />
-                        <span>قاعدة JAZ: أبقِ الطلب كـ <strong>مسودة</strong> حتى يكتمل المسار.</span>
+                        <span>JAZ policy: keep the application as <strong>Draft</strong> until the case is complete.</span>
                     </InlineAlert>
                     <FormGrid>
                         <FormField label="Application reference">

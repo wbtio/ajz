@@ -79,11 +79,11 @@ type SortDir = 'asc' | 'desc'
 
 // ─── Section Config ──────────────────────────────────────
 const SECTIONS = [
-    { slug: 'sponsors', label: 'الرعاة', labelEn: 'Sponsors', icon: Award, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', accent: 'bg-yellow-500', ring: 'ring-yellow-500/20' },
-    { slug: 'exhibitors', label: 'العارضون', labelEn: 'Exhibitors', icon: Store, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'bg-emerald-500', ring: 'ring-emerald-500/20' },
-    { slug: 'partners', label: 'الشركاء', labelEn: 'Partners', icon: Handshake, color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-200', accent: 'bg-indigo-500', ring: 'ring-indigo-500/20' },
-    { slug: 'registration', label: 'التسجيل', labelEn: 'Registration', icon: ClipboardList, color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200', accent: 'bg-rose-500', ring: 'ring-rose-500/20' },
-    { slug: 'program', label: 'البرنامج', labelEn: 'Program', icon: CalendarDays, color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200', accent: 'bg-teal-500', ring: 'ring-teal-500/20' },
+    { slug: 'sponsors', label: 'Sponsors', labelEn: 'Sponsors', icon: Award, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', accent: 'bg-yellow-500', ring: 'ring-yellow-500/20' },
+    { slug: 'exhibitors', label: 'Exhibitors', labelEn: 'Exhibitors', icon: Store, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'bg-emerald-500', ring: 'ring-emerald-500/20' },
+    { slug: 'partners', label: 'Partners', labelEn: 'Partners', icon: Handshake, color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-200', accent: 'bg-indigo-500', ring: 'ring-indigo-500/20' },
+    { slug: 'registration', label: 'Registration', labelEn: 'Registration', icon: ClipboardList, color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200', accent: 'bg-rose-500', ring: 'ring-rose-500/20' },
+    { slug: 'program', label: 'Program', labelEn: 'Program', icon: CalendarDays, color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200', accent: 'bg-teal-500', ring: 'ring-teal-500/20' },
 ] as const
 
 type SectionSlug = typeof SECTIONS[number]['slug']
@@ -160,10 +160,10 @@ function getRelativeTime(dateStr: string): string {
     const diffHours = Math.floor(diffMs / 3600000)
     const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 1) return 'الآن'
-    if (diffMins < 60) return `منذ ${diffMins} دقيقة`
-    if (diffHours < 24) return `منذ ${diffHours} ساعة`
-    if (diffDays < 7) return `منذ ${diffDays} يوم`
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays < 7) return `${diffDays}d ago`
     return formatDate(dateStr)
 }
 
@@ -183,7 +183,7 @@ function CopyBtn({ text, id, size = 'sm' }: { text: string; id: string; size?: '
                     {isCopied ? <Check className={`${iconSize} text-green-600`} /> : <Copy className={`${iconSize} text-muted-foreground/60 hover:text-muted-foreground`} />}
                 </button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">{isCopied ? 'تم النسخ!' : 'نسخ'}</TooltipContent>
+            <TooltipContent side="top" className="text-xs">{isCopied ? 'Copied!' : 'Copy'}</TooltipContent>
         </Tooltip>
     )
 }
@@ -206,7 +206,7 @@ function PhoneChip({ phone, id }: { phone: string; id: string }) {
                             <MessageCircle className="w-3 h-3 text-green-600" />
                         </a>
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">واتساب</TooltipContent>
+                    <TooltipContent side="top" className="text-xs">WhatsApp</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -218,7 +218,7 @@ function PhoneChip({ phone, id }: { phone: string; id: string }) {
                             <PhoneCall className="w-3 h-3 text-blue-600" />
                         </a>
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">اتصال</TooltipContent>
+                    <TooltipContent side="top" className="text-xs">Call</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -230,7 +230,7 @@ function PhoneChip({ phone, id }: { phone: string; id: string }) {
                             <Mail className="w-3 h-3 text-purple-500" />
                         </a>
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">رسالة SMS</TooltipContent>
+                    <TooltipContent side="top" className="text-xs">SMS Message</TooltipContent>
                 </Tooltip>
                 <CopyBtn text={phone} id={id} size="xs" />
             </div>
@@ -253,7 +253,7 @@ function EmailChip({ email, id }: { email: string; id: string }) {
                         <ExternalLink className="w-2.5 h-2.5 text-blue-500" />
                     </a>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs">إرسال بريد</TooltipContent>
+                <TooltipContent side="top" className="text-xs">Send Email</TooltipContent>
             </Tooltip>
             <CopyBtn text={email} id={id} size="xs" />
         </div>
@@ -262,9 +262,9 @@ function EmailChip({ email, id }: { email: string; id: string }) {
 
 function StatusBadge({ status, size = 'default' }: { status: string; size?: 'default' | 'lg' }) {
     const config: Record<string, { label: string; className: string; dot: string; icon: typeof CheckCircle2 }> = {
-        approved: { label: 'مقبول', className: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500', icon: CheckCircle2 },
-        rejected: { label: 'مرفوض', className: 'bg-red-50 text-red-700 border-red-200', dot: 'bg-red-500', icon: XCircle },
-        pending: { label: 'قيد الانتظار', className: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500', icon: Clock },
+        approved: { label: 'Approved', className: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500', icon: CheckCircle2 },
+        rejected: { label: 'Rejected', className: 'bg-red-50 text-red-700 border-red-200', dot: 'bg-red-500', icon: XCircle },
+        pending: { label: 'Pending', className: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500', icon: Clock },
     }
     const c = config[status] || config.pending
     const Icon = c.icon
@@ -414,13 +414,13 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
     const getEventTitle = useCallback((sub: any) => (sub.events as any)?.title_ar || (sub.events as any)?.title || '', [])
 
     const getFirstValue = useCallback((sub: any) => {
-        if (!sub.data) return 'بدون بيانات'
+        if (!sub.data) return 'No data'
         const values = Object.values(sub.data)
-        return values.length > 0 ? String(values[0]) : 'بدون بيانات'
+        return values.length > 0 ? String(values[0]) : 'No data'
     }, [])
 
     const getStatusLabel = (status: string) => {
-        const map: Record<string, string> = { approved: 'مقبول', rejected: 'مرفوض', pending: 'قيد الانتظار' }
+        const map: Record<string, string> = { approved: 'Approved', rejected: 'Rejected', pending: 'Pending' }
         return map[status] || status
     }
 
@@ -435,13 +435,13 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
 
     const copyAllData = (sub: any) => {
         const lines: string[] = [
-            `القسم: ${getSectionMeta(sub.section_slug).label}`,
-            `الفعالية: ${getEventTitle(sub)}`,
-            `الحالة: ${getStatusLabel(sub.status)}`,
-            `التاريخ: ${sub.created_at ? formatDate(sub.created_at) : '-'}`,
+            `Section: ${getSectionMeta(sub.section_slug).label}`,
+            `Event: ${getEventTitle(sub)}`,
+            `Status: ${getStatusLabel(sub.status)}`,
+            `Date: ${sub.created_at ? formatDate(sub.created_at) : '-'}`,
         ]
         if (sub.data && Object.keys(sub.data).length > 0) {
-            lines.push('--- البيانات ---')
+            lines.push('--- Data ---')
             Object.entries(sub.data).forEach(([k, v]) => lines.push(`${getFieldLabel(sub, k)}: ${String(v)}`))
         }
         copyText(lines.join('\n'), `all-${sub.id}`)
@@ -450,10 +450,10 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
     const exportToExcel = () => {
         const data = filteredSubmissions.map(sub => {
             const row: any = {
-                'القسم': getSectionMeta(sub.section_slug).label,
-                'الفعالية': getEventTitle(sub),
-                'التاريخ': sub.created_at ? formatDate(sub.created_at) : '-',
-                'الحالة': getStatusLabel(sub.status),
+                'Section': getSectionMeta(sub.section_slug).label,
+                'Event': getEventTitle(sub),
+                'Date': sub.created_at ? formatDate(sub.created_at) : '-',
+                'Status': getStatusLabel(sub.status),
             }
             if (sub.data && typeof sub.data === 'object') {
                 Object.entries(sub.data).forEach(([k, v]) => { row[getFieldLabel(sub, k)] = String(v) || '-' })
@@ -463,7 +463,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
         const ws = XLSX.utils.json_to_sheet(data)
         const wb = XLSX.utils.book_new()
         ws['!cols'] = Object.keys(data[0] || {}).map(() => ({ wch: 22 }))
-        XLSX.utils.book_append_sheet(wb, ws, 'التسجيلات')
+        XLSX.utils.book_append_sheet(wb, ws, 'Registrations')
         XLSX.writeFile(wb, 'conference-submissions.xlsx')
     }
 
@@ -497,10 +497,10 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
             {/* ── KPI Stats Row ── */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                    { key: 'all', label: 'إجمالي الطلبات', icon: Users, gradient: 'from-slate-500 to-slate-700', lightBg: 'bg-slate-50', lightText: 'text-slate-700' },
-                    { key: 'pending', label: 'قيد الانتظار', icon: Clock, gradient: 'from-amber-500 to-orange-600', lightBg: 'bg-amber-50', lightText: 'text-amber-700' },
-                    { key: 'approved', label: 'مقبول', icon: CheckCircle2, gradient: 'from-emerald-500 to-green-600', lightBg: 'bg-emerald-50', lightText: 'text-emerald-700' },
-                    { key: 'rejected', label: 'مرفوض', icon: XCircle, gradient: 'from-red-500 to-rose-600', lightBg: 'bg-red-50', lightText: 'text-red-700' },
+                    { key: 'all', label: 'Total Applications', icon: Users, gradient: 'from-slate-500 to-slate-700', lightBg: 'bg-slate-50', lightText: 'text-slate-700' },
+                    { key: 'pending', label: 'Pending', icon: Clock, gradient: 'from-amber-500 to-orange-600', lightBg: 'bg-amber-50', lightText: 'text-amber-700' },
+                    { key: 'approved', label: 'Approved', icon: CheckCircle2, gradient: 'from-emerald-500 to-green-600', lightBg: 'bg-emerald-50', lightText: 'text-emerald-700' },
+                    { key: 'rejected', label: 'Rejected', icon: XCircle, gradient: 'from-red-500 to-rose-600', lightBg: 'bg-red-50', lightText: 'text-red-700' },
                 ].map(s => {
                     const isActive = statusFilter === s.key
                     const count = statusCounts[s.key as keyof typeof statusCounts]
@@ -552,7 +552,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                     }`}
                 >
                     <Inbox className="w-3.5 h-3.5" />
-                    الكل
+                    All
                     <span className={`text-[11px] px-1.5 py-0.5 rounded-md font-bold ${
                         activeSection === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
                     }`}>{sectionCounts.all}</span>
@@ -587,7 +587,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                     <div className="relative flex-1 sm:max-w-sm">
                         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                         <Input
-                            placeholder="بحث بالاسم، الهاتف، البريد..."
+                            placeholder="Search by name, phone, email..."
                             value={searchTerm}
                             onChange={(e) => { setSearchTerm(e.target.value); resetPage() }}
                             className="pr-9 h-9 bg-slate-50 border-slate-200 focus:bg-white"
@@ -604,27 +604,27 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
 
                     {/* Filters */}
                     <div className="flex flex-wrap gap-2 items-center">
-                        <Select value={eventFilter} onValueChange={(v) => { setEventFilter(v); resetPage() }} dir="rtl">
+                        <Select value={eventFilter} onValueChange={(v) => { setEventFilter(v); resetPage() }}>
                             <SelectTrigger className="w-[180px] h-9 bg-slate-50 border-slate-200">
-                                <SelectValue placeholder="كل الفعاليات" />
+                                <SelectValue placeholder="All Events" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">كل الفعاليات</SelectItem>
+                                <SelectItem value="all">All Events</SelectItem>
                                 {uniqueEvents.map(ev => (
                                     <SelectItem key={ev.id} value={ev.id}>{ev.title}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
 
-                        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); resetPage() }} dir="rtl">
+                        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); resetPage() }}>
                             <SelectTrigger className="w-[150px] h-9 bg-slate-50 border-slate-200">
-                                <SelectValue placeholder="كل الحالات" />
+                                <SelectValue placeholder="All Statuses" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">كل الحالات</SelectItem>
-                                <SelectItem value="pending">قيد الانتظار ({statusCounts.pending})</SelectItem>
-                                <SelectItem value="approved">مقبول ({statusCounts.approved})</SelectItem>
-                                <SelectItem value="rejected">مرفوض ({statusCounts.rejected})</SelectItem>
+                                <SelectItem value="all">All Statuses</SelectItem>
+                                <SelectItem value="pending">Pending ({statusCounts.pending})</SelectItem>
+                                <SelectItem value="approved">Approved ({statusCounts.approved})</SelectItem>
+                                <SelectItem value="rejected">Rejected ({statusCounts.rejected})</SelectItem>
                             </SelectContent>
                         </Select>
 
@@ -634,7 +634,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                 className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
                             >
                                 <X className="w-3 h-3" />
-                                مسح الفلاتر ({activeFiltersCount})
+                                Clear Filters ({activeFiltersCount})
                             </button>
                         )}
                     </div>
@@ -648,16 +648,16 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                     <span className="hidden sm:inline">Excel</span>
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>تصدير البيانات كملف Excel</TooltipContent>
+                            <TooltipContent>Export data as an Excel file</TooltipContent>
                         </Tooltip>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={() => window.print()} className="h-9 gap-1.5 text-blue-700 hover:text-blue-800 hover:bg-blue-50 border-blue-200">
                                     <Printer className="w-4 h-4" />
-                                    <span className="hidden sm:inline">طباعة</span>
+                                    <span className="hidden sm:inline">Print</span>
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>طباعة أو تصدير PDF</TooltipContent>
+                            <TooltipContent>Print or export as PDF</TooltipContent>
                         </Tooltip>
                     </div>
                 </div>
@@ -666,9 +666,9 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
             {/* ── Results Count ── */}
             <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                    عرض <span className="font-bold text-foreground">{paginatedSubmissions.length}</span> من <span className="font-semibold">{filteredSubmissions.length}</span> طلب
+                    Showing <span className="font-bold text-foreground">{paginatedSubmissions.length}</span> of <span className="font-semibold">{filteredSubmissions.length}</span> applications
                     {filteredSubmissions.length !== submissions.length && (
-                        <span className="text-xs text-muted-foreground/60 mr-1">(من أصل {submissions.length})</span>
+                        <span className="text-xs text-muted-foreground/60 mr-1">(out of {submissions.length} total)</span>
                     )}
                 </p>
             </div>
@@ -680,12 +680,12 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                         <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
                             <Inbox className="w-8 h-8 text-slate-300" />
                         </div>
-                        <p className="font-semibold text-slate-500 text-lg">لا توجد نتائج مطابقة</p>
-                        <p className="text-sm text-muted-foreground/60 mt-1 mb-4">حاول تغيير معايير البحث أو الفلتر</p>
+                        <p className="font-semibold text-slate-500 text-lg">No matching results</p>
+                        <p className="text-sm text-muted-foreground/60 mt-1 mb-4">Try changing your search or filter criteria</p>
                         {activeFiltersCount > 0 && (
                             <Button variant="outline" size="sm" onClick={clearAllFilters} className="gap-1.5">
                                 <X className="w-3.5 h-3.5" />
-                                مسح جميع الفلاتر
+                                Clear all filters
                             </Button>
                         )}
                     </CardContent>
@@ -701,30 +701,30 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                     </TableHead>
                                     <TableHead className="min-w-[280px]">
                                         <SortButton field="name" currentField={sortField} currentDir={sortDir} onSort={handleSort}>
-                                            <span className="font-bold text-slate-600">المعلومات</span>
+                                            <span className="font-bold text-slate-600">Information</span>
                                         </SortButton>
                                     </TableHead>
                                     <TableHead className="min-w-[120px]">
                                         <SortButton field="section" currentField={sortField} currentDir={sortDir} onSort={handleSort}>
-                                            <span className="font-bold text-slate-600">القسم</span>
+                                            <span className="font-bold text-slate-600">Section</span>
                                         </SortButton>
                                     </TableHead>
                                     <TableHead className="min-w-[140px]">
                                         <SortButton field="event" currentField={sortField} currentDir={sortDir} onSort={handleSort}>
-                                            <span className="font-bold text-slate-600">الفعالية</span>
+                                            <span className="font-bold text-slate-600">Event</span>
                                         </SortButton>
                                     </TableHead>
                                     <TableHead className="min-w-[100px]">
                                         <SortButton field="date" currentField={sortField} currentDir={sortDir} onSort={handleSort}>
-                                            <span className="font-bold text-slate-600">التاريخ</span>
+                                            <span className="font-bold text-slate-600">Date</span>
                                         </SortButton>
                                     </TableHead>
                                     <TableHead className="min-w-[90px]">
                                         <SortButton field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort}>
-                                            <span className="font-bold text-slate-600">الحالة</span>
+                                            <span className="font-bold text-slate-600">Status</span>
                                         </SortButton>
                                     </TableHead>
-                                    <TableHead className="text-center w-[130px] font-bold text-slate-600">إجراءات</TableHead>
+                                    <TableHead className="text-center w-[130px] font-bold text-slate-600">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -835,7 +835,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                 <Eye className="w-4 h-4 text-slate-500" />
                                                             </Button>
                                                         </TooltipTrigger>
-                                                        <TooltipContent className="text-xs">عرض التفاصيل</TooltipContent>
+                                                        <TooltipContent className="text-xs">View details</TooltipContent>
                                                     </Tooltip>
                                                     {sub.status !== 'approved' && (
                                                         <Tooltip>
@@ -844,7 +844,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                     <CheckCircle2 className="w-4 h-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent className="text-xs">قبول</TooltipContent>
+                                                            <TooltipContent className="text-xs">Approve</TooltipContent>
                                                         </Tooltip>
                                                     )}
                                                     {sub.status !== 'rejected' && (
@@ -854,7 +854,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                     <XCircle className="w-4 h-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent className="text-xs">رفض</TooltipContent>
+                                                            <TooltipContent className="text-xs">Reject</TooltipContent>
                                                         </Tooltip>
                                                     )}
                                                     <Tooltip>
@@ -868,7 +868,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                 {copiedKey === `all-${sub.id}` ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                                                             </Button>
                                                         </TooltipTrigger>
-                                                        <TooltipContent className="text-xs">{copiedKey === `all-${sub.id}` ? 'تم النسخ!' : 'نسخ الكل'}</TooltipContent>
+                                                        <TooltipContent className="text-xs">{copiedKey === `all-${sub.id}` ? 'Copied!' : 'Copy all'}</TooltipContent>
                                                     </Tooltip>
                                                 </div>
                                             </TableCell>
@@ -883,7 +883,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                     {totalPages > 1 && (
                         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50/50">
                             <p className="text-xs text-muted-foreground">
-                                صفحة <span className="font-bold text-foreground">{currentPage}</span> من <span className="font-bold">{totalPages}</span>
+                                Page <span className="font-bold text-foreground">{currentPage}</span> of <span className="font-bold">{totalPages}</span>
                             </p>
                             <div className="flex items-center gap-1">
                                 <Button
@@ -988,7 +988,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                     <MessageCircle className="w-4 h-4" />
                                                                 </a>
                                                             </TooltipTrigger>
-                                                            <TooltipContent className="text-xs">واتساب</TooltipContent>
+                                                            <TooltipContent className="text-xs">WhatsApp</TooltipContent>
                                                         </Tooltip>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
@@ -997,7 +997,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                     <PhoneCall className="w-4 h-4" />
                                                                 </a>
                                                             </TooltipTrigger>
-                                                            <TooltipContent className="text-xs">اتصال</TooltipContent>
+                                                            <TooltipContent className="text-xs">Call</TooltipContent>
                                                         </Tooltip>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
@@ -1054,24 +1054,24 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                     </button>
                                                                 </DropdownMenuTrigger>
                                                                 <DropdownMenuContent align="end" className="w-48">
-                                                                    <DropdownMenuLabel>إجراءات الهاتف</DropdownMenuLabel>
+                                                                    <DropdownMenuLabel>Phone Actions</DropdownMenuLabel>
                                                                     <DropdownMenuSeparator />
                                                                     <DropdownMenuItem asChild>
                                                                         <a href={`https://wa.me/${formatPhoneForWhatsApp(strVal)}`} target="_blank" rel="noopener noreferrer">
                                                                             <MessageCircle className="w-4 h-4 text-green-600" />
-                                                                            <span>إرسال واتساب</span>
+                                                                            <span>Send WhatsApp message</span>
                                                                         </a>
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuItem asChild>
                                                                         <a href={`tel:${strVal}`}>
                                                                             <PhoneCall className="w-4 h-4 text-blue-600" />
-                                                                            <span>اتصال مباشر</span>
+                                                                            <span>Call directly</span>
                                                                         </a>
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuItem asChild>
                                                                         <a href={`sms:${strVal}`}>
                                                                             <Mail className="w-4 h-4 text-purple-600" />
-                                                                            <span>إرسال SMS</span>
+                                                                            <span>Send SMS</span>
                                                                         </a>
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>
@@ -1084,7 +1084,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                                         <ExternalLink className="w-3 h-3 text-blue-500" />
                                                                     </a>
                                                                 </TooltipTrigger>
-                                                                <TooltipContent className="text-xs">إرسال بريد</TooltipContent>
+                                                                <TooltipContent className="text-xs">Send Email</TooltipContent>
                                                             </Tooltip>
                                                         )}
                                                     </div>
@@ -1102,7 +1102,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                             onClick={() => copyAllData(selected)}
                                         >
                                             {copiedKey === `all-${selected.id}` ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                            {copiedKey === `all-${selected.id}` ? 'تم النسخ!' : 'نسخ جميع البيانات'}
+                                            {copiedKey === `all-${selected.id}` ? 'Copied!' : 'Copy all data'}
                                         </Button>
                                         <div className="flex gap-2">
                                             {selected.status !== 'rejected' && (
@@ -1113,7 +1113,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                     className="text-red-600 hover:bg-red-50 border-red-200 gap-1.5"
                                                 >
                                                     <XCircle className="w-4 h-4" />
-                                                    رفض
+                                                    Reject
                                                 </Button>
                                             )}
                                             {selected.status !== 'approved' && (
@@ -1123,7 +1123,7 @@ export function SubmissionsView({ submissions: initialSubmissions }: Submissions
                                                     className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
                                                 >
                                                     <CheckCircle2 className="w-4 h-4" />
-                                                    قبول
+                                                    Approve
                                                 </Button>
                                             )}
                                         </div>

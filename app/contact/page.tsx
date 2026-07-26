@@ -332,9 +332,9 @@ export default function ContactPage() {
                 </svg>
               </Link>
 
-              {/* Become a Partner in Iraq */}
+              {/* Cooperate with us */}
               <Link
-                href="/partnership"
+                href="/cooperation"
                 className="action-card flex items-center justify-between py-2.5 px-4 bg-jaz-navy/40 backdrop-blur-md rounded-jaz border border-white/20 cursor-pointer hover:bg-jaz-navy/60 transition-all duration-200"
               >
                 <div className="flex items-center gap-3 text-start">

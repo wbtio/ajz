@@ -30,11 +30,11 @@ interface BlogFormProps {
 }
 
 const CATEGORIES = [
-  { value: 'news', label: 'أخبار' },
-  { value: 'events', label: 'فعاليات' },
-  { value: 'partnerships', label: 'شراكات' },
-  { value: 'insights', label: 'رؤى وتحليلات' },
-  { value: 'updates', label: 'تحديثات' },
+  { value: 'news', label: 'News' },
+  { value: 'events', label: 'Events' },
+  { value: 'partnerships', label: 'Partnerships' },
+  { value: 'insights', label: 'Insights & Analysis' },
+  { value: 'updates', label: 'Updates' },
 ]
 
 export function BlogForm({ post, onClose }: BlogFormProps) {
@@ -108,7 +108,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
 
   const handleSubmit = async (status: 'draft' | 'published') => {
     if (!formData.title_ar && !formData.title) {
-      alert('يرجى إدخال عنوان المقال')
+      alert('Please enter a post title')
       return
     }
 
@@ -134,7 +134,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
     setLoading(false)
 
     if (result.error) {
-      alert(`خطأ: ${result.error}`)
+      alert(`Error: ${result.error}`)
     } else {
       onClose(true)
     }
@@ -146,26 +146,26 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b pb-2">
           <FileText className="w-5 h-5 text-gray-500" />
-          <h3 className="font-semibold text-lg text-gray-900">المعلومات الأساسية</h3>
+          <h3 className="font-semibold text-lg text-gray-900">Basic Information</h3>
         </div>
 
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="title_ar" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              العنوان (عربي) <span className="text-red-500">*</span>
+              Title (Arabic) <span className="text-red-500">*</span>
             </Label>
             <Input
               id="title_ar"
               name="title_ar"
               value={formData.title_ar}
               onChange={handleChange}
-              placeholder="عنوان المقال بالعربية"
+              placeholder="Enter the Arabic title"
               className="h-10"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-sm font-medium text-gray-700">العنوان (إنجليزي)</Label>
+            <Label htmlFor="title" className="text-sm font-medium text-gray-700">Title (English)</Label>
             <Input
               id="title"
               name="title"
@@ -179,7 +179,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
 
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="slug" className="text-sm font-medium text-gray-700">الرابط (Slug)</Label>
+            <Label htmlFor="slug" className="text-sm font-medium text-gray-700">Slug</Label>
             <div className="relative">
               <LinkIcon className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <Input
@@ -193,11 +193,11 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
               />
             </div>
             <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-              <Info className="w-3 h-3" /> اتركه فارغاً للإنشاء التلقائي
+              <Info className="w-3 h-3" /> Leave blank to generate automatically
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-sm font-medium text-gray-700">التصنيف</Label>
+            <Label htmlFor="category" className="text-sm font-medium text-gray-700">Category</Label>
             <select
               id="category"
               name="category"
@@ -205,7 +205,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
               onChange={handleChange}
               className="w-full h-10 px-3 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-950 bg-white text-sm"
             >
-              <option value="">اختر التصنيف</option>
+              <option value="">Select category</option>
               {CATEGORIES.map((cat) => (
                 <option key={cat.value} value={cat.value}>
                   {cat.label}
@@ -217,7 +217,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="featured_image_url" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-gray-500" /> رابط الصورة البارزة
+            <ImageIcon className="w-4 h-4 text-gray-500" /> Featured Image URL
           </Label>
           <div className="relative">
             <Globe className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -250,24 +250,24 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b pb-2">
           <PenTool className="w-5 h-5 text-gray-500" />
-          <h3 className="font-semibold text-lg text-gray-900">المحتوى</h3>
+          <h3 className="font-semibold text-lg text-gray-900">Content</h3>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="excerpt_ar" className="text-sm font-medium text-gray-700">المقتطف (عربي)</Label>
+          <Label htmlFor="excerpt_ar" className="text-sm font-medium text-gray-700">Excerpt (Arabic)</Label>
           <Textarea
             id="excerpt_ar"
             name="excerpt_ar"
             value={formData.excerpt_ar}
             onChange={handleChange}
-            placeholder="وصف مختصر للمقال بالعربية (يظهر في البطاقات)"
+            placeholder="Short Arabic description (shown on cards)"
             rows={3}
             className="resize-none"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="excerpt" className="text-sm font-medium text-gray-700">المقتطف (إنجليزي)</Label>
+          <Label htmlFor="excerpt" className="text-sm font-medium text-gray-700">Excerpt (English)</Label>
           <Textarea
             id="excerpt"
             name="excerpt"
@@ -281,30 +281,30 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="content_ar" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            المحتوى الكامل (عربي) <span className="text-red-500">*</span>
+            Full Content (Arabic) <span className="text-red-500">*</span>
           </Label>
           <Textarea
             id="content_ar"
             name="content_ar"
             value={formData.content_ar}
             onChange={handleChange}
-            placeholder="اكتب محتوى المقال بالعربية..."
+            placeholder="Write the post content in Arabic..."
             rows={10}
             className="resize-none"
             required
           />
           <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
             <span className="flex items-center gap-1">
-              <Type className="w-3 h-3" /> {formData.content_ar.trim().split(/\s+/).filter(w => w).length} كلمة
+              <Type className="w-3 h-3" /> {formData.content_ar.trim().split(/\s+/).filter(w => w).length} words
             </span>
             <span className="flex items-center gap-1">
-              <Info className="w-3 h-3" /> ~{calculateReadingTime(formData.content_ar || 'word')} دقيقة قراءة
+              <Info className="w-3 h-3" /> ~{calculateReadingTime(formData.content_ar || 'word')} min read
             </span>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="content" className="text-sm font-medium text-gray-700">المحتوى (إنجليزي)</Label>
+          <Label htmlFor="content" className="text-sm font-medium text-gray-700">Content (English)</Label>
           <Textarea
             id="content"
             name="content"
@@ -321,17 +321,17 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b pb-2">
           <Search className="w-5 h-5 text-gray-500" />
-          <h3 className="font-semibold text-lg text-gray-900">إعدادات السيو (SEO)</h3>
+          <h3 className="font-semibold text-lg text-gray-900">SEO Settings</h3>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="seo_title" className="text-sm font-medium text-gray-700">عنوان السيو</Label>
+          <Label htmlFor="seo_title" className="text-sm font-medium text-gray-700">SEO Title</Label>
           <Input
             id="seo_title"
             name="seo_title"
             value={formData.seo_title}
             onChange={handleChange}
-            placeholder="عنوان محسّن لمحركات البحث (60 حرف)"
+            placeholder="Search-engine-optimized title (60 characters)"
             maxLength={60}
             className="h-10"
           />
@@ -351,13 +351,13 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="seo_description" className="text-sm font-medium text-gray-700">وصف السيو</Label>
+          <Label htmlFor="seo_description" className="text-sm font-medium text-gray-700">SEO Description</Label>
           <Textarea
             id="seo_description"
             name="seo_description"
             value={formData.seo_description}
             onChange={handleChange}
-            placeholder="وصف محسّن لمحركات البحث (160 حرف)"
+            placeholder="Search-engine-optimized description (160 characters)"
             rows={4}
             maxLength={160}
             className="resize-none"
@@ -379,7 +379,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
 
         <div className="space-y-3">
           <Label htmlFor="keywords" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <Tag className="w-4 h-4 text-gray-500" /> الكلمات المفتاحية
+            <Tag className="w-4 h-4 text-gray-500" /> Keywords
           </Label>
           <div className="flex gap-2">
             <Input
@@ -392,7 +392,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
                   handleAddKeyword()
                 }
               }}
-              placeholder="أضف كلمة مفتاحية واضغط Enter"
+              placeholder="Add a keyword and press Enter"
               className="h-10"
             />
             <Button
@@ -401,7 +401,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
               variant="outline"
               className="h-10 px-4"
             >
-              إضافة
+              Add
             </Button>
           </div>
           {formData.keywords.length > 0 && (
@@ -429,7 +429,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-6 border-t sticky bottom-0 bg-white pb-2">
         <Button variant="outline" onClick={() => onClose()} disabled={loading}>
-          إلغاء
+          Cancel
         </Button>
         <Button
           variant="secondary"
@@ -438,7 +438,7 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
           className="gap-2"
         >
           <Save className="w-4 h-4" />
-          حفظ كمسودة
+          Save as Draft
         </Button>
         <Button
           onClick={() => handleSubmit('published')}
@@ -446,11 +446,11 @@ export function BlogForm({ post, onClose }: BlogFormProps) {
           className="gap-2"
         >
           {loading ? (
-            'جاري النشر...'
+            'Publishing...'
           ) : (
             <>
               <Send className="w-4 h-4" />
-              نشر المقال
+              Publish Post
             </>
           )}
         </Button>

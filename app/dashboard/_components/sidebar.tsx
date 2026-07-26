@@ -131,8 +131,8 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
         },
     ]
 
-    // إظهار الروابط المسموح بها لدور المستخدم فقط
-    // صفحات إدارية حساسة (adminOnly) للمدير فقط، وباقي صفحات /dashboard تُفحص بصلاحيات العضو
+    // Show only the links allowed for the current user's role.
+    // Sensitive admin pages (adminOnly) are restricted to admins only; other /dashboard pages are checked against the member's permissions.
     const visibleSections = navSections
         .map((section) => ({
             ...section,

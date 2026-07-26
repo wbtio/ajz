@@ -7,19 +7,19 @@ import { cn } from "@/lib/utils";
 type State = "idle" | "recording" | "loading";
 
 interface VoiceInputProps {
-  /** يُستدعى بالنص المُفرَّغ؛ append=true لإلحاقه بالموجود */
+  /** Called with the transcribed text; append=true to append it to the existing text */
   onResult: (text: string) => void;
   title?: string;
   className?: string;
 }
 
 /**
- * زر ميكروفون للتفريغ الصوتي عبر Mistral Voxtral.
- * ضغطة = بدء التسجيل، ضغطة ثانية = إيقاف وإرسال، ثم يعيد النص.
+ * Microphone button for voice transcription via Mistral Voxtral.
+ * One click = start recording, second click = stop and submit, then returns the text.
  */
 export function VoiceInput({
   onResult,
-  title = "تفريغ صوتي",
+  title = "Voice transcription",
   className,
 }: VoiceInputProps) {
   const [state, setState] = useState<State>("idle");
@@ -28,7 +28,7 @@ export function VoiceInput({
 
   async function start() {
     if (typeof navigator === "undefined" || !navigator.mediaDevices) {
-      alert("المتصفح لا يدعم التسجيل الصوتي");
+      alert("Your browser does not support audio recording");
       return;
     }
     try {
@@ -56,10 +56,10 @@ export function VoiceInput({
           if (res.ok && data.text) {
             onResult(data.text as string);
           } else {
-            alert(data.error || "تعذّر تفريغ الصوت");
+            alert(data.error || "Unable to transcribe audio");
           }
         } catch {
-          alert("خطأ في الاتصال أثناء التفريغ");
+          alert("Connection error during transcription");
         } finally {
           setState("idle");
         }
@@ -69,7 +69,7 @@ export function VoiceInput({
       recorderRef.current = recorder;
       setState("recording");
     } catch {
-      alert("تعذّر الوصول للميكروفون — تأكد من منح الإذن للمتصفح.");
+      alert("Unable to access the microphone — make sure your browser has permission.");
       setState("idle");
     }
   }
@@ -88,9 +88,9 @@ export function VoiceInput({
       type="button"
       title={
         state === "recording"
-          ? "إيقاف التسجيل"
+          ? "Stop recording"
           : state === "loading"
-          ? "جارٍ التفريغ…"
+          ? "Transcribing…"
           : title
       }
       onClick={onClick}

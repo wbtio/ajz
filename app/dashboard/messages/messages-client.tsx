@@ -47,7 +47,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return
+    if (!confirm('Are you sure you want to delete this message?')) return
 
     const { error } = await supabase
       .from('contact_messages')
@@ -68,17 +68,17 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
   const unreadCount = messages.filter((msg) => msg.status === 'unread').length
 
   return (
-    <div className="space-y-6 text-right" dir="rtl">
+    <div className="space-y-6" dir="ltr">
       <section className="rounded-2xl border border-stone-200 bg-white p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <Badge variant="outline" className="border-stone-200 bg-stone-50 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-stone-600">
-              رسائل التواصل
+              Contact Messages
             </Badge>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-stone-950 md:text-3xl">رسائل التواصل</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-stone-950 md:text-3xl">Contact Messages</h1>
               <p className="mt-1 text-sm text-stone-600">
-                عرض مختصر للرسائل الواردة من نموذج التواصل.
+                A quick view of messages received through the contact form.
               </p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
           <div className="flex flex-wrap gap-2">
             <div className="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600">
               <Bell className="h-4 w-4 text-stone-500" />
-              {unreadCount} غير مقروء
+              {unreadCount} unread
             </div>
             <Button
               variant="outline"
@@ -95,7 +95,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
               className="h-10 rounded-2xl border-stone-200 bg-white px-4 text-stone-700 hover:bg-stone-50"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
-              تحديث
+              Refresh
             </Button>
           </div>
         </div>
@@ -105,14 +105,14 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
         <CardHeader className="border-b border-stone-200 bg-white">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <CardTitle className="text-xl font-semibold text-stone-950">صندوق الوارد</CardTitle>
+              <CardTitle className="text-xl font-semibold text-stone-950">Inbox</CardTitle>
               <CardDescription className="mt-1 text-sm text-stone-500">
-                ابحث بالاسم أو البريد أو الموضوع، ثم راجع الرسالة بسرعة.
+                Search by name, email, or subject, then review the message quickly.
               </CardDescription>
             </div>
             <div className="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm font-medium text-stone-500">
               <MessageSquare className="h-4 w-4 text-stone-500" />
-              {filteredMessages.length} رسالة
+              {filteredMessages.length} messages
             </div>
           </div>
         </CardHeader>
@@ -121,7 +121,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
             <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
             <Input
               type="text"
-              placeholder="ابحث باسم المرسل أو البريد أو الموضوع"
+              placeholder="Search by sender name, email, or subject"
               className="h-11 rounded-2xl border-stone-200 bg-stone-50 pr-11 text-sm shadow-none transition-colors focus:border-stone-300 focus:bg-white"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -156,14 +156,14 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
                               <h3 className="text-sm font-semibold text-stone-950">{msg.full_name}</h3>
                               {msg.status === 'unread' && (
                                 <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-semibold text-stone-700">
-                                  جديد
+                                  New
                                 </span>
                               )}
                             </div>
 
                             <div className="mt-2 space-y-1">
                               <p className="truncate text-sm font-medium text-stone-800">
-                                {msg.subject || 'بدون موضوع'}
+                                {msg.subject || 'No subject'}
                               </p>
                               <p className="line-clamp-2 text-sm leading-6 text-stone-600">
                                 {msg.message}
@@ -179,7 +179,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
                               ) : null}
                               <span className="inline-flex items-center gap-1">
                                 <Clock className="h-3.5 w-3.5" />
-                                {msg.created_at ? formatDateTime(msg.created_at) : '-'}
+                                {msg.created_at ? formatDateTime(msg.created_at, 'en-US') : '-'}
                               </span>
                             </div>
                           </div>
@@ -195,7 +195,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
                             className="h-9 rounded-xl border-stone-200 px-3 text-stone-700 hover:bg-stone-50"
                           >
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            قراءة
+                            Mark as read
                           </Button>
                         ) : (
                           <Button
@@ -205,7 +205,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
                             className="h-9 rounded-xl border-stone-200 px-3 text-stone-600 hover:bg-stone-50"
                           >
                             <RefreshCw className="mr-2 h-4 w-4" />
-                            إعادة
+                            Mark as unread
                           </Button>
                         )}
                         <Button
@@ -215,7 +215,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
                           className="h-9 rounded-xl border-rose-100 px-3 text-rose-600 hover:bg-rose-50"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          حذف
+                          Delete
                         </Button>
                       </div>
                     </div>
@@ -227,7 +227,7 @@ export default function MessagesPage({ initialMessages }: { initialMessages: Con
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white">
                   <MessageSquare className="h-7 w-7 text-stone-300" />
                 </div>
-                <p className="font-medium text-stone-500">لا توجد رسائل واردة حالياً</p>
+                <p className="font-medium text-stone-500">No messages received yet</p>
               </div>
             )}
           </div>

@@ -16,14 +16,14 @@ import {
 } from './shared'
 
 const INV_STATUS_OPTIONS = [
-    { value: 'not_required', label: 'غير مطلوبة' },
-    { value: 'required', label: 'مطلوبة' },
-    { value: 'pending_data', label: 'بانتظار البيانات' },
-    { value: 'ready', label: 'جاهزة للطلب' },
-    { value: 'requested', label: 'تم الطلب' },
-    { value: 'processing', label: 'قيد المعالجة' },
-    { value: 'received', label: 'تم الاستلام' },
-    { value: 'correction_required', label: 'يلزم تصحيح' },
+    { value: 'not_required', label: 'Not required' },
+    { value: 'required', label: 'Required' },
+    { value: 'pending_data', label: 'Pending data' },
+    { value: 'ready', label: 'Ready to request' },
+    { value: 'requested', label: 'Requested' },
+    { value: 'processing', label: 'Processing' },
+    { value: 'received', label: 'Received' },
+    { value: 'correction_required', label: 'Correction required' },
 ]
 
 export function TabInvitation({ registration }: { registration: any }) {
@@ -45,11 +45,11 @@ export function TabInvitation({ registration }: { registration: any }) {
             const { error } = await saveRegistrationJsonb(
                 registration.id, 'additional_data',
                 { invitation: form },
-                'invitation_updated', 'تم تحديث بيانات الدعوة',
+                'invitation_updated', 'Invitation data updated',
             )
             if (error) toast.error(error)
-            else toast.success('تم حفظ بيانات الدعوة')
-        } catch { toast.error('فشل الحفظ') } finally { setSaving(false) }
+            else toast.success('Invitation data saved')
+        } catch { toast.error('Save failed') } finally { setSaving(false) }
     }
 
     return (

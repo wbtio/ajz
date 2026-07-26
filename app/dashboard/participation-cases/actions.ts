@@ -7,9 +7,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Json } from '@/lib/database.types'
+import { decryptField, encryptField, isEncrypted } from '@/lib/secure-field'
 
 // ─────────────────────────────────────────────────────────────────
-//  مساعد: جلب المستخدم الحالي + التحقق من الصلاحية
+//  Helper: fetch current user + check authorization
 // ─────────────────────────────────────────────────────────────────
 async function getCurrentUser() {
     const supabase = await createClient()
@@ -67,7 +68,7 @@ async function purgeExpiredApplicationDocuments(currentRegistrationId?: string) 
     }
 }
 
-// ── مساعد داخلي: تسجيل حدث على التسجيل ──
+// ── Internal helper: log an event on a registration ──
 async function logEvent(
     supabase: SupabaseClient<Database>,
     registrationId: string,
@@ -87,7 +88,75 @@ async function logEvent(
     })
 }
 
-/** سجل مختصر لتعديلات صفحات الـ wizard التي تحفظ مباشرة من العميل. */
+// ─────────────────────────────────────────────────────────────────
+//  Visa portal credentials
+//
+//  The password is stored encrypted inside `additional_data` and is never
+//  sent to the browser with the rest of the case. The wizard writes it
+//  through `saveVisaPortalPassword` and only pulls the cleartext back on an
+//  explicit reveal, which is recorded in the activity log.
+// ─────────────────────────────────────────────────────────────────
+
+export async function saveVisaPortalPassword(regId: string, password: string) {
+    const { supabase, user, profile } = await getCurrentUser()
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
+
+    const ciphertext = encryptField(password)
+    if (ciphertext === null) {
+        return { error: 'Password storage is not configured. Set FIELD_ENCRYPTION_KEY before saving portal credentials.' }
+    }
+
+    const { data: current, error: lookupError } = await supabase
+        .from('registrations')
+        .select('additional_data')
+        .eq('id', regId)
+        .single()
+    if (lookupError || !current) return { error: lookupError?.message || 'Could not find the application' }
+
+    const additionalData = (current.additional_data ?? {}) as Record<string, unknown>
+    // Drop the legacy plaintext key so the old value stops travelling to the client.
+    delete additionalData.visa_portal_password
+
+    const { error } = await supabase
+        .from('registrations')
+        .update({
+            additional_data: { ...additionalData, visa_portal_password_encrypted: ciphertext } as unknown as Json,
+            updated_at: new Date().toISOString(),
+        })
+        .eq('id', regId)
+
+    if (error) return { error: error.message }
+    return { error: null }
+}
+
+export async function revealVisaPortalPassword(regId: string) {
+    const { supabase, user, profile } = await getCurrentUser()
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized', password: '' }
+
+    const { data, error } = await supabase
+        .from('registrations')
+        .select('additional_data')
+        .eq('id', regId)
+        .single()
+    if (error || !data) return { error: error?.message || 'Could not find the application', password: '' }
+
+    const additionalData = (data.additional_data ?? {}) as Record<string, unknown>
+    const stored = additionalData.visa_portal_password_encrypted ?? additionalData.visa_portal_password
+    const password = isEncrypted(stored) ? decryptField(stored) : String(stored ?? '')
+
+    await logEvent(
+        supabase,
+        regId,
+        'visa_credentials_revealed',
+        'Visa portal password revealed',
+        user.id,
+        profile?.full_name || profile?.email || 'Staff',
+    )
+
+    return { error: null, password }
+}
+
+/** Short activity log entry for wizard page edits that save directly from the client. */
 export async function recordRegistrationActivity(input: {
     registrationId: string
     action: string
@@ -96,25 +165,25 @@ export async function recordRegistrationActivity(input: {
     metadata?: Record<string, unknown>
 }) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!user || !isStaff(profile)) return { error: 'غير مصرح' }
+    if (!user || !isStaff(profile)) return { error: 'Unauthorized' }
     await logEvent(
         supabase,
         input.registrationId,
         input.action,
         input.description,
         user.id,
-        profile?.full_name || profile?.email || 'موظف',
+        profile?.full_name || profile?.email || 'Staff',
         { ...(input.metadata ?? {}), step: input.step },
     )
     return { error: null }
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  1) البحث عن تسجيل/عميل موجود (لإعادة الاستخدام بدل تكرار)
+//  1) Search for an existing registration/client (to reuse instead of duplicating)
 // ─────────────────────────────────────────────────────────────────
 export async function searchRegistrations(query: string) {
     const { supabase, profile } = await getCurrentUser()
-    if (!isStaff(profile)) return { data: [], error: 'غير مصرح' }
+    if (!isStaff(profile)) return { data: [], error: 'Unauthorized' }
 
     const q = query.trim()
     if (q.length < 2) return { data: [], error: null }
@@ -141,7 +210,7 @@ export async function searchRegistrations(query: string) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  1.5) البحث عن العملاء (لإعادة الاستخدام وتجنب تكرار العملاء)
+//  1.5) Search for clients (to reuse and avoid creating duplicate clients)
 // ─────────────────────────────────────────────────────────────────
 export async function searchClients(input: {
     fullName: string
@@ -149,7 +218,7 @@ export async function searchClients(input: {
     placeOfBirth?: string
 }) {
     const { supabase, profile } = await getCurrentUser()
-    if (!isStaff(profile)) return { data: [], error: 'غير مصرح' }
+    if (!isStaff(profile)) return { data: [], error: 'Unauthorized' }
 
     if (!input.fullName.trim() && !input.dateOfBirth && !input.placeOfBirth?.trim()) {
         return { data: [], error: null }
@@ -181,7 +250,7 @@ export async function searchClients(input: {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  2) توليد رقم ملف تسلسلي JAZ-{آخر رقمين من السنة}-{تسلسل}
+//  2) Generate a sequential case number JAZ-{last 2 digits of year}-{sequence}
 // ─────────────────────────────────────────────────────────────────
 async function generateCaseNumber(supabase: SupabaseClient<Database>): Promise<string> {
     const fullYear = new Date().getFullYear()
@@ -196,8 +265,8 @@ async function generateCaseNumber(supabase: SupabaseClient<Database>): Promise<s
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  3) إنشاء تسجيل مشاركة جديد (يدوي — من واتساب/هاتف)
-//     يُدرج صف في registrations مع case_number + case_status.
+//  3) Create a new participation registration (manual — from WhatsApp/phone)
+//     Inserts a row into registrations with case_number + case_status.
 // ─────────────────────────────────────────────────────────────────
 export async function createManualRegistration(input: {
     eventId: string
@@ -213,10 +282,10 @@ export async function createManualRegistration(input: {
     clientId?: string
 }) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { data: null, error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { data: null, error: 'Unauthorized' }
 
     if (!input.eventId || (!input.clientId && !input.fullName.trim())) {
-        return { data: null, error: 'الفعالية والاسم مطلوبان' }
+        return { data: null, error: 'Event and name are required' }
     }
 
     const caseNumber = await generateCaseNumber(supabase)
@@ -236,7 +305,7 @@ export async function createManualRegistration(input: {
             if (client.email) finalEmail = client.email
         }
     } else {
-        // إنشاء عميل جديد
+        // create a new client
         const { data: newClient, error: clientErr } = await supabase
             .from('clients')
             .insert({
@@ -266,7 +335,7 @@ export async function createManualRegistration(input: {
             payment_status: 'pending',
             total_amount: 0,
             current_step: 5,
-            user_id: null, // يدوي
+            user_id: null, // manual
             case_number: caseNumber,
             case_status: 'new_request',
             case_source: input.source || null,
@@ -296,7 +365,7 @@ export async function createManualRegistration(input: {
         return { data: null, error: error.message }
     }
 
-    await logEvent(supabase, reg.id, 'case_created', 'تم إنشاء ملف المشاركة وتعيين العميل', user.id, profile?.full_name || profile?.email || 'موظف', { case_number: caseNumber, source: input.source, client_id: finalClientId })
+    await logEvent(supabase, reg.id, 'case_created', 'Participation case created and client assigned', user.id, profile?.full_name || profile?.email || 'Staff', { case_number: caseNumber, source: input.source, client_id: finalClientId })
 
     revalidatePath('/dashboard/participation-cases')
     return { data: reg, error: null }
@@ -304,19 +373,19 @@ export async function createManualRegistration(input: {
 
 function getServiceRequirements(servicePackage: string) {
     const base = [
-        { key: 'passport', label: 'نسخة الجواز', required: true },
-        { key: 'photo', label: 'صورة شخصية', required: true },
-        { key: 'professional_evidence', label: 'إثبات مهني', required: false },
+        { key: 'passport', label: 'Passport copy', required: true },
+        { key: 'photo', label: 'Personal photo', required: true },
+        { key: 'professional_evidence', label: 'Professional evidence', required: false },
     ]
 
     if (servicePackage === 'registration_invitation' || servicePackage === 'registration_invitation_visa' || servicePackage === 'full') {
-        base.push({ key: 'invitation', label: 'الدعوة الرسمية', required: true })
+        base.push({ key: 'invitation', label: 'Official invitation', required: true })
     }
 
     if (servicePackage === 'registration_invitation_visa' || servicePackage === 'full') {
         base.push(
-            { key: 'insurance', label: 'وثيقة التأمين', required: true },
-            { key: 'tls_appointment', label: 'تأكيد موعد TLS', required: true },
+            { key: 'insurance', label: 'Insurance policy', required: true },
+            { key: 'tls_appointment', label: 'TLS appointment confirmation', required: true },
         )
     }
 
@@ -324,11 +393,11 @@ function getServiceRequirements(servicePackage: string) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  4) تحديث حالة الملف التفصيلية (case_status)
+//  4) Update the detailed case status (case_status)
 // ─────────────────────────────────────────────────────────────────
 export async function updateCaseStatus(regId: string, caseStatus: string, note?: string) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
     const { error } = await supabase
         .from('registrations')
@@ -340,7 +409,7 @@ export async function updateCaseStatus(regId: string, caseStatus: string, note?:
         return { error: error.message }
     }
 
-    await logEvent(supabase, regId, 'status_changed', note || `تم تغيير الحالة إلى: ${caseStatus}`, user.id, profile?.full_name || profile?.email || 'موظف', { new_status: caseStatus })
+    await logEvent(supabase, regId, 'status_changed', note || `Status changed to: ${caseStatus}`, user.id, profile?.full_name || profile?.email || 'Staff', { new_status: caseStatus })
 
     revalidatePath('/dashboard/participation-cases')
     revalidatePath(`/dashboard/participation-cases/${regId}`)
@@ -349,7 +418,7 @@ export async function updateCaseStatus(regId: string, caseStatus: string, note?:
 
 export async function updateCaseClosure(regId: string, caseStatus: string, closureReason: string) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
     const { data: current } = await supabase
         .from('registrations')
@@ -376,7 +445,7 @@ export async function updateCaseClosure(regId: string, caseStatus: string, closu
         return { error: error.message }
     }
 
-    await logEvent(supabase, regId, 'status_changed', `تم إغلاق/إلغاء الملف: ${closureReason}`, user.id, profile?.full_name || profile?.email || 'موظف', { new_status: caseStatus, closure_reason: closureReason })
+    await logEvent(supabase, regId, 'status_changed', `Case closed/cancelled: ${closureReason}`, user.id, profile?.full_name || profile?.email || 'Staff', { new_status: caseStatus, closure_reason: closureReason })
 
     revalidatePath('/dashboard/participation-cases')
     revalidatePath(`/dashboard/participation-cases/${regId}`)
@@ -384,9 +453,9 @@ export async function updateCaseClosure(regId: string, caseStatus: string, closu
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  5) حفظ بيانات JSONB عامة على registrations (للتبويبات)
+//  5) Save generic JSONB data on registrations (for the tabs)
 //     column = 'embassy_application' | 'additional_data' | ...
-//     تدمج مع القيمة الموجودة (merge).
+//     Merges with the existing value.
 // ─────────────────────────────────────────────────────────────────
 export async function saveRegistrationJsonb(
     regId: string,
@@ -396,9 +465,9 @@ export async function saveRegistrationJsonb(
     eventDescription: string,
 ) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
-    // اقرأ القيمة الحالية أولاً
+    // read the current value first
     const { data: current } = await supabase
         .from('registrations')
         .select(column)
@@ -418,14 +487,14 @@ export async function saveRegistrationJsonb(
         return { error: error.message }
     }
 
-    await logEvent(supabase, regId, eventAction, eventDescription, user.id, profile?.full_name || profile?.email || 'موظف', patch)
+    await logEvent(supabase, regId, eventAction, eventDescription, user.id, profile?.full_name || profile?.email || 'Staff', patch)
 
     revalidatePath(`/dashboard/participation-cases/${regId}`)
     return { error: null }
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  6) حفظ بيانات الدفع (total_amount + payment_status + JSONB خصم)
+//  6) Save payment data (total_amount + payment_status + JSONB discount)
 // ─────────────────────────────────────────────────────────────────
 export async function savePaymentData(
     regId: string,
@@ -440,7 +509,7 @@ export async function savePaymentData(
     },
 ) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
     const update: Record<string, unknown> = { updated_at: new Date().toISOString() }
     if (data.total_amount !== undefined) update.total_amount = data.total_amount
@@ -448,7 +517,7 @@ export async function savePaymentData(
     if (hasReceipt) update.payment_status = 'paid'
     else if (data.payment_status !== undefined) update.payment_status = data.payment_status
 
-    // الخصم والإيصال في additional_data
+    // discount and receipt live in additional_data
     if (data.discount || data.receipt || data.currency || data.discount_approved !== undefined || data.service_package) {
         const { data: current } = await supabase
             .from('registrations')
@@ -481,14 +550,14 @@ export async function savePaymentData(
         return { error: error.message }
     }
 
-    await logEvent(supabase, regId, 'payment_updated', 'تم تحديث بيانات الدفع', user.id, profile?.full_name || profile?.email || 'موظف', data)
+    await logEvent(supabase, regId, 'payment_updated', 'Payment data updated', user.id, profile?.full_name || profile?.email || 'Staff', data)
 
     if (hasReceipt) {
         await supabase
             .from('registrations')
             .update({ case_status: 'payment_confirmed' })
             .eq('id', regId)
-        await logEvent(supabase, regId, 'status_changed', 'تم تأكيد الدفع تلقائياً بسبب إدخال رقم الإيصال', user.id, profile?.full_name || profile?.email || 'موظف', { new_status: 'payment_confirmed' })
+        await logEvent(supabase, regId, 'status_changed', 'Payment automatically confirmed because a receipt number was entered', user.id, profile?.full_name || profile?.email || 'Staff', { new_status: 'payment_confirmed' })
     }
 
     revalidatePath(`/dashboard/participation-cases/${regId}`)
@@ -496,13 +565,13 @@ export async function savePaymentData(
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  7) تحديث بيانات العميل (full_name, email, form_data.phone...)
+//  7) Update client data (full_name, email, form_data.phone...)
 // ─────────────────────────────────────────────────────────────────
 export async function updateClientData(regId: string, data: Record<string, unknown>) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
-    // 1) البحث عن client_id المرتبط بالتسجيل
+    // 1) find the client_id linked to the registration
     const { data: reg, error: regError } = await supabase
         .from('registrations')
         .select('client_id')
@@ -511,12 +580,12 @@ export async function updateClientData(regId: string, data: Record<string, unkno
 
     if (regError || !reg || !reg.client_id) {
         console.error('updateClientData failed: registration or client_id not found', regError)
-        return { error: 'ملف المشاركة غير موجود أو غير مرتبط بعميل' }
+        return { error: 'Participation case not found or not linked to a client' }
     }
 
     const clientId = reg.client_id
 
-    // 2) خرائط الحقول من الواجهة لأعمدة جدول clients
+    // 2) map form fields to clients table columns
     const clientPatch: Record<string, any> = {
         updated_at: new Date().toISOString()
     }
@@ -569,7 +638,7 @@ export async function updateClientData(regId: string, data: Record<string, unkno
         }
     }
 
-    // 3) تحديث جدول العملاء
+    // 3) update the clients table
     const { error: clientError } = await supabase
         .from('clients')
         .update(clientPatch)
@@ -580,7 +649,7 @@ export async function updateClientData(regId: string, data: Record<string, unkno
         return { error: clientError.message }
     }
 
-    // 4) مزامنة الحقول الأساسية في جدول registrations للتوافق مع العرض في لوحات التحكم
+    // 4) sync core fields into the registrations table for display consistency across dashboards
     const regUpdate: Record<string, any> = {
         updated_at: new Date().toISOString()
     }
@@ -597,7 +666,7 @@ export async function updateClientData(regId: string, data: Record<string, unkno
         }
     }
 
-    await logEvent(supabase, regId, 'client_updated', 'تم تحديث بيانات العميل المستقل بنجاح', user.id, profile?.full_name || profile?.email || 'موظف', data)
+    await logEvent(supabase, regId, 'client_updated', 'Client data updated successfully', user.id, profile?.full_name || profile?.email || 'Staff', data)
 
     revalidatePath(`/dashboard/participation-cases/${regId}`)
     revalidatePath('/dashboard/participation-cases')
@@ -605,7 +674,7 @@ export async function updateClientData(regId: string, data: Record<string, unkno
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  8) رفع وثيقة مباشرة إلى Supabase Storage ثم تسجيلها في documents
+//  8) Upload a document directly to Supabase Storage, then register it in documents
 // ─────────────────────────────────────────────────────────────────
 const REGISTRATION_DOCUMENTS_BUCKET = 'events-bucket'
 
@@ -624,20 +693,20 @@ export async function prepareRegistrationDocumentUpload(
 ) {
     try {
         const { supabase, user, profile } = await getCurrentUser()
-        if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+        if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
         if (!isSafeRegistrationUploadValue(regId) || !isSafeRegistrationUploadValue(docType)) {
-            return { error: 'بيانات المستند غير صالحة' }
+            return { error: 'Invalid document data' }
         }
 
         if (!file?.name || !Number.isFinite(file.size) || file.size <= 0) {
-            return { error: 'لم يتم اختيار ملف صالح' }
+            return { error: 'No valid file was selected' }
         }
 
         const maxFileSize = getRegistrationDocumentMaxSize(docType)
         if (file.size > maxFileSize) {
             const maxSizeMb = Math.round(maxFileSize / (1024 * 1024))
-            return { error: `حجم الملف كبير جداً، الحد الأقصى ${maxSizeMb} ميغابايت` }
+            return { error: `File is too large. Maximum size is ${maxSizeMb} MB` }
         }
 
         const safeFileName = file.name
@@ -650,7 +719,7 @@ export async function prepareRegistrationDocumentUpload(
 
         if (error || !data) {
             console.error('prepareRegistrationDocumentUpload failed:', error)
-            return { error: error?.message || 'تعذر تجهيز رابط رفع الملف' }
+            return { error: error?.message || 'Could not prepare the file upload link' }
         }
 
         return {
@@ -661,7 +730,7 @@ export async function prepareRegistrationDocumentUpload(
         }
     } catch (error) {
         console.error('prepareRegistrationDocumentUpload unexpected failure:', error)
-        return { error: 'تعذر بدء رفع الملف. حاول مرة أخرى.' }
+        return { error: 'Could not start the file upload. Please try again.' }
     }
 }
 
@@ -673,7 +742,7 @@ export async function finalizeRegistrationDocumentUpload(
 ) {
     try {
         const { supabase, user, profile } = await getCurrentUser()
-        if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+        if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
         const expectedPrefix = `registrations/${regId}/`
         if (
@@ -682,7 +751,7 @@ export async function finalizeRegistrationDocumentUpload(
             || !storagePath.startsWith(expectedPrefix)
             || !label.trim()
         ) {
-            return { error: 'بيانات المستند غير صالحة' }
+            return { error: 'Invalid document data' }
         }
 
         const { data: storedFile, error: fileError } = await supabase.storage
@@ -691,14 +760,14 @@ export async function finalizeRegistrationDocumentUpload(
 
         if (fileError || !storedFile) {
             console.error('finalizeRegistrationDocumentUpload file verification failed:', fileError)
-            return { error: 'لم يكتمل رفع الملف إلى التخزين' }
+            return { error: 'The file upload to storage did not complete' }
         }
 
         const maxFileSize = getRegistrationDocumentMaxSize(docType)
         if (typeof storedFile.size === 'number' && storedFile.size > maxFileSize) {
             await supabase.storage.from(REGISTRATION_DOCUMENTS_BUCKET).remove([storagePath])
             const maxSizeMb = Math.round(maxFileSize / (1024 * 1024))
-            return { error: `حجم الملف كبير جداً، الحد الأقصى ${maxSizeMb} ميغابايت` }
+            return { error: `File is too large. Maximum size is ${maxSizeMb} MB` }
         }
 
         const { data: publicUrlData } = supabase.storage
@@ -714,7 +783,7 @@ export async function finalizeRegistrationDocumentUpload(
 
         if (registrationError || !current) {
             console.error('finalizeRegistrationDocumentUpload registration lookup failed:', registrationError)
-            return { error: registrationError?.message || 'تعذر العثور على الطلب' }
+            return { error: registrationError?.message || 'Could not find the application' }
         }
 
         const docsRaw = current.documents
@@ -724,6 +793,9 @@ export async function finalizeRegistrationDocumentUpload(
             path: url,
             uploadedAt: new Date().toISOString(),
             type: docType,
+            // Storage reports the authoritative size; the UI previously showed
+            // a hardcoded placeholder for every file.
+            size: typeof storedFile.size === 'number' ? storedFile.size : undefined,
         }
         const nextDocs = [
             ...docs.filter((doc: any) => doc?.type !== docType),
@@ -745,9 +817,9 @@ export async function finalizeRegistrationDocumentUpload(
             supabase,
             regId,
             'document_uploaded',
-            `تم رفع وثيقة: ${label}`,
+            `Document uploaded: ${label}`,
             user.id,
-            profile?.full_name || profile?.email || 'موظف',
+            profile?.full_name || profile?.email || 'Staff',
             { doc_type: docType, url },
         )
 
@@ -755,16 +827,16 @@ export async function finalizeRegistrationDocumentUpload(
         return { error: null, url }
     } catch (error) {
         console.error('finalizeRegistrationDocumentUpload unexpected failure:', error)
-        return { error: 'تم رفع الملف، لكن تعذر تسجيله في الطلب. حاول مرة أخرى.' }
+        return { error: 'The file was uploaded, but could not be registered on the application. Please try again.' }
     }
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  9) حذف وثيقة من documents JSONB (بالمسار)
+//  9) Delete a document from the documents JSONB (by path)
 // ─────────────────────────────────────────────────────────────────
 export async function deleteRegistrationDocument(regId: string, docPath: string, docLabel: string) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { error: 'Unauthorized' }
 
     const { data: current } = await supabase
         .from('registrations')
@@ -785,14 +857,14 @@ export async function deleteRegistrationDocument(regId: string, docPath: string,
         return { error: error.message }
     }
 
-    await logEvent(supabase, regId, 'document_deleted', `تم حذف وثيقة: ${docLabel}`, user.id, profile?.full_name || profile?.email || 'موظف')
+    await logEvent(supabase, regId, 'document_deleted', `Document deleted: ${docLabel}`, user.id, profile?.full_name || profile?.email || 'Staff')
 
     revalidatePath(`/dashboard/participation-cases/${regId}`)
     return { error: null }
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  10) تحديث بيانات الداعي للفعالية في registration_config.inviter
+//  10) Update the event inviter details in registration_config.inviter
 // ─────────────────────────────────────────────────────────────────
 export async function updateEventInviterDetails(eventId: string, inviter: {
     host_org: string
@@ -802,7 +874,7 @@ export async function updateEventInviterDetails(eventId: string, inviter: {
     host_contact_email: string
 }) {
     const { supabase, profile } = await getCurrentUser()
-    if (!isStaff(profile)) return { error: 'غير مصرح' }
+    if (!isStaff(profile)) return { error: 'Unauthorized' }
 
     const { data: event, error: getError } = await supabase
         .from('events')
@@ -811,7 +883,7 @@ export async function updateEventInviterDetails(eventId: string, inviter: {
         .single()
 
     if (getError || !event) {
-        return { error: 'الفعالية غير موجودة' }
+        return { error: 'Event not found' }
     }
 
     const currentConfig = (event.registration_config as Record<string, any>) || {}
@@ -835,7 +907,7 @@ export async function updateEventInviterDetails(eventId: string, inviter: {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  11) حساب نقاط التطابق للعميل ومقارنة البيانات (الخطوة الأولى)
+//  11) Calculate the client match score and compare data (step one)
 // ─────────────────────────────────────────────────────────────────
 function calculateClientMatchScore(client: any, input: any) {
     let score = 0
@@ -952,7 +1024,7 @@ export async function searchClientsWithMatchingScore(input: {
     passportExpiryDate?: string
 }) {
     const { supabase, profile } = await getCurrentUser()
-    if (!isStaff(profile)) return { data: [], error: 'غير مصرح' }
+    if (!isStaff(profile)) return { data: [], error: 'Unauthorized' }
 
     const orConditions: string[] = []
     if (input.fullName?.trim()) {
@@ -1031,7 +1103,7 @@ export async function searchClientsWithMatchingScore(input: {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  12) المتابعة مع عميل موجود وتجديد بيانات الجواز وحفظ المسودة
+//  12) Continue with an existing client, renew passport data, and save the draft
 // ─────────────────────────────────────────────────────────────────
 export async function continueWithClientAction(input: {
     clientId: string
@@ -1065,7 +1137,7 @@ export async function continueWithClientAction(input: {
     }
 }) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { data: null, error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { data: null, error: 'Unauthorized' }
 
     const { data: client, error: fetchErr } = await (supabase as any)
         .from('clients')
@@ -1074,7 +1146,7 @@ export async function continueWithClientAction(input: {
         .single()
 
     if (fetchErr || !client) {
-        return { data: null, error: 'العميل غير موجود' }
+        return { data: null, error: 'Client not found' }
     }
 
     const updatedHistory = Array.isArray((client as any).passport_history) ? (client as any).passport_history : []
@@ -1236,14 +1308,14 @@ export async function continueWithClientAction(input: {
         console.error('Expired application document cleanup skipped:', cleanupError)
     }
 
-    await logEvent(supabase, targetRegId, 'client_updated', 'تم تحديث بيانات العميل وربطه بطلب جديد/مسودة', user.id, profile?.full_name || profile?.email || 'موظف', { client_id: input.clientId, passport_changed: !!passportChanged })
+    await logEvent(supabase, targetRegId, 'client_updated', 'Client data updated and linked to a new application/draft', user.id, profile?.full_name || profile?.email || 'Staff', { client_id: input.clientId, passport_changed: !!passportChanged })
 
     revalidatePath('/dashboard/participation-cases')
     return { data: { registrationId: targetRegId, caseNumber }, error: null }
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  13) إنشاء عميل جديد وتوليد طلب جديد ومسودة
+//  13) Create a new client and generate a new application and draft
 // ─────────────────────────────────────────────────────────────────
 export async function createNewClientAndApplication(input: {
     eventId: string
@@ -1275,7 +1347,7 @@ export async function createNewClientAndApplication(input: {
     }
 }) {
     const { supabase, user, profile } = await getCurrentUser()
-    if (!isStaff(profile) || !user) return { data: null, error: 'غير مصرح' }
+    if (!isStaff(profile) || !user) return { data: null, error: 'Unauthorized' }
 
     if (input.clientData.nationalId) {
         const { data: existing } = await supabase
@@ -1284,9 +1356,9 @@ export async function createNewClientAndApplication(input: {
             .eq('national_id', input.clientData.nationalId.trim())
             .limit(1)
             .maybeSingle()
-        
+
         if (existing) {
-            return { data: null, error: `الرقم الوطني مستخدم بالفعل للعميل: ${existing.full_name_as_passport}` }
+            return { data: null, error: `This national ID is already used by client: ${existing.full_name_as_passport}` }
         }
     }
 
@@ -1384,7 +1456,7 @@ export async function createNewClientAndApplication(input: {
         .update({ client_snapshot: snapshot })
         .eq('id', newReg.id)
 
-    await logEvent(supabase, newReg.id, 'case_created', 'تم إنشاء ملف العميل وتوليد طلب جديد ومسودة في النظام', user.id, profile?.full_name || profile?.email || 'موظف', { client_id: newClient.id, case_number: caseNumber })
+    await logEvent(supabase, newReg.id, 'case_created', 'Client case created and a new application and draft generated in the system', user.id, profile?.full_name || profile?.email || 'Staff', { client_id: newClient.id, case_number: caseNumber })
 
     revalidatePath('/dashboard/participation-cases')
     return { data: { registrationId: newReg.id, caseNumber }, error: null }

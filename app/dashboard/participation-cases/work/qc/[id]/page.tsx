@@ -34,7 +34,7 @@ export default async function QcDetailPage({ params }: { params: Promise<{ id: s
         <StationDetail
             registration={registration}
             station="qc"
-            stationLabel="التدقيق والجودة"
+            stationLabel="Quality Control"
             tab="qc"
         />
     )

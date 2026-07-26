@@ -133,6 +133,21 @@ function getRegistrationChecks(registration: EventRegistration) {
   }
 }
 
+/**
+ * Extracts a readable message from anything a Supabase call can throw.
+ * The client's `{ error }` results are PostgrestError/AuthError objects,
+ * not `Error` instances, so a plain `instanceof Error` check misses them
+ * and previously always fell back to a generic "Unknown error".
+ */
+function getSupabaseErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = (error as { message?: unknown }).message
+    if (typeof message === 'string' && message) return message
+  }
+  return 'Unknown error'
+}
+
 function StatusBox({ complete, label }: { complete: boolean; label: string }) {
   return (
     <span className={`inline-flex size-7 items-center justify-center rounded-md border ${complete ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-600'}`} title={`${label}: ${complete ? 'Complete' : 'Incomplete'}`} aria-label={`${label}: ${complete ? 'Complete' : 'Incomplete'}`}>
@@ -188,6 +203,10 @@ export function DraftEventsTable({ events: initialEvents, registrations }: Draft
 
   const resetToFirstPage = () => setCurrentPage(1)
 
+  const pendingDeleteRegistrationCount = pendingDelete
+    ? registrations.filter((registration) => registration.event_id === pendingDelete.id).length
+    : 0
+
   const deleteEvents = async (ids: string[]) => {
     setIsDeleting(true)
     try {
@@ -198,7 +217,21 @@ export function DraftEventsTable({ events: initialEvents, registrations }: Draft
       toast.success(ids.length === 1 ? 'Draft event deleted.' : `${ids.length} draft events deleted.`)
       router.refresh()
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
+      // Supabase returns a PostgrestError, not a native Error, so
+      // `error instanceof Error` was always false here — every failure
+      // surfaced as an unhelpful "Unknown error" no matter what actually
+      // went wrong.
+      //
+      // Postgres error 23503 (foreign_key_violation) is what happens when a
+      // draft event still has applications linked to it: deleting drift_events
+      // cascades (via trigger_sync_drift_event) into deleting the mirrored
+      // events row, which registrations.event_id restricts while any
+      // registration still points at it. Name that case explicitly instead of
+      // showing the raw constraint text.
+      const code = error && typeof error === 'object' && 'code' in error ? String((error as { code?: unknown }).code) : ''
+      const message = code === '23503'
+        ? 'This event still has applications linked to it. Reassign or close those applications before deleting the event.'
+        : getSupabaseErrorMessage(error)
       toast.error(`Could not delete the draft${ids.length > 1 ? 's' : ''}: ${message}`)
     } finally {
       setIsDeleting(false)
@@ -378,7 +411,24 @@ export function DraftEventsTable({ events: initialEvents, registrations }: Draft
         </section>
       ) : null}
 
-      <Dialog open={Boolean(pendingDelete)} onOpenChange={(open) => !open && setPendingDelete(null)}><DialogContent className="max-w-md text-left" dir="ltr"><DialogHeader><DialogTitle>Delete this draft event?</DialogTitle><DialogDescription>“{pendingDelete?.title || 'Untitled event'}” will be permanently removed. This action cannot be undone.</DialogDescription></DialogHeader><DialogFooter className="mt-3 gap-2 sm:space-x-0"><DialogClose asChild><Button variant="outline" disabled={isDeleting}>Cancel</Button></DialogClose><Button variant="danger" onClick={() => pendingDelete && deleteEvents([pendingDelete.id])} disabled={isDeleting}>{isDeleting ? 'Deleting…' : 'Delete draft'}</Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={Boolean(pendingDelete)} onOpenChange={(open) => !open && setPendingDelete(null)}>
+        <DialogContent className="max-w-md text-left" dir="ltr">
+          <DialogHeader>
+            <DialogTitle>Delete this draft event?</DialogTitle>
+            <DialogDescription>“{pendingDelete?.title || 'Untitled event'}” will be permanently removed. This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          {pendingDeleteRegistrationCount > 0 && (
+            <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              {pendingDeleteRegistrationCount} {pendingDeleteRegistrationCount === 1 ? 'application is' : 'applications are'} linked to this event.
+              Deleting it may fail, or leave those applications pointing at a missing event. Reassign or close them first if that happens.
+            </p>
+          )}
+          <DialogFooter className="mt-3 gap-2 sm:space-x-0">
+            <DialogClose asChild><Button variant="outline" disabled={isDeleting}>Cancel</Button></DialogClose>
+            <Button variant="danger" onClick={() => pendingDelete && deleteEvents([pendingDelete.id])} disabled={isDeleting}>{isDeleting ? 'Deleting…' : 'Delete draft'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

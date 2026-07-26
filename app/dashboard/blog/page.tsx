@@ -123,12 +123,12 @@ export default function BlogDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between border-b pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">إدارة المدونة</h1>
-          <p className="text-gray-500">لوحة التحكم بالمقالات والمحتوى</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Blog Management</h1>
+          <p className="text-gray-500">Manage articles and content</p>
         </div>
         <Button onClick={handleCreate} className="gap-2">
           <Plus className="w-4 h-4" />
-          <span className="font-semibold">مقال جديد</span>
+          <span className="font-semibold">New Article</span>
         </Button>
       </div>
 
@@ -137,7 +137,7 @@ export default function BlogDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">
-              إجمالي المقالات
+              Total Articles
             </CardTitle>
             <BookOpen className="h-4 w-4 text-gray-400" />
           </CardHeader>
@@ -149,7 +149,7 @@ export default function BlogDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">
-              منشور
+              Published
             </CardTitle>
             <CheckCircle2 className="h-4 w-4 text-green-500" />
           </CardHeader>
@@ -163,7 +163,7 @@ export default function BlogDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">
-              مسودة
+              Draft
             </CardTitle>
             <FileText className="h-4 w-4 text-gray-400" />
           </CardHeader>
@@ -177,7 +177,7 @@ export default function BlogDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">
-              إجمالي المشاهدات
+              Total Views
             </CardTitle>
             <Eye className="h-4 w-4 text-blue-500" />
           </CardHeader>
@@ -194,7 +194,7 @@ export default function BlogDashboardPage() {
         <div className="relative w-full sm:w-[300px]">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="البحث في المقالات..."
+            placeholder="Search articles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pr-9 h-10"
@@ -207,7 +207,7 @@ export default function BlogDashboardPage() {
             size="sm"
             className="rounded-lg"
           >
-            الكل
+            All
           </Button>
           <Button
             variant={statusFilter === 'published' ? 'primary' : 'outline'}
@@ -215,7 +215,7 @@ export default function BlogDashboardPage() {
             size="sm"
             className="rounded-lg"
           >
-            منشور
+            Published
           </Button>
           <Button
             variant={statusFilter === 'draft' ? 'primary' : 'outline'}
@@ -223,7 +223,7 @@ export default function BlogDashboardPage() {
             size="sm"
             className="rounded-lg"
           >
-            مسودة
+            Draft
           </Button>
         </div>
       </div>
@@ -233,16 +233,16 @@ export default function BlogDashboardPage() {
         {loading ? (
           <div className="p-16 text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mb-4"></div>
-            <p className="text-gray-500 font-medium">جاري التحميل...</p>
+            <p className="text-gray-500 font-medium">Loading...</p>
           </div>
         ) : filteredPosts.length === 0 ? (
           <div className="p-16 text-center">
             <Inbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-gray-900 mb-2">لا توجد مقالات</h3>
-            <p className="text-gray-500 mb-6">لم يتم العثور على أي مقالات تطابق بحثك</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">No articles found</h3>
+            <p className="text-gray-500 mb-6">No articles match your search</p>
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="w-4 h-4" />
-              إنشاء مقال جديد
+              Create New Article
             </Button>
           </div>
         ) : (
@@ -250,12 +250,12 @@ export default function BlogDashboardPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-gray-500 border-b">
                 <tr>
-                  <th className="px-6 py-4 text-right font-medium">العنوان</th>
-                  <th className="px-6 py-4 text-right font-medium">التصنيف</th>
-                  <th className="px-6 py-4 text-right font-medium">الحالة</th>
-                  <th className="px-6 py-4 text-right font-medium">المشاهدات</th>
-                  <th className="px-6 py-4 text-right font-medium">التاريخ</th>
-                  <th className="px-6 py-4 text-right font-medium">الإجراءات</th>
+                  <th className="px-6 py-4 text-right font-medium">Title</th>
+                  <th className="px-6 py-4 text-right font-medium">Category</th>
+                  <th className="px-6 py-4 text-right font-medium">Status</th>
+                  <th className="px-6 py-4 text-right font-medium">Views</th>
+                  <th className="px-6 py-4 text-right font-medium">Date</th>
+                  <th className="px-6 py-4 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -279,7 +279,7 @@ export default function BlogDashboardPage() {
                             {post.title_ar || post.title}
                           </div>
                           <div className="text-gray-500 line-clamp-1 text-xs mt-1">
-                            {post.excerpt_ar || post.excerpt || 'لا يوجد وصف'}
+                            {post.excerpt_ar || post.excerpt || 'No description'}
                           </div>
                         </div>
                       </div>
@@ -293,7 +293,7 @@ export default function BlogDashboardPage() {
                           post.status
                         )}`}
                       >
-                        {post.status === 'published' ? 'منشور' : 'مسودة'}
+                        {post.status === 'published' ? 'Published' : 'Draft'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-600">
@@ -312,7 +312,7 @@ export default function BlogDashboardPage() {
                             href={`/blog/${post.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            title="عرض على الموقع"
+                            title="View on site"
                           >
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <ExternalLink className="w-4 h-4 text-sky-500" />
@@ -334,14 +334,14 @@ export default function BlogDashboardPage() {
                               size="sm"
                               onClick={() => handleDelete(post.id)}
                             >
-                              تأكيد
+                              Confirm
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => setDeleteConfirmId(null)}
                             >
-                              إلغاء
+                              Cancel
                             </Button>
                           </div>
                         ) : (
@@ -369,12 +369,12 @@ export default function BlogDashboardPage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedPost ? 'تعديل المقال' : 'مقال جديد'}
+              {selectedPost ? 'Edit Article' : 'New Article'}
             </DialogTitle>
             <DialogDescription>
               {selectedPost
-                ? 'قم بتعديل بيانات المقال'
-                : 'أضف مقال جديد إلى المدونة'}
+                ? 'Edit the article details'
+                : 'Add a new article to the blog'}
             </DialogDescription>
           </DialogHeader>
           <BlogForm post={selectedPost} onClose={handleModalClose} />

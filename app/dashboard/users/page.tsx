@@ -3,15 +3,15 @@ import { UsersView } from './components/users-view'
 import { requireDashboardAccess } from '@/lib/auth/require-dashboard-access'
 
 export const metadata = {
-    title: 'إدارة العملاء | JAZ Admin',
+    title: 'Client Management | JAZ Admin',
 }
 
 export default async function UsersPage() {
     await requireDashboardAccess('/dashboard/users')
 
-    // هذه الصفحة تعرض عملاء الموقع فقط (من سجّلوا حساب من الموقع)
-    // عمود role له قيمة افتراضية 'user' عند التسجيل العادي، وأعضاء لوحة التحكم (مدير/فريق)
-    // لهم صفحة "الفريق" المنفصلة
+    // This page shows only website clients (those who registered an account from the website)
+    // The role column defaults to 'user' on normal signup, while dashboard members (admin/team)
+    // have their own separate "Team" page
     const supabase = await createClient()
     const { data: users } = await supabase
         .from('users')
@@ -22,8 +22,8 @@ export default async function UsersPage() {
     return (
         <div className="space-y-3">
             <div>
-                <h1 className="text-xl font-bold text-slate-900">إدارة العملاء</h1>
-                <p className="text-sm text-slate-500">عملاء الموقع المسجَّلين — يمكنك ترقية أي حساب لعضو فريق أو تفعيل/تعطيل الوصول.</p>
+                <h1 className="text-xl font-bold text-slate-900">Client Management</h1>
+                <p className="text-sm text-slate-500">Registered website clients — you can promote any account to a team member or enable/disable access.</p>
             </div>
             <UsersView users={users || []} />
         </div>

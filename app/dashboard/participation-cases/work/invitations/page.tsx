@@ -34,8 +34,8 @@ export default async function InvitationsStation() {
         <StationList
             cases={cases ?? []}
             station="invitations"
-            title="الدعوات"
-            desc="متابعة طلب واستلام الدعوات الرسمية"
+            title="Invitations"
+            desc="Track requesting and receiving official invitations"
         />
     )
 }

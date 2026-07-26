@@ -34,7 +34,7 @@ export default async function InvitationDetailPage({ params }: { params: Promise
         <StationDetail
             registration={registration}
             station="invitations"
-            stationLabel="الدعوات"
+            stationLabel="Invitations"
             tab="invitation"
         />
     )
