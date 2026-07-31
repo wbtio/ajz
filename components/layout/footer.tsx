@@ -4,32 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { X, Instagram, Linkedin, Facebook } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 import { Container } from '@/components/ui/container'
-
-const socialLinks = [
-  {
-    name: 'Twitter',
-    href: 'https://x.com',
-    icon: X,
-  },
-  {
-    name: 'Facebook',
-    href: 'https://www.facebook.com/ZointAnnualZone/',
-    icon: Facebook,
-  },
-  {
-    name: 'Instagram',
-    href: 'https://www.instagram.com/joint.annual.zone?igsh=bmk2eWxzejhlNzBw&utm_source=qr',
-    icon: Instagram,
-  },
-  {
-    name: 'LinkedIn',
-    href: 'https://www.linkedin.com/company/jazcompany/',
-    icon: Linkedin,
-  },
-]
 
 const navLinks = [
   { href: '/', en: 'Home', ar: 'الرئيسية' },
@@ -107,24 +83,6 @@ export function Footer() {
                   ? 'نربط ونمثّل مؤسسات العراق ومهنييه على الساحة العالمية.'
                   : "We connect and represent Iraq's institutions and professionals on the global stage."}
               </p>
-            </div>
-            {/* Social Icons */}
-            <div className="flex gap-3 items-center pt-1">
-              {socialLinks.map((social) => {
-                const Icon = social.icon
-                return (
-                  <Link
-                    key={social.name}
-                    aria-label={social.name}
-                    className="w-10 h-10 rounded-full border border-[#6f85a3]/30 flex items-center justify-center text-[#6f85a3] hover:text-[#f7e382] hover:border-[#f7e382] transition-all duration-300 transform active:scale-95"
-                    href={social.href}
-                    target={social.href.startsWith('http') ? '_blank' : undefined}
-                    rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </Link>
-                )
-              })}
             </div>
           </div>
 

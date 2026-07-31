@@ -92,6 +92,30 @@ export type Database = {
         }
         Relationships: []
       }
+      app_settings: {
+        Row: {
+          key: string
+          value: Json
+          is_public: boolean
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          key: string
+          value: Json
+          is_public?: boolean
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          key?: string
+          value?: Json
+          is_public?: boolean
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       case_documents: {
         Row: {
           case_id: string
