@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { registrationDocumentUrl } from '@/lib/registration-documents'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -701,7 +702,7 @@ function DetailDialog({
                             <p className="text-xs font-bold text-slate-500 mb-2">Documents Uploaded by User</p>
                             <div className="space-y-2">
                                 {reg.documents.map((doc: any, i: number) => {
-                                    const viewUrl = `/api/documents/view?path=${encodeURIComponent(doc.path)}`
+                                    const viewUrl = registrationDocumentUrl(doc.path)
                                     return (
                                         <a
                                             key={i}

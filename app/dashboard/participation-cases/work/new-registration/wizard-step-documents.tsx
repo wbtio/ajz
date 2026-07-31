@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { registrationDocumentUrl } from '@/lib/registration-documents'
 import { toast } from 'sonner'
 import { CheckCircle2, Eye, FileText, Trash2, Upload } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -259,7 +260,7 @@ export function DocumentsStep() {
               {documents.packageDocument && (
                 <button
                   type="button"
-                  onClick={() => window.open(documents.packageDocument!.path, '_blank', 'noopener,noreferrer')}
+                  onClick={() => window.open(registrationDocumentUrl(documents.packageDocument!.path), '_blank', 'noopener,noreferrer')}
                   className="flex max-w-full items-center gap-2 rounded-md py-1 text-left text-xs text-emerald-700 hover:text-emerald-800"
                 >
                   <CheckCircle2 className="size-4 shrink-0" />

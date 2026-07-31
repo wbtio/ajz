@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { registrationDocumentUrl } from '@/lib/registration-documents'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -761,7 +762,7 @@ export function StepLeads({ event, initialRegistrations, isReadOnly }: StepLeads
                                                                         {reg.documents.map((doc: any, i: number) => (
                                                                             <a
                                                                                 key={i}
-                                                                                href={`/api/documents/view?path=${encodeURIComponent(doc.path)}`}
+                                                                                href={registrationDocumentUrl(doc.path)}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
                                                                                 className="inline-flex items-center gap-0.5 text-[9px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 px-1 rounded hover:underline"

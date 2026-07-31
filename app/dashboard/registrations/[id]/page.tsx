@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { registrationDocumentUrl } from '@/lib/registration-documents'
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -457,7 +458,7 @@ export default function RegistrationDetailPage() {
         // Reference crops for each field from the image itself — for visual verification before relying on the automated reading
         if (/\.(jpe?g|png)$/i.test(path) && data.fields) {
           try {
-            const imgRes = await fetch(`/api/documents/view?path=${encodeURIComponent(path)}`);
+            const imgRes = await fetch(registrationDocumentUrl(path));
             const blob = await imgRes.blob();
             const file = new File([blob], docName, { type: blob.type || "image/jpeg" });
             setOcrCrops(await makePassportCrops(file, data.fields));
@@ -527,7 +528,7 @@ export default function RegistrationDetailPage() {
         id: crypto.randomUUID(), type: "file",
         content: `New document uploaded: ${file.name}`,
         fileName: file.name,
-        fileLink: `/api/documents/view?path=${encodeURIComponent(storageData.path)}`,
+        fileLink: registrationDocumentUrl(storageData.path),
         created_at: ts,
       }, ...prev]);
     } catch (err) {
@@ -803,7 +804,7 @@ export default function RegistrationDetailPage() {
                           </span>
                           {matchedDoc && (
                             <a
-                              href={`/api/documents/view?path=${encodeURIComponent(matchedDoc.path)}`}
+                              href={registrationDocumentUrl(matchedDoc.path)}
                               target="_blank" rel="noopener noreferrer"
                               className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:underline"
                             >
@@ -893,7 +894,7 @@ export default function RegistrationDetailPage() {
             {documents.length > 0 ? (
               <div className="space-y-1.5">
                 {documents.map((doc: any, i: number) => {
-                  const viewUrl = `/api/documents/view?path=${encodeURIComponent(doc.path)}`;
+                  const viewUrl = registrationDocumentUrl(doc.path);
                   const isImageOrPdf = /\.(jpe?g|png|pdf)$/i.test(doc.path);
                   const ocr = doc.ocr as { fields?: Record<string, string>; quality?: string } | undefined;
                   const ocrFields = ocr?.fields || {};

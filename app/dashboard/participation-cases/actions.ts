@@ -676,7 +676,9 @@ export async function updateClientData(regId: string, data: Record<string, unkno
 // ─────────────────────────────────────────────────────────────────
 //  8) Upload a document directly to Supabase Storage, then register it in documents
 // ─────────────────────────────────────────────────────────────────
-const REGISTRATION_DOCUMENTS_BUCKET = 'events-bucket'
+// مستندات المتقدّمين (جوازات، استمارات تأشيرة، إيصالات) تخصّ المخزن الخاص.
+// كانت تُرفع إلى events-bucket العام، فكان أي شخص يعرف المسار يستطيع تنزيلها.
+const REGISTRATION_DOCUMENTS_BUCKET = 'registration-documents'
 
 function getRegistrationDocumentMaxSize(docType: string) {
     return docType === 'merged_package' ? 50 * 1024 * 1024 : 10 * 1024 * 1024
@@ -770,10 +772,9 @@ export async function finalizeRegistrationDocumentUpload(
             return { error: `File is too large. Maximum size is ${maxSizeMb} MB` }
         }
 
-        const { data: publicUrlData } = supabase.storage
-            .from(REGISTRATION_DOCUMENTS_BUCKET)
-            .getPublicUrl(storagePath)
-        const url = publicUrlData.publicUrl
+        // نخزّن مسار الملف لا رابطاً عاماً — القراءة تمرّ عبر /api/documents/view
+        // الذي يتحقق من الموظف ثم يولّد رابطاً موقّعاً قصير الأجل.
+        const url = storagePath
 
         const { data: current, error: registrationError } = await supabase
             .from('registrations')
