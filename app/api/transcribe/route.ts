@@ -1,7 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
-// تفريغ صوتي عبر Mistral Voxtral: يستقبل ملف صوت ويعيد نصّه
+// أقصى حجم لملف صوتي واحد — يمنع رفع ملفات ضخمة تستهلك الرصيد
+const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+
+// تفريغ صوتي عبر Mistral Voxtral: يستقبل ملف صوت ويعيد نصّه.
+// هذا المسار يستهلك رصيداً مدفوعاً، لذا يقتصر على موظفي لوحة التحكم.
 export async function POST(req: NextRequest) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "غير مصرح بالدخول" }, { status: 401 });
+  }
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (!profile || (profile.role !== "admin" && profile.role !== "team")) {
+    return NextResponse.json({ error: "غير مصرح بالدخول" }, { status: 403 });
+  }
+
   const apiKey = process.env.MISTRAL_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
@@ -14,6 +35,12 @@ export async function POST(req: NextRequest) {
   const audio = form.get("audio");
   if (!(audio instanceof Blob)) {
     return NextResponse.json({ error: "لا يوجد ملف صوتي" }, { status: 400 });
+  }
+  if (audio.size > MAX_AUDIO_BYTES) {
+    return NextResponse.json(
+      { error: "الملف الصوتي أكبر من الحد المسموح" },
+      { status: 413 }
+    );
   }
 
   const upstream = new FormData();

@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 async function sendTelegramMessage(task: {
   id: string;
   page: string;
@@ -19,13 +26,14 @@ async function sendTelegramMessage(task: {
     return;
   }
 
+  // النص قادم من زائر مجهول، وتيليغرام يرفض الرسالة كلها إذا احتوت HTML غير سليم
   const text = `
 📋 <b>طلب جديد - تعديلات الموقع</b>
 ━━━━━━━━━━━━━━━
-🆔 <b>الرقم:</b> <code>${task.id.slice(0, 8)}</code>
-📄 <b>الصفحة:</b> ${task.page}
-🔧 <b>نوع التعديل:</b> ${task.modification_type}
-📝 <b>الوصف:</b> ${task.description}
+🆔 <b>الرقم:</b> <code>${escapeHtml(task.id.slice(0, 8))}</code>
+📄 <b>الصفحة:</b> ${escapeHtml(task.page)}
+🔧 <b>نوع التعديل:</b> ${escapeHtml(task.modification_type)}
+📝 <b>الوصف:</b> ${escapeHtml(task.description)}
 📊 <b>الحالة:</b> ${getStatusArabic(task.status)}
 🕐 <b>التاريخ:</b> ${task.created_at ? new Date(task.created_at).toLocaleString("ar-SA") : "غير محدد"}
 ━━━━━━━━━━━━━━━
@@ -96,17 +104,45 @@ function getStatusArabic(status: string) {
   return map[status] || status;
 }
 
+/** حدود الإدخال — هذا المسار عام عمداً (نموذج /tasks/new)، فلا بد من تقييده */
+const MAX_TEXT = 2000;
+const MAX_IMAGE_CHARS = 8 * 1024 * 1024; // ≈ ٦ ميغابايت بعد فك ترميز base64
+
+function cleanText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > MAX_TEXT) return null;
+  return trimmed;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const supabase = await createClient();
 
+    const page = cleanText(body.page);
+    const modificationType = cleanText(body.modification_type);
+    const description = cleanText(body.description);
+
+    if (!page || !modificationType || !description) {
+      return NextResponse.json(
+        { error: "البيانات المرسلة غير مكتملة أو تتجاوز الحد المسموح" },
+        { status: 400 }
+      );
+    }
+
+    const image =
+      typeof body.base64_image === "string" &&
+      body.base64_image.length <= MAX_IMAGE_CHARS
+        ? body.base64_image
+        : null;
+
     const { data, error } = await supabase
       .from("tasks")
       .insert({
-        page: body.page,
-        modification_type: body.modification_type,
-        description: body.description,
+        page,
+        modification_type: modificationType,
+        description,
         status: "todo",
         image_url: null, // Not saving to database as per user request
         image_annotation: null,
@@ -121,7 +157,7 @@ export async function POST(req: NextRequest) {
     // Send Telegram notification with the base64 image (not saved to server)
     await sendTelegramMessage({
       ...data,
-      base64_image: body.base64_image || null
+      base64_image: image
     });
 
     return NextResponse.json(data, { status: 201 });

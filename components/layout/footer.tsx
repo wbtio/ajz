@@ -33,16 +33,40 @@ export function Footer() {
   const [emailInput, setEmailInput] = useState('')
   const [isSubscribing, setIsSubscribing] = useState(false)
   const [subscribeSuccess, setSubscribeSuccess] = useState(false)
+  const [subscribeError, setSubscribeError] = useState('')
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!emailInput) return
+
     setIsSubscribing(true)
-    setTimeout(() => {
-      setIsSubscribing(false)
+    setSubscribeError('')
+
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput, locale }),
+      })
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null)
+        setSubscribeError(
+          payload?.error ??
+            (isAr ? 'تعذّر إتمام الاشتراك، حاول مرة أخرى.' : 'Could not subscribe, please try again.')
+        )
+        return
+      }
+
       setSubscribeSuccess(true)
       setEmailInput('')
-    }, 1200)
+    } catch {
+      setSubscribeError(
+        isAr ? 'تعذّر الاتصال بالخادم، حاول مرة أخرى.' : 'Could not reach the server, please try again.'
+      )
+    } finally {
+      setIsSubscribing(false)
+    }
   }
 
   const normalizedPathname = pathname?.toLowerCase() ?? ''
@@ -178,7 +202,13 @@ export function Footer() {
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubscribe} className="flex w-full group overflow-hidden rounded border border-[#6f85a3]/20 animate-in fade-in duration-300">
+                <>
+                  {subscribeError && (
+                    <p role="alert" className="text-[11px] font-medium text-red-300">
+                      {subscribeError}
+                    </p>
+                  )}
+                  <form onSubmit={handleSubscribe} className="flex w-full group overflow-hidden rounded border border-[#6f85a3]/20 animate-in fade-in duration-300">
                   <label className="sr-only" htmlFor="footer-newsletter-email">
                     {locale === 'ar' ? 'البريد الإلكتروني' : 'Email address'}
                   </label>
@@ -202,7 +232,8 @@ export function Footer() {
                       ? locale === 'ar' ? 'جارٍ…' : 'Saving…'
                       : locale === 'ar' ? 'اشترك' : 'Subscribe'}
                   </button>
-                </form>
+                  </form>
+                </>
               )}
             </div>
             

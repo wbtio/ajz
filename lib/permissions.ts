@@ -15,6 +15,7 @@ export const DASHBOARD_PAGES: { path: string; label: string }[] = [
   { path: "/dashboard/partners", label: "Partners" },
   { path: "/dashboard/trainings", label: "Training Programs" },
   { path: "/dashboard/messages", label: "Messages" },
+  { path: "/dashboard/newsletter", label: "Newsletter" },
   { path: "/dashboard/users", label: "Users" },
   { path: "/dashboard/registrations", label: "Event Registrations" },
   { path: "/dashboard/sector-registrations", label: "Sector Registrations" },

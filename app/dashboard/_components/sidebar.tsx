@@ -26,6 +26,7 @@ import {
     Inbox,
     Timer,
     Wand2,
+    Mail,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -117,6 +118,7 @@ export function DashboardSidebar({ user, collapsed = false }: DashboardSidebarPr
                 { name: 'Training Programs', href: '/dashboard/trainings', icon: GraduationCap },
                 { name: 'Quick Links', href: '/dashboard/links', icon: LinkIcon },
                 { name: 'Messages', href: '/dashboard/messages', icon: MessageSquare },
+                { name: 'Newsletter', href: '/dashboard/newsletter', icon: Mail },
                 { name: 'Users', href: '/dashboard/users', icon: Users },
                 { name: 'Registrations', href: '/dashboard/registrations', icon: FileText },
                 { name: 'Sector Registrations', href: '/dashboard/sector-registrations', icon: ClipboardList },
