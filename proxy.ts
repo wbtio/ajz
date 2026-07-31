@@ -1,6 +1,23 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { canAccessPath, isDashboardRole, defaultRouteForRole } from '@/lib/permissions'
+import { getCachedPublicSettings } from '@/lib/site-settings'
+
+/**
+ * Paths that stay reachable while the public site is in maintenance, so an
+ * admin can always sign in and switch it back off.
+ */
+function isAlwaysReachable(pathname: string) {
+  return (
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/admin-login') ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/maintenance') ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml'
+  )
+}
 
 export async function proxy(request: NextRequest) {
   // استثناء طلبات Server Actions
@@ -95,6 +112,32 @@ export async function proxy(request: NextRequest) {
       }
     }
 
+  }
+
+  // وضع الصيانة: يُخفي الموقع العام عن الزوّار، ويترك الموظفين يدخلون كالمعتاد
+  if (!isAlwaysReachable(pathname)) {
+    const { maintenance } = await getCachedPublicSettings()
+
+    if (maintenance.enabled) {
+      // نتحقق من الموظف فقط عند تفعيل الصيانة، حتى لا نُبطئ الموقع في الوضع الطبيعي
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      let isStaff = false
+      if (user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        isStaff = isDashboardRole(profile?.role)
+      }
+
+      if (!isStaff) {
+        return NextResponse.rewrite(new URL('/maintenance', request.url))
+      }
+    }
   }
 
   return supabaseResponse

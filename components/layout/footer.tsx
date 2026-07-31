@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
+import { useCompanySettings } from '@/lib/use-company-settings'
 import { Container } from '@/components/ui/container'
 
 const navLinks = [
@@ -22,6 +23,7 @@ const navLinkClass =
 
 export function Footer() {
   const { locale, dir } = useI18n()
+  const company = useCompanySettings()
   const isAr = locale === 'ar'
   const headingClass = isAr
     ? 'text-xs font-bold text-white tracking-normal'
@@ -127,16 +129,28 @@ export function Footer() {
                 <p className="font-semibold text-white/90">{isAr ? 'مكتب ألمانيا' : 'Germany Office'}</p>
               </div>
               <div className="pt-1.5 space-y-0.5 border-t border-[#6f85a3]/10">
-                <a
-                  href="tel:+9647719000600"
-                  className={`block text-white/90 hover:text-[#f7e382] transition-colors font-medium ${isAr ? 'text-right' : 'text-left'}`}
-                  dir="ltr"
-                >
-                  +964 771 900 0600
-                </a>
-                <a href="mailto:info@jaz.iq" className="block hover:text-[#f7e382] transition-colors font-medium">
-                  info@jaz.iq
-                </a>
+                {company.phone && (
+                  <a
+                    href={`tel:${company.phone.replace(/[^+\d]/g, '')}`}
+                    className={`block text-white/90 hover:text-[#f7e382] transition-colors font-medium ${isAr ? 'text-right' : 'text-left'}`}
+                    dir="ltr"
+                  >
+                    {company.phone}
+                  </a>
+                )}
+                {company.email && (
+                  <a
+                    href={`mailto:${company.email}`}
+                    className="block hover:text-[#f7e382] transition-colors font-medium"
+                  >
+                    {company.email}
+                  </a>
+                )}
+                {(isAr ? company.address_ar : company.address_en) && (
+                  <p className="pt-1 leading-relaxed text-[#6f85a3]">
+                    {isAr ? company.address_ar : company.address_en}
+                  </p>
+                )}
               </div>
             </div>
           </div>
