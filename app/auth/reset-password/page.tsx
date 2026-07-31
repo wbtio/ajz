@@ -22,24 +22,60 @@ export default function ResetPasswordPage() {
     const [checking, setChecking] = useState(true)
     const [hasSession, setHasSession] = useState(false)
 
-    // The recovery link lands on /auth/callback, which establishes the session
-    // and forwards here. Without a session there is nothing to update.
+    // Supabase sends recovery links in more than one shape depending on how the
+    // reset was triggered: a PKCE `?code=`, a `?token_hash=` pair, or tokens in
+    // the URL fragment. Handle all three so the link never dead-ends.
     useEffect(() => {
         const supabase = createClient()
+        let cancelled = false
 
-        supabase.auth.getSession().then(({ data }) => {
-            setHasSession(!!data.session)
+        const settle = (ok: boolean) => {
+            if (cancelled) return
+            setHasSession(ok)
             setChecking(false)
-        })
+        }
+
+        const resolve = async () => {
+            const params = new URLSearchParams(window.location.search)
+            const code = params.get('code')
+            const tokenHash = params.get('token_hash')
+            const type = params.get('type')
+
+            // 1) already signed in from the fragment (detectSessionInUrl) or a
+            //    previous step in this browser
+            const { data: existing } = await supabase.auth.getSession()
+            if (existing.session) return settle(true)
+
+            // 2) PKCE style link
+            if (code) {
+                const { error: exErr } = await supabase.auth.exchangeCodeForSession(code)
+                if (!exErr) return settle(true)
+            }
+
+            // 3) token-hash style link
+            if (tokenHash) {
+                const { error: otpErr } = await supabase.auth.verifyOtp({
+                    token_hash: tokenHash,
+                    type: (type as 'recovery') || 'recovery',
+                })
+                if (!otpErr) return settle(true)
+            }
+
+            settle(false)
+        }
+
+        // give detectSessionInUrl a moment to consume the fragment first
+        const timer = setTimeout(resolve, 400)
 
         const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session) {
-                setHasSession(true)
-                setChecking(false)
-            }
+            if (session) settle(true)
         })
 
-        return () => sub.subscription.unsubscribe()
+        return () => {
+            cancelled = true
+            clearTimeout(timer)
+            sub.subscription.unsubscribe()
+        }
     }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {

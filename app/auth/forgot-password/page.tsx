@@ -20,9 +20,9 @@ export default function ForgotPasswordPage() {
         setIsLoading(true)
 
         const supabase = createClient()
-        // The link lands on /auth/callback, which exchanges the code for a
-        // session and then forwards to the page where the new password is set.
-        const redirectTo = `${window.location.origin}/auth/callback?next=/auth/reset-password`
+        // Point straight at the reset page — it resolves the session itself
+        // whichever shape the link arrives in (code, token_hash, or fragment).
+        const redirectTo = `${window.location.origin}/auth/reset-password`
 
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
             redirectTo,
