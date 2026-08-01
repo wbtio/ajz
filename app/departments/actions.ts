@@ -26,18 +26,18 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
 
     const sectorName = sector?.name_ar || sector?.name_en || 'القطاع'
 
-    // Insert registration into database
+    // The answers live in `data`. This used to write `sector_name` and
+    // `additional_info`, neither of which exists on the table, so every public
+    // submission failed with 42703 and the visitor's details were lost.
     const { error } = await supabase
       .from('sector_registrations')
       .insert({
-        // @ts-ignore - keeping sector_id just in case it exists in DB but not in types
         sector_id: sectorId,
-        sector_name: sectorName,
         user_id: user?.id || null,
         full_name: fullName || 'غير معروف',
         email: email || '',
         phone: phone,
-        additional_info: data as Json,
+        data: { ...data, sector_name: sectorName } as Json,
         status: 'pending'
       })
 

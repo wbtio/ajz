@@ -15,12 +15,25 @@ export async function GET() {
   if (!user || !['admin', 'team'].includes(profile?.role ?? '')) return NextResponse.json({ error: 'Authentication required.' }, { status: 401 })
 
   const db = supabase as any
-  const [{ data: settings }, { data: prompts }, { data: events }] = await Promise.all([
+  const [settingsResult, promptsResult, eventsResult] = await Promise.all([
     db.from('creative_prompt_studio').select('*').eq('owner_id', user.id).eq('kind', 'settings').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
     db.from('creative_prompt_studio').select('*').eq('owner_id', user.id).eq('kind', 'prompt').order('updated_at', { ascending: false }).limit(12),
     supabase.from('events').select('id,title,title_ar,description,description_ar,date,location,location_ar,image_url').order('date', { ascending: false }).limit(100),
   ])
-  return NextResponse.json({ settings, prompts: prompts ?? [], events: events ?? [] })
+
+  // Swallowing these turned a missing table into an empty page that looked
+  // like "nothing saved yet" — surface the failure instead.
+  const failure = settingsResult.error ?? promptsResult.error ?? eventsResult.error
+  if (failure) {
+    console.error('creative-prompts GET failed:', failure)
+    return NextResponse.json({ error: failure.message }, { status: 500 })
+  }
+
+  return NextResponse.json({
+    settings: settingsResult.data,
+    prompts: promptsResult.data ?? [],
+    events: eventsResult.data ?? [],
+  })
 }
 
 export async function POST(request: Request) {
