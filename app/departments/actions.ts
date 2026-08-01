@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import type { Json } from '@/lib/database.types'
 import { sendEmail, generateSectorRegistrationEmail } from '@/lib/email'
 import { notifyAdmins } from '@/lib/notifications'
+import { getNotificationRecipients } from '@/lib/site-settings'
 
 export async function submitSectorRegistration(sectorId: string, data: Record<string, string>) {
   try {
@@ -72,21 +73,24 @@ export async function submitSectorRegistration(sectorId: string, data: Record<st
         html: userEmailHtml
       })
 
-      // Send notification email to admin
-      const adminEmailHtml = generateSectorRegistrationEmail({
-        sectorName,
-        fullName: fullName || 'غير محدد',
-        email,
-        phone: phone || undefined,
-        formData: data,
-        isAdminEmail: true
-      })
+      // Send notification email to whoever is listed under Settings → Notifications
+      const recipients = await getNotificationRecipients('on_new_registration')
+      if (recipients.length) {
+        const adminEmailHtml = generateSectorRegistrationEmail({
+          sectorName,
+          fullName: fullName || 'غير محدد',
+          email,
+          phone: phone || undefined,
+          formData: data,
+          isAdminEmail: true
+        })
 
-      await sendEmail({
-        to: ['jaz.registr@gmail.com'],
-        subject: `طلب تسجيل جديد - ${sectorName} - ${fullName || email}`,
-        html: adminEmailHtml
-      })
+        await sendEmail({
+          to: recipients,
+          subject: `طلب تسجيل جديد - ${sectorName} - ${fullName || email}`,
+          html: adminEmailHtml
+        })
+      }
     }
 
     return { success: true }

@@ -22,6 +22,13 @@ export type MaintenanceSettings = {
   message_en: string
 }
 
+export type NotificationSettings = {
+  recipients: string[]
+  on_new_registration: boolean
+  on_new_contact_message: boolean
+  on_new_task: boolean
+}
+
 export type PublicSettings = {
   company: CompanySettings
   maintenance: MaintenanceSettings
@@ -79,6 +86,48 @@ export async function fetchPublicSettings(): Promise<PublicSettings> {
     }
   } catch {
     return FALLBACK_SETTINGS
+  }
+}
+
+/** Fallback recipient, used only when an admin has not set any in the dashboard. */
+export const DEFAULT_NOTIFICATION_RECIPIENT = 'jaz.registr@gmail.com'
+
+/**
+ * Who should receive an emailed alert for `event`, as configured under
+ * Settings → Notifications. Reads the private row, so it needs the service
+ * key — call it only from the server.
+ *
+ * Returns an empty list when the admin has switched that alert off, so callers
+ * can skip sending entirely.
+ */
+export async function getNotificationRecipients(
+  event: 'on_new_registration' | 'on_new_contact_message' | 'on_new_task'
+): Promise<string[]> {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!serviceKey) return [DEFAULT_NOTIFICATION_RECIPIENT]
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_settings?select=value&key=eq.notifications`,
+      {
+        headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` },
+        cache: 'no-store',
+      }
+    )
+    if (!res.ok) return [DEFAULT_NOTIFICATION_RECIPIENT]
+
+    const rows = (await res.json()) as { value: Partial<NotificationSettings> }[]
+    const settings = rows[0]?.value
+    if (!settings) return [DEFAULT_NOTIFICATION_RECIPIENT]
+
+    if (settings[event] === false) return []
+
+    const recipients = (settings.recipients ?? []).filter(
+      (address) => typeof address === 'string' && address.includes('@')
+    )
+    return recipients.length ? recipients : [DEFAULT_NOTIFICATION_RECIPIENT]
+  } catch {
+    return [DEFAULT_NOTIFICATION_RECIPIENT]
   }
 }
 

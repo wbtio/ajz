@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { notifyAdmins } from '@/lib/notifications'
+import { sendEmail, generateContactMessageEmail } from '@/lib/email'
+import { getNotificationRecipients } from '@/lib/site-settings'
 
 export async function submitContactForm(formData: FormData) {
   try {
@@ -33,6 +35,28 @@ export async function submitContactForm(formData: FormData) {
       body: `${rawData.full_name} — ${rawData.subject}`,
       linkUrl: '/dashboard/messages',
     })
+
+    // …and an email to whoever is listed under Settings → Notifications.
+    // A failure here must not lose the message, which is already saved.
+    try {
+      const recipients = await getNotificationRecipients('on_new_contact_message')
+      if (recipients.length) {
+        await sendEmail({
+          to: recipients,
+          subject: `رسالة تواصل جديدة — ${rawData.full_name}`,
+          html: generateContactMessageEmail({
+            fullName: rawData.full_name,
+            email: rawData.email,
+            phone: rawData.phone,
+            subject: rawData.subject,
+            category: rawData.category,
+            message: rawData.message,
+          }),
+        })
+      }
+    } catch (emailError) {
+      console.error('Contact notification email failed:', emailError)
+    }
 
     revalidatePath('/dashboard/messages')
     return { success: true }
