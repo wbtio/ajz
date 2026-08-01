@@ -1,23 +1,24 @@
 import { DASHBOARD_PAGES } from "@/lib/permissions";
 
-// صفحات إدارية لا تظهر في DASHBOARD_PAGES (لأنها غير قابلة للإسناد لعضو فريق) لكنها تحتاج تسمية عربية في سجل النشاط
-const EXTRA_PAGE_LABELS: { path: string; label_ar: string }[] = [
-  { path: "/dashboard/team", label_ar: "إدارة الفريق" },
-  { path: "/dashboard/team/analytics", label_ar: "تحليلات الفريق" },
-  { path: "/tasks", label_ar: "طلبات التعديل" },
+// Admin pages that are not assignable to a team member, so they are absent from
+// DASHBOARD_PAGES, but still need a name in the activity log.
+const EXTRA_PAGE_LABELS: { path: string; label: string }[] = [
+  { path: "/dashboard/team", label: "Team management" },
+  { path: "/dashboard/team/analytics", label: "Team analytics" },
+  { path: "/tasks", label: "Change requests" },
 ];
 
 function labelForPath(path: string): string {
   const exact = [...DASHBOARD_PAGES, ...EXTRA_PAGE_LABELS].find((p) => p.path === path);
-  if (exact) return exact.label_ar;
+  if (exact) return exact.label;
 
-  // صفحة عضو فريق معيّن: /dashboard/team/<uuid>
-  if (/^\/dashboard\/team\/[^/]+$/.test(path)) return "ملف عضو في الفريق";
+  // A specific team member page: /dashboard/team/<uuid>
+  if (/^\/dashboard\/team\/[^/]+$/.test(path)) return "Team member profile";
 
   const prefixMatch = [...DASHBOARD_PAGES, ...EXTRA_PAGE_LABELS]
     .filter((p) => path.startsWith(p.path + "/"))
     .sort((a, b) => b.path.length - a.path.length)[0];
-  if (prefixMatch) return prefixMatch.label_ar;
+  if (prefixMatch) return prefixMatch.label;
 
   return path;
 }
@@ -28,41 +29,41 @@ interface ActivityEvent {
   metadata: Record<string, unknown> | null;
 }
 
-/** يحوّل حدث analytics_events خام إلى وصف عربي مفهوم لسجل نشاط عضو الفريق */
+/** Turns a raw analytics_events row into a readable line for the activity log. */
 export function describeActivity(e: ActivityEvent): string {
   const meta = e.metadata ?? {};
   const title = typeof meta.title === "string" ? meta.title : null;
 
   switch (e.event_type) {
     case "page_view":
-      return `فتح صفحة: ${labelForPath(e.path)}`;
+      return `Opened page: ${labelForPath(e.path)}`;
     case "team_task_created":
-      return `أنشأ مهمة جديدة: ${title ?? ""}`;
+      return `Created a task: ${title ?? ""}`;
     case "team_task_status_changed": {
       const from = typeof meta.from === "string" ? meta.from : null;
       const to = typeof meta.to === "string" ? meta.to : null;
-      const statusAr: Record<string, string> = { todo: "قيد الانتظار", in_progress: "تحت المعالجة", done: "تم الإنجاز" };
+      const statusLabel: Record<string, string> = { todo: "To do", in_progress: "In progress", done: "Done" };
       if (from && to) {
-        return `غيّر حالة مهمة «${title ?? ""}» من ${statusAr[from] ?? from} إلى ${statusAr[to] ?? to}`;
+        return `Moved task "${title ?? ""}" from ${statusLabel[from] ?? from} to ${statusLabel[to] ?? to}`;
       }
-      return `حدّث حالة مهمة: ${title ?? ""}`;
+      return `Updated the status of task: ${title ?? ""}`;
     }
     case "team_task_deleted":
-      return `حذف مهمة: ${title ?? ""}`;
+      return `Deleted task: ${title ?? ""}`;
     case "team_task_edited":
-      return `عدّل تفاصيل مهمة: ${title ?? ""}`;
+      return `Edited task: ${title ?? ""}`;
     case "registration_visa_updated":
-      return `حدّث تفاصيل التأشيرة في الطلب: ${String(meta.description ?? "")}`;
+      return `Updated visa details on application: ${String(meta.description ?? "")}`;
     case "registration_payment_updated":
-      return `حدّث بيانات الدفع في الطلب: ${String(meta.description ?? "")}`;
+      return `Updated payment details on application: ${String(meta.description ?? "")}`;
     case "registration_document_uploaded":
-      return `رفع وثيقة في الطلب: ${String(meta.description ?? "")}`;
+      return `Uploaded a document to application: ${String(meta.description ?? "")}`;
     case "registration_client_updated":
-      return `حدّث بيانات العميل في الطلب: ${String(meta.description ?? "")}`;
+      return `Updated client details on application: ${String(meta.description ?? "")}`;
     case "registration_status_changed":
-      return `غيّر حالة الطلب: ${String(meta.description ?? "")}`;
+      return `Changed application status: ${String(meta.description ?? "")}`;
     case "registration_case_created":
-      return `أنشأ طلباً جديداً: ${String(meta.description ?? "")}`;
+      return `Created a new application: ${String(meta.description ?? "")}`;
     default:
       return e.event_type;
   }

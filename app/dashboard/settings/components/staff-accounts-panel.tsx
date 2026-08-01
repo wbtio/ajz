@@ -381,7 +381,7 @@ export function StaffAccountsPanel() {
                       }
                       className="h-4 w-4 rounded border-slate-300"
                     />
-                    {page.label_ar}
+                    {page.label}
                   </label>
                 ))}
               </div>
@@ -480,7 +480,7 @@ export function StaffAccountsPanel() {
                             }
                             className="h-4 w-4 rounded border-slate-300"
                           />
-                          {page.label_ar}
+                          {page.label}
                         </label>
                       ))}
                     </div>
