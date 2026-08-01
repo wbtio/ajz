@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { canAccessPath } from "@/lib/permissions";
 
+/** يطابق الحد الأدنى في صفحة إعادة تعيين كلمة المرور */
+const MIN_PASSWORD_LENGTH = 10;
+
 async function canManageTeam(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
@@ -12,6 +15,14 @@ async function canManageTeam(supabase: Awaited<ReturnType<typeof createClient>>)
     .eq("id", user.id)
     .single();
   return profile?.role === "admin" || canAccessPath(profile?.role, "/dashboard/team", profile?.permissions);
+}
+
+/** إنشاء الحسابات ومنح الأدوار للمدير وحده — لا لعضو فريق يملك صفحة الفريق */
+async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
+  return profile?.role === "admin" ? user : null;
 }
 
 // قائمة أعضاء لوحة التحكم (مدير/فريق) لاختيار المسؤول عن المهمة، ولصفحة إدارة الفريق
@@ -36,16 +47,9 @@ export async function GET() {
 // إضافة عضو فريق جديد: ينشئ حساب مصادقة (Auth) + صف في users بالدور والصلاحيات المحدَّدة
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const {
-    data: { user: requester },
-  } = await supabase.auth.getUser();
 
-  const { data: requesterProfile } = requester
-    ? await supabase.from("users").select("role, permissions").eq("id", requester.id).single()
-    : { data: null };
-
-  if (!requesterProfile || (requesterProfile.role !== "admin" && !canAccessPath(requesterProfile.role, "/dashboard/team", requesterProfile.permissions))) {
-    return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
+  if (!(await requireAdmin(supabase))) {
+    return NextResponse.json({ error: "إنشاء الحسابات متاح للمدير فقط" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -63,8 +67,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "جميع الحقول مطلوبة" }, { status: 400 });
   }
 
-  if (password.length < 6) {
-    return NextResponse.json({ error: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" }, { status: 400 });
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return NextResponse.json(
+      { error: `كلمة المرور يجب أن تكون ${MIN_PASSWORD_LENGTH} أحرف على الأقل` },
+      { status: 400 }
+    );
   }
 
   let admin;

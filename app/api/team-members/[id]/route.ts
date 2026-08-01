@@ -9,11 +9,12 @@ async function requireTeamManager() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { ok: false as const, userId: null };
+  if (!user) return { ok: false as const, isAdmin: false, userId: null };
 
   const { data: profile } = await supabase.from("users").select("role, permissions").eq("id", user.id).single();
   return {
     ok: profile?.role === "admin" || canAccessPath(profile?.role, "/dashboard/team", profile?.permissions),
+    isAdmin: profile?.role === "admin",
     userId: user.id,
   };
 }
@@ -43,7 +44,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 // تعديل بيانات/دور/صلاحيات عضو فريق
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { ok, userId } = await requireTeamManager();
+  const { ok, isAdmin, userId } = await requireTeamManager();
   if (!ok) {
     return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
   }
@@ -60,6 +61,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   if (is_active === false && id === userId) {
     return NextResponse.json({ error: "لا يمكنك تعطيل حسابك الخاص" }, { status: 400 });
+  }
+
+  // منح الأدوار والصلاحيات وتعطيل الحسابات قرار إداري، لا يُفوَّض بصفحة
+  if (!isAdmin && (role !== undefined || permissions !== undefined || is_active !== undefined)) {
+    return NextResponse.json(
+      { error: "تغيير الدور أو الصلاحيات أو تفعيل الحساب متاح للمدير فقط" },
+      { status: 403 }
+    );
   }
 
   const admin = createAdminClient();
@@ -87,9 +96,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 // إزالة عضو من الفريق: يفقد صلاحية دخول لوحة التحكم بإرجاعه إلى دور عميل عادي
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { ok, userId } = await requireTeamManager();
-  if (!ok) {
-    return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
+  const { isAdmin, userId } = await requireTeamManager();
+  if (!isAdmin) {
+    return NextResponse.json({ error: "إزالة الأعضاء متاحة للمدير فقط" }, { status: 403 });
   }
 
   if (id === userId) {

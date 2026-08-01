@@ -10,9 +10,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { toast } from 'sonner'
+import { StaffAccountsPanel } from './staff-accounts-panel'
 import {
     Building2, Bell, Wrench, UserCircle, Save, Loader2,
-    ShieldAlert, Plus, X, KeyRound, CheckCircle2,
+    ShieldAlert, Plus, X, KeyRound, CheckCircle2, Users,
 } from 'lucide-react'
 
 // ── Shapes stored in public.app_settings ────────────────────────────────────
@@ -219,6 +220,9 @@ export function SettingsClient() {
                             </TabsTrigger>
                             <TabsTrigger value="notifications" className="gap-2">
                                 <Bell className="w-4 h-4" /> الإشعارات
+                            </TabsTrigger>
+                            <TabsTrigger value="staff" className="gap-2">
+                                <Users className="w-4 h-4" /> الموظفون
                             </TabsTrigger>
                             <TabsTrigger value="maintenance" className="gap-2">
                                 <Wrench className="w-4 h-4" /> الصيانة
@@ -516,6 +520,11 @@ export function SettingsClient() {
                         </TabsContent>
 
                         {/* ── الصيانة ── */}
+                        {/* ── الموظفون ── */}
+                        <TabsContent value="staff">
+                            <StaffAccountsPanel />
+                        </TabsContent>
+
                         <TabsContent value="maintenance">
                             <Card className={maintenance.enabled ? 'border-amber-300' : undefined}>
                                 <CardHeader>
