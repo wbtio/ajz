@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const bucket = req.nextUrl.searchParams.get("bucket") || "registration-documents";
 
     if (!path) {
-      return NextResponse.json({ error: "المسار مطلوب" }, { status: 400 });
+      return NextResponse.json({ error: "A path is required" }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     // التأكد من أن المستخدم مسجل دخول وله صلاحية (مسؤول أو موظف)
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: "غير مصرح بالدخول" }, { status: 401 });
+      return NextResponse.json({ error: "Not authorised" }, { status: 401 });
     }
 
     const { data: profile } = await supabase
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (!profile || (profile.role !== "admin" && profile.role !== "team")) {
-      return NextResponse.json({ error: "غير مصرح بالدخول" }, { status: 403 });
+      return NextResponse.json({ error: "Not authorised" }, { status: 403 });
     }
 
     // توليد رابط مؤقت صالح لمدة 60 ثانية
@@ -37,13 +37,13 @@ export async function GET(req: NextRequest) {
 
     if (error || !data?.signedUrl) {
       console.error("Error creating signed URL:", error);
-      return NextResponse.json({ error: "تعذّر العثور على الملف أو توليد الرابط" }, { status: 404 });
+      return NextResponse.json({ error: "Could not find the file or build the link" }, { status: 404 });
     }
 
     // إعادة التوجيه للرابط المؤقت الآمن
     return NextResponse.redirect(data.signedUrl);
   } catch (err) {
     console.error("Signed URL API error:", err);
-    return NextResponse.json({ error: "خطأ داخلي في الخادم" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

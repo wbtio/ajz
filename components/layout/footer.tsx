@@ -50,10 +50,16 @@ export function Footer() {
       })
 
       if (!res.ok) {
-        const payload = await res.json().catch(() => null)
+        // Message the visitor in their own language rather than echoing the
+        // server's, which is written in one language only.
         setSubscribeError(
-          payload?.error ??
-            (isAr ? 'تعذّر إتمام الاشتراك، حاول مرة أخرى.' : 'Could not subscribe, please try again.')
+          res.status === 400
+            ? isAr
+              ? 'البريد الإلكتروني غير صالح.'
+              : 'That email address is not valid.'
+            : isAr
+              ? 'تعذّر إتمام الاشتراك، حاول مرة أخرى.'
+              : 'Could not subscribe, please try again.'
         )
         return
       }

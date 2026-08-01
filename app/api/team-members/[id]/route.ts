@@ -24,7 +24,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const { id } = await params;
   const { ok } = await requireTeamManager();
   if (!ok) {
-    return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
+    return NextResponse.json({ error: "You are not allowed to do that" }, { status: 403 });
   }
 
   const supabase = await createClient();
@@ -46,7 +46,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const { ok, isAdmin, userId } = await requireTeamManager();
   if (!ok) {
-    return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
+    return NextResponse.json({ error: "You are not allowed to do that" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -60,13 +60,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   };
 
   if (is_active === false && id === userId) {
-    return NextResponse.json({ error: "لا يمكنك تعطيل حسابك الخاص" }, { status: 400 });
+    return NextResponse.json({ error: "You cannot disable your own account" }, { status: 400 });
   }
 
   // منح الأدوار والصلاحيات وتعطيل الحسابات قرار إداري، لا يُفوَّض بصفحة
   if (!isAdmin && (role !== undefined || permissions !== undefined || is_active !== undefined)) {
     return NextResponse.json(
-      { error: "تغيير الدور أو الصلاحيات أو تفعيل الحساب متاح للمدير فقط" },
+      { error: "Only an administrator can change roles, permissions or activation" },
       { status: 403 }
     );
   }
@@ -98,11 +98,11 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const { id } = await params;
   const { isAdmin, userId } = await requireTeamManager();
   if (!isAdmin) {
-    return NextResponse.json({ error: "إزالة الأعضاء متاحة للمدير فقط" }, { status: 403 });
+    return NextResponse.json({ error: "Only an administrator can remove members" }, { status: 403 });
   }
 
   if (id === userId) {
-    return NextResponse.json({ error: "لا يمكنك إزالة نفسك من الفريق" }, { status: 400 });
+    return NextResponse.json({ error: "You cannot remove yourself from the team" }, { status: 400 });
   }
 
   const admin = createAdminClient();

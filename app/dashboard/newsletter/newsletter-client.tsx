@@ -22,7 +22,7 @@ interface Props {
 }
 
 function formatDate(value: string) {
-  return new Date(value).toLocaleDateString('ar-IQ', {
+  return new Date(value).toLocaleDateString('en-GB', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -66,7 +66,7 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
   }
 
   const handleDelete = async (subscriber: Subscriber) => {
-    if (!window.confirm(`حذف ${subscriber.email} من قائمة النشرة البريدية؟`)) return
+    if (!window.confirm(`Remove ${subscriber.email} from the newsletter list?`)) return
 
     setBusyId(subscriber.id)
     setError('')
@@ -86,18 +86,18 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
     }
 
     setSubscribers((prev) => prev.filter((s) => s.id !== subscriber.id))
-    setNotice(`تم حذف ${subscriber.email}`)
+    setNotice(`Removed ${subscriber.email}`)
   }
 
   return (
-    <div dir="rtl" className="space-y-6 p-6">
+    <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">النشرة البريدية</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Newsletter</h1>
           <p className="mt-1 text-sm text-slate-500">
             {subscribers.length === 0
-              ? 'لا يوجد مشتركون بعد. سيظهر هنا كل من يشترك من أسفل الموقع.'
-              : `${subscribers.length} مشترك من نموذج الاشتراك في الموقع.`}
+              ? 'No subscribers yet. Anyone who signs up from the site footer appears here.'
+              : `${subscribers.length} subscribers from the sign-up form on the site.`}
           </p>
         </div>
 
@@ -107,8 +107,8 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
           disabled={filtered.length === 0}
           className="bg-slate-900 text-white hover:bg-slate-800"
         >
-          <Download className="ml-2 h-4 w-4" />
-          تصدير CSV
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
         </Button>
       </div>
 
@@ -128,12 +128,12 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
       <Card className="border-slate-200 bg-white">
         <CardHeader className="border-b border-slate-100 pb-4">
           <div className="relative max-w-sm">
-            <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ابحث بالبريد الإلكتروني…"
-              className="h-10 border-slate-200 bg-slate-50 pr-9"
+              placeholder="Search by email…"
+              className="h-10 border-slate-200 bg-slate-50 pl-9"
             />
           </div>
         </CardHeader>
@@ -143,18 +143,18 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
             <div className="flex flex-col items-center gap-3 py-16 text-center">
               <Mail className="h-8 w-8 text-slate-300" />
               <p className="text-sm text-slate-500">
-                {subscribers.length === 0 ? 'لا يوجد مشتركون بعد.' : 'لا نتائج مطابقة للبحث.'}
+                {subscribers.length === 0 ? 'No subscribers yet.' : 'No results match your search.'}
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-right text-sm">
+              <table className="w-full text-left text-sm">
                 <thead className="border-b border-slate-100 text-xs text-slate-500">
                   <tr>
-                    <th className="px-5 py-3 font-medium">البريد الإلكتروني</th>
-                    <th className="px-5 py-3 font-medium">اللغة</th>
-                    <th className="px-5 py-3 font-medium">المصدر</th>
-                    <th className="px-5 py-3 font-medium">تاريخ الاشتراك</th>
+                    <th className="px-5 py-3 font-medium">Email</th>
+                    <th className="px-5 py-3 font-medium">Language</th>
+                    <th className="px-5 py-3 font-medium">Source</th>
+                    <th className="px-5 py-3 font-medium">Subscribed</th>
                     {isAdmin && <th className="px-5 py-3" />}
                   </tr>
                 </thead>
@@ -162,10 +162,10 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
                   {filtered.map((subscriber) => (
                     <tr key={subscriber.id} className="hover:bg-slate-50/60">
                       <td className="px-5 py-3 font-medium text-slate-900" dir="ltr">
-                        <span className="block text-right">{subscriber.email}</span>
+                        {subscriber.email}
                       </td>
                       <td className="px-5 py-3 text-slate-600">
-                        {subscriber.locale === 'en' ? 'English' : 'العربية'}
+                        {subscriber.locale === 'en' ? 'English' : 'Arabic'}
                       </td>
                       <td className="px-5 py-3 text-slate-500">{subscriber.source ?? '—'}</td>
                       <td className="px-5 py-3 text-slate-500">
@@ -177,7 +177,7 @@ export default function NewsletterClient({ initialSubscribers, isAdmin }: Props)
                             type="button"
                             onClick={() => handleDelete(subscriber)}
                             disabled={busyId === subscriber.id}
-                            aria-label={`حذف ${subscriber.email}`}
+                            aria-label={`Remove ${subscriber.email}`}
                             className="rounded-md p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
                           >
                             <Trash2 className="h-4 w-4" />

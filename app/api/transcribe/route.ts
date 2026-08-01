@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "غير مصرح بالدخول" }, { status: 401 });
+    return NextResponse.json({ error: "Not authorised" }, { status: 401 });
   }
   const { data: profile } = await supabase
     .from("users")
@@ -20,13 +20,13 @@ export async function POST(req: NextRequest) {
     .eq("id", user.id)
     .single();
   if (!profile || (profile.role !== "admin" && profile.role !== "team")) {
-    return NextResponse.json({ error: "غير مصرح بالدخول" }, { status: 403 });
+    return NextResponse.json({ error: "Not authorised" }, { status: 403 });
   }
 
   const apiKey = process.env.MISTRAL_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "MISTRAL_API_KEY غير مضبوط" },
+      { error: "MISTRAL_API_KEY is not configured" },
       { status: 500 }
     );
   }
@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
   const form = await req.formData();
   const audio = form.get("audio");
   if (!(audio instanceof Blob)) {
-    return NextResponse.json({ error: "لا يوجد ملف صوتي" }, { status: 400 });
+    return NextResponse.json({ error: "No audio file was provided" }, { status: 400 });
   }
   if (audio.size > MAX_AUDIO_BYTES) {
     return NextResponse.json(
-      { error: "الملف الصوتي أكبر من الحد المسموح" },
+      { error: "The audio file is larger than the allowed limit" },
       { status: 413 }
     );
   }
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const detail = await res.text();
     console.error("Mistral transcription error:", detail);
     return NextResponse.json(
-      { error: "تعذّر تفريغ الصوت" },
+      { error: "Could not transcribe the audio" },
       { status: 502 }
     );
   }

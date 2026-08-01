@@ -16,25 +16,25 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.json({ error: 'غير مصرح بالدخول' }, { status: 401 })
+    return NextResponse.json({ error: 'Not authorised' }, { status: 401 })
   }
 
   const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
   if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'تغيير كلمات المرور متاح للمدير فقط' }, { status: 403 })
+    return NextResponse.json({ error: 'Only an administrator can change passwords' }, { status: 403 })
   }
 
   let body: { password?: unknown }
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'طلب غير صالح' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
   const password = typeof body.password === 'string' ? body.password : ''
   if (password.length < MIN_PASSWORD_LENGTH) {
     return NextResponse.json(
-      { error: `كلمة المرور يجب أن تكون ${MIN_PASSWORD_LENGTH} أحرف على الأقل` },
+      { error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` },
       { status: 400 }
     )
   }
@@ -43,7 +43,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const admin = createAdminClient()
   const { data: target } = await admin.from('users').select('id, email, role').eq('id', id).single()
   if (!target || (target.role !== 'admin' && target.role !== 'team')) {
-    return NextResponse.json({ error: 'هذا الحساب ليس ضمن الفريق' }, { status: 404 })
+    return NextResponse.json({ error: 'That account is not a team member' }, { status: 404 })
   }
 
   const { error } = await admin.auth.admin.updateUserById(id, { password })

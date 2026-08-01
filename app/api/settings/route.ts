@@ -21,7 +21,7 @@ export async function GET() {
   const { user, role } = await getRole(supabase)
 
   if (!user || (role !== 'admin' && role !== 'team')) {
-    return NextResponse.json({ error: 'غير مصرح لك بهذا الإجراء' }, { status: 403 })
+    return NextResponse.json({ error: 'You are not allowed to do that' }, { status: 403 })
   }
 
   const { data, error } = await supabase
@@ -44,22 +44,22 @@ export async function PATCH(request: Request) {
   const { user, role } = await getRole(supabase)
 
   if (!user || role !== 'admin') {
-    return NextResponse.json({ error: 'غير مصرح لك بهذا الإجراء' }, { status: 403 })
+    return NextResponse.json({ error: 'You are not allowed to do that' }, { status: 403 })
   }
 
   let body: { key?: string; value?: unknown }
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'طلب غير صالح' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
   const key = body.key as EditableKey
   if (!key || !EDITABLE_KEYS.includes(key)) {
-    return NextResponse.json({ error: 'مفتاح إعداد غير معروف' }, { status: 400 })
+    return NextResponse.json({ error: 'Unknown setting key' }, { status: 400 })
   }
   if (typeof body.value !== 'object' || body.value === null || Array.isArray(body.value)) {
-    return NextResponse.json({ error: 'قيمة غير صالحة' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid value' }, { status: 400 })
   }
 
   const { data, error } = await supabase

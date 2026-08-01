@@ -95,7 +95,7 @@ export function SettingsClient() {
                         setMaintenance({ ...EMPTY_MAINTENANCE, ...settings.maintenance })
                 }
             } catch {
-                toast.error('تعذّر تحميل الإعدادات')
+                toast.error('Could not load the settings')
             }
             setLoading(false)
         }
@@ -113,10 +113,10 @@ export function SettingsClient() {
                     body: JSON.stringify({ key, value }),
                 })
                 const json = await res.json()
-                if (!res.ok) throw new Error(json.error || 'فشل الحفظ')
-                toast.success(`${label} — حُفظ`)
+                if (!res.ok) throw new Error(json.error || 'Could not save')
+                toast.success(`${label} saved`)
             } catch (e) {
-                toast.error(e instanceof Error ? e.message : 'فشل الحفظ')
+                toast.error(e instanceof Error ? e.message : 'Could not save')
             } finally {
                 setSaving(null)
             }
@@ -132,16 +132,16 @@ export function SettingsClient() {
             const {
                 data: { user },
             } = await supabase.auth.getUser()
-            if (!user) throw new Error('انتهت الجلسة')
+            if (!user) throw new Error('Your session has expired')
 
             const { error } = await supabase
                 .from('users')
                 .update({ full_name: profile.full_name, phone: profile.phone })
                 .eq('id', user.id)
             if (error) throw error
-            toast.success('بياناتك — حُفظت')
+            toast.success('Your details were saved')
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : 'فشل الحفظ')
+            toast.error(e instanceof Error ? e.message : 'Could not save')
         } finally {
             setSaving(null)
         }
@@ -149,11 +149,11 @@ export function SettingsClient() {
 
     const changePassword = async () => {
         if (password.length < MIN_PASSWORD) {
-            toast.error(`كلمة المرور يجب أن تكون ${MIN_PASSWORD} أحرف فأكثر`)
+            toast.error(`Password must be at least ${MIN_PASSWORD} characters`)
             return
         }
         if (password !== passwordConfirm) {
-            toast.error('الكلمتان غير متطابقتين')
+            toast.error('The two passwords do not match')
             return
         }
         setSaving('password')
@@ -163,9 +163,9 @@ export function SettingsClient() {
             if (error) throw error
             setPassword('')
             setPasswordConfirm('')
-            toast.success('تم تغيير كلمة المرور')
+            toast.success('Password changed')
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : 'تعذّر التغيير')
+            toast.error(e instanceof Error ? e.message : 'Could not change the password')
         } finally {
             setSaving(null)
         }
@@ -175,11 +175,11 @@ export function SettingsClient() {
         const v = newRecipient.trim().toLowerCase()
         if (!v) return
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-            toast.error('بريد غير صالح')
+            toast.error('That email address is not valid')
             return
         }
         if (notifications.recipients.includes(v)) {
-            toast.error('مضاف مسبقاً')
+            toast.error('Already on the list')
             return
         }
         setNotifications((n) => ({ ...n, recipients: [...n.recipients, v] }))
@@ -190,7 +190,7 @@ export function SettingsClient() {
         return (
             <div className="flex items-center gap-2 text-slate-500 py-10">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                جارٍ التحميل…
+                Loading…
             </div>
         )
     }
@@ -202,57 +202,56 @@ export function SettingsClient() {
             className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
         >
             {saving === id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            حفظ
+            Save
         </Button>
     )
 
     return (
-        <div className="max-w-4xl space-y-6 pb-12" dir="rtl">
+        <div className="max-w-4xl space-y-6 pb-12" dir="ltr">
             <Tabs defaultValue="account" className="w-full">
                 <TabsList className="mb-4 flex-wrap h-auto">
                     <TabsTrigger value="account" className="gap-2">
-                        <UserCircle className="w-4 h-4" /> حسابي
+                        <UserCircle className="w-4 h-4" /> My account
                     </TabsTrigger>
                     {isAdmin && (
                         <>
                             <TabsTrigger value="company" className="gap-2">
-                                <Building2 className="w-4 h-4" /> بيانات الشركة
+                                <Building2 className="w-4 h-4" /> Company
                             </TabsTrigger>
                             <TabsTrigger value="notifications" className="gap-2">
-                                <Bell className="w-4 h-4" /> الإشعارات
+                                <Bell className="w-4 h-4" /> Notifications
                             </TabsTrigger>
                             <TabsTrigger value="staff" className="gap-2">
-                                <Users className="w-4 h-4" /> الموظفون
+                                <Users className="w-4 h-4" /> Staff
                             </TabsTrigger>
                             <TabsTrigger value="maintenance" className="gap-2">
-                                <Wrench className="w-4 h-4" /> الصيانة
+                                <Wrench className="w-4 h-4" /> Maintenance
                             </TabsTrigger>
                         </>
                     )}
                 </TabsList>
 
-                {/* ── حسابي ── */}
+                {/* ── My account ── */}
                 <TabsContent value="account" className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">بياناتي</CardTitle>
+                            <CardTitle className="text-lg">My details</CardTitle>
                             <CardDescription>
-                                تظهر هذه البيانات لزملائك في اللوحة وفي سجلّ الأعمال.
+                                These appear to your colleagues in the dashboard and in the activity log.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label>الاسم الكامل</Label>
+                                    <Label>Full name</Label>
                                     <Input
                                         value={profile.full_name}
-                                                data-arabic-allowed="true"
                                         onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                                        placeholder="الاسم كما يظهر لزملائك"
+                                        placeholder="How your name appears to colleagues"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>رقم الهاتف</Label>
+                                    <Label>Phone number</Label>
                                     <Input
                                         value={profile.phone}
                                         onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
@@ -263,20 +262,20 @@ export function SettingsClient() {
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label>البريد الإلكتروني</Label>
+                                    <Label>Email address</Label>
                                     <Input value={profile.email} disabled dir="ltr" />
                                     <p className="text-xs text-slate-500">
-                                        لتغيير البريد يلزم مدير النظام.
+                                        Only an administrator can change the email address.
                                     </p>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>الصلاحية</Label>
+                                    <Label>Role</Label>
                                     <Input
                                         value={
                                             profile.role === 'admin'
-                                                ? 'مدير'
+                                                ? 'Administrator'
                                                 : profile.role === 'team'
-                                                    ? 'موظف'
+                                                    ? 'Team member'
                                                     : profile.role || '—'
                                         }
                                         disabled
@@ -292,16 +291,16 @@ export function SettingsClient() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-lg flex items-center gap-2">
-                                <KeyRound className="w-4 h-4" /> كلمة المرور
+                                <KeyRound className="w-4 h-4" /> Password
                             </CardTitle>
                             <CardDescription>
-                                غيّرها متى شئت — {MIN_PASSWORD} أحرف فأكثر.
+                                Change it whenever you like — {MIN_PASSWORD} characters or more.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label>كلمة مرور جديدة</Label>
+                                    <Label>New password</Label>
                                     <Input
                                         type="password"
                                         value={password}
@@ -311,7 +310,7 @@ export function SettingsClient() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>تأكيد كلمة المرور</Label>
+                                    <Label>Confirm password</Label>
                                     <Input
                                         type="password"
                                         value={passwordConfirm}
@@ -323,7 +322,7 @@ export function SettingsClient() {
                             </div>
                             {password && password.length >= MIN_PASSWORD && password === passwordConfirm && (
                                 <p className="text-xs text-green-700 flex items-center gap-1">
-                                    <CheckCircle2 className="w-3 h-3" /> جاهزة للحفظ
+                                    <CheckCircle2 className="w-3 h-3" /> Ready to save
                                 </p>
                             )}
                             <div className="flex justify-end pt-2">
@@ -337,7 +336,7 @@ export function SettingsClient() {
                                     ) : (
                                         <KeyRound className="w-4 h-4" />
                                     )}
-                                    تغيير كلمة المرور
+                                    Change password
                                 </Button>
                             </div>
                         </CardContent>
@@ -346,28 +345,27 @@ export function SettingsClient() {
 
                 {isAdmin && (
                     <>
-                        {/* ── بيانات الشركة ── */}
+                        {/* ── Company ── */}
                         <TabsContent value="company">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">بيانات الشركة</CardTitle>
+                                    <CardTitle className="text-lg">Company details</CardTitle>
                                     <CardDescription>
-                                        تُستخدم في الموقع والرسائل الرسمية. تُحفظ في قاعدة البيانات فيراها كل
-                                        الموظفين من أي جهاز.
+                                        Used on the public website and in official messages. Saved in the database,
+                                        so every member of staff sees the same values from any device.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label>اسم الشركة (عربي)</Label>
+                                            <Label>Company name (Arabic — shown on the website)</Label>
                                             <Input
                                                 value={company.name_ar}
-                                                data-arabic-allowed="true"
                                                 onChange={(e) => setCompany({ ...company, name_ar: e.target.value })}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>اسم الشركة (إنجليزي)</Label>
+                                            <Label>Company name (English)</Label>
                                             <Input
                                                 value={company.name_en}
                                                 onChange={(e) => setCompany({ ...company, name_en: e.target.value })}
@@ -377,7 +375,7 @@ export function SettingsClient() {
                                     </div>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label>بريد التواصل</Label>
+                                            <Label>Contact email</Label>
                                             <Input
                                                 type="email"
                                                 value={company.email}
@@ -386,7 +384,7 @@ export function SettingsClient() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>الهاتف</Label>
+                                            <Label>Phone</Label>
                                             <Input
                                                 value={company.phone}
                                                 onChange={(e) => setCompany({ ...company, phone: e.target.value })}
@@ -395,7 +393,7 @@ export function SettingsClient() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>الموقع الإلكتروني</Label>
+                                        <Label>Website</Label>
                                         <Input
                                             value={company.website}
                                             onChange={(e) => setCompany({ ...company, website: e.target.value })}
@@ -404,16 +402,15 @@ export function SettingsClient() {
                                     </div>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label>العنوان (عربي)</Label>
+                                            <Label>Address (Arabic — shown on the website)</Label>
                                             <Textarea
                                                 value={company.address_ar}
-                                                data-arabic-allowed="true"
                                                 onChange={(e) => setCompany({ ...company, address_ar: e.target.value })}
                                                 rows={3}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>العنوان (إنجليزي)</Label>
+                                            <Label>Address (English)</Label>
                                             <Textarea
                                                 value={company.address_en}
                                                 onChange={(e) => setCompany({ ...company, address_en: e.target.value })}
@@ -425,25 +422,25 @@ export function SettingsClient() {
                                     <div className="flex justify-end pt-2">
                                         <SaveButton
                                             id="company"
-                                            onClick={() => saveSetting('company', company, 'بيانات الشركة')}
+                                            onClick={() => saveSetting('company', company, 'Company details')}
                                         />
                                     </div>
                                 </CardContent>
                             </Card>
                         </TabsContent>
 
-                        {/* ── الإشعارات ── */}
+                        {/* ── Notifications ── */}
                         <TabsContent value="notifications">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">إشعارات البريد</CardTitle>
+                                    <CardTitle className="text-lg">Email notifications</CardTitle>
                                     <CardDescription>
-                                        من يستلم تنبيهاً عند وصول طلب أو رسالة جديدة.
+                                        Who gets an alert when a new request or message arrives.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-5">
                                     <div className="space-y-2">
-                                        <Label>عناوين المستلمين</Label>
+                                        <Label>Recipients</Label>
                                         <div className="flex gap-2">
                                             <Input
                                                 value={newRecipient}
@@ -458,13 +455,13 @@ export function SettingsClient() {
                                                 dir="ltr"
                                             />
                                             <Button type="button" variant="outline" onClick={addRecipient} className="gap-1">
-                                                <Plus className="w-4 h-4" /> إضافة
+                                                <Plus className="w-4 h-4" /> Add
                                             </Button>
                                         </div>
                                         {notifications.recipients.length === 0 ? (
                                             <p className="text-xs text-amber-700 flex items-center gap-1 pt-1">
                                                 <ShieldAlert className="w-3 h-3" />
-                                                لا مستلمين — لن يصل تنبيه لأحد.
+                                                No recipients — nobody will be alerted.
                                             </p>
                                         ) : (
                                             <div className="flex flex-wrap gap-2 pt-2">
@@ -484,7 +481,7 @@ export function SettingsClient() {
                                                                 }))
                                                             }
                                                             className="text-slate-400 hover:text-red-600"
-                                                            aria-label={`حذف ${r}`}
+                                                            aria-label={`Remove ${r}`}
                                                         >
                                                             <X className="w-3 h-3" />
                                                         </button>
@@ -496,9 +493,9 @@ export function SettingsClient() {
 
                                     <div className="space-y-3 border-t border-slate-100 pt-4">
                                         {[
-                                            ['on_new_registration', 'تسجيل جديد في فعالية'],
-                                            ['on_new_contact_message', 'رسالة جديدة من نموذج التواصل'],
-                                            ['on_new_task', 'مهمة جديدة'],
+                                            ['on_new_registration', 'New event registration'],
+                                            ['on_new_contact_message', 'New contact-form message'],
+                                            ['on_new_task', 'New task'],
                                         ].map(([key, label]) => (
                                             <div key={key} className="flex items-center justify-between">
                                                 <Label className="font-normal">{label}</Label>
@@ -515,15 +512,15 @@ export function SettingsClient() {
                                     <div className="flex justify-end pt-2">
                                         <SaveButton
                                             id="notifications"
-                                            onClick={() => saveSetting('notifications', notifications, 'الإشعارات')}
+                                            onClick={() => saveSetting('notifications', notifications, 'Notifications')}
                                         />
                                     </div>
                                 </CardContent>
                             </Card>
                         </TabsContent>
 
-                        {/* ── الصيانة ── */}
-                        {/* ── الموظفون ── */}
+                        {/* ── Maintenance ── */}
+                        {/* ── Staff ── */}
                         <TabsContent value="staff">
                             <StaffAccountsPanel />
                         </TabsContent>
@@ -531,9 +528,9 @@ export function SettingsClient() {
                         <TabsContent value="maintenance">
                             <Card className={maintenance.enabled ? 'border-amber-300' : undefined}>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">وضع الصيانة</CardTitle>
+                                    <CardTitle className="text-lg">Maintenance mode</CardTitle>
                                     <CardDescription>
-                                        يعرض للزوّار رسالة مؤدّبة بدل الموقع. لوحة التحكم تبقى تعمل لك ولموظفيك.
+                                        Shows visitors a holding page instead of the site. The dashboard keeps working for you and your staff.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-5">
@@ -545,12 +542,12 @@ export function SettingsClient() {
                                     >
                                         <div>
                                             <p className="font-medium text-slate-800">
-                                                {maintenance.enabled ? 'الصيانة مُفعّلة' : 'الموقع يعمل طبيعياً'}
+                                                {maintenance.enabled ? 'Maintenance mode is on' : 'The site is running normally'}
                                             </p>
                                             <p className="text-xs text-slate-500 mt-0.5">
                                                 {maintenance.enabled
-                                                    ? 'الزوّار يرون رسالة الصيانة الآن.'
-                                                    : 'الزوّار يتصفّحون الموقع بشكل طبيعي.'}
+                                                    ? 'Visitors are seeing the maintenance page.'
+                                                    : 'Visitors are browsing the site normally.'}
                                             </p>
                                         </div>
                                         <Switch
@@ -560,10 +557,9 @@ export function SettingsClient() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>الرسالة (عربي)</Label>
+                                        <Label>Message (Arabic — shown to visitors)</Label>
                                         <Textarea
                                             value={maintenance.message_ar}
-                                                data-arabic-allowed="true"
                                             onChange={(e) =>
                                                 setMaintenance({ ...maintenance, message_ar: e.target.value })
                                             }
@@ -571,7 +567,7 @@ export function SettingsClient() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>الرسالة (إنجليزي)</Label>
+                                        <Label>Message (English — shown to visitors)</Label>
                                         <Textarea
                                             value={maintenance.message_en}
                                             onChange={(e) =>
@@ -585,7 +581,7 @@ export function SettingsClient() {
                                     <div className="flex justify-end pt-2">
                                         <SaveButton
                                             id="maintenance"
-                                            onClick={() => saveSetting('maintenance', maintenance, 'وضع الصيانة')}
+                                            onClick={() => saveSetting('maintenance', maintenance, 'Maintenance mode')}
                                         />
                                     </div>
                                 </CardContent>
@@ -597,7 +593,7 @@ export function SettingsClient() {
 
             {!isAdmin && (
                 <p className="text-xs text-slate-500">
-                    إعدادات الشركة والإشعارات والصيانة متاحة للمدير فقط.
+                    Company, notification and maintenance settings are available to administrators only.
                 </p>
             )}
         </div>

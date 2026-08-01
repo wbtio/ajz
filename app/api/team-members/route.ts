@@ -29,7 +29,7 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) 
 export async function GET() {
   const supabase = await createClient();
   if (!(await canManageTeam(supabase))) {
-    return NextResponse.json({ error: "غير مصرح لك بهذا الإجراء" }, { status: 403 });
+    return NextResponse.json({ error: "You are not allowed to do that" }, { status: 403 });
   }
   const { data, error } = await supabase
     .from("users")
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const supabase = await createClient();
 
   if (!(await requireAdmin(supabase))) {
-    return NextResponse.json({ error: "إنشاء الحسابات متاح للمدير فقط" }, { status: 403 });
+    return NextResponse.json({ error: "Only an administrator can create accounts" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -64,12 +64,12 @@ export async function POST(request: Request) {
   };
 
   if (!full_name || !email || !password || !role) {
-    return NextResponse.json({ error: "جميع الحقول مطلوبة" }, { status: 400 });
+    return NextResponse.json({ error: "All fields are required" }, { status: 400 });
   }
 
   if (password.length < MIN_PASSWORD_LENGTH) {
     return NextResponse.json(
-      { error: `كلمة المرور يجب أن تكون ${MIN_PASSWORD_LENGTH} أحرف على الأقل` },
+      { error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` },
       { status: 400 }
     );
   }
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
   });
 
   if (createError || !created.user) {
-    return NextResponse.json({ error: createError?.message || "تعذّر إنشاء الحساب" }, { status: 400 });
+    return NextResponse.json({ error: createError?.message || "Could not create the account" }, { status: 400 });
   }
 
   // صف public.users يُنشأ تلقائيًا عبر trigger، نكمّله بالدور والصلاحيات

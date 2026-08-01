@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
 
     if (!page || !modificationType || !description) {
       return NextResponse.json(
-        { error: "البيانات المرسلة غير مكتملة أو تتجاوز الحد المسموح" },
+        { error: "The submitted data is incomplete or exceeds the allowed limit" },
         { status: 400 }
       );
     }
