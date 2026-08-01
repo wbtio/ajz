@@ -1,15 +1,15 @@
 import { DASHBOARD_PAGES } from "@/lib/permissions";
 
 // صفحات إدارية لا تظهر في DASHBOARD_PAGES (لأنها غير قابلة للإسناد لعضو فريق) لكنها تحتاج تسمية عربية في سجل النشاط
-const EXTRA_PAGE_LABELS: { path: string; label: string }[] = [
-  { path: "/dashboard/team", label: "إدارة الفريق" },
-  { path: "/dashboard/team/analytics", label: "تحليلات الفريق" },
-  { path: "/tasks", label: "طلبات التعديل" },
+const EXTRA_PAGE_LABELS: { path: string; label_ar: string }[] = [
+  { path: "/dashboard/team", label_ar: "إدارة الفريق" },
+  { path: "/dashboard/team/analytics", label_ar: "تحليلات الفريق" },
+  { path: "/tasks", label_ar: "طلبات التعديل" },
 ];
 
 function labelForPath(path: string): string {
   const exact = [...DASHBOARD_PAGES, ...EXTRA_PAGE_LABELS].find((p) => p.path === path);
-  if (exact) return exact.label;
+  if (exact) return exact.label_ar;
 
   // صفحة عضو فريق معيّن: /dashboard/team/<uuid>
   if (/^\/dashboard\/team\/[^/]+$/.test(path)) return "ملف عضو في الفريق";
@@ -17,7 +17,7 @@ function labelForPath(path: string): string {
   const prefixMatch = [...DASHBOARD_PAGES, ...EXTRA_PAGE_LABELS]
     .filter((p) => path.startsWith(p.path + "/"))
     .sort((a, b) => b.path.length - a.path.length)[0];
-  if (prefixMatch) return prefixMatch.label;
+  if (prefixMatch) return prefixMatch.label_ar;
 
   return path;
 }

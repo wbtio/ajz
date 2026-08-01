@@ -10,7 +10,7 @@ import { DASHBOARD_PAGES } from '@/lib/permissions'
 import { toast } from 'sonner'
 import {
   UserPlus, Loader2, Copy, Check, RefreshCw, KeyRound, MessageCircle,
-  ShieldCheck, Users, Trash2, Save,
+  ShieldCheck, Users, Trash2, Save, Mail,
 } from 'lucide-react'
 
 const MIN_PASSWORD = 10
@@ -85,6 +85,8 @@ export function StaffAccountsPanel() {
   const [handover, setHandover] = useState<{ name: string; email: string; phone: string; password: string } | null>(null)
   const [resetFor, setResetFor] = useState<Member | null>(null)
   const [resetPassword, setResetPassword] = useState('')
+  const [permsFor, setPermsFor] = useState<Member | null>(null)
+  const [draftPerms, setDraftPerms] = useState<string[]>([])
 
   const load = useCallback(async () => {
     try {
@@ -120,6 +122,18 @@ export function StaffAccountsPanel() {
     if (!digits) return null
     const intl = digits.startsWith('964') ? digits : `964${digits}`
     return `https://wa.me/${intl}?text=${encodeURIComponent(message)}`
+  }, [handover, message])
+
+  /**
+   * Opens the admin's own mail client with everything filled in. Deliberately
+   * not sent from the server: the sending domain is not verified yet, so a
+   * server-side send would fail silently and the employee would wait for an
+   * email that never arrives. This way the admin sees it leave their outbox.
+   */
+  const mailtoUrl = useMemo(() => {
+    if (!handover) return null
+    const subject = 'بيانات الدخول إلى لوحة تحكم جاز'
+    return `mailto:${encodeURIComponent(handover.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`
   }, [handover, message])
 
   const createMember = async () => {
@@ -197,6 +211,29 @@ export function StaffAccountsPanel() {
     }
   }
 
+  const savePermissions = async () => {
+    if (!permsFor) return
+    setBusy(permsFor.id)
+    try {
+      const res = await fetch(`/api/team-members/${permsFor.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ permissions: draftPerms }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'تعذّر الحفظ')
+      setMembers((prev) =>
+        prev.map((m) => (m.id === permsFor.id ? { ...m, permissions: draftPerms } : m))
+      )
+      setPermsFor(null)
+      toast.success('حُفظت الصلاحيات')
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'تعذّر الحفظ')
+    } finally {
+      setBusy(null)
+    }
+  }
+
   const applyReset = async () => {
     if (!resetFor) return
     if (resetPassword.length < MIN_PASSWORD) {
@@ -258,6 +295,13 @@ export function StaffAccountsPanel() {
                 <Button asChild variant="outline" size="sm" className="gap-1.5">
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="w-3.5 h-3.5" /> إرسال عبر واتساب
+                  </a>
+                </Button>
+              )}
+              {mailtoUrl && (
+                <Button asChild variant="outline" size="sm" className="gap-1.5">
+                  <a href={mailtoUrl}>
+                    <Mail className="w-3.5 h-3.5" /> إرسال بالبريد
                   </a>
                 </Button>
               )}
@@ -333,7 +377,7 @@ export function StaffAccountsPanel() {
                       }
                       className="h-4 w-4 rounded border-slate-300"
                     />
-                    {page.label}
+                    {page.label_ar}
                   </label>
                 ))}
               </div>
@@ -386,6 +430,17 @@ export function StaffAccountsPanel() {
                         {member.is_active === false ? 'معطّل' : 'مفعّل'}
                       </span>
                     </div>
+                    {member.role === 'team' && (
+                      <Button
+                        type="button" variant="outline" size="sm" className="gap-1.5"
+                        onClick={() => {
+                          setPermsFor(permsFor?.id === member.id ? null : member)
+                          setDraftPerms(member.permissions ?? [])
+                        }}
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5" /> الصلاحيات
+                      </Button>
+                    )}
                     <Button
                       type="button" variant="outline" size="sm" className="gap-1.5"
                       onClick={() => { setResetFor(member); setResetPassword(generatePassword()) }}
@@ -403,6 +458,37 @@ export function StaffAccountsPanel() {
                     </Button>
                   </div>
                 </div>
+
+                {permsFor?.id === member.id && (
+                  <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+                    <div className="grid max-h-56 gap-1.5 overflow-y-auto rounded-md border border-slate-200 p-3 sm:grid-cols-2">
+                      {DASHBOARD_PAGES.map((page) => (
+                        <label key={page.path} className="flex items-center gap-2 text-sm text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={draftPerms.includes(page.path)}
+                            onChange={(e) =>
+                              setDraftPerms((prev) =>
+                                e.target.checked
+                                  ? [...prev, page.path]
+                                  : prev.filter((p) => p !== page.path)
+                              )
+                            }
+                            className="h-4 w-4 rounded border-slate-300"
+                          />
+                          {page.label_ar}
+                        </label>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" disabled={busy === member.id} onClick={savePermissions}>
+                        حفظ الصلاحيات
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setPermsFor(null)}>إلغاء</Button>
+                      <span className="text-xs text-slate-500">{draftPerms.length} صفحة مختارة</span>
+                    </div>
+                  </div>
+                )}
 
                 {resetFor?.id === member.id && (
                   <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
