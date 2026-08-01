@@ -246,6 +246,7 @@ export function SettingsClient() {
                                     <Label>الاسم الكامل</Label>
                                     <Input
                                         value={profile.full_name}
+                                                data-arabic-allowed="true"
                                         onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
                                         placeholder="الاسم كما يظهر لزملائك"
                                     />
@@ -361,6 +362,7 @@ export function SettingsClient() {
                                             <Label>اسم الشركة (عربي)</Label>
                                             <Input
                                                 value={company.name_ar}
+                                                data-arabic-allowed="true"
                                                 onChange={(e) => setCompany({ ...company, name_ar: e.target.value })}
                                             />
                                         </div>
@@ -405,6 +407,7 @@ export function SettingsClient() {
                                             <Label>العنوان (عربي)</Label>
                                             <Textarea
                                                 value={company.address_ar}
+                                                data-arabic-allowed="true"
                                                 onChange={(e) => setCompany({ ...company, address_ar: e.target.value })}
                                                 rows={3}
                                             />
@@ -560,6 +563,7 @@ export function SettingsClient() {
                                         <Label>الرسالة (عربي)</Label>
                                         <Textarea
                                             value={maintenance.message_ar}
+                                                data-arabic-allowed="true"
                                             onChange={(e) =>
                                                 setMaintenance({ ...maintenance, message_ar: e.target.value })
                                             }

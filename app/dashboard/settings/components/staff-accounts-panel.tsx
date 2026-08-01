@@ -327,7 +327,12 @@ export function StaffAccountsPanel() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>الاسم الكامل</Label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="أحمد علي" />
+              <Input
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="أحمد علي"
+                data-arabic-allowed="true"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>البريد الإلكتروني</Label>
